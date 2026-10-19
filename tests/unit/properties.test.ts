@@ -1,0 +1,101 @@
+/**
+ * Property-based tests. Example-based conformance checks show behaviour on chosen
+ * inputs; these search the input space (fast-check shrinks any failure to a minimal
+ * counterexample). Passing them is empirical evidence, not a proof of correctness.
+ */
+import fc from "fast-check";
+import { describe, expect, it } from "vitest";
+import { bfs } from "@/algorithms/graph/bfs";
+import { bubbleSort } from "@/algorithms/sorting/bubble-sort";
+import { runAlgorithm } from "@/algorithms/run";
+import type { GraphInputValue } from "@/algorithms/inputs";
+import { layoutGraph } from "@/lib/graph-layout";
+import { TracePlayer } from "@/engine/player";
+
+const arrays = fc.array(fc.integer({ min: -999, max: 999 }), { minLength: 1, maxLength: 40 });
+
+describe("bubble sort properties", () => {
+  it("output is ordered and a permutation of the input", () => {
+    fc.assert(
+      fc.property(arrays, (input) => {
+        const { output } = runAlgorithm(bubbleSort, input);
+        for (let i = 1; i < output.length; i++) expect(output[i - 1]!).toBeLessThanOrEqual(output[i]!);
+        expect([...output].sort((a, b) => a - b)).toEqual([...input].sort((a, b) => a - b));
+      }),
+    );
+  });
+
+  it("comparisons are exactly n(n−1)/2 and swaps equal the inversion count", () => {
+    fc.assert(
+      fc.property(arrays, (input) => {
+        const { trace } = runAlgorithm(bubbleSort, input, { mode: "count" });
+        const n = input.length;
+        let inversions = 0;
+        for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) if (input[i]! > input[j]!) inversions++;
+        expect(trace.meta.counters.comparisons).toBe((n * (n - 1)) / 2);
+        expect(trace.meta.counters.swaps).toBe(inversions);
+      }),
+    );
+  });
+
+  it("every intermediate state is a permutation of the input (no element is lost mid-animation)", () => {
+    fc.assert(
+      fc.property(fc.array(fc.integer({ min: 0, max: 20 }), { minLength: 1, maxLength: 12 }), (input) => {
+        const { trace } = runAlgorithm(bubbleSort, input);
+        const player = new TracePlayer(trace);
+        const sorted = [...input].sort((a, b) => a - b);
+        for (let p = 0; p <= player.length; p++) {
+          const A = player.stateAt(p).structures.A!;
+          if (A.kind !== "array") throw new Error("A is not an array");
+          expect([...(A.values as number[])].sort((a, b) => a - b)).toEqual(sorted);
+        }
+      }),
+      { numRuns: 50 },
+    );
+  });
+});
+
+const graphs: fc.Arbitrary<GraphInputValue> = fc
+  .integer({ min: 1, max: 12 })
+  .chain((n) => {
+    const ids = Array.from({ length: n }, (_, i) => String.fromCharCode(65 + i));
+    const pairs = ids.flatMap((a, i) => ids.slice(i + 1).map((b) => [a, b] as const));
+    return fc.record({
+      ids: fc.constant(ids),
+      edges: pairs.length ? fc.subarray(pairs) : fc.constant([] as (readonly [string, string])[]),
+      source: fc.constantFrom(...ids),
+    });
+  })
+  .map(({ ids, edges, source }) => {
+    const e = edges.map(([from, to]) => ({ from, to }));
+    return { directed: false, weighted: false, nodes: layoutGraph(ids, e, { iterations: 5 }), edges: e, source };
+  });
+
+describe("BFS properties", () => {
+  it("distances satisfy the edge constraint |d(u) − d(v)| ≤ 1 and reachability is symmetric", () => {
+    fc.assert(
+      fc.property(graphs, (g) => {
+        const { output } = runAlgorithm(bfs, g);
+        expect(output.dist[g.source]).toBe(0);
+        for (const { from, to } of g.edges) {
+          const a = output.dist[from]!;
+          const b = output.dist[to]!;
+          // In an undirected graph, an edge never joins a reachable and an unreachable vertex.
+          expect(a === null).toBe(b === null);
+          if (a !== null && b !== null) expect(Math.abs(a - b)).toBeLessThanOrEqual(1);
+        }
+        expect(bfs.check(g, output)).toBeNull();
+      }),
+    );
+  });
+
+  it("dequeues every reachable vertex exactly once", () => {
+    fc.assert(
+      fc.property(graphs, (g) => {
+        const { output } = runAlgorithm(bfs, g);
+        const reachable = Object.entries(output.dist).filter(([, d]) => d !== null).map(([v]) => v);
+        expect([...output.order].sort()).toEqual(reachable.sort());
+      }),
+    );
+  });
+});
