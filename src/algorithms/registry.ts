@@ -1,5 +1,12 @@
 import type { AnyAlgorithmModule } from "./types";
 import { bubbleSort } from "./sorting/bubble-sort";
+import { selectionSort } from "./sorting/selection-sort";
+import { heapSort } from "./sorting/heap-sort";
+import { linearSearch } from "./searching/linear-search";
+import { topologicalSort } from "./graph/topological-sort";
+import { lcs } from "./dp/lcs";
+import { knapsack } from "./dp/knapsack";
+import { kmp } from "./strings/kmp";
 import { insertionSort } from "./sorting/insertion-sort";
 import { mergeSort } from "./sorting/merge-sort";
 import { quickSort } from "./sorting/quick-sort";
@@ -16,14 +23,21 @@ import { editDistance } from "./dp/edit-distance";
  */
 export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   bubbleSort,
+  selectionSort,
   insertionSort,
   mergeSort,
   quickSort,
+  heapSort,
+  linearSearch,
   binarySearch,
   bfs,
   dfs,
   dijkstra,
+  topologicalSort,
   editDistance,
+  lcs,
+  knapsack,
+  kmp,
 ];
 
 const byId = new Map(ALGORITHM_MODULES.map((m) => [m.id, m]));

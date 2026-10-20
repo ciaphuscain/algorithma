@@ -14,6 +14,9 @@ for (const path of [
   "/algorithms/dfs",
   "/algorithms/dijkstra",
   "/algorithms/edit-distance",
+  "/algorithms/topological-sort",
+  "/algorithms/knapsack",
+  "/algorithms/kmp",
   "/arena",
   "/studio",
 ]) {

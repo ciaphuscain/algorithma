@@ -122,6 +122,12 @@ import { binarySearch } from "@/algorithms/searching/binary-search";
 import { dfs } from "@/algorithms/graph/dfs";
 import { dijkstra } from "@/algorithms/graph/dijkstra";
 import { editDistance } from "@/algorithms/dp/edit-distance";
+import { heapSort } from "@/algorithms/sorting/heap-sort";
+import { selectionSort } from "@/algorithms/sorting/selection-sort";
+import { kmp } from "@/algorithms/strings/kmp";
+import { lcs } from "@/algorithms/dp/lcs";
+import { knapsack } from "@/algorithms/dp/knapsack";
+import { topologicalSort } from "@/algorithms/graph/topological-sort";
 
 const inversions = (a: number[]) => {
   let count = 0;
@@ -135,6 +141,8 @@ describe.each([
   ["insertion sort", insertionSort],
   ["merge sort", mergeSort],
   ["quick sort", quickSort],
+  ["selection sort", selectionSort],
+  ["heap sort", heapSort],
 ] as const)("%s mark semantics", (_name, sort) => {
   it("a position marked 'sorted' already holds its final value, and keeps it", () => {
     fc.assert(
@@ -303,6 +311,117 @@ describe("edit distance is a metric", () => {
         expect(dist(a, c)).toBeLessThanOrEqual(dist(a, b) + dist(b, c));
       }),
       { numRuns: 60 },
+    );
+  });
+});
+
+/* -------------------------------------------------------------- strings / DP */
+
+const ab = (max: number, min = 0) =>
+  fc.string({ unit: fc.constantFrom("a", "b"), minLength: min, maxLength: max });
+
+describe("KMP properties", () => {
+  it("finds exactly the occurrences a naive scan finds, in at most 2n + 2(m − 1) comparisons", () => {
+    fc.assert(
+      fc.property(ab(24, 1), ab(8, 1), (text, pat) => {
+        const { output, trace } = runAlgorithm(kmp, { a: text, b: pat }, { mode: "count" });
+        expect(kmp.check({ a: text, b: pat }, output)).toBeNull();
+        expect(trace.meta.counters.comparisons).toBeLessThanOrEqual(
+          2 * text.length + 2 * (pat.length - 1),
+        );
+      }),
+      { numRuns: 300 },
+    );
+  });
+});
+
+describe("LCS properties", () => {
+  it("is symmetric, bounded by the shorter string, and agrees with the oracle", () => {
+    fc.assert(
+      fc.property(words, words, (a, b) => {
+        const x = runAlgorithm(lcs, { a, b }, { mode: "count" }).output;
+        const y = runAlgorithm(lcs, { a: b, b: a }, { mode: "count" }).output;
+        expect(x.length).toBe(y.length);
+        expect(x.length).toBeLessThanOrEqual(Math.min(a.length, b.length));
+        expect(lcs.check({ a, b }, x)).toBeNull();
+        // Edit distance without substitutions = m + n − 2·LCS ≥ Levenshtein distance.
+        expect(a.length + b.length - 2 * x.length).toBeGreaterThanOrEqual(dist(a, b));
+      }),
+    );
+  });
+});
+
+describe("knapsack properties", () => {
+  it("matches brute force and never decreases with more capacity", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 1, max: 6 }).chain((n) =>
+          fc.record({
+            weights: fc.array(fc.integer({ min: 1, max: 10 }), { minLength: n, maxLength: n }),
+            values: fc.array(fc.integer({ min: 0, max: 30 }), { minLength: n, maxLength: n }),
+            capacity: fc.integer({ min: 0, max: 14 }),
+          }),
+        ),
+        (k) => {
+          const a = runAlgorithm(knapsack, k, { mode: "count" }).output;
+          expect(knapsack.check(k, a)).toBeNull();
+          const b = runAlgorithm(
+            knapsack,
+            { ...k, capacity: k.capacity + 1 },
+            { mode: "count" },
+          ).output;
+          expect(b.best).toBeGreaterThanOrEqual(a.best);
+        },
+      ),
+    );
+  });
+});
+
+describe("topological sort properties", () => {
+  it("orders every DAG completely with all edges pointing forward", () => {
+    // Edges only from lower to higher index guarantee a DAG.
+    const dags = fc.integer({ min: 1, max: 10 }).chain((n) => {
+      const ids = Array.from({ length: n }, (_, i) => String.fromCharCode(65 + i));
+      const pairs = ids.flatMap((a, i) => ids.slice(i + 1).map((b) => [a, b] as const));
+      return fc.record({
+        ids: fc.constant(ids),
+        edges: pairs.length ? fc.subarray(pairs) : fc.constant([] as (readonly [string, string])[]),
+      });
+    });
+    fc.assert(
+      fc.property(dags, ({ ids, edges }) => {
+        const e = edges.map(([from, to]) => ({ from, to }));
+        const g = {
+          directed: true,
+          weighted: false,
+          nodes: layoutGraph(ids, e, { iterations: 5 }),
+          edges: e,
+          source: ids[0]!,
+        };
+        const { output } = runAlgorithm(topologicalSort, g);
+        expect(output.hasCycle).toBe(false);
+        expect(output.order).toHaveLength(ids.length);
+        expect(topologicalSort.check(g, output)).toBeNull();
+      }),
+    );
+  });
+
+  it("reports a cycle whenever one edge closes a loop", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 2, max: 8 }), (n) => {
+        const ids = Array.from({ length: n }, (_, i) => String.fromCharCode(65 + i));
+        const e = ids.map((a, i) => ({ from: a, to: ids[(i + 1) % n]! }));
+        const g = {
+          directed: true,
+          weighted: false,
+          nodes: layoutGraph(ids, e, { iterations: 5 }),
+          edges: e,
+          source: "A",
+        };
+        const { output } = runAlgorithm(topologicalSort, g);
+        expect(output.hasCycle).toBe(true);
+        expect(output.order).toEqual([]);
+      }),
     );
   });
 });

@@ -159,15 +159,22 @@ describe("catalog search", () => {
       "binary-search",
       "dfs",
       "dijkstra",
+      "heap-sort",
+      "kmp",
+      "linear-search",
       "merge-sort",
+      "topological-sort",
     ]);
     expect(slugs({ maxWorst: "log n" })).toEqual(["binary-search"]);
     expect(slugs({ domain: "searching-sorting" }).sort()).toEqual([
       "binary-search",
       "bubble-sort",
+      "heap-sort",
       "insertion-sort",
+      "linear-search",
       "merge-sort",
       "quick-sort",
+      "selection-sort",
     ]);
   });
 
@@ -175,7 +182,8 @@ describe("catalog search", () => {
     expect(entryForItem(11)?.slug).toBe("bubble-sort");
     expect(entryForItem(201)?.slug).toBe("bfs");
     expect(entryForItem(330)?.slug).toBe("edit-distance"); // duplicate of #276
-    expect(entryForItem(1)).toBeUndefined();
+    expect(entryForItem(1)?.slug).toBe("linear-search");
+    expect(entryForItem(208)).toBeUndefined(); // Bellman–Ford: planned
     expect(getEntry("nope")).toBeUndefined();
   });
 
@@ -322,5 +330,98 @@ describe("worked examples agree with the engine", () => {
     expect(runAlgorithm(module, { a: "flaw", b: "lawn" }).output.distance).toBe(2);
     expect(runAlgorithm(module, { a: "kitten", b: "sitting" }).output.distance).toBe(3);
     expect(runAlgorithm(module, { a: "sunday", b: "saturday" }).output.distance).toBe(3);
+  });
+
+  it("linear search: 5 comparisons to find 4, 7 to miss 5", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const m = getModule("linear-search")!;
+    const hit = runAlgorithm(m, { values: [7, 3, 9, 1, 4, 8, 2], target: 4 });
+    expect([hit.output, hit.trace.meta.counters.comparisons]).toEqual([4, 5]);
+    const miss = runAlgorithm(m, { values: [7, 3, 9, 1, 4, 8, 2], target: 5 });
+    expect([miss.output, miss.trace.meta.counters.comparisons]).toEqual([-1, 7]);
+  });
+
+  it("selection sort on [64, 25, 12, 22, 11]: 10 comparisons, 3 swaps", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { trace } = runAlgorithm(getModule("selection-sort")!, [64, 25, 12, 22, 11]);
+    expect(trace.meta.counters).toMatchObject({ comparisons: 10, swaps: 3 });
+  });
+
+  it("heap sort: heap after building and after each extraction", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { TracePlayer } = await import("@/engine/player");
+    const { trace } = runAlgorithm(getModule("heap-sort")!, [4, 10, 3, 5, 1]);
+    const player = new TracePlayer(trace);
+    const values = (p: number) => {
+      const A = player.stateAt(p).structures.A!;
+      return A.kind === "array" ? A.values : [];
+    };
+    const builtAt = trace.events.findIndex((e) => e.type === "step" && e.line === 3);
+    expect(values(builtAt + 1)).toEqual([10, 5, 3, 4, 1]);
+    // Snapshot just before each extraction swap (line 4).
+    const swaps = trace.events.flatMap((e, i) =>
+      e.type === "array.swap" && e.line === 4 ? [i] : [],
+    );
+    expect(swaps.slice(1).map((i) => values(i))).toEqual([
+      [5, 4, 3, 1, 10],
+      [4, 1, 3, 5, 10],
+      [3, 1, 4, 5, 10],
+    ]);
+  });
+
+  it("topological sort examples: course order and cycle detection", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const m = getModule("topological-sort")!;
+    const courses = runAlgorithm(m, m.input.presets.find((p) => p.id === "courses")!.value).output;
+    expect(courses).toEqual({ order: ["A", "B", "C", "D", "E", "F"], hasCycle: false });
+    const cyclic = runAlgorithm(m, m.input.presets.find((p) => p.id === "cycle")!.value).output;
+    expect(cyclic).toEqual({ order: ["A"], hasCycle: true });
+  });
+
+  it("LCS examples", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const m = getModule("lcs")!;
+    expect(runAlgorithm(m, { a: "ABCBDAB", b: "BDCABA" }).output).toEqual({
+      length: 4,
+      subsequence: "BCBA",
+    });
+    expect(runAlgorithm(m, { a: "AGGTAB", b: "GXTXAYB" }).output.length).toBe(4);
+  });
+
+  it("knapsack: the lesson's table, best value and greedy counterexample", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { TracePlayer } = await import("@/engine/player");
+    const m = getModule("knapsack")!;
+    const { trace, output } = runAlgorithm(m, {
+      weights: [1, 3, 4, 5],
+      values: [1, 4, 5, 7],
+      capacity: 7,
+    });
+    const K = new TracePlayer(trace).finalState().structures.K!;
+    expect(K.kind === "grid" && K.cells).toEqual([
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1, 1, 1],
+      [0, 1, 1, 4, 5, 5, 5, 5],
+      [0, 1, 1, 4, 5, 6, 6, 9],
+      [0, 1, 1, 4, 5, 7, 8, 9],
+    ]);
+    expect(output).toEqual({ best: 9, chosen: [1, 2] });
+    expect(
+      runAlgorithm(m, { weights: [5, 4, 3], values: [10, 7, 6], capacity: 7 }).output.best,
+    ).toBe(13);
+  });
+
+  it("KMP examples: prefix functions and matches", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const m = getModule("kmp")!;
+    expect(runAlgorithm(m, { a: "ababcabcabababd", b: "ababd" }).output).toEqual({
+      matches: [10],
+      lps: [0, 0, 1, 2, 0],
+    });
+    expect(runAlgorithm(m, { a: "aabaaab", b: "aabaaab" }).output.lps).toEqual([
+      0, 1, 0, 1, 2, 2, 3,
+    ]);
+    expect(runAlgorithm(m, { a: "abababa", b: "aba" }).output.matches).toEqual([0, 2, 4]);
+    expect(runAlgorithm(m, { a: "aaaaab", b: "aaa" }).output.matches).toEqual([0, 1, 2]);
   });
 });

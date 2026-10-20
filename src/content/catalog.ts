@@ -10,18 +10,32 @@ import { editDistanceEntry } from "./entries/edit-distance";
 import { insertionSortEntry } from "./entries/insertion-sort";
 import { mergeSortEntry } from "./entries/merge-sort";
 import { quickSortEntry } from "./entries/quick-sort";
+import { heapSortEntry } from "./entries/heap-sort";
+import { kmpEntry } from "./entries/kmp";
+import { knapsackEntry } from "./entries/knapsack";
+import { lcsEntry } from "./entries/lcs";
+import { linearSearchEntry } from "./entries/linear-search";
+import { selectionSortEntry } from "./entries/selection-sort";
+import { topologicalSortEntry } from "./entries/topological-sort";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
+  linearSearchEntry,
+  binarySearchEntry,
   bubbleSortEntry,
+  selectionSortEntry,
   insertionSortEntry,
   mergeSortEntry,
   quickSortEntry,
-  binarySearchEntry,
+  heapSortEntry,
   bfsEntry,
   dfsEntry,
   dijkstraEntry,
+  topologicalSortEntry,
   editDistanceEntry,
+  lcsEntry,
+  knapsackEntry,
+  kmpEntry,
 ];
 
 const bySlug = new Map(ENTRIES.map((e) => [e.slug, e]));

@@ -124,35 +124,58 @@ export function GraphView({
   );
 }
 
-export function GraphLegend() {
-  const node = (cls: string, label: string) => (
-    <span className="legend__item" key={cls}>
-      <svg viewBox="0 0 22 14" aria-hidden="true">
-        <g className={`g-node g-node--${cls}`}>
-          <circle cx="11" cy="7" r="5.5" />
-        </g>
-      </svg>
-      {label}
-    </span>
-  );
-  const edge = (cls: string, label: string) => (
-    <span className="legend__item" key={cls}>
-      <svg viewBox="0 0 22 14" aria-hidden="true">
-        <line className={`g-edge g-edge--${cls}`} x1="1" y1="7" x2="21" y2="7" />
-      </svg>
-      {label}
-    </span>
-  );
+const NODE_LEGEND: Record<string, string> = {
+  unvisited: "not reached",
+  frontier: "waiting (dashed)",
+  current: "current",
+  visited: "done",
+  path: "on path",
+  unreachable: "unreachable (dotted)",
+};
+const EDGE_LEGEND: Record<string, string> = {
+  examining: "being examined",
+  tree: "tree / chosen edge",
+  relaxed: "improved",
+  rejected: "discarded (dotted)",
+  path: "path",
+  back: "back edge (dashed)",
+};
+
+/**
+ * Legend for the statuses that occur anywhere in this trace, with wording that does
+ * not assume a particular algorithm.
+ */
+export function GraphLegend({
+  nodeStatuses,
+  edgeStatuses,
+}: {
+  nodeStatuses: string[];
+  edgeStatuses: string[];
+}) {
   return (
     <div className="legend" aria-label="Graph legend">
-      {node("unvisited", "unvisited")}
-      {node("frontier", "in frontier (dashed)")}
-      {node("current", "current")}
-      {node("visited", "done")}
-      {node("unreachable", "unreachable")}
-      {edge("tree", "tree edge")}
-      {edge("examining", "examining")}
-      {edge("rejected", "skipped (dotted)")}
+      {nodeStatuses
+        .filter((s) => NODE_LEGEND[s])
+        .map((s) => (
+          <span className="legend__item" key={`n-${s}`}>
+            <svg viewBox="0 0 22 14" aria-hidden="true">
+              <g className={`g-node g-node--${s}`}>
+                <circle cx="11" cy="7" r="5.5" />
+              </g>
+            </svg>
+            {NODE_LEGEND[s]}
+          </span>
+        ))}
+      {edgeStatuses
+        .filter((s) => EDGE_LEGEND[s])
+        .map((s) => (
+          <span className="legend__item" key={`e-${s}`}>
+            <svg viewBox="0 0 22 14" aria-hidden="true">
+              <line className={`g-edge g-edge--${s}`} x1="1" y1="7" x2="21" y2="7" />
+            </svg>
+            {EDGE_LEGEND[s]}
+          </span>
+        ))}
     </div>
   );
 }

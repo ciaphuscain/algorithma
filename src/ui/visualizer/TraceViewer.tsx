@@ -16,6 +16,44 @@ const COUNTER_LABEL: Record<string, string> = {
   writes: "writes",
 };
 
+/** Every status each graph takes during the whole trace (statuses only change via events). */
+function graphLegends(player: TracePlayer) {
+  const out: Record<string, { nodeStatuses: string[]; edgeStatuses: string[] }> = {};
+  const order = [
+    "unvisited",
+    "frontier",
+    "current",
+    "visited",
+    "path",
+    "unreachable",
+    "idle",
+    "examining",
+    "tree",
+    "relaxed",
+    "rejected",
+    "back",
+  ];
+  const sets: Record<string, { n: Set<string>; e: Set<string> }> = {};
+  for (const [name, s] of Object.entries(player.trace.initial.structures)) {
+    if (s.kind === "graph")
+      sets[name] = {
+        n: new Set(Object.values(s.nodeStatus)),
+        e: new Set(Object.values(s.edgeStatus)),
+      };
+  }
+  for (const e of player.trace.events) {
+    if (e.type === "graph.node") sets[e.s]?.n.add(e.status);
+    else if (e.type === "graph.edge") sets[e.s]?.e.add(e.status);
+  }
+  for (const [name, { n, e }] of Object.entries(sets)) {
+    out[name] = {
+      nodeStatuses: order.filter((s) => n.has(s)),
+      edgeStatuses: order.filter((s) => e.has(s)),
+    };
+  }
+  return out;
+}
+
 /**
  * Plays back any validated trace. It knows nothing about the algorithm that produced
  * it: structures are drawn by kind, and pseudocode is optional.
@@ -39,6 +77,7 @@ export function TraceViewer({
     .filter(([, v]) => v > 0)
     .map(([k]) => k);
   const truncated = player.trace.meta.truncated;
+  const legends = graphLegends(player);
 
   const onKeyDown = (e: KeyboardEvent) => {
     const target = e.target as HTMLElement;
@@ -98,6 +137,7 @@ export function TraceViewer({
             name={name}
             structure={state.structures[name]!}
             focus={state.focus}
+            legend={legends[name]}
           />
         ))}
         <div className="no-print">

@@ -15,10 +15,13 @@ export function StructureView({
   name,
   structure,
   focus,
+  legend,
 }: {
   name: string;
   structure: Structure;
   focus: Focus[];
+  /** Statuses that occur anywhere in the trace, so the legend is stable while stepping. */
+  legend?: { nodeStatuses: string[]; edgeStatuses: string[] };
 }) {
   switch (structure.kind) {
     case "array":
@@ -27,7 +30,10 @@ export function StructureView({
       return (
         <>
           <GraphView name={name} structure={structure} focus={focus} />
-          <GraphLegend />
+          <GraphLegend
+            nodeStatuses={legend?.nodeStatuses ?? [...new Set(Object.values(structure.nodeStatus))]}
+            edgeStatuses={legend?.edgeStatuses ?? [...new Set(Object.values(structure.edgeStatus))]}
+          />
         </>
       );
     case "sequence":
@@ -48,10 +54,12 @@ export function StructurePanel({
   name,
   structure,
   focus,
+  legend,
 }: {
   name: string;
   structure: Structure;
   focus: Focus[];
+  legend?: { nodeStatuses: string[]; edgeStatuses: string[] };
 }) {
   const kind = structure.kind === "sequence" ? structure.discipline : KIND_LABEL[structure.kind];
   return (
@@ -59,7 +67,7 @@ export function StructurePanel({
       <div className="structure__label">
         {structure.label ?? name} <span>{kind}</span>
       </div>
-      <StructureView name={name} structure={structure} focus={focus} />
+      <StructureView name={name} structure={structure} focus={focus} legend={legend} />
     </section>
   );
 }

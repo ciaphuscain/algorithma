@@ -85,28 +85,31 @@ export interface SearchInput {
   target: number;
 }
 
-export function sortedSearchInput(options: {
+/** Array + target. With `sorted: true` the array must be in non-decreasing order. */
+export function searchInput(options: {
   limits: NumberArrayLimits;
   presets: InputPreset<SearchInput>[];
+  sorted: boolean;
 }): InputSpec<SearchInput> {
-  const { limits } = options;
+  const { limits, sorted } = options;
+  const label = sorted ? "Sorted array" : "Array";
   return {
     fields: [
       {
         name: "values",
-        label: "Sorted array",
-        placeholder: "e.g. 2, 5, 8, 12, 16",
-        help: "Must be in non-decreasing order.",
+        label,
+        placeholder: sorted ? "e.g. 2, 5, 8, 12, 16" : "e.g. 7, 3, 9, 1, 4",
+        ...(sorted ? { help: "Must be in non-decreasing order." } : {}),
       },
       { name: "target", label: "Target", placeholder: "e.g. 12" },
     ],
-    constraints: `${limits.minLength}–${limits.maxLength} whole numbers in non-decreasing order; integer target.`,
+    constraints: `${limits.minLength}–${limits.maxLength} whole numbers${sorted ? " in non-decreasing order" : ""}; integer target.`,
     parse: (fields) => {
-      const list = parseNumberList(fields.values ?? "", limits, "Sorted array");
+      const list = parseNumberList(fields.values ?? "", limits, label);
       const errors = list.ok ? [] : [...list.errors];
       const targetText = (fields.target ?? "").trim();
       if (!/^-?\d+$/.test(targetText)) errors.push("Target must be a whole number");
-      if (list.ok) {
+      if (list.ok && sorted) {
         for (let i = 1; i < list.value.length; i++) {
           if (list.value[i]! < list.value[i - 1]!) {
             errors.push(`Array is not sorted: ${list.value[i - 1]} comes before ${list.value[i]}`);
@@ -121,12 +124,20 @@ export function sortedSearchInput(options: {
     presets: options.presets,
     random: (rng, size) => {
       const n = clamp(size ?? 12, limits.minLength, limits.maxLength);
-      const values = randomNumbers(rng, n, 1, 99).sort((a, b) => a - b);
+      const values = randomNumbers(rng, n, 1, 99);
+      if (sorted) values.sort((a, b) => a - b);
       // Half the time search for a present value, otherwise any value.
       const target = rng.next() < 0.5 ? values[rng.int(0, n - 1)]! : rng.int(1, 99);
       return { values, target };
     },
   };
+}
+
+export function sortedSearchInput(options: {
+  limits: NumberArrayLimits;
+  presets: InputPreset<SearchInput>[];
+}): InputSpec<SearchInput> {
+  return searchInput({ ...options, sorted: true });
 }
 
 /* ------------------------------------------------------------------ graphs */
@@ -412,39 +423,133 @@ const PRINTABLE = /^[\x21-\x7e]*$/;
 
 export function stringPairInput(options: {
   labels: [string, string];
-  maxLength: number;
+  /** One limit for both strings, or [limit for a, limit for b]. */
+  maxLength: number | [number, number];
+  /** Minimum lengths for [a, b]; default 0. */
+  minLength?: [number, number];
   presets: InputPreset<StringPair>[];
   alphabet?: string;
+  placeholders?: [string, string];
 }): InputSpec<StringPair> {
-  const { maxLength } = options;
+  const [maxA, maxB] =
+    typeof options.maxLength === "number"
+      ? [options.maxLength, options.maxLength]
+      : options.maxLength;
+  const [minA, minB] = options.minLength ?? [0, 0];
   const alphabet = options.alphabet ?? "abcdefgh";
-  const check = (s: string, label: string, errors: string[]) => {
-    if (s.length > maxLength)
-      errors.push(`${label} has ${s.length} characters; the maximum is ${maxLength}`);
+  const check = (s: string, label: string, min: number, max: number, errors: string[]) => {
+    if (s.length > max) errors.push(`${label} has ${s.length} characters; the maximum is ${max}`);
+    if (s.length < min)
+      errors.push(`${label} needs at least ${min} character${min === 1 ? "" : "s"}`);
     if (!PRINTABLE.test(s))
       errors.push(`${label} may contain only visible ASCII characters, no spaces`);
   };
   return {
     fields: [
-      { name: "a", label: options.labels[0], placeholder: "e.g. kitten" },
-      { name: "b", label: options.labels[1], placeholder: "e.g. sitting" },
+      {
+        name: "a",
+        label: options.labels[0],
+        placeholder: options.placeholders?.[0] ?? "e.g. kitten",
+      },
+      {
+        name: "b",
+        label: options.labels[1],
+        placeholder: options.placeholders?.[1] ?? "e.g. sitting",
+      },
     ],
-    constraints: `Each string 0–${maxLength} visible ASCII characters (no spaces).`,
+    constraints:
+      maxA === maxB && minA === minB
+        ? `Each string ${minA}–${maxA} visible ASCII characters (no spaces).`
+        : `${options.labels[0]}: ${minA}–${maxA} characters; ${options.labels[1]}: ${minB}–${maxB}. Visible ASCII, no spaces.`,
     parse: (fields) => {
       const a = (fields.a ?? "").trim();
       const b = (fields.b ?? "").trim();
       const errors: string[] = [];
-      check(a, options.labels[0], errors);
-      check(b, options.labels[1], errors);
+      check(a, options.labels[0], minA, maxA, errors);
+      check(b, options.labels[1], minB, maxB, errors);
       return errors.length > 0 ? { ok: false, errors } : { ok: true, value: { a, b } };
     },
     format: (v) => ({ a: v.a, b: v.b }),
     presets: options.presets,
     random: (rng, size) => {
-      const len = () => clamp(rng.int(Math.max(1, (size ?? 6) - 2), size ?? 6), 0, maxLength);
-      const word = () =>
-        Array.from({ length: len() }, () => alphabet[rng.int(0, alphabet.length - 1)]).join("");
-      return { a: word(), b: word() };
+      const word = (min: number, max: number) => {
+        const len = clamp(rng.int(Math.max(1, (size ?? 6) - 2), size ?? 6), Math.max(min, 1), max);
+        return Array.from({ length: len }, () => alphabet[rng.int(0, alphabet.length - 1)]).join(
+          "",
+        );
+      };
+      return { a: word(minA, maxA), b: word(minB, maxB) };
+    },
+  };
+}
+
+/* --------------------------------------------------------------- knapsack */
+
+export interface KnapsackInput {
+  weights: number[];
+  values: number[];
+  capacity: number;
+}
+
+export function knapsackInput(options: {
+  maxItems: number;
+  maxCapacity: number;
+  presets: InputPreset<KnapsackInput>[];
+}): InputSpec<KnapsackInput> {
+  const { maxItems, maxCapacity } = options;
+  return {
+    fields: [
+      {
+        name: "weights",
+        label: "Weights",
+        placeholder: "e.g. 1, 3, 4, 5",
+        help: "One positive whole number per item.",
+      },
+      {
+        name: "values",
+        label: "Values",
+        placeholder: "e.g. 1, 4, 5, 7",
+        help: "Same number of items as weights.",
+      },
+      { name: "capacity", label: "Capacity", placeholder: "e.g. 7" },
+    ],
+    constraints: `1–${maxItems} items with weights 1–${maxCapacity} and values 0–99; capacity 0–${maxCapacity}.`,
+    parse: (fields) => {
+      const w = parseNumberList(
+        fields.weights ?? "",
+        { minLength: 1, maxLength: maxItems, min: 1, max: maxCapacity },
+        "Weights",
+      );
+      const v = parseNumberList(
+        fields.values ?? "",
+        { minLength: 1, maxLength: maxItems, min: 0, max: 99 },
+        "Values",
+      );
+      const errors = [...(w.ok ? [] : w.errors), ...(v.ok ? [] : v.errors)];
+      const capText = (fields.capacity ?? "").trim();
+      if (!/^\d+$/.test(capText) || Number(capText) > maxCapacity)
+        errors.push(`Capacity must be a whole number from 0 to ${maxCapacity}`);
+      if (w.ok && v.ok && w.value.length !== v.value.length) {
+        errors.push(
+          `${w.value.length} weights but ${v.value.length} values: give one of each per item`,
+        );
+      }
+      if (errors.length > 0 || !w.ok || !v.ok) return { ok: false, errors };
+      return { ok: true, value: { weights: w.value, values: v.value, capacity: Number(capText) } };
+    },
+    format: (k) => ({
+      weights: k.weights.join(", "),
+      values: k.values.join(", "),
+      capacity: String(k.capacity),
+    }),
+    presets: options.presets,
+    random: (rng, size) => {
+      const n = clamp(size ?? 4, 1, maxItems);
+      return {
+        weights: randomNumbers(rng, n, 1, Math.min(6, maxCapacity)),
+        values: randomNumbers(rng, n, 1, 20),
+        capacity: rng.int(1, maxCapacity),
+      };
     },
   };
 }

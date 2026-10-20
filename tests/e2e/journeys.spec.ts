@@ -145,7 +145,7 @@ test("explore search and filters, shareable via URL", async ({ page }) => {
   await expect(page).toHaveURL(/query=shortest/);
   await page.getByLabel("Search").fill("");
   await page.getByLabel("Worst-case time at most").selectOption("n log n");
-  await expect(page.getByTestId("result-count")).toContainText("5 interactive entries");
+  await expect(page.getByTestId("result-count")).toContainText("9 interactive entries");
   await page.goto("/explore?domain=searching-sorting");
   await expect(page.getByTestId("results")).toContainText("Bubble Sort");
   await expect(page.getByTestId("results")).not.toContainText("Breadth-First");
@@ -163,7 +163,7 @@ test("roadmap lists the curriculum honestly", async ({ page }) => {
   await expect(page.locator('[data-number="220"]')).toContainText("Same as #218");
   await page.getByLabel("Search the curriculum").fill("");
   await page.getByLabel("Status").selectOption("available");
-  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 11 of 600");
+  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 19 of 600");
   await page.locator('[data-number="11"]').getByRole("link", { name: "Bubble Sort" }).click();
   await expect(page).toHaveURL(/\/algorithms\/bubble-sort/);
 });
@@ -202,15 +202,22 @@ test("every catalogue entry renders its visualizer without console errors", asyn
   page.on("pageerror", (e) => errors.push(String(e)));
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
   for (const slug of [
+    "linear-search",
+    "binary-search",
     "bubble-sort",
+    "selection-sort",
     "insertion-sort",
     "merge-sort",
     "quick-sort",
-    "binary-search",
+    "heap-sort",
     "bfs",
     "dfs",
     "dijkstra",
+    "topological-sort",
     "edit-distance",
+    "lcs",
+    "knapsack",
+    "kmp",
   ]) {
     await page.goto(`/algorithms/${slug}`);
     await page.getByRole("button", { name: "Jump to end" }).click();
