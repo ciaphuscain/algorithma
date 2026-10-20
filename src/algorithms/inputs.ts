@@ -11,7 +11,11 @@ export interface NumberArrayLimits {
   max: number;
 }
 
-export function parseNumberList(text: string, limits: NumberArrayLimits, label = "Array"): ParseResult<number[]> {
+export function parseNumberList(
+  text: string,
+  limits: NumberArrayLimits,
+  label = "Array",
+): ParseResult<number[]> {
   const tokens = text
     .split(/[\s,;]+/)
     .map((t) => t.trim())
@@ -24,14 +28,20 @@ export function parseNumberList(text: string, limits: NumberArrayLimits, label =
       continue;
     }
     const v = Number(token);
-    if (v < limits.min || v > limits.max) errors.push(`${v} is outside ${limits.min}…${limits.max}`);
+    if (v < limits.min || v > limits.max)
+      errors.push(`${v} is outside ${limits.min}…${limits.max}`);
     values.push(v);
   }
-  if (values.length < limits.minLength) errors.push(`${label} needs at least ${limits.minLength} element(s)`);
+  if (values.length < limits.minLength)
+    errors.push(`${label} needs at least ${limits.minLength} element(s)`);
   if (values.length > limits.maxLength) {
-    errors.push(`${label} has ${values.length} elements; the visualizer supports at most ${limits.maxLength}`);
+    errors.push(
+      `${label} has ${values.length} elements; the visualizer supports at most ${limits.maxLength}`,
+    );
   }
-  return errors.length > 0 ? { ok: false, errors: errors.slice(0, 5) } : { ok: true, value: values };
+  return errors.length > 0
+    ? { ok: false, errors: errors.slice(0, 5) }
+    : { ok: true, value: values };
 }
 
 export function randomNumbers(rng: Rng, length: number, min: number, max: number): number[] {
@@ -58,7 +68,11 @@ export function numberArrayInput(options: {
     format: (value) => ({ values: value.join(", ") }),
     presets: options.presets,
     random: (rng, size) => {
-      const n = clamp(size ?? options.defaultRandomLength ?? 10, limits.minLength, limits.maxLength);
+      const n = clamp(
+        size ?? options.defaultRandomLength ?? 10,
+        limits.minLength,
+        limits.maxLength,
+      );
       return randomNumbers(rng, n, Math.max(limits.min, 1), Math.min(limits.max, 99));
     },
   };
@@ -78,7 +92,12 @@ export function sortedSearchInput(options: {
   const { limits } = options;
   return {
     fields: [
-      { name: "values", label: "Sorted array", placeholder: "e.g. 2, 5, 8, 12, 16", help: "Must be in non-decreasing order." },
+      {
+        name: "values",
+        label: "Sorted array",
+        placeholder: "e.g. 2, 5, 8, 12, 16",
+        help: "Must be in non-decreasing order.",
+      },
       { name: "target", label: "Target", placeholder: "e.g. 12" },
     ],
     constraints: `${limits.minLength}–${limits.maxLength} whole numbers in non-decreasing order; integer target.`,
@@ -201,10 +220,14 @@ export function parseGraph(
       }
       weight = Number(weightText);
       if (limits.minWeight !== undefined && weight < limits.minWeight) {
-        errors.push(`Weight ${weight} on ${from}${sep}${to} is below the minimum ${limits.minWeight}`);
+        errors.push(
+          `Weight ${weight} on ${from}${sep}${to} is below the minimum ${limits.minWeight}`,
+        );
       }
       if (limits.maxWeight !== undefined && weight > limits.maxWeight) {
-        errors.push(`Weight ${weight} on ${from}${sep}${to} exceeds the maximum ${limits.maxWeight}`);
+        errors.push(
+          `Weight ${weight} on ${from}${sep}${to} exceeds the maximum ${limits.maxWeight}`,
+        );
       }
     } else if (weightText !== undefined) {
       errors.push(`"${token}": this graph is unweighted`);
@@ -216,10 +239,13 @@ export function parseGraph(
   }
 
   if (nodes.length === 0) errors.push("The graph needs at least one node");
-  if (nodes.length > limits.maxNodes) errors.push(`${nodes.length} nodes; the visualizer supports at most ${limits.maxNodes}`);
-  if (edges.length > limits.maxEdges) errors.push(`${edges.length} edges; the visualizer supports at most ${limits.maxEdges}`);
+  if (nodes.length > limits.maxNodes)
+    errors.push(`${nodes.length} nodes; the visualizer supports at most ${limits.maxNodes}`);
+  if (edges.length > limits.maxEdges)
+    errors.push(`${edges.length} edges; the visualizer supports at most ${limits.maxEdges}`);
   const source = sourceText.trim();
-  if (!seen.has(source)) errors.push(source ? `Start node "${source}" is not in the graph` : "Choose a start node");
+  if (!seen.has(source))
+    errors.push(source ? `Start node "${source}" is not in the graph` : "Choose a start node");
   if (errors.length > 0) return { ok: false, errors: errors.slice(0, 5) };
 
   return {
@@ -231,7 +257,9 @@ export function parseGraph(
 export function formatGraph(value: GraphInputValue): Record<string, string> {
   const sep = value.directed ? "->" : "-";
   const inEdge = new Set(value.edges.flatMap((e) => [e.from, e.to]));
-  const parts = value.edges.map((e) => `${e.from}${sep}${e.to}${e.weight !== undefined ? `:${e.weight}` : ""}`);
+  const parts = value.edges.map(
+    (e) => `${e.from}${sep}${e.to}${e.weight !== undefined ? `:${e.weight}` : ""}`,
+  );
   for (const n of value.nodes) if (!inEdge.has(n.id)) parts.push(n.id);
   return { edges: parts.join(", "), source: value.source };
 }
@@ -250,9 +278,19 @@ export function graphPreset(
 /** Random connected-ish graph: a random spanning tree plus extra edges. */
 export function randomGraph(
   rng: Rng,
-  options: { directed: boolean; weighted: boolean; nodes: number; extraEdges: number; minWeight?: number; maxWeight?: number },
+  options: {
+    directed: boolean;
+    weighted: boolean;
+    nodes: number;
+    extraEdges: number;
+    minWeight?: number;
+    maxWeight?: number;
+  },
 ): GraphInputValue {
-  const ids = Array.from({ length: options.nodes }, (_, i) => String.fromCharCode(65 + (i % 26)) + (i >= 26 ? String(Math.floor(i / 26)) : ""));
+  const ids = Array.from(
+    { length: options.nodes },
+    (_, i) => String.fromCharCode(65 + (i % 26)) + (i >= 26 ? String(Math.floor(i / 26)) : ""),
+  );
   const edges: GraphInputValue["edges"] = [];
   const keys = new Set<string>();
   const weight = () => rng.int(options.minWeight ?? 1, options.maxWeight ?? 9);
@@ -286,7 +324,13 @@ export function graphInput(options: {
   presets: InputPreset<GraphInputValue>[];
 }): InputSpec<GraphInputValue> {
   const { directed, weighted, limits } = options;
-  const example = directed ? (weighted ? "A->B:4, B->C:1, A->C:7" : "A->B, B->C, A->C") : weighted ? "A-B:4, B-C:1, A-C:7" : "A-B, B-C, A-C, C-D";
+  const example = directed
+    ? weighted
+      ? "A->B:4, B->C:1, A->C:7"
+      : "A->B, B->C, A->C"
+    : weighted
+      ? "A-B:4, B-C:1, A-C:7"
+      : "A-B, B-C, A-C, C-D";
   return {
     fields: [
       {
@@ -299,9 +343,12 @@ export function graphInput(options: {
       { name: "source", label: "Start node", placeholder: "e.g. A" },
     ],
     constraints: `Up to ${limits.maxNodes} nodes and ${limits.maxEdges} edges; node ids are 1–3 letters or digits.${
-      weighted && limits.minWeight !== undefined ? ` Weights ${limits.minWeight}–${limits.maxWeight}.` : ""
+      weighted && limits.minWeight !== undefined
+        ? ` Weights ${limits.minWeight}–${limits.maxWeight}.`
+        : ""
     }`,
-    parse: (fields) => parseGraph(fields.edges ?? "", fields.source ?? "", { directed, weighted, limits }),
+    parse: (fields) =>
+      parseGraph(fields.edges ?? "", fields.source ?? "", { directed, weighted, limits }),
     format: formatGraph,
     presets: options.presets,
     random: (rng, size) => {
@@ -335,7 +382,9 @@ export function toTraceGraph(value: GraphInputValue) {
 export const edgeId = (from: string, to: string) => `${from}-${to}`;
 
 /** Adjacency lists in input order. For undirected graphs each edge appears in both lists. */
-export function adjacency(value: GraphInputValue): Map<string, { to: string; edge: string; weight: number }[]> {
+export function adjacency(
+  value: GraphInputValue,
+): Map<string, { to: string; edge: string; weight: number }[]> {
   const adj = new Map<string, { to: string; edge: string; weight: number }[]>();
   for (const n of value.nodes) adj.set(n.id, []);
   for (const e of value.edges) {

@@ -19,7 +19,8 @@ describe("bubble sort properties", () => {
     fc.assert(
       fc.property(arrays, (input) => {
         const { output } = runAlgorithm(bubbleSort, input);
-        for (let i = 1; i < output.length; i++) expect(output[i - 1]!).toBeLessThanOrEqual(output[i]!);
+        for (let i = 1; i < output.length; i++)
+          expect(output[i - 1]!).toBeLessThanOrEqual(output[i]!);
         expect([...output].sort((a, b) => a - b)).toEqual([...input].sort((a, b) => a - b));
       }),
     );
@@ -31,7 +32,8 @@ describe("bubble sort properties", () => {
         const { trace } = runAlgorithm(bubbleSort, input, { mode: "count" });
         const n = input.length;
         let inversions = 0;
-        for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) if (input[i]! > input[j]!) inversions++;
+        for (let i = 0; i < n; i++)
+          for (let j = i + 1; j < n; j++) if (input[i]! > input[j]!) inversions++;
         expect(trace.meta.counters.comparisons).toBe((n * (n - 1)) / 2);
         expect(trace.meta.counters.swaps).toBe(inversions);
       }),
@@ -40,16 +42,19 @@ describe("bubble sort properties", () => {
 
   it("every intermediate state is a permutation of the input (no element is lost mid-animation)", () => {
     fc.assert(
-      fc.property(fc.array(fc.integer({ min: 0, max: 20 }), { minLength: 1, maxLength: 12 }), (input) => {
-        const { trace } = runAlgorithm(bubbleSort, input);
-        const player = new TracePlayer(trace);
-        const sorted = [...input].sort((a, b) => a - b);
-        for (let p = 0; p <= player.length; p++) {
-          const A = player.stateAt(p).structures.A!;
-          if (A.kind !== "array") throw new Error("A is not an array");
-          expect([...(A.values as number[])].sort((a, b) => a - b)).toEqual(sorted);
-        }
-      }),
+      fc.property(
+        fc.array(fc.integer({ min: 0, max: 20 }), { minLength: 1, maxLength: 12 }),
+        (input) => {
+          const { trace } = runAlgorithm(bubbleSort, input);
+          const player = new TracePlayer(trace);
+          const sorted = [...input].sort((a, b) => a - b);
+          for (let p = 0; p <= player.length; p++) {
+            const A = player.stateAt(p).structures.A!;
+            if (A.kind !== "array") throw new Error("A is not an array");
+            expect([...(A.values as number[])].sort((a, b) => a - b)).toEqual(sorted);
+          }
+        },
+      ),
       { numRuns: 50 },
     );
   });
@@ -68,7 +73,13 @@ const graphs: fc.Arbitrary<GraphInputValue> = fc
   })
   .map(({ ids, edges, source }) => {
     const e = edges.map(([from, to]) => ({ from, to }));
-    return { directed: false, weighted: false, nodes: layoutGraph(ids, e, { iterations: 5 }), edges: e, source };
+    return {
+      directed: false,
+      weighted: false,
+      nodes: layoutGraph(ids, e, { iterations: 5 }),
+      edges: e,
+      source,
+    };
   });
 
 describe("BFS properties", () => {
@@ -93,7 +104,9 @@ describe("BFS properties", () => {
     fc.assert(
       fc.property(graphs, (g) => {
         const { output } = runAlgorithm(bfs, g);
-        const reachable = Object.entries(output.dist).filter(([, d]) => d !== null).map(([v]) => v);
+        const reachable = Object.entries(output.dist)
+          .filter(([, d]) => d !== null)
+          .map(([v]) => v);
         expect([...output.order].sort()).toEqual(reachable.sort());
       }),
     );

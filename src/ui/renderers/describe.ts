@@ -1,0 +1,45 @@
+import type { Structure } from "@/engine/protocol";
+import type { TraceState } from "@/engine/state";
+
+/**
+ * Plain-text description of a state, for screen readers and the "text view". Every
+ * visual cue the renderers draw has a textual counterpart here.
+ */
+export function describeStructure(name: string, s: Structure): string {
+  const label = s.label ?? name;
+  switch (s.kind) {
+    case "array": {
+      const marked = s.values
+        .map((v, i) => (s.marks[i] ? `${i}:${s.marks[i]}` : null))
+        .filter(Boolean)
+        .join(", ");
+      const pointers = Object.entries(s.pointers)
+        .map(([p, i]) => `${p}=${i}`)
+        .join(", ");
+      return `${label} = [${s.values.map(String).join(", ")}]${marked ? `; marked ${marked}` : ""}${pointers ? `; pointers ${pointers}` : ""}.`;
+    }
+    case "graph": {
+      const byStatus = new Map<string, string[]>();
+      for (const n of s.nodes) {
+        const st = s.nodeStatus[n.id] ?? "unvisited";
+        byStatus.set(st, [
+          ...(byStatus.get(st) ?? []),
+          n.id + (s.annotations[n.id] ? ` (${s.annotations[n.id]})` : ""),
+        ]);
+      }
+      const nodes = [...byStatus].map(([st, ids]) => `${st}: ${ids.join(", ")}`).join("; ");
+      const tree = s.edges
+        .filter((e) => s.edgeStatus[e.id] === "tree" || s.edgeStatus[e.id] === "path")
+        .map((e) => e.id);
+      return `${label} — ${nodes}${tree.length ? `; highlighted edges ${tree.join(", ")}` : ""}.`;
+    }
+    case "sequence":
+      return `${label} (${s.discipline}) = [${s.items.map(String).join(", ")}].`;
+    case "grid":
+      return `${label}: ${s.rows}×${s.cols} table; rows ${s.cells.map((r) => `[${r.map((c) => (c === null ? "·" : String(c))).join(" ")}]`).join(" ")}.`;
+  }
+}
+
+export function describeState(state: TraceState): string {
+  return state.order.map((name) => describeStructure(name, state.structures[name]!)).join(" ");
+}

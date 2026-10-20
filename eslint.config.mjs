@@ -4,7 +4,15 @@ import reactHooks from "eslint-plugin-react-hooks";
 import globals from "globals";
 
 export default tseslint.config(
-  { ignores: [".next/**", "node_modules/**", "playwright-report/**", "test-results/**", "next-env.d.ts"] },
+  {
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      "playwright-report/**",
+      "test-results/**",
+      "next-env.d.ts",
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -13,7 +21,10 @@ export default tseslint.config(
     plugins: { "react-hooks": reactHooks },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
       "@typescript-eslint/consistent-type-imports": "error",
     },
   },
@@ -33,7 +44,18 @@ export default tseslint.config(
     rules: {
       "no-restricted-imports": [
         "error",
-        { patterns: ["react", "react-dom", "next", "next/*", "@/ui/*", "@/app/*", "@/algorithms/*", "@/content/*"] },
+        {
+          patterns: [
+            "react",
+            "react-dom",
+            "next",
+            "next/*",
+            "@/ui/*",
+            "@/app/*",
+            "@/algorithms/*",
+            "@/content/*",
+          ],
+        },
       ],
     },
   },

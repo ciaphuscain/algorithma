@@ -26,10 +26,25 @@ export type VarValue = Scalar | Scalar[];
 export const ARRAY_MARKS = ["sorted", "pivot", "found", "discarded", "active", "min"] as const;
 export type ArrayMark = (typeof ARRAY_MARKS)[number];
 
-export const NODE_STATUSES = ["unvisited", "frontier", "current", "visited", "path", "unreachable"] as const;
+export const NODE_STATUSES = [
+  "unvisited",
+  "frontier",
+  "current",
+  "visited",
+  "path",
+  "unreachable",
+] as const;
 export type NodeStatus = (typeof NODE_STATUSES)[number];
 
-export const EDGE_STATUSES = ["idle", "examining", "tree", "relaxed", "rejected", "path", "back"] as const;
+export const EDGE_STATUSES = [
+  "idle",
+  "examining",
+  "tree",
+  "relaxed",
+  "rejected",
+  "path",
+  "back",
+] as const;
 export type EdgeStatus = (typeof EDGE_STATUSES)[number];
 
 export const GRID_MARKS = ["filled", "active", "path", "base"] as const;
@@ -39,12 +54,23 @@ export const SEQUENCE_DISCIPLINES = ["queue", "stack", "priority"] as const;
 export type SequenceDiscipline = (typeof SEQUENCE_DISCIPLINES)[number];
 
 /** Transient emphasis tone attached to the elements an event touched. */
-export const FOCUS_TONES = ["compare", "swap", "read", "write", "visit", "relax", "match", "mismatch"] as const;
+export const FOCUS_TONES = [
+  "compare",
+  "swap",
+  "read",
+  "write",
+  "visit",
+  "relax",
+  "match",
+  "mismatch",
+] as const;
 export type FocusTone = (typeof FOCUS_TONES)[number];
 
 export interface ArrayStructure {
   kind: "array";
   label?: string;
+  /** Rendering hint only: "bars" (heights) or "cells" (boxes). Renderers may ignore it. */
+  display?: "bars" | "cells";
   values: Scalar[];
   marks: (ArrayMark | null)[];
   pointers: Record<string, number>;

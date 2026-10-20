@@ -54,13 +54,19 @@ describe("reducer", () => {
   it("rejects out-of-range indices with the event index", () => {
     const trace = smallTrace();
     const state = initialState(trace);
-    expect(() => applyEvent(state, { type: "array.swap", s: "A", i: 0, j: 7 }, 4)).toThrow(TraceReplayError);
-    expect(() => applyEvent(state, { type: "array.swap", s: "A", i: 0, j: 7 }, 4)).toThrow(/event #4/);
+    expect(() => applyEvent(state, { type: "array.swap", s: "A", i: 0, j: 7 }, 4)).toThrow(
+      TraceReplayError,
+    );
+    expect(() => applyEvent(state, { type: "array.swap", s: "A", i: 0, j: 7 }, 4)).toThrow(
+      /event #4/,
+    );
   });
 
   it("rejects events against the wrong structure kind", () => {
     const state = initialState(smallTrace());
-    expect(() => applyEvent(state, { type: "seq.push", s: "A", value: 1 })).toThrow(/is a array, expected sequence/);
+    expect(() => applyEvent(state, { type: "seq.push", s: "A", value: 1 })).toThrow(
+      /is a array, expected sequence/,
+    );
   });
 
   it("pops queues from the front and stacks from the back", () => {
@@ -94,7 +100,8 @@ describe("player", () => {
     const A = t.array("A", values);
     // A long trace: a full bubble sort.
     for (let i = 0; i < A.length - 1; i++)
-      for (let j = 0; j < A.length - 1 - i; j++) if (A.compare(j, j + 1, { vars: { i, j } }) > 0) A.swap(j, j + 1);
+      for (let j = 0; j < A.length - 1 - i; j++)
+        if (A.compare(j, j + 1, { vars: { i, j } }) > 0) A.swap(j, j + 1);
     const trace = t.finish(values, A.toArray());
 
     const reference = new TracePlayer(trace, { keyframeInterval: 1 });
@@ -131,7 +138,8 @@ describe("tracer", () => {
     const go = (mode: "record" | "count") => {
       const t = new Tracer({ id: "test", version: 1 }, { mode });
       const A = t.array("A", [4, 3, 2, 1]);
-      for (let i = 0; i < 3; i++) for (let j = 0; j < 3 - i; j++) if (A.compare(j, j + 1) > 0) A.swap(j, j + 1);
+      for (let i = 0; i < 3; i++)
+        for (let j = 0; j < 3 - i; j++) if (A.compare(j, j + 1) > 0) A.swap(j, j + 1);
       t.tally("passes", 3);
       return t.finish(null, A.toArray());
     };
@@ -157,11 +165,15 @@ describe("tracer", () => {
   it("marks traces explicitly truncated when the event budget runs out", () => {
     const t = new Tracer({ id: "test", version: 1 }, { maxEvents: 10 });
     const A = t.array("A", [5, 4, 3, 2, 1]);
-    for (let i = 0; i < 4; i++) for (let j = 0; j < 4 - i; j++) if (A.compare(j, j + 1) > 0) A.swap(j, j + 1);
+    for (let i = 0; i < 4; i++)
+      for (let j = 0; j < 4 - i; j++) if (A.compare(j, j + 1) > 0) A.swap(j, j + 1);
     const trace = t.finish(null, A.toArray());
     expect(trace.events.length).toBe(10);
     expect(trace.events.at(-1)!.type).toBe("done");
-    expect(trace.meta.truncated).toEqual({ afterEvents: 9, reason: expect.stringContaining("event budget of 10") });
+    expect(trace.meta.truncated).toEqual({
+      afterEvents: 9,
+      reason: expect.stringContaining("event budget of 10"),
+    });
     // The algorithm itself still ran to completion.
     expect(trace.result).toEqual([1, 2, 3, 4, 5]);
     expect(trace.meta.counters.comparisons).toBe(10);
@@ -223,7 +235,8 @@ describe("validateTrace", () => {
 
   it("enforces resource limits", () => {
     const raw = valid();
-    const A = (raw.initial as { structures: { A: { values: number[]; marks: null[] } } }).structures.A;
+    const A = (raw.initial as { structures: { A: { values: number[]; marks: null[] } } }).structures
+      .A;
     A.values = Array(5000).fill(1);
     A.marks = Array(5000).fill(null);
     const result = validateTrace(raw);
@@ -232,7 +245,13 @@ describe("validateTrace", () => {
   });
 
   it("never throws on garbage", () => {
-    for (const junk of [null, [], "x", { protocol: "algorithma.trace", version: 1 }, { protocol: "algorithma.trace", version: 1, events: [null], initial: {}, meta: {} }]) {
+    for (const junk of [
+      null,
+      [],
+      "x",
+      { protocol: "algorithma.trace", version: 1 },
+      { protocol: "algorithma.trace", version: 1, events: [null], initial: {}, meta: {} },
+    ]) {
       expect(() => validateTrace(junk)).not.toThrow();
       expect(validateTrace(junk).ok).toBe(false);
     }

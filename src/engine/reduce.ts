@@ -39,13 +39,24 @@ function get<K extends StructureKind>(state: TraceState, s: string, kind: K): Ki
 
 function checkIndex(a: ArrayStructure, i: number, s: string): void {
   if (!Number.isInteger(i) || i < 0 || i >= a.values.length) {
-    throw new TraceReplayError(`index ${i} out of range for array "${s}" (length ${a.values.length})`);
+    throw new TraceReplayError(
+      `index ${i} out of range for array "${s}" (length ${a.values.length})`,
+    );
   }
 }
 
 function checkCell(g: GridStructure, r: number, c: number, s: string): void {
-  if (!Number.isInteger(r) || !Number.isInteger(c) || r < 0 || c < 0 || r >= g.rows || c >= g.cols) {
-    throw new TraceReplayError(`cell (${r}, ${c}) out of range for grid "${s}" (${g.rows}×${g.cols})`);
+  if (
+    !Number.isInteger(r) ||
+    !Number.isInteger(c) ||
+    r < 0 ||
+    c < 0 ||
+    r >= g.rows ||
+    c >= g.cols
+  ) {
+    throw new TraceReplayError(
+      `cell (${r}, ${c}) out of range for grid "${s}" (${g.rows}×${g.cols})`,
+    );
   }
 }
 
@@ -185,7 +196,12 @@ function applyUnchecked(state: TraceState, e: TraceEvent): void {
       const q = get(state, e.s, "sequence");
       if (q.items.length === 0) throw new TraceReplayError(`pop from empty sequence "${e.s}"`);
       if (q.discipline === "priority") {
-        if (e.index === undefined || !Number.isInteger(e.index) || e.index < 0 || e.index >= q.items.length) {
+        if (
+          e.index === undefined ||
+          !Number.isInteger(e.index) ||
+          e.index < 0 ||
+          e.index >= q.items.length
+        ) {
           throw new TraceReplayError(`priority pop on "${e.s}" needs a valid index`);
         }
         q.items.splice(e.index, 1);

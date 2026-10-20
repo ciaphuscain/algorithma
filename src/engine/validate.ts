@@ -28,8 +28,7 @@ export const TRACE_LIMITS = {
 } as const;
 
 export type ValidationResult =
-  | { ok: true; trace: Trace; player: TracePlayer }
-  | { ok: false; errors: string[] };
+  { ok: true; trace: Trace; player: TracePlayer } | { ok: false; errors: string[] };
 
 class Collector {
   errors: string[] = [];
@@ -46,9 +45,11 @@ const isScalar = (v: unknown): boolean =>
   (typeof v === "number" && Number.isFinite(v)) ||
   (typeof v === "string" && v.length <= TRACE_LIMITS.maxStringLength);
 const isInt = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v);
-const isStr = (v: unknown): v is string => typeof v === "string" && v.length <= TRACE_LIMITS.maxStringLength;
+const isStr = (v: unknown): v is string =>
+  typeof v === "string" && v.length <= TRACE_LIMITS.maxStringLength;
 const isCellList = (v: unknown): boolean =>
-  Array.isArray(v) && v.every((c) => Array.isArray(c) && c.length === 2 && isInt(c[0]) && isInt(c[1]));
+  Array.isArray(v) &&
+  v.every((c) => Array.isArray(c) && c.length === 2 && isInt(c[0]) && isInt(c[1]));
 const oneOf =
   <T extends string>(values: readonly T[]) =>
   (v: unknown): v is T =>
@@ -60,12 +61,21 @@ function checkStructure(raw: unknown, path: string, c: Collector): void {
   switch (raw.kind) {
     case "array": {
       const { values, marks, pointers } = raw;
-      if (!Array.isArray(values) || !values.every(isScalar)) return c.add(`${path}.values`, "must be an array of scalars");
-      if (values.length > TRACE_LIMITS.maxArrayLength) c.add(`${path}.values`, `exceeds ${TRACE_LIMITS.maxArrayLength} elements`);
-      if (!Array.isArray(marks) || marks.length !== values.length || !marks.every((m) => m === null || oneOf(ARRAY_MARKS)(m))) {
+      if (!Array.isArray(values) || !values.every(isScalar))
+        return c.add(`${path}.values`, "must be an array of scalars");
+      if (values.length > TRACE_LIMITS.maxArrayLength)
+        c.add(`${path}.values`, `exceeds ${TRACE_LIMITS.maxArrayLength} elements`);
+      if (
+        !Array.isArray(marks) ||
+        marks.length !== values.length ||
+        !marks.every((m) => m === null || oneOf(ARRAY_MARKS)(m))
+      ) {
         c.add(`${path}.marks`, "must be an array of marks (or null) matching values");
       }
-      if (!isObject(pointers) || !Object.values(pointers).every(isInt)) c.add(`${path}.pointers`, "must map names to integers");
+      if (!isObject(pointers) || !Object.values(pointers).every(isInt))
+        c.add(`${path}.pointers`, "must map names to integers");
+      if (raw.display !== undefined && raw.display !== "bars" && raw.display !== "cells")
+        c.add(`${path}.display`, "must be bars or cells");
       return;
     }
     case "graph": {
@@ -73,8 +83,10 @@ function checkStructure(raw: unknown, path: string, c: Collector): void {
       if (typeof directed !== "boolean") c.add(`${path}.directed`, "must be boolean");
       if (!Array.isArray(nodes)) return c.add(`${path}.nodes`, "must be an array");
       if (!Array.isArray(edges)) return c.add(`${path}.edges`, "must be an array");
-      if (nodes.length > TRACE_LIMITS.maxGraphNodes) c.add(`${path}.nodes`, `exceeds ${TRACE_LIMITS.maxGraphNodes} nodes`);
-      if (edges.length > TRACE_LIMITS.maxGraphEdges) c.add(`${path}.edges`, `exceeds ${TRACE_LIMITS.maxGraphEdges} edges`);
+      if (nodes.length > TRACE_LIMITS.maxGraphNodes)
+        c.add(`${path}.nodes`, `exceeds ${TRACE_LIMITS.maxGraphNodes} nodes`);
+      if (edges.length > TRACE_LIMITS.maxGraphEdges)
+        c.add(`${path}.edges`, `exceeds ${TRACE_LIMITS.maxGraphEdges} edges`);
       const ids = new Set<string>();
       nodes.forEach((n, i) => {
         if (!isObject(n) || !isStr(n.id) || typeof n.x !== "number" || typeof n.y !== "number") {
@@ -88,35 +100,55 @@ function checkStructure(raw: unknown, path: string, c: Collector): void {
         if (!isObject(e) || !isStr(e.id) || !isStr(e.from) || !isStr(e.to)) {
           return c.add(`${path}.edges[${i}]`, "needs string id, from, to");
         }
-        if (!ids.has(e.from) || !ids.has(e.to)) c.add(`${path}.edges[${i}]`, "references an unknown node");
+        if (!ids.has(e.from) || !ids.has(e.to))
+          c.add(`${path}.edges[${i}]`, "references an unknown node");
         if (edgeIds.has(e.id)) c.add(`${path}.edges[${i}]`, `duplicate id "${e.id}"`);
         edgeIds.add(e.id);
-        if (e.weight !== undefined && (typeof e.weight !== "number" || !Number.isFinite(e.weight))) {
+        if (
+          e.weight !== undefined &&
+          (typeof e.weight !== "number" || !Number.isFinite(e.weight))
+        ) {
           c.add(`${path}.edges[${i}].weight`, "must be a finite number");
         }
       });
-      if (!isObject(nodeStatus) || !Object.values(nodeStatus).every(oneOf(NODE_STATUSES))) c.add(`${path}.nodeStatus`, "invalid");
-      if (!isObject(edgeStatus) || !Object.values(edgeStatus).every(oneOf(EDGE_STATUSES))) c.add(`${path}.edgeStatus`, "invalid");
-      if (!isObject(annotations) || !Object.values(annotations).every(isStr)) c.add(`${path}.annotations`, "invalid");
+      if (!isObject(nodeStatus) || !Object.values(nodeStatus).every(oneOf(NODE_STATUSES)))
+        c.add(`${path}.nodeStatus`, "invalid");
+      if (!isObject(edgeStatus) || !Object.values(edgeStatus).every(oneOf(EDGE_STATUSES)))
+        c.add(`${path}.edgeStatus`, "invalid");
+      if (!isObject(annotations) || !Object.values(annotations).every(isStr))
+        c.add(`${path}.annotations`, "invalid");
       return;
     }
     case "sequence": {
       if (!oneOf(SEQUENCE_DISCIPLINES)(raw.discipline)) c.add(`${path}.discipline`, "invalid");
-      if (!Array.isArray(raw.items) || !raw.items.every(isScalar)) c.add(`${path}.items`, "must be an array of scalars");
+      if (!Array.isArray(raw.items) || !raw.items.every(isScalar))
+        c.add(`${path}.items`, "must be an array of scalars");
       return;
     }
     case "grid": {
       const { rows, cols, cells, marks, rowHeaders, colHeaders } = raw;
-      if (!isInt(rows) || !isInt(cols) || rows < 1 || cols < 1) return c.add(path, "rows and cols must be positive integers");
-      if (rows * cols > TRACE_LIMITS.maxGridCells) return c.add(path, `exceeds ${TRACE_LIMITS.maxGridCells} cells`);
+      if (!isInt(rows) || !isInt(cols) || rows < 1 || cols < 1)
+        return c.add(path, "rows and cols must be positive integers");
+      if (rows * cols > TRACE_LIMITS.maxGridCells)
+        return c.add(path, `exceeds ${TRACE_LIMITS.maxGridCells} cells`);
       const shaped = (m: unknown, ok: (x: unknown) => boolean) =>
-        Array.isArray(m) && m.length === rows && m.every((row) => Array.isArray(row) && row.length === cols && row.every(ok));
-      if (!shaped(cells, isScalar)) c.add(`${path}.cells`, `must be a ${rows}×${cols} matrix of scalars`);
-      if (!shaped(marks, (m) => m === null || oneOf(GRID_MARKS)(m))) c.add(`${path}.marks`, `must be a ${rows}×${cols} matrix of marks`);
-      if (rowHeaders !== undefined && !(Array.isArray(rowHeaders) && rowHeaders.length === rows && rowHeaders.every(isStr))) {
+        Array.isArray(m) &&
+        m.length === rows &&
+        m.every((row) => Array.isArray(row) && row.length === cols && row.every(ok));
+      if (!shaped(cells, isScalar))
+        c.add(`${path}.cells`, `must be a ${rows}×${cols} matrix of scalars`);
+      if (!shaped(marks, (m) => m === null || oneOf(GRID_MARKS)(m)))
+        c.add(`${path}.marks`, `must be a ${rows}×${cols} matrix of marks`);
+      if (
+        rowHeaders !== undefined &&
+        !(Array.isArray(rowHeaders) && rowHeaders.length === rows && rowHeaders.every(isStr))
+      ) {
         c.add(`${path}.rowHeaders`, "must have one string per row");
       }
-      if (colHeaders !== undefined && !(Array.isArray(colHeaders) && colHeaders.length === cols && colHeaders.every(isStr))) {
+      if (
+        colHeaders !== undefined &&
+        !(Array.isArray(colHeaders) && colHeaders.length === cols && colHeaders.every(isStr))
+      ) {
         c.add(`${path}.colHeaders`, "must have one string per column");
       }
       return;
@@ -132,7 +164,11 @@ const EVENT_FIELDS: Record<TraceEvent["type"], Record<string, (v: unknown) => bo
   "array.read": { s: isStr, i: isInt },
   "array.write": { s: isStr, i: isInt, value: isScalar },
   "array.swap": { s: isStr, i: isInt, j: isInt },
-  "array.mark": { s: isStr, indices: (v) => Array.isArray(v) && v.every(isInt), mark: (v) => v === null || oneOf(ARRAY_MARKS)(v) },
+  "array.mark": {
+    s: isStr,
+    indices: (v) => Array.isArray(v) && v.every(isInt),
+    mark: (v) => v === null || oneOf(ARRAY_MARKS)(v),
+  },
   "array.pointer": { s: isStr, name: isStr, index: (v) => v === null || isInt(v) },
   "graph.node": { s: isStr, node: isStr, status: oneOf(NODE_STATUSES) },
   "graph.edge": { s: isStr, edge: isStr, status: oneOf(EDGE_STATUSES) },
@@ -147,7 +183,9 @@ const EVENT_FIELDS: Record<TraceEvent["type"], Record<string, (v: unknown) => bo
   step: {},
   done: {},
 };
-const OPTIONAL_EVENT_FIELDS: Partial<Record<TraceEvent["type"], Record<string, (v: unknown) => boolean>>> = {
+const OPTIONAL_EVENT_FIELDS: Partial<
+  Record<TraceEvent["type"], Record<string, (v: unknown) => boolean>>
+> = {
   "array.compare": { j: isInt, value: isScalar },
   "seq.pop": { index: isInt },
 };
@@ -168,13 +206,17 @@ function checkEvent(raw: unknown, path: string, c: Collector): void {
     if (!check) c.add(`${path}.${field}`, "unknown field");
     else if (!check(value)) c.add(`${path}.${field}`, "invalid");
   }
-  if (raw.line !== undefined && !(isInt(raw.line) && raw.line >= 1)) c.add(`${path}.line`, "must be a positive integer");
+  if (raw.line !== undefined && !(isInt(raw.line) && raw.line >= 1))
+    c.add(`${path}.line`, "must be a positive integer");
   if (raw.note !== undefined && !isStr(raw.note)) c.add(`${path}.note`, "must be a string");
   if (raw.vars !== undefined) {
     if (!isObject(raw.vars)) c.add(`${path}.vars`, "must be an object");
     else
       for (const [k, v] of Object.entries(raw.vars)) {
-        if (!(isScalar(v) || (Array.isArray(v) && v.length <= TRACE_LIMITS.maxArrayLength && v.every(isScalar)))) {
+        if (!(
+          isScalar(v) ||
+          (Array.isArray(v) && v.length <= TRACE_LIMITS.maxArrayLength && v.every(isScalar))
+        )) {
           c.add(`${path}.vars.${k}`, "must be a scalar or array of scalars");
         }
       }
@@ -190,11 +232,17 @@ function checkEvent(raw: unknown, path: string, c: Collector): void {
  * published version, so there is nothing to migrate yet; future versions add a step
  * here (v1→v2, v2→v3 …) so that saved traces keep loading.
  */
-export function migrateTrace(raw: Record<string, unknown>): { trace?: Record<string, unknown>; error?: string } {
-  if (raw.protocol !== TRACE_PROTOCOL) return { error: `not an ALGORITHMA trace (protocol ${JSON.stringify(raw.protocol)})` };
+export function migrateTrace(raw: Record<string, unknown>): {
+  trace?: Record<string, unknown>;
+  error?: string;
+} {
+  if (raw.protocol !== TRACE_PROTOCOL)
+    return { error: `not an ALGORITHMA trace (protocol ${JSON.stringify(raw.protocol)})` };
   if (raw.version === TRACE_VERSION) return { trace: raw };
   if (isInt(raw.version) && raw.version > TRACE_VERSION) {
-    return { error: `trace version ${raw.version} is newer than this application supports (${TRACE_VERSION})` };
+    return {
+      error: `trace version ${raw.version} is newer than this application supports (${TRACE_VERSION})`,
+    };
   }
   return { error: `unsupported trace version ${JSON.stringify(raw.version)}` };
 }
@@ -207,21 +255,33 @@ export function validateTrace(input: unknown): ValidationResult {
   const c = new Collector();
   if (!isObject(input)) return { ok: false, errors: ["trace must be a JSON object"] };
   const migrated = migrateTrace(input);
-  if (migrated.error || !migrated.trace) return { ok: false, errors: [migrated.error ?? "unreadable trace"] };
+  if (migrated.error || !migrated.trace)
+    return { ok: false, errors: [migrated.error ?? "unreadable trace"] };
   const raw = migrated.trace;
 
   if (!isObject(raw.algorithm) || !isStr(raw.algorithm.id) || !isInt(raw.algorithm.version)) {
     c.add("algorithm", "needs string id and integer version");
   }
   const initial = raw.initial;
-  if (!isObject(initial) || !isObject(initial.structures) || !Array.isArray(initial.order) || !isObject(initial.vars)) {
+  if (
+    !isObject(initial) ||
+    !isObject(initial.structures) ||
+    !Array.isArray(initial.order) ||
+    !isObject(initial.vars)
+  ) {
     c.add("initial", "needs structures, order and vars");
   } else {
     const names = Object.keys(initial.structures);
-    if (names.length > TRACE_LIMITS.maxStructures) c.add("initial.structures", `more than ${TRACE_LIMITS.maxStructures} structures`);
-    for (const name of names) checkStructure(initial.structures[name], `initial.structures.${name}`, c);
+    if (names.length > TRACE_LIMITS.maxStructures)
+      c.add("initial.structures", `more than ${TRACE_LIMITS.maxStructures} structures`);
+    for (const name of names)
+      checkStructure(initial.structures[name], `initial.structures.${name}`, c);
     const order = initial.order;
-    if (!order.every((n) => isStr(n) && names.includes(n)) || new Set(order).size !== order.length || order.length !== names.length) {
+    if (
+      !order.every((n) => isStr(n) && names.includes(n)) ||
+      new Set(order).size !== order.length ||
+      order.length !== names.length
+    ) {
       c.add("initial.order", "must list each initial structure exactly once");
     }
   }
@@ -240,7 +300,8 @@ export function validateTrace(input: unknown): ValidationResult {
       c.add("meta.eventCount", `says ${meta.eventCount} but trace has ${raw.events.length} events`);
     }
     const t = meta.truncated;
-    if (t !== null && !(isObject(t) && isInt(t.afterEvents) && isStr(t.reason))) c.add("meta.truncated", "invalid");
+    if (t !== null && !(isObject(t) && isInt(t.afterEvents) && isStr(t.reason)))
+      c.add("meta.truncated", "invalid");
   }
   if (c.errors.length > 0) return { ok: false, errors: c.errors };
 

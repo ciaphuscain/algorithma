@@ -61,7 +61,12 @@ export class Tracer {
   private readonly initialStructures: Record<string, Structure> = {};
   private readonly initialOrder: string[] = [];
   private readonly initialVars: Record<string, VarValue> = {};
-  private readonly counters: Record<string, number> = { comparisons: 0, swaps: 0, reads: 0, writes: 0 };
+  private readonly counters: Record<string, number> = {
+    comparisons: 0,
+    swaps: 0,
+    reads: 0,
+    writes: 0,
+  };
   private pendingCounts: Record<string, number> = {};
   private started = false;
   private finished = false;
@@ -86,10 +91,15 @@ export class Tracer {
 
   /* ------------------------------------------------------------ structures */
 
-  array(name: string, values: readonly Scalar[], options: { label?: string } = {}): TracedArray {
+  array(
+    name: string,
+    values: readonly Scalar[],
+    options: { label?: string; display?: "bars" | "cells" } = {},
+  ): TracedArray {
     this.register(name, {
       kind: "array",
       ...(options.label ? { label: options.label } : {}),
+      ...(options.display ? { display: options.display } : {}),
       values: [...values],
       marks: values.map(() => null),
       pointers: {},
@@ -118,7 +128,11 @@ export class Tracer {
     return new TracedGraph(this, name);
   }
 
-  sequence(name: string, discipline: SequenceDiscipline, options: { label?: string } = {}): TracedSequence {
+  sequence(
+    name: string,
+    discipline: SequenceDiscipline,
+    options: { label?: string } = {},
+  ): TracedSequence {
     this.register(name, {
       kind: "sequence",
       ...(options.label ? { label: options.label } : {}),
@@ -155,7 +169,8 @@ export class Tracer {
   }
 
   private register(name: string, structure: Structure): void {
-    if (name in this.initialStructures && !this.started) throw new Error(`structure "${name}" registered twice`);
+    if (name in this.initialStructures && !this.started)
+      throw new Error(`structure "${name}" registered twice`);
     if (this.started) {
       this.emit({ type: "structure.create", s: name, structure });
     } else {
@@ -187,7 +202,8 @@ export class Tracer {
   emit(body: EventBody, meta?: MetaArg, standardCounter?: string, by = 1): void {
     if (this.finished) throw new Error("tracer already finished");
     this.started = true;
-    if (standardCounter) this.counters[standardCounter] = (this.counters[standardCounter] ?? 0) + by;
+    if (standardCounter)
+      this.counters[standardCounter] = (this.counters[standardCounter] ?? 0) + by;
     if (!this.recording) return;
 
     // Reserve the final slot for the "done" event so a truncated trace still ends cleanly.
@@ -217,7 +233,8 @@ export class Tracer {
     if (this.mode === "record") {
       const m = typeof meta === "function" ? meta() : meta;
       const done: TraceEvent = { type: "done", ...m };
-      if (this.truncation === null && Object.keys(this.pendingCounts).length > 0) done.count = this.pendingCounts;
+      if (this.truncation === null && Object.keys(this.pendingCounts).length > 0)
+        done.count = this.pendingCounts;
       this.events.push(done);
     }
     this.finished = true;
@@ -329,7 +346,9 @@ export class TracedArray {
 
   private check(i: number): void {
     if (!Number.isInteger(i) || i < 0 || i >= this.values.length) {
-      throw new RangeError(`index ${i} out of range for ${this.name} (length ${this.values.length})`);
+      throw new RangeError(
+        `index ${i} out of range for ${this.name} (length ${this.values.length})`,
+      );
     }
   }
 }

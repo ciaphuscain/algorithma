@@ -29,7 +29,10 @@ export function layoutGraph(
   });
   const links = edges
     .map((e) => [index.get(e.from), index.get(e.to)] as const)
-    .filter((l): l is readonly [number, number] => l[0] !== undefined && l[1] !== undefined && l[0] !== l[1]);
+    .filter(
+      (l): l is readonly [number, number] =>
+        l[0] !== undefined && l[1] !== undefined && l[0] !== l[1],
+    );
 
   const k = Math.sqrt(1 / n); // ideal edge length in the unit square
   const iterations = options.iterations ?? 300;

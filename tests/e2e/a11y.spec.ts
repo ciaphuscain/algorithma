@@ -1,0 +1,30 @@
+import AxeBuilder from "@axe-core/playwright";
+import { expect, test } from "@playwright/test";
+
+// Automated checks catch only part of WCAG; they complement, not replace, manual review.
+for (const path of [
+  "/",
+  "/explore",
+  "/roadmap",
+  "/algorithms/bubble-sort",
+  "/algorithms/bfs",
+  "/algorithms/bfs#exam",
+]) {
+  for (const scheme of ["light", "dark"] as const) {
+    test(`no detectable WCAG A/AA violations on ${path} (${scheme})`, async ({ page }) => {
+      await page.emulateMedia({ colorScheme: scheme });
+      await page.goto(path);
+      const results = await new AxeBuilder({ page })
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+        .analyze();
+      const summary = results.violations.map(
+        (v) =>
+          `${v.id}: ${v.help} (${v.nodes.length}) ${v.nodes
+            .slice(0, 2)
+            .map((n) => n.target.join(" "))
+            .join(" | ")}`,
+      );
+      expect(summary).toEqual([]);
+    });
+  }
+}

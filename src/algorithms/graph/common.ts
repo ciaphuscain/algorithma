@@ -11,7 +11,8 @@ export const distanceFidelity =
     if (!g || g.kind !== "graph") return `final state has no graph "${name}"`;
     for (const [node, d] of Object.entries(distances(output))) {
       const want = `d=${d === null ? "∞" : d}`;
-      if (g.annotations[node] !== want) return `node ${node} shows ${g.annotations[node] ?? "nothing"}, expected ${want}`;
+      if (g.annotations[node] !== want)
+        return `node ${node} shows ${g.annotations[node] ?? "nothing"}, expected ${want}`;
     }
     return null;
   };
