@@ -7,6 +7,8 @@ import { Logo } from "./Logo";
 export const NAV = [
   { href: "/explore", label: "Explore" },
   { href: "/roadmap", label: "Roadmap" },
+  { href: "/arena", label: "Arena" },
+  { href: "/studio", label: "Studio" },
 ] as const;
 
 export function SiteHeader() {

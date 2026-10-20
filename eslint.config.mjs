@@ -31,11 +31,37 @@ export default tseslint.config(
   {
     // The engine and algorithm layers must stay framework-free so they can run in
     // workers, scripts, and tests. See docs/architecture.md "Dependency direction".
-    files: ["src/engine/**/*.ts", "src/algorithms/**/*.ts", "src/lib/**/*.ts"],
+    files: [
+      "src/engine/**/*.ts",
+      "src/algorithms/**/*.ts",
+      "src/lib/**/*.ts",
+      "src/experiments/**/*.ts",
+    ],
     rules: {
       "no-restricted-imports": [
         "error",
         { patterns: ["react", "react-dom", "next", "next/*", "@/ui/*", "@/app/*"] },
+      ],
+    },
+  },
+  {
+    // lib is the bottom layer: pure utilities with no knowledge of algorithms or content.
+    files: ["src/lib/**/*.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            "react",
+            "react-dom",
+            "next",
+            "next/*",
+            "@/ui/*",
+            "@/app/*",
+            "@/algorithms/*",
+            "@/experiments/*",
+          ],
+        },
       ],
     },
   },

@@ -14,6 +14,8 @@ for (const path of [
   "/algorithms/dfs",
   "/algorithms/dijkstra",
   "/algorithms/edit-distance",
+  "/arena",
+  "/studio",
 ]) {
   for (const scheme of ["light", "dark"] as const) {
     test(`no detectable WCAG A/AA violations on ${path} (${scheme})`, async ({ page }) => {
