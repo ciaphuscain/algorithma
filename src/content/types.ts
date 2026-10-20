@@ -41,7 +41,7 @@ export type ComplexityClass = (typeof COMPLEXITY_CLASSES)[number];
 
 /**
  * A reference implementation in a real language. `tests` are executed by
- * tests/unit/implementations.test.ts, so displayed code is checked, not just shown.
+ * tests/unit/content.test.ts, so displayed code is checked, not just shown.
  */
 export interface Implementation {
   language: "python" | "javascript";

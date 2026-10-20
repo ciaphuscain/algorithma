@@ -9,6 +9,11 @@ for (const path of [
   "/algorithms/bubble-sort",
   "/algorithms/bfs",
   "/algorithms/bfs#exam",
+  "/algorithms/merge-sort",
+  "/algorithms/binary-search",
+  "/algorithms/dfs",
+  "/algorithms/dijkstra",
+  "/algorithms/edit-distance",
 ]) {
   for (const scheme of ["light", "dark"] as const) {
     test(`no detectable WCAG A/AA violations on ${path} (${scheme})`, async ({ page }) => {

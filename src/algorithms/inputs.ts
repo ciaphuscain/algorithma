@@ -400,3 +400,51 @@ export function adjacency(
 export function clamp(v: number, lo: number, hi: number): number {
   return Math.min(Math.max(v, lo), hi);
 }
+
+/* ------------------------------------------------------------- string pairs */
+
+export interface StringPair {
+  a: string;
+  b: string;
+}
+
+const PRINTABLE = /^[\x21-\x7e]*$/;
+
+export function stringPairInput(options: {
+  labels: [string, string];
+  maxLength: number;
+  presets: InputPreset<StringPair>[];
+  alphabet?: string;
+}): InputSpec<StringPair> {
+  const { maxLength } = options;
+  const alphabet = options.alphabet ?? "abcdefgh";
+  const check = (s: string, label: string, errors: string[]) => {
+    if (s.length > maxLength)
+      errors.push(`${label} has ${s.length} characters; the maximum is ${maxLength}`);
+    if (!PRINTABLE.test(s))
+      errors.push(`${label} may contain only visible ASCII characters, no spaces`);
+  };
+  return {
+    fields: [
+      { name: "a", label: options.labels[0], placeholder: "e.g. kitten" },
+      { name: "b", label: options.labels[1], placeholder: "e.g. sitting" },
+    ],
+    constraints: `Each string 0–${maxLength} visible ASCII characters (no spaces).`,
+    parse: (fields) => {
+      const a = (fields.a ?? "").trim();
+      const b = (fields.b ?? "").trim();
+      const errors: string[] = [];
+      check(a, options.labels[0], errors);
+      check(b, options.labels[1], errors);
+      return errors.length > 0 ? { ok: false, errors } : { ok: true, value: { a, b } };
+    },
+    format: (v) => ({ a: v.a, b: v.b }),
+    presets: options.presets,
+    random: (rng, size) => {
+      const len = () => clamp(rng.int(Math.max(1, (size ?? 6) - 2), size ?? 6), 0, maxLength);
+      const word = () =>
+        Array.from({ length: len() }, () => alphabet[rng.int(0, alphabet.length - 1)]).join("");
+      return { a: word(), b: word() };
+    },
+  };
+}

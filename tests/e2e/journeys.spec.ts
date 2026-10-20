@@ -145,7 +145,7 @@ test("explore search and filters, shareable via URL", async ({ page }) => {
   await expect(page).toHaveURL(/query=shortest/);
   await page.getByLabel("Search").fill("");
   await page.getByLabel("Worst-case time at most").selectOption("n log n");
-  await expect(page.getByTestId("result-count")).toContainText("1 interactive entry");
+  await expect(page.getByTestId("result-count")).toContainText("5 interactive entries");
   await page.goto("/explore?domain=searching-sorting");
   await expect(page.getByTestId("results")).toContainText("Bubble Sort");
   await expect(page.getByTestId("results")).not.toContainText("Breadth-First");
@@ -153,15 +153,17 @@ test("explore search and filters, shareable via URL", async ({ page }) => {
 
 test("roadmap lists the curriculum honestly", async ({ page }) => {
   await page.goto("/roadmap");
+  await page.getByLabel("Search the curriculum").fill("bellman");
+  const bellman = page.locator('[data-number="208"]');
+  await expect(bellman).toContainText("Planned");
+  await expect(bellman).toContainText("Tier 2");
   await page.getByLabel("Search the curriculum").fill("dijkstra");
-  const dijkstra = page.locator('[data-number="207"]');
-  await expect(dijkstra).toContainText("Planned");
-  await expect(dijkstra).toContainText("Tier 1");
+  await expect(page.locator('[data-number="207"]')).toContainText("Available");
   await page.getByLabel("Search the curriculum").fill("sollin");
   await expect(page.locator('[data-number="220"]')).toContainText("Same as #218");
   await page.getByLabel("Search the curriculum").fill("");
   await page.getByLabel("Status").selectOption("available");
-  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 2 of 600");
+  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 11 of 600");
   await page.locator('[data-number="11"]').getByRole("link", { name: "Bubble Sort" }).click();
   await expect(page).toHaveURL(/\/algorithms\/bubble-sort/);
 });
@@ -169,4 +171,52 @@ test("roadmap lists the curriculum honestly", async ({ page }) => {
 test("unknown algorithm returns 404", async ({ page }) => {
   const response = await page.goto("/algorithms/does-not-exist");
   expect(response?.status()).toBe(404);
+});
+
+test("grid renderer: edit distance fills the DP table and traces back", async ({ page }) => {
+  await page.goto("/algorithms/edit-distance");
+  await page.getByLabel("From (a)").fill("cat");
+  await page.getByLabel("To (b)").fill("cart");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator('[data-kind="grid"]')).toBeVisible();
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText(
+    "Distance 1: keep c, keep a, insert r, keep t",
+  );
+  await expect(page.locator(".grid-view td.cell--path")).toHaveCount(5);
+});
+
+test("priority-queue renderer: Dijkstra settles vertices by distance", async ({ page }) => {
+  await page.goto("/algorithms/dijkstra");
+  await expect(page.locator('[data-kind="sequence"]')).toContainText("Priority queue");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText("A: 0, B: 3, C: 2, D: 8, E: 10, F: 13");
+  const negative = page.getByRole("textbox", { name: "Edges" });
+  await negative.fill("A-B:-2");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText("below the minimum 0");
+});
+
+test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(String(e)));
+  page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
+  for (const slug of [
+    "bubble-sort",
+    "insertion-sort",
+    "merge-sort",
+    "quick-sort",
+    "binary-search",
+    "bfs",
+    "dfs",
+    "dijkstra",
+    "edit-distance",
+  ]) {
+    await page.goto(`/algorithms/${slug}`);
+    await page.getByRole("button", { name: "Jump to end" }).click();
+    await expect(page.getByTestId("result"), slug).toContainText(
+      "Verified by an independent checker",
+    );
+  }
+  expect(errors).toEqual([]);
 });

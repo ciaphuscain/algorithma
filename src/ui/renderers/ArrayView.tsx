@@ -95,7 +95,7 @@ export function ArrayView({
                 textAnchor="middle"
                 fontSize={Math.min(14, slot * 0.38)}
               >
-                {String(v)}
+                {v === null ? "" : String(v)}
               </text>
             )}
             {t && FOCUS_WORD[t] && slot >= 24 && (

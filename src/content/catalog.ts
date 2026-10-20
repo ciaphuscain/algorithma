@@ -1,11 +1,28 @@
 import { CURRICULUM_ITEMS, DUPLICATES, type CurriculumItem } from "./curriculum";
 import type { DomainId } from "./domains";
 import type { AlgorithmEntry, ComplexityClass, Difficulty } from "./types";
-import { bubbleSortEntry } from "./entries/bubble-sort";
 import { bfsEntry } from "./entries/bfs";
+import { binarySearchEntry } from "./entries/binary-search";
+import { bubbleSortEntry } from "./entries/bubble-sort";
+import { dfsEntry } from "./entries/dfs";
+import { dijkstraEntry } from "./entries/dijkstra";
+import { editDistanceEntry } from "./entries/edit-distance";
+import { insertionSortEntry } from "./entries/insertion-sort";
+import { mergeSortEntry } from "./entries/merge-sort";
+import { quickSortEntry } from "./entries/quick-sort";
 
 /** All published entries. Order here is the default display order. */
-export const ENTRIES: readonly AlgorithmEntry[] = [bubbleSortEntry, bfsEntry];
+export const ENTRIES: readonly AlgorithmEntry[] = [
+  bubbleSortEntry,
+  insertionSortEntry,
+  mergeSortEntry,
+  quickSortEntry,
+  binarySearchEntry,
+  bfsEntry,
+  dfsEntry,
+  dijkstraEntry,
+  editDistanceEntry,
+];
 
 const bySlug = new Map(ENTRIES.map((e) => [e.slug, e]));
 const byCurriculum = new Map<number, AlgorithmEntry>();

@@ -938,7 +938,7 @@ pre.code {
 .viz {
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr) 360px;
   grid-template-areas:
     "stage side"
     "controls side";
@@ -1328,7 +1328,7 @@ pre.code {
   margin: 0;
   padding: 6px 0;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   line-height: 1.6;
   counter-reset: line;
   list-style: none;
@@ -1340,6 +1340,7 @@ pre.code {
   border-radius: 4px;
   /* Wrap long lines instead of scrolling: a scroll region would need its own focus stop. */
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 .pseudo li::before {
   counter-increment: line;

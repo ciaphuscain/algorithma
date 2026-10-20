@@ -12,7 +12,7 @@ export const bubbleSortEntry: AlgorithmEntry = {
     "Repeatedly swaps adjacent out-of-order pairs; each pass carries the largest remaining value to the end.",
   tags: ["sorting", "comparison sort", "in-place", "stable", "quadratic"],
   prerequisites: ["Arrays and indexing", "Nested loops"],
-  related: ["insertion-sort", "selection-sort"],
+  related: ["insertion-sort", "merge-sort"],
   problem: {
     input: "An array $A$ of $n$ comparable elements.",
     output: "The same elements rearranged so that $A[0] \\le A[1] \\le \\dots \\le A[n-1]$.",

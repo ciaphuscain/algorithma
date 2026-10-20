@@ -135,11 +135,18 @@ print(json.dumps([${impl.entry}(*c["args"]) for c in cases]))
 });
 
 describe("catalog search", () => {
+  const slugs = (f: Parameters<typeof searchCatalog>[0]) => searchCatalog(f).map((e) => e.slug);
+
   it("finds entries by name, alias and tag", () => {
-    expect(searchCatalog({ query: "bubble" }).map((e) => e.slug)).toEqual(["bubble-sort"]);
-    expect(searchCatalog({ query: "BFS" }).map((e) => e.slug)).toEqual(["bfs"]);
-    expect(searchCatalog({ query: "shortest path" }).map((e) => e.slug)).toContain("bfs");
-    expect(searchCatalog({ query: "stable sort" }).map((e) => e.slug)).toEqual(["bubble-sort"]);
+    expect(slugs({ query: "bubble" })).toEqual(["bubble-sort"]);
+    expect(slugs({ query: "BFS" })).toEqual(["bfs"]);
+    expect(slugs({ query: "levenshtein" })).toEqual(["edit-distance"]);
+    expect(slugs({ query: "shortest path" })).toEqual(expect.arrayContaining(["bfs", "dijkstra"]));
+    expect(slugs({ query: "stable sort" }).sort()).toEqual([
+      "bubble-sort",
+      "insertion-sort",
+      "merge-sort",
+    ]);
   });
 
   it("requires every term to match", () => {
@@ -147,17 +154,40 @@ describe("catalog search", () => {
   });
 
   it("filters by complexity bound and domain", () => {
-    expect(searchCatalog({ maxWorst: "n log n" }).map((e) => e.slug)).toEqual(["bfs"]);
-    expect(searchCatalog({ domain: "searching-sorting" }).map((e) => e.slug)).toEqual([
+    expect(slugs({ maxWorst: "n log n" }).sort()).toEqual([
+      "bfs",
+      "binary-search",
+      "dfs",
+      "dijkstra",
+      "merge-sort",
+    ]);
+    expect(slugs({ maxWorst: "log n" })).toEqual(["binary-search"]);
+    expect(slugs({ domain: "searching-sorting" }).sort()).toEqual([
+      "binary-search",
       "bubble-sort",
+      "insertion-sort",
+      "merge-sort",
+      "quick-sort",
     ]);
   });
 
   it("links curriculum items, including duplicates, to entries", () => {
     expect(entryForItem(11)?.slug).toBe("bubble-sort");
     expect(entryForItem(201)?.slug).toBe("bfs");
+    expect(entryForItem(330)?.slug).toBe("edit-distance"); // duplicate of #276
     expect(entryForItem(1)).toBeUndefined();
     expect(getEntry("nope")).toBeUndefined();
+  });
+
+  it("every related link points to a published entry, and no entry claims a curriculum item twice", () => {
+    const claimed = new Map<number, string>();
+    for (const e of ENTRIES) {
+      for (const r of e.related) expect(getEntry(r), `${e.slug} → ${r}`).toBeDefined();
+      for (const n of e.curriculum) {
+        expect(claimed.get(n), `#${n}`).toBeUndefined();
+        claimed.set(n, e.slug);
+      }
+    }
   });
 
   it("searches the curriculum roadmap", () => {
@@ -192,5 +222,105 @@ describe("worked examples agree with the engine", () => {
     expect(output.dist).toEqual({ A: 0, B: 1, C: 1, D: 2, E: 3, F: 2 });
     expect(output.order).toEqual(["A", "B", "C", "D", "F", "E"]);
     expect(output.parent.D).toBe("B");
+  });
+
+  it("insertion sort on [5, 2, 4, 6, 1, 3]: 9 shifts, 14 writes, 12 comparisons", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { trace } = runAlgorithm(getModule("insertion-sort")!, [5, 2, 4, 6, 1, 3]);
+    expect(trace.meta.counters).toMatchObject({ comparisons: 12, writes: 14 });
+  });
+
+  it("quick sort partition example ends with [2, 1, 3, 4, 7, 5, 6, 8]", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { TracePlayer } = await import("@/engine/player");
+    const { trace } = runAlgorithm(getModule("quick-sort")!, [2, 8, 7, 1, 3, 5, 6, 4]);
+    const firstFinal = trace.events.findIndex(
+      (e) => e.type === "array.mark" && e.mark === "sorted",
+    );
+    const A = new TracePlayer(trace).stateAt(firstFinal + 1).structures.A!;
+    expect(A.kind === "array" && A.values).toEqual([2, 1, 3, 4, 7, 5, 6, 8]);
+  });
+
+  it("quick sort average comparisons equal 2(n+1)H_n − 4n over all permutations", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const permutations = (a: number[]): number[][] =>
+      a.length <= 1
+        ? [a]
+        : a.flatMap((x, i) =>
+            permutations([...a.slice(0, i), ...a.slice(i + 1)]).map((p) => [x, ...p]),
+          );
+    for (let n = 1; n <= 7; n++) {
+      const perms = permutations(Array.from({ length: n }, (_, i) => i));
+      const total = perms.reduce(
+        (sum, p) =>
+          sum +
+          runAlgorithm(getModule("quick-sort")!, p, { mode: "count" }).trace.meta.counters
+            .comparisons!,
+        0,
+      );
+      let h = 0;
+      for (let k = 1; k <= n; k++) h += 1 / k;
+      expect(total / perms.length).toBeCloseTo(2 * (n + 1) * h - 4 * n, 9);
+    }
+  });
+
+  it("binary search examples: 3 comparisons to find 23; unsorted input misses 3", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const module = getModule("binary-search")!;
+    const found = runAlgorithm(module, {
+      values: [2, 5, 8, 12, 16, 23, 38, 56, 72, 91],
+      target: 23,
+    });
+    expect(found.output).toBe(5);
+    expect(found.trace.meta.counters.comparisons).toBe(3);
+    // The practice question deliberately violates the precondition, so bypass the parser.
+    expect(runAlgorithm(module, { values: [9, 1, 5, 3, 7], target: 3 }).output).toBe(-1);
+    expect(runAlgorithm(module, { values: [4, 9, 15, 22, 30, 41, 57], target: 30 }).output).toBe(4);
+  });
+
+  it("DFS example: discovery/finish times from the lesson table", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const module = getModule("dfs")!;
+    const parsed = module.input.parse({ edges: "A-B, A-C, B-D, C-D, D-E, C-F", source: "A" });
+    if (!parsed.ok) throw new Error(parsed.errors.join());
+    const { output, trace } = runAlgorithm(module, parsed.value);
+    expect(output.disc).toEqual({ A: 1, B: 2, C: 4, D: 3, E: 8, F: 5 });
+    expect(output.fin).toEqual({ A: 12, B: 11, C: 7, D: 10, E: 9, F: 6 });
+    const back = trace.events.filter((e) => e.type === "graph.edge" && e.status === "back");
+    expect(back).toHaveLength(1);
+  });
+
+  it("Dijkstra example: distances and settle order from the lesson table", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const module = getModule("dijkstra")!;
+    const { output } = runAlgorithm(
+      module,
+      module.input.presets.find((p) => p.id === "classic")!.value,
+    );
+    expect(output.dist).toEqual({ A: 0, B: 3, C: 2, D: 8, E: 10, F: 13 });
+    expect(output.settled).toEqual(["A", "C", "B", "D", "E", "F"]);
+    const trap = runAlgorithm(
+      module,
+      module.input.presets.find((p) => p.id === "greedy-trap")!.value,
+    );
+    expect(trap.output.dist.T).toBe(3);
+  });
+
+  it("edit distance: the cat → cart table and the practice answers", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { TracePlayer } = await import("@/engine/player");
+    const module = getModule("edit-distance")!;
+    const { trace, output } = runAlgorithm(module, { a: "cat", b: "cart" });
+    const D = new TracePlayer(trace).finalState().structures.D!;
+    expect(D.kind === "grid" && D.cells).toEqual([
+      [0, 1, 2, 3, 4],
+      [1, 0, 1, 2, 3],
+      [2, 1, 0, 1, 2],
+      [3, 2, 1, 1, 1],
+    ]);
+    expect(output.operations).toEqual(["keep c", "keep a", "insert r", "keep t"]);
+    expect(runAlgorithm(module, { a: "flaw", b: "lawn" }).output.distance).toBe(2);
+    expect(runAlgorithm(module, { a: "kitten", b: "sitting" }).output.distance).toBe(3);
+    expect(runAlgorithm(module, { a: "sunday", b: "saturday" }).output.distance).toBe(3);
   });
 });
