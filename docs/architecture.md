@@ -18,8 +18,8 @@ The difficult parts are not the pages. They are:
 
 1. **Beginner:** discover → read intuition → choose input → run → step through the trace → inspect the result. _(Implemented, covered by e2e tests.)_
 2. **Student:** read mechanics/maths levels, review complexity, practise, print exam notes. _(Implemented.)_
-3. **Competitive programmer:** compare algorithms on the same inputs, look at operation counts and edge cases. _(Arena: next.)_
-4. **Developer:** add an algorithm against the SDK and get validation, visualization and tests for free. _(Implemented for in-repo contributors; Studio import planned.)_
+3. **Competitive programmer:** compare algorithms on the same inputs, look at operation counts and edge cases. _(Arena: implemented for the four comparison sorts.)_
+4. **Developer:** add an algorithm against the SDK and get validation, visualization and tests for free. _(Implemented: in-repo modules via [adding-an-algorithm.md](adding-an-algorithm.md); outside traces via the Studio import.)_
 5. Educator, researcher and community workflows are long-term ([progress.md](progress.md)).
 
 ## 3. Architecture options considered
@@ -55,12 +55,14 @@ src/
   engine/       trace protocol, reducer, player, validator, tracer SDK      (no deps)
   lib/          pure utilities: seeded RNG, graph layout, grading, progress  (no app deps)
   algorithms/   traced algorithm modules + input specs                       → engine, lib
+  experiments/  Arena: seeded inputs, count-mode runs, shareable configs     → algorithms, lib
+  studio/       example traces built only with the public SDK                → engine
   content/      curriculum, domains, lesson entries, catalogue search        → (types only)
   ui/           React components: renderers, visualizer, lesson widgets      → engine, algorithms, content, lib
   app/          Next.js routes                                               → everything above
 ```
 
-Rules enforced by ESLint (`no-restricted-imports` in `eslint.config.mjs`): `engine` may import nothing from the app; `engine`, `algorithms` and `lib` may not import React, Next.js or UI code. This keeps the core runnable in Node scripts, tests and (later) workers.
+Rules enforced by ESLint (`no-restricted-imports` in `eslint.config.mjs`): `engine` may import nothing from the app; `lib` may not import algorithms or experiments; `engine`, `algorithms`, `experiments` and `lib` may not import React, Next.js or UI code. A test additionally fails if any renderer source mentions an algorithm id. This keeps the core runnable in Node scripts, tests and (later) workers.
 
 The only coupling between an algorithm and the UI is data: the module's pseudocode lines and the trace it emits. Renderers are selected by _structure kind_ (`ui/renderers/index.tsx`), never by algorithm id.
 
@@ -96,14 +98,14 @@ input text ──parse──▶ validated input ──module.run(input, tracer)�
 
 ## 8. Priorities
 
-- **P0 (done):** trace engine, two structurally different algorithms on shared renderers, learning page, explore, accessibility baseline, tests and CI.
-- **P0 (next):** broaden the catalogue with Tier-1 algorithms that exercise every structure kind; Arena operation-count comparisons; Studio trace import proving renderer reuse for algorithms that are not in the registry.
+- **P0 (done):** trace engine; 16 algorithms on four shared renderers (arrays, graphs incl. directed and weighted, queues/stacks/priority queues, DP tables); learning pages; explore; 600-item roadmap; Arena; Studio import with a tested renderer-reuse guarantee; accessibility baseline; tests and CI.
+- **P0 (next):** a tree structure kind (BSTs, heaps as trees, recursion trees), then the remaining Tier-1 items: Union-Find, Kruskal, Prim, Bellman–Ford, Floyd–Warshall, LIS, Trie, Segment Tree, Fenwick Tree.
 - **P1:** exam-question bank growth, trace compression, learning paths from the prerequisite graph, persistence + accounts.
 - **Deferred:** user code execution (until isolation is built and tested), AI tutor (optional, never a dependency of core features), community contributions, educator tools.
 
 ## 9. Definition of the first release
 
-A user can find an algorithm, read it at the depth they choose, run it on their own valid input (invalid input is rejected with a reason), step forwards and backwards through a faithful trace with pseudocode, variables and operation counts, confirm the output was independently checked, and test their understanding — on desktop or phone, by keyboard or pointer, in light or dark mode. This holds today for Bubble Sort and BFS, which share one visualization pipeline.
+A user can find an algorithm, read it at the depth they choose, run it on their own valid input (invalid input is rejected with a reason), step forwards and backwards through a faithful trace with pseudocode, variables and operation counts, confirm the output was independently checked, and test their understanding — on desktop or phone, by keyboard or pointer, in light or dark mode. This holds today for all 16 interactive entries, which share one visualization pipeline.
 
 ## 10. Verification
 
