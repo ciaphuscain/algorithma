@@ -161,16 +161,27 @@ describe("catalog search", () => {
       "bst",
       "dfs",
       "dijkstra",
+      "fenwick-tree",
       "heap-sort",
       "kmp",
+      "kruskal",
       "linear-search",
+      "lis",
       "merge-sort",
+      "prim",
       "segment-tree",
       "topological-sort",
+      "topological-sort-dfs",
       "tree-traversals",
       "trie",
+      "union-find",
     ]);
-    expect(slugs({ maxWorst: "log n" }).sort()).toEqual(["binary-search", "segment-tree"]);
+    expect(slugs({ maxWorst: "log n" }).sort()).toEqual([
+      "binary-search",
+      "fenwick-tree",
+      "segment-tree",
+      "union-find",
+    ]);
     expect(slugs({ domain: "searching-sorting" }).sort()).toEqual([
       "binary-search",
       "bubble-sort",
@@ -188,7 +199,9 @@ describe("catalog search", () => {
     expect(entryForItem(201)?.slug).toBe("bfs");
     expect(entryForItem(330)?.slug).toBe("edit-distance"); // duplicate of #276
     expect(entryForItem(1)?.slug).toBe("linear-search");
-    expect(entryForItem(208)).toBeUndefined(); // Bellman–Ford: planned
+    expect(entryForItem(208)?.slug).toBe("bellman-ford");
+    expect(entryForItem(173)?.slug).toBe("fenwick-tree"); // duplicate of #61
+    expect(entryForItem(218)).toBeUndefined(); // Borůvka: planned
     expect(getEntry("nope")).toBeUndefined();
   });
 
@@ -473,5 +486,103 @@ describe("worked examples agree with the engine", () => {
         ],
       }).output.sums,
     ).toEqual([18, 46]);
+  });
+
+  it("graph and sequence lessons: every worked-example table matches the traced run", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { TracePlayer } = await import("@/engine/player");
+    const run = (id: string, presetId: string) => {
+      const m = getModule(id)!;
+      return runAlgorithm(m, m.input.presets.find((p) => p.id === presetId)!.value);
+    };
+    /** The state just before the first event whose vars match `vars`. */
+    const stateBefore = (trace: ReturnType<typeof run>["trace"], vars: Record<string, unknown>) => {
+      const at = trace.events.findIndex((e) =>
+        Object.entries(vars).every(([k, v]) => e.vars?.[k] === v),
+      );
+      expect(at).toBeGreaterThan(0);
+      return new TracePlayer(trace).stateAt(at);
+    };
+
+    // Union-find: parent arrays before and after find(7), and ranks.
+    const uf = run("union-find", "rank");
+    expect(uf.output).toMatchObject({
+      answers: [0],
+      parent: [0, 0, 0, 2, 0, 4, 0, 0],
+      rank: [3, 0, 1, 0, 2, 0, 1, 0],
+    });
+    const beforeFind = stateBefore(uf.trace, { op: "find 7" }).structures.P;
+    expect(beforeFind?.kind === "array" && beforeFind.values).toEqual([0, 0, 0, 2, 0, 4, 4, 6]);
+
+    // Kruskal and Prim: the same 39-weight tree, in the orders of the two tables.
+    expect(run("kruskal", "classic").output).toEqual({
+      edges: [
+        ["A", "D", 5],
+        ["C", "E", 5],
+        ["D", "F", 6],
+        ["A", "B", 7],
+        ["B", "E", 7],
+        ["E", "G", 9],
+      ],
+      total: 39,
+    });
+    const pr = run("prim", "classic");
+    expect(pr.output.edges.map(([a, b]: string[]) => `${a}${b}`)).toEqual([
+      "AD",
+      "DF",
+      "AB",
+      "BE",
+      "EC",
+      "EG",
+    ]);
+    expect(pr.trace.meta.counters.extractions).toBe(11);
+
+    // Bellman–Ford: the distance table after rounds 1 and 2, and the early stop.
+    const bf = run("bellman-ford", "negative");
+    const annotations = (round: number) => {
+      const g = stateBefore(bf.trace, { round }).structures.G;
+      return g?.kind === "graph" ? g.annotations : {};
+    };
+    expect(annotations(2)).toEqual({ S: "d=0", A: "d=2", B: "d=5", C: "d=2", D: "d=5" });
+    expect(annotations(3)).toEqual({ S: "d=0", A: "d=2", B: "d=5", C: "d=0", D: "d=3" });
+    expect(bf.output).toMatchObject({ rounds: 3, negativeCycle: false });
+    expect(bf.trace.meta.counters.relaxations).toBe(7);
+
+    // Floyd–Warshall: the final matrix.
+    expect(run("floyd-warshall", "classic").output.dist).toEqual([
+      [0, -1, -2, 0],
+      [4, 0, 2, 4],
+      [5, 1, 0, 2],
+      [3, -1, 1, 0],
+    ]);
+
+    // DFS topological sort: the order, and the watch placed first.
+    expect(run("topological-sort-dfs", "courses").output.order).toEqual([
+      "B",
+      "D",
+      "A",
+      "C",
+      "E",
+      "F",
+    ]);
+    expect(run("topological-sort-dfs", "clothes").output.order.indexOf("Wch")).toBe(0);
+
+    // LIS: the subsequence, comparisons and final tails.
+    const l = run("lis", "classic");
+    expect(l.output).toEqual({ length: 4, indices: [2, 4, 5, 7], sequence: [2, 3, 7, 18] });
+    expect(l.trace.meta.counters.comparisons).toBe(10);
+    const tails = new TracePlayer(l.trace).finalState().structures.T;
+    expect(tails?.kind === "array" && tails.values.slice(0, 4)).toEqual([2, 3, 7, 18]);
+
+    // Fenwick tree: T after the O(n) build, the sums, and T after "add 3 4".
+    const fw = run("fenwick-tree", "classic");
+    const built = stateBefore(fw.trace, { op: "sum 6" }).structures.T;
+    expect(built?.kind === "array" && built.values).toEqual([null, 5, 7, 9, 13, 5, 25, 10, 41]);
+    expect(fw.output.sums).toEqual([38, 47]);
+    const after = new TracePlayer(fw.trace).finalState().structures.T;
+    expect(after?.kind === "array" && [after.values[3], after.values[4], after.values[8]]).toEqual([
+      13, 17, 45,
+    ]);
+    expect(fw.trace.meta.counters["nodes visited"]).toBe(9);
   });
 });

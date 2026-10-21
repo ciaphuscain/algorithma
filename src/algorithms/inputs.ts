@@ -157,6 +157,17 @@ export interface GraphLimits {
   maxWeight?: number;
 }
 
+export interface GraphOptions {
+  directed: boolean;
+  weighted: boolean;
+  limits: GraphLimits;
+  /**
+   * Whether the algorithm starts from a chosen vertex. When false the form has no
+   * "Start node" field and `source` is set to the first vertex, unused.
+   */
+  withSource?: boolean;
+}
+
 const NODE_ID = /^[A-Za-z0-9]{1,3}$/;
 
 /**
@@ -167,7 +178,7 @@ const NODE_ID = /^[A-Za-z0-9]{1,3}$/;
 export function parseGraph(
   text: string,
   sourceText: string,
-  options: { directed: boolean; weighted: boolean; limits: GraphLimits },
+  options: GraphOptions,
 ): ParseResult<GraphInputValue> {
   const { directed, weighted, limits } = options;
   const errors: string[] = [];
@@ -254,8 +265,8 @@ export function parseGraph(
     errors.push(`${nodes.length} nodes; the visualizer supports at most ${limits.maxNodes}`);
   if (edges.length > limits.maxEdges)
     errors.push(`${edges.length} edges; the visualizer supports at most ${limits.maxEdges}`);
-  const source = sourceText.trim();
-  if (!seen.has(source))
+  const source = options.withSource === false ? (nodes[0] ?? "") : sourceText.trim();
+  if (nodes.length > 0 && !seen.has(source))
     errors.push(source ? `Start node "${source}" is not in the graph` : "Choose a start node");
   if (errors.length > 0) return { ok: false, errors: errors.slice(0, 5) };
 
@@ -276,11 +287,7 @@ export function formatGraph(value: GraphInputValue): Record<string, string> {
 }
 
 /** Build a graph value from edge notation with automatic layout (used for presets). */
-export function graphPreset(
-  text: string,
-  source: string,
-  options: { directed: boolean; weighted: boolean; limits: GraphLimits },
-): GraphInputValue {
+export function graphPreset(text: string, source: string, options: GraphOptions): GraphInputValue {
   const parsed = parseGraph(text, source, options);
   if (!parsed.ok) throw new Error(`invalid graph preset: ${parsed.errors.join("; ")}`);
   return parsed.value;
@@ -328,13 +335,11 @@ export function randomGraph(
   };
 }
 
-export function graphInput(options: {
-  directed: boolean;
-  weighted: boolean;
-  limits: GraphLimits;
-  presets: InputPreset<GraphInputValue>[];
-}): InputSpec<GraphInputValue> {
+export function graphInput(
+  options: GraphOptions & { presets: InputPreset<GraphInputValue>[] },
+): InputSpec<GraphInputValue> {
   const { directed, weighted, limits } = options;
+  const withSource = options.withSource !== false;
   const example = directed
     ? weighted
       ? "A->B:4, B->C:1, A->C:7"
@@ -351,7 +356,7 @@ export function graphInput(options: {
         multiline: true,
         help: `Separate edges with commas or new lines.${weighted ? " Add a weight after a colon." : ""} A lone id adds an isolated node.`,
       },
-      { name: "source", label: "Start node", placeholder: "e.g. A" },
+      ...(withSource ? [{ name: "source", label: "Start node", placeholder: "e.g. A" }] : []),
     ],
     constraints: `Up to ${limits.maxNodes} nodes and ${limits.maxEdges} edges; node ids are 1–3 letters or digits.${
       weighted && limits.minWeight !== undefined
@@ -359,8 +364,17 @@ export function graphInput(options: {
         : ""
     }`,
     parse: (fields) =>
-      parseGraph(fields.edges ?? "", fields.source ?? "", { directed, weighted, limits }),
-    format: formatGraph,
+      parseGraph(fields.edges ?? "", fields.source ?? "", {
+        directed,
+        weighted,
+        limits,
+        withSource,
+      }),
+    format: (value) => {
+      const fields = formatGraph(value);
+      if (!withSource) delete fields.source;
+      return fields;
+    },
     presets: options.presets,
     random: (rng, size) => {
       const nodes = clamp(size ?? 8, 2, Math.min(limits.maxNodes, 26));

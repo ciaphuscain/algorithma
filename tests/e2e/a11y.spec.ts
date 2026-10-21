@@ -19,6 +19,8 @@ for (const path of [
   "/algorithms/kmp",
   "/algorithms/bst",
   "/algorithms/trie",
+  "/algorithms/union-find",
+  "/algorithms/floyd-warshall",
   "/arena",
   "/studio",
 ]) {

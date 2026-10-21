@@ -12,7 +12,7 @@ export const dfsEntry: AlgorithmEntry = {
     "Follows one path as deep as possible before backtracking, recording discovery and finish times; the foundation of cycle detection, topological sort and connectivity algorithms.",
   tags: ["graph", "traversal", "recursion", "stack", "cycle detection", "back edge"],
   prerequisites: ["Graphs and adjacency lists", "Recursion", "Breadth-First Search"],
-  related: ["bfs", "dijkstra"],
+  related: ["bfs", "dijkstra", "topological-sort-dfs"],
   problem: {
     input: "A graph $G = (V, E)$ as adjacency lists and a start vertex $s$.",
     output:

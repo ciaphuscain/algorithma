@@ -18,7 +18,8 @@ export const TRACE_PROTOCOL = "algorithma.trace" as const;
 /**
  * Version history:
  *   1 — arrays, graphs, sequences, grids.
- *   2 — adds the tree structure kind and tree.* events (v1 traces are valid v2 traces).
+ *   2 — adds the tree structure kind and tree.* events, including tree.move (v1 traces
+ *       are valid v2 traces).
  */
 export const TRACE_VERSION = 2 as const;
 
@@ -201,6 +202,8 @@ export type TraceEvent = EventMeta &
     | { type: "tree.remove"; s: string; node: string }
     /** Delete a node with at most one child; that child takes its place. */
     | { type: "tree.splice"; s: string; node: string }
+    /** Re-attach a non-root node, with its subtree, under another node (not inside the subtree). */
+    | { type: "tree.move"; s: string; node: string; parent: string; slot?: number }
     | { type: "structure.create"; s: string; structure: Structure }
     | { type: "structure.remove"; s: string }
     | { type: "step" }

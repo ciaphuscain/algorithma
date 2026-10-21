@@ -9,7 +9,7 @@ import type {
   TreeStructure,
 } from "./protocol";
 import type { TraceState } from "./state";
-import { treeAdd, treeRemove, treeSplice } from "./tree";
+import { treeAdd, treeMove, treeRemove, treeSplice } from "./tree";
 
 /** Raised when an event cannot be applied to the current state (e.g. index out of range). */
 export class TraceReplayError extends Error {
@@ -296,6 +296,14 @@ function applyUnchecked(state: TraceState, e: TraceEvent): void {
     case "tree.splice": {
       const t = get(state, e.s, "tree");
       treeOp(() => treeSplice(t, e.node));
+      break;
+    }
+    case "tree.move": {
+      const t = get(state, e.s, "tree");
+      treeOp(() => treeMove(t, e.node, e.parent, e.slot));
+      // Structural, like remove and splice: no counter, so drawing a pointer change
+      // that the algorithm also writes to an array is not counted twice.
+      state.focus.push({ s: e.s, tone: "write", nodes: [e.node] });
       break;
     }
     case "structure.create": {

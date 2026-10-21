@@ -145,7 +145,7 @@ test("explore search and filters, shareable via URL", async ({ page }) => {
   await expect(page).toHaveURL(/query=shortest/);
   await page.getByLabel("Search").fill("");
   await page.getByLabel("Worst-case time at most").selectOption("n log n");
-  await expect(page.getByTestId("result-count")).toContainText("13 interactive entries");
+  await expect(page.getByTestId("result-count")).toContainText("19 interactive entries");
   await page.goto("/explore?domain=searching-sorting");
   await expect(page.getByTestId("results")).toContainText("Bubble Sort");
   await expect(page.getByTestId("results")).not.toContainText("Breadth-First");
@@ -155,15 +155,17 @@ test("roadmap lists the curriculum honestly", async ({ page }) => {
   await page.goto("/roadmap");
   await page.getByLabel("Search the curriculum").fill("bellman");
   const bellman = page.locator('[data-number="208"]');
-  await expect(bellman).toContainText("Planned");
+  await expect(bellman).toContainText("Available");
   await expect(bellman).toContainText("Tier 2");
+  await page.getByLabel("Search the curriculum").fill("boruvka");
+  await expect(page.locator('[data-number="218"]')).toContainText("Planned");
   await page.getByLabel("Search the curriculum").fill("dijkstra");
   await expect(page.locator('[data-number="207"]')).toContainText("Available");
   await page.getByLabel("Search the curriculum").fill("sollin");
   await expect(page.locator('[data-number="220"]')).toContainText("Same as #218");
   await page.getByLabel("Search the curriculum").fill("");
   await page.getByLabel("Status").selectOption("available");
-  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 27 of 600");
+  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 38 of 600");
   await page.locator('[data-number="11"]').getByRole("link", { name: "Bubble Sort" }).click();
   await expect(page).toHaveURL(/\/algorithms\/bubble-sort/);
 });
@@ -214,6 +216,24 @@ test("tree renderer: BST inserts, searches and deletes with a successor", async 
   await expect(page.locator(".alert--error")).toContainText("99");
 });
 
+test("union-find moves subtrees; Bellman–Ford reports a negative cycle", async ({ page }) => {
+  await page.goto("/algorithms/union-find");
+  const forest = page.locator('[data-kind="tree"]');
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(forest.locator("[data-node]")).toHaveCount(9);
+  await expect(page.getByTestId("result")).toContainText("1 set; answers: 0");
+  await page.getByLabel("Operations").fill("union 0 1, find 9");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText("numbered 0–7");
+
+  await page.goto("/algorithms/bellman-ford");
+  await page.getByLabel("Directed edges").fill("S->A:1, A->B:2, B->C:-4, C->A:1");
+  await page.getByLabel("Start node").fill("S");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText("negative cycle");
+});
+
 test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(String(e)));
@@ -239,6 +259,14 @@ test("every catalogue entry renders its visualizer without console errors", asyn
     "bst",
     "trie",
     "segment-tree",
+    "union-find",
+    "kruskal",
+    "prim",
+    "bellman-ford",
+    "floyd-warshall",
+    "topological-sort-dfs",
+    "lis",
+    "fenwick-tree",
   ]) {
     await page.goto(`/algorithms/${slug}`);
     await page.getByRole("button", { name: "Jump to end" }).click();

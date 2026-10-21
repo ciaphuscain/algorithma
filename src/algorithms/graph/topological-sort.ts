@@ -10,11 +10,11 @@ export interface TopoOutput {
 }
 
 const LIMITS = { maxNodes: 20, maxEdges: 50 };
-const DIRECTED = { directed: true, weighted: false, limits: LIMITS };
+const DIRECTED = { directed: true, weighted: false, limits: LIMITS, withSource: false };
 
 /**
- * Kahn's algorithm. The "start node" field is not used: every vertex with no incoming
- * edges starts in the queue (ties in id order).
+ * Kahn's algorithm. There is no start vertex: every vertex with no incoming edges
+ * starts in the queue (ties in id order).
  */
 export const topologicalSort: AlgorithmModule<GraphInputValue, TopoOutput> = {
   id: "topological-sort",
@@ -36,22 +36,22 @@ export const topologicalSort: AlgorithmModule<GraphInputValue, TopoOutput> = {
       {
         id: "courses",
         label: "Course prerequisites",
-        value: graphPreset("A->C, B->C, B->D, C->E, D->E, E->F, D->F", "A", DIRECTED),
+        value: graphPreset("A->C, B->C, B->D, C->E, D->E, E->F, D->F", "", DIRECTED),
       },
       {
         id: "chain",
         label: "A single chain",
-        value: graphPreset("A->B, B->C, C->D, D->E", "A", DIRECTED),
+        value: graphPreset("A->B, B->C, C->D, D->E", "", DIRECTED),
       },
       {
         id: "cycle",
         label: "Contains a cycle",
-        value: graphPreset("A->B, B->C, C->D, D->B, C->E", "A", DIRECTED),
+        value: graphPreset("A->B, B->C, C->D, D->B, C->E", "", DIRECTED),
       },
       {
         id: "independent",
         label: "Independent tasks",
-        value: graphPreset("A->B, C->D, E", "A", DIRECTED),
+        value: graphPreset("A->B, C->D, E", "", DIRECTED),
       },
     ],
   }),

@@ -222,6 +222,7 @@ const EVENT_FIELDS: Record<TraceEvent["type"], Record<string, (v: unknown) => bo
   "tree.annotate": { s: isStr, node: isStr, text: (v) => v === null || isStr(v) },
   "tree.remove": { s: isStr, node: isStr },
   "tree.splice": { s: isStr, node: isStr },
+  "tree.move": { s: isStr, node: isStr, parent: isStr },
   "structure.create": { s: isStr, structure: isObject },
   "structure.remove": { s: isStr },
   step: {},
@@ -233,6 +234,7 @@ const OPTIONAL_EVENT_FIELDS: Partial<
   "array.compare": { j: isInt, value: isScalar },
   "seq.pop": { index: isInt },
   "tree.add": { slot: isInt, edgeLabel: isStr },
+  "tree.move": { slot: isInt },
 };
 const META_FIELDS = new Set(["type", "line", "note", "vars", "count"]);
 

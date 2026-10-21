@@ -109,6 +109,41 @@ export function treeSplice(t: TreeStructure, node: string): void {
   forget(t, node);
 }
 
+/** True when `node` is `ancestor` or lies in its subtree. */
+function inSubtree(t: TreeStructure, ancestor: string, node: string): boolean {
+  if (ancestor === node) return true;
+  return t.nodes[ancestor]!.children.some((c) => c !== null && inSubtree(t, c, node));
+}
+
+/**
+ * Re-attach `node`, with its whole subtree, under `parent` (binary: into an empty
+ * slot; general: at position `slot`, default last). The root cannot move, and a node
+ * cannot move into its own subtree.
+ */
+export function treeMove(t: TreeStructure, node: string, parent: string, slot?: number): void {
+  requireNode(t, node);
+  const p = requireNode(t, parent);
+  if (t.root === node) throw new Error(`cannot move the root "${node}"`);
+  if (inSubtree(t, node, parent))
+    throw new Error(`cannot move "${node}" under "${parent}": that is inside its own subtree`);
+  if (t.binary) {
+    if (slot !== 0 && slot !== 1)
+      throw new Error("binary tree children need slot 0 (left) or 1 (right)");
+    if (p.children[slot] !== null && p.children[slot] !== node) {
+      throw new Error(`node "${parent}" already has a ${slot === 0 ? "left" : "right"} child`);
+    }
+  }
+  detach(t, node, null);
+  if (t.binary) p.children[slot!] = node;
+  else {
+    const at = slot ?? p.children.length;
+    if (!Number.isInteger(at) || at < 0 || at > p.children.length) {
+      throw new Error(`child position ${at} out of range for node "${parent}"`);
+    }
+    p.children.splice(at, 0, node);
+  }
+}
+
 /**
  * Check the shape invariants: one root, every node reachable from it exactly once,
  * no cycles, children reference existing nodes, binary nodes have two slots.

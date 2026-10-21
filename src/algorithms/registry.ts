@@ -19,6 +19,14 @@ import { bfs } from "./graph/bfs";
 import { dfs } from "./graph/dfs";
 import { dijkstra } from "./graph/dijkstra";
 import { editDistance } from "./dp/edit-distance";
+import { lis } from "./dp/lis";
+import { unionFind } from "./graph/union-find";
+import { kruskal } from "./graph/kruskal";
+import { prim } from "./graph/prim";
+import { bellmanFord } from "./graph/bellman-ford";
+import { floydWarshall } from "./graph/floyd-warshall";
+import { topologicalSortDfs } from "./graph/topological-sort-dfs";
+import { fenwickTree } from "./trees/fenwick-tree";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -46,6 +54,14 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   bst,
   trie,
   segmentTree,
+  unionFind,
+  kruskal,
+  prim,
+  bellmanFord,
+  floydWarshall,
+  topologicalSortDfs,
+  lis,
+  fenwickTree,
 ];
 
 const byId = new Map(ALGORITHM_MODULES.map((m) => [m.id, m]));

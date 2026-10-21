@@ -21,6 +21,14 @@ import { bstEntry } from "./entries/bst";
 import { segmentTreeEntry } from "./entries/segment-tree";
 import { treeTraversalsEntry } from "./entries/tree-traversals";
 import { trieEntry } from "./entries/trie";
+import { unionFindEntry } from "./entries/union-find";
+import { kruskalEntry } from "./entries/kruskal";
+import { primEntry } from "./entries/prim";
+import { bellmanFordEntry } from "./entries/bellman-ford";
+import { floydWarshallEntry } from "./entries/floyd-warshall";
+import { topologicalSortDfsEntry } from "./entries/topological-sort-dfs";
+import { lisEntry } from "./entries/lis";
+import { fenwickTreeEntry } from "./entries/fenwick-tree";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -35,15 +43,23 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   bfsEntry,
   dfsEntry,
   dijkstraEntry,
+  bellmanFordEntry,
+  floydWarshallEntry,
   topologicalSortEntry,
+  topologicalSortDfsEntry,
+  unionFindEntry,
+  kruskalEntry,
+  primEntry,
   editDistanceEntry,
   lcsEntry,
+  lisEntry,
   knapsackEntry,
   kmpEntry,
   treeTraversalsEntry,
   bstEntry,
   trieEntry,
   segmentTreeEntry,
+  fenwickTreeEntry,
 ];
 
 const bySlug = new Map(ENTRIES.map((e) => [e.slug, e]));

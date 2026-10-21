@@ -2,7 +2,15 @@ import { describe, expect, it } from "vitest";
 import { TracePlayer } from "./player";
 import type { Trace, TreeStructure } from "./protocol";
 import { Tracer } from "./tracer";
-import { checkTreeShape, emptyTree, inorder, treeAdd, treeRemove, treeSplice } from "./tree";
+import {
+  checkTreeShape,
+  emptyTree,
+  inorder,
+  treeAdd,
+  treeMove,
+  treeRemove,
+  treeSplice,
+} from "./tree";
 import { validateTrace } from "./validate";
 
 function bst(values: number[]): TreeStructure {
@@ -67,6 +75,31 @@ describe("tree operations", () => {
     expect(t.nodes.b!.edgeLabel).toBe("b");
   });
 
+  it("moves subtrees, but never the root or into the node's own subtree", () => {
+    const t = emptyTree(false);
+    treeAdd(t, "r", "", null);
+    for (const id of ["a", "b", "c"]) treeAdd(t, id, id, "r");
+    treeAdd(t, "a1", "a1", "a");
+    treeMove(t, "a", "b");
+    expect(t.nodes.r!.children).toEqual(["b", "c"]);
+    expect(t.nodes.b!.children).toEqual(["a"]);
+    expect(t.nodes.a!.children).toEqual(["a1"]);
+    treeMove(t, "c", "r", 0);
+    expect(t.nodes.r!.children).toEqual(["c", "b"]);
+    expect(() => treeMove(t, "r", "a")).toThrow(/cannot move the root/);
+    expect(() => treeMove(t, "b", "a1")).toThrow(/inside its own subtree/);
+    expect(() => treeMove(t, "b", "b")).toThrow(/inside its own subtree/);
+    expect(checkTreeShape(t)).toBeNull();
+
+    const bin = bst([5, 3, 8]);
+    expect(() => treeMove(bin, "n1", "n2")).toThrow(/slot 0 \(left\) or 1 \(right\)/);
+    treeMove(bin, "n1", "n2", 0);
+    expect(inorder(bin)).toEqual([5, 3, 8]);
+    expect(bin.nodes.n0!.children).toEqual([null, "n2"]);
+    expect(() => treeMove(bin, "n2", "n0", 0)).not.toThrow();
+    expect(checkTreeShape(bin)).toBeNull();
+  });
+
   it("detects broken shapes", () => {
     const t = bst([2, 1, 3]);
     expect(
@@ -95,6 +128,8 @@ function treeTrace(): Trace {
   T.set(l, 4);
   T.splice(rr);
   T.remove(l);
+  const x = T.add(1, "n0", 0);
+  T.move(x, "n3", 1);
   return t.finish(null, null);
 }
 
@@ -105,9 +140,9 @@ describe("tree traces", () => {
     const player = new TracePlayer(trace, { keyframeInterval: 3 });
     for (let p = player.length; p >= 0; p--) expect(player.stateAt(p)).toEqual(ref.stateAt(p));
     const final = player.finalState().structures.T as TreeStructure;
-    expect(inorder(final)).toEqual([5, 7]);
+    expect(inorder(final)).toEqual([5, 7, 1]);
     expect(final.annotations).toEqual({ n0: "root" });
-    expect(player.finalState().counters).toMatchObject({ comparisons: 1, writes: 5 });
+    expect(player.finalState().counters).toMatchObject({ comparisons: 1, writes: 6 });
   });
 
   it("validates through JSON and rejects impossible tree edits", () => {
@@ -118,6 +153,13 @@ describe("tree traces", () => {
     const result = validateTrace(raw);
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.errors[0]).toMatch(/event #1: the tree already has a root/);
+    const cyclic = JSON.parse(JSON.stringify(treeTrace()));
+    const last = cyclic.events.findIndex((e: { type: string }) => e.type === "tree.move");
+    cyclic.events.splice(last + 1, 0, { type: "tree.move", s: "T", node: "n0", parent: "n3" });
+    cyclic.meta.eventCount += 1;
+    const moved = validateTrace(cyclic);
+    expect(moved.ok).toBe(false);
+    if (!moved.ok) expect(moved.errors[0]).toMatch(/cannot move the root/);
   });
 
   it("rejects malformed initial trees and unknown tree fields", () => {

@@ -12,7 +12,7 @@ export const lcsEntry: AlgorithmEntry = {
     "Finds the longest sequence of characters that appears in the same order (not necessarily contiguously) in two strings, with an (m+1)×(n+1) DP table.",
   tags: ["dynamic programming", "strings", "table", "subsequence", "diff", "bioinformatics"],
   prerequisites: ["Strings", "Edit Distance (Levenshtein)"],
-  related: ["edit-distance", "knapsack"],
+  related: ["edit-distance", "knapsack", "lis"],
   problem: {
     input: "Two sequences $a$ (length $m$) and $b$ (length $n$).",
     output:

@@ -532,3 +532,200 @@ describe("traversal and trie properties", () => {
     );
   });
 });
+
+/* ----------------------------------------------- graphs II, LIS and Fenwick */
+
+import { bellmanFord } from "@/algorithms/graph/bellman-ford";
+import { floydWarshall } from "@/algorithms/graph/floyd-warshall";
+import { kruskal } from "@/algorithms/graph/kruskal";
+import { prim } from "@/algorithms/graph/prim";
+import { topologicalSortDfs } from "@/algorithms/graph/topological-sort-dfs";
+import { unionFind, type UnionFindOp } from "@/algorithms/graph/union-find";
+import { lis } from "@/algorithms/dp/lis";
+import { fenwickTree, type FenwickOp } from "@/algorithms/trees/fenwick-tree";
+
+/** Random simple graphs on vertices A, B, … with integer weights in [min, max]. */
+const simpleGraphs = (directed: boolean, min: number, max: number, maxNodes = 8) =>
+  fc.integer({ min: 1, max: maxNodes }).chain((n) => {
+    const ids = Array.from({ length: n }, (_, i) => String.fromCharCode(65 + i));
+    const pairs = ids.flatMap((a, i) =>
+      ids.flatMap((b, j) => ((directed ? i !== j : i < j) ? [[a, b] as const] : [])),
+    );
+    return fc
+      .record({
+        chosen: pairs.length
+          ? fc.subarray(pairs)
+          : fc.constant([] as (readonly [string, string])[]),
+        weights: fc.array(fc.integer({ min, max }), {
+          minLength: pairs.length,
+          maxLength: pairs.length,
+        }),
+      })
+      .map(({ chosen, weights }): GraphInputValue => {
+        const edges = chosen.map(([from, to], i) => ({ from, to, weight: weights[i]! }));
+        return {
+          directed,
+          weighted: true,
+          nodes: layoutGraph(ids, edges, { iterations: 5 }),
+          edges,
+          source: ids[0]!,
+        };
+      });
+  });
+
+describe("minimum spanning tree properties", () => {
+  it("Kruskal and Prim agree on the weight of the start vertex's tree", () => {
+    fc.assert(
+      fc.property(simpleGraphs(false, -9, 9), (g) => {
+        const k = runAlgorithm(kruskal, { ...g, source: g.nodes[0]!.id }).output;
+        const p = runAlgorithm(prim, g).output;
+        expect(kruskal.check(g, k)).toBeNull();
+        expect(prim.check(g, p)).toBeNull();
+        // On a connected graph both span everything, so the totals coincide.
+        if (k.edges.length === g.nodes.length - 1) expect(p.total).toBe(k.total);
+      }),
+    );
+  });
+
+  it("adding a constant to every weight does not change Kruskal's choice", () => {
+    fc.assert(
+      fc.property(simpleGraphs(false, 0, 9), fc.integer({ min: 1, max: 20 }), (g, c) => {
+        const shifted = { ...g, edges: g.edges.map((e) => ({ ...e, weight: e.weight! + c })) };
+        const a = runAlgorithm(kruskal, g).output.edges.map(([u, v]) => `${u}-${v}`);
+        const b = runAlgorithm(kruskal, shifted).output.edges.map(([u, v]) => `${u}-${v}`);
+        expect(b).toEqual(a);
+      }),
+    );
+  });
+});
+
+describe("shortest path properties (Bellman–Ford, Floyd–Warshall)", () => {
+  it("Bellman–Ford equals Dijkstra when no weight is negative", () => {
+    fc.assert(
+      fc.property(simpleGraphs(false, 0, 9), (g) => {
+        const both = g.edges.flatMap((e) => [e, { from: e.to, to: e.from, weight: e.weight }]);
+        const directed = { ...g, directed: true, edges: both };
+        const bf = runAlgorithm(bellmanFord, directed).output;
+        expect(bf.negativeCycle).toBe(false);
+        expect(bf.dist).toEqual(runAlgorithm(dijkstra, g).output.dist);
+      }),
+    );
+  });
+
+  it("each Floyd–Warshall row equals Bellman–Ford from that vertex", () => {
+    fc.assert(
+      fc.property(simpleGraphs(true, -3, 9, 6), (g) => {
+        const fw = runAlgorithm(floydWarshall, g).output;
+        expect(floydWarshall.check(g, fw)).toBeNull();
+        if (fw.negativeCycle) return;
+        fw.ids.forEach((s, i) => {
+          const bf = runAlgorithm(bellmanFord, { ...g, source: s }).output;
+          expect(fw.ids.map((v) => bf.dist[v])).toEqual(fw.dist[i]);
+        });
+      }),
+    );
+  });
+});
+
+describe("union-find properties", () => {
+  it("agrees with naive connectivity, and ranks stay at most log2 of the set size", () => {
+    const ops = (n: number) =>
+      fc.array(
+        fc.oneof(
+          fc.record({ kind: fc.constant("union" as const), a: fc.nat(n - 1), b: fc.nat(n - 1) }),
+          fc.record({ kind: fc.constant("find" as const), a: fc.nat(n - 1) }),
+          fc.record({
+            kind: fc.constant("connected" as const),
+            a: fc.nat(n - 1),
+            b: fc.nat(n - 1),
+          }),
+        ),
+        { minLength: 1, maxLength: 12 },
+      );
+    const inputs = fc
+      .integer({ min: 2, max: 12 })
+      .chain((n) => fc.record({ n: fc.constant(n), ops: ops(n) as fc.Arbitrary<UnionFindOp[]> }));
+    fc.assert(
+      fc.property(inputs, (input) => {
+        const { output } = runAlgorithm(unionFind, input);
+        expect(unionFind.check(input, output)).toBeNull();
+        for (const r of output.rank) expect(2 ** r).toBeLessThanOrEqual(input.n);
+      }),
+    );
+  });
+});
+
+describe("DFS topological sort properties", () => {
+  it("agrees with Kahn's algorithm on whether a cycle exists", () => {
+    fc.assert(
+      fc.property(simpleGraphs(true, 1, 1, 7), (g) => {
+        const plain = {
+          ...g,
+          weighted: false,
+          edges: g.edges.map(({ from, to }) => ({ from, to })),
+        };
+        const dfsOut = runAlgorithm(topologicalSortDfs, plain).output;
+        expect(topologicalSortDfs.check(plain, dfsOut)).toBeNull();
+        expect(dfsOut.hasCycle).toBe(runAlgorithm(topologicalSort, plain).output.hasCycle);
+      }),
+    );
+  });
+});
+
+describe("LIS properties", () => {
+  it("matches the O(n²) oracle; strictly increasing input is its own LIS", () => {
+    const values = fc.array(fc.integer({ min: -20, max: 20 }), { minLength: 1, maxLength: 16 });
+    fc.assert(
+      fc.property(values, (a) => {
+        const out = runAlgorithm(lis, a).output;
+        expect(lis.check(a, out)).toBeNull();
+        const strict = [...new Set(a)].sort((x, y) => x - y);
+        expect(runAlgorithm(lis, strict).output.length).toBe(strict.length);
+      }),
+    );
+  });
+
+  it("uses at most n·⌈log2(n + 1)⌉ comparisons", () => {
+    const values = fc.array(fc.integer({ min: -99, max: 99 }), { minLength: 1, maxLength: 16 });
+    fc.assert(
+      fc.property(values, (a) => {
+        const { counters } = runAlgorithm(lis, a, { mode: "count" }).trace.meta;
+        expect(counters.comparisons ?? 0).toBeLessThanOrEqual(
+          a.length * Math.ceil(Math.log2(a.length + 1)),
+        );
+      }),
+    );
+  });
+});
+
+describe("Fenwick tree properties", () => {
+  it("matches naive sums and touches at most ⌊log2 n⌋ + 1 entries per prefix walk or update", () => {
+    const inputs = fc.integer({ min: 1, max: 16 }).chain((n) =>
+      fc.record({
+        values: fc.array(fc.integer({ min: -99, max: 99 }), { minLength: n, maxLength: n }),
+        ops: fc.array(
+          fc.oneof(
+            fc.record({
+              kind: fc.constant("add" as const),
+              i: fc.integer({ min: 1, max: n }),
+              x: fc.integer({ min: -9, max: 9 }),
+            }),
+            fc
+              .tuple(fc.integer({ min: 1, max: n }), fc.integer({ min: 1, max: n }))
+              .map(([x, y]) => ({ kind: "sum" as const, l: Math.min(x, y), r: Math.max(x, y) })),
+          ),
+          { maxLength: 6 },
+        ) as fc.Arbitrary<FenwickOp[]>,
+      }),
+    );
+    fc.assert(
+      fc.property(inputs, (input) => {
+        const { output, trace } = runAlgorithm(fenwickTree, input, { mode: "count" });
+        expect(fenwickTree.check(input, output)).toBeNull();
+        const walks = input.ops.reduce((k, o) => k + (o.kind === "sum" && o.l > 1 ? 2 : 1), 0);
+        const bound = walks * (Math.floor(Math.log2(input.values.length)) + 1);
+        expect(trace.meta.counters["nodes visited"] ?? 0).toBeLessThanOrEqual(bound);
+      }),
+    );
+  });
+});

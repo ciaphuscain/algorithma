@@ -17,7 +17,7 @@ import {
   type TreeStructure,
   type VarValue,
 } from "./protocol";
-import { emptyTree, treeAdd, treeRemove, treeSplice } from "./tree";
+import { emptyTree, treeAdd, treeMove, treeRemove, treeSplice } from "./tree";
 
 /**
  * Metadata for an operation. A function is evaluated only when the tracer records,
@@ -572,6 +572,21 @@ export class TracedTree {
   splice(id: string, meta?: MetaArg): void {
     treeSplice(this.t, id);
     this.tracer.emit({ type: "tree.splice", s: this.name, node: id }, meta);
+  }
+
+  /** Re-attach `id` (with its subtree) under `parent`. */
+  move(id: string, parent: string, slot?: number, meta?: MetaArg): void {
+    treeMove(this.t, id, parent, slot);
+    this.tracer.emit(
+      {
+        type: "tree.move",
+        s: this.name,
+        node: id,
+        parent,
+        ...(slot !== undefined ? { slot } : {}),
+      },
+      meta,
+    );
   }
 
   private node(id: string) {

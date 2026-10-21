@@ -12,7 +12,7 @@ export const dijkstraEntry: AlgorithmEntry = {
     "Grows a set of vertices with known shortest distances, always settling the closest unsettled vertex next; correct whenever edge weights are non-negative.",
   tags: ["graph", "shortest path", "weighted", "greedy", "priority queue", "heap"],
   prerequisites: ["Breadth-First Search", "Priority queues / heaps"],
-  related: ["bfs", "dfs"],
+  related: ["bellman-ford", "prim", "bfs", "dfs"],
   problem: {
     input: "A graph with edge weights $w(u, v) \\ge 0$ and a source vertex $s$.",
     output:

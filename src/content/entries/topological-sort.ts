@@ -12,7 +12,7 @@ export const topologicalSortEntry: AlgorithmEntry = {
     "Orders the vertices of a directed acyclic graph so every edge points forward, by repeatedly removing vertices with no incoming edges; detects cycles as a by-product.",
   tags: ["graph", "directed", "DAG", "ordering", "dependencies", "queue", "cycle detection"],
   prerequisites: ["Directed graphs", "Queues", "Breadth-First Search"],
-  related: ["dfs", "bfs"],
+  related: ["topological-sort-dfs", "dfs", "bfs"],
   problem: {
     input: "A directed graph $G = (V, E)$.",
     output:
