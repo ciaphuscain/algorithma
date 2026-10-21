@@ -4,6 +4,7 @@ import { useState, type ChangeEvent } from "react";
 import type { TracePlayer } from "@/engine/player";
 import { validateTrace } from "@/engine/validate";
 import { STUDIO_EXAMPLES } from "@/studio/examples";
+import { ErrorBoundary } from "./ErrorBoundary";
 import { TraceViewer } from "./visualizer/TraceViewer";
 
 const MAX_FILE_BYTES = 8 * 1024 * 1024;
@@ -159,10 +160,12 @@ export function StudioClient() {
             replay validation, so it is internally consistent, but it shows what the file says
             happened; it is not a verified execution of any algorithm.
           </div>
-          <TraceViewer
-            player={loaded.player}
-            pseudocode={loaded.pseudocode.length > 0 ? loaded.pseudocode : undefined}
-          />
+          <ErrorBoundary label="this trace" resetKey={loaded.player}>
+            <TraceViewer
+              player={loaded.player}
+              pseudocode={loaded.pseudocode.length > 0 ? loaded.pseudocode : undefined}
+            />
+          </ErrorBoundary>
         </section>
       )}
     </>

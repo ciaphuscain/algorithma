@@ -5,6 +5,7 @@ import type { TracePlayer } from "@/engine/player";
 import type { VarValue } from "@/engine/protocol";
 import { StructurePanel } from "@/ui/renderers";
 import { describeState } from "@/ui/renderers/describe";
+import { ErrorBoundary } from "@/ui/ErrorBoundary";
 import { Controls } from "./Controls";
 import { usePlayback } from "./usePlayback";
 
@@ -132,13 +133,18 @@ export function TraceViewer({
                 : " ")}
         </div>
         {state.order.map((name) => (
-          <StructurePanel
+          <ErrorBoundary
             key={name}
-            name={name}
-            structure={state.structures[name]!}
-            focus={state.focus}
-            legend={legends[name]}
-          />
+            label={`“${state.structures[name]!.label ?? name}”`}
+            resetKey={state.position}
+          >
+            <StructurePanel
+              name={name}
+              structure={state.structures[name]!}
+              focus={state.focus}
+              legend={legends[name]}
+            />
+          </ErrorBoundary>
         ))}
         <div className="no-print">
           <button

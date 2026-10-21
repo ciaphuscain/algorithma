@@ -7,6 +7,7 @@ import type { AnyAlgorithmModule } from "@/algorithms/types";
 import { TracePlayer } from "@/engine/player";
 import type { Trace } from "@/engine/protocol";
 import { createRng, randomSeed } from "@/lib/random";
+import { ErrorBoundary } from "@/ui/ErrorBoundary";
 import { TraceViewer } from "./TraceViewer";
 
 interface Run {
@@ -174,40 +175,42 @@ export function AlgorithmVisualizer({ moduleId }: { moduleId: string }) {
       </form>
 
       {run && (
-        <TraceViewer
-          player={run.player}
-          pseudocode={module.pseudocode}
-          footer={
-            <section className="panel" data-testid="result">
-              <h3 className="panel__title">Result</h3>
-              <p
-                style={{
-                  margin: "0 0 8px",
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "0.85rem",
-                  overflowWrap: "anywhere",
-                }}
-              >
-                {run.summary}
-              </p>
-              {run.checkError === null ? (
-                <p className="badge badge--ok" style={{ margin: 0 }}>
-                  ✓ Verified by an independent checker
+        <ErrorBoundary label="the visualizer">
+          <TraceViewer
+            player={run.player}
+            pseudocode={module.pseudocode}
+            footer={
+              <section className="panel" data-testid="result">
+                <h3 className="panel__title">Result</h3>
+                <p
+                  style={{
+                    margin: "0 0 8px",
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.85rem",
+                    overflowWrap: "anywhere",
+                  }}
+                >
+                  {run.summary}
                 </p>
-              ) : (
-                <p className="alert alert--error" role="alert" style={{ margin: 0 }}>
-                  Checker disagrees: {run.checkError}
+                {run.checkError === null ? (
+                  <p className="badge badge--ok" style={{ margin: 0 }}>
+                    ✓ Verified by an independent checker
+                  </p>
+                ) : (
+                  <p className="alert alert--error" role="alert" style={{ margin: 0 }}>
+                    Checker disagrees: {run.checkError}
+                  </p>
+                )}
+                <p className="field__help" style={{ margin: "8px 0" }}>
+                  Input: {run.origin}. {run.trace.meta.eventCount} events.
                 </p>
-              )}
-              <p className="field__help" style={{ margin: "8px 0" }}>
-                Input: {run.origin}. {run.trace.meta.eventCount} events.
-              </p>
-              <button type="button" className="btn btn--small" onClick={exportTrace}>
-                Export trace (JSON)
-              </button>
-            </section>
-          }
-        />
+                <button type="button" className="btn btn--small" onClick={exportTrace}>
+                  Export trace (JSON)
+                </button>
+              </section>
+            }
+          />
+        </ErrorBoundary>
       )}
     </div>
   );
