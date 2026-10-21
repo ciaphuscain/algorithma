@@ -36,14 +36,17 @@ function graphLegends(player: TracePlayer) {
   ];
   const sets: Record<string, { n: Set<string>; e: Set<string> }> = {};
   for (const [name, s] of Object.entries(player.trace.initial.structures)) {
-    if (s.kind === "graph")
+    if (s.kind === "tree") sets[name] = { n: new Set(["unvisited"]), e: new Set() };
+    else if (s.kind === "graph")
       sets[name] = {
         n: new Set(Object.values(s.nodeStatus)),
         e: new Set(Object.values(s.edgeStatus)),
       };
   }
   for (const e of player.trace.events) {
-    if (e.type === "graph.node") sets[e.s]?.n.add(e.status);
+    if (e.type === "graph.node" || e.type === "tree.node") sets[e.s]?.n.add(e.status);
+    else if (e.type === "structure.create" && e.structure.kind === "tree")
+      sets[e.s] = { n: new Set(["unvisited"]), e: new Set() };
     else if (e.type === "graph.edge") sets[e.s]?.e.add(e.status);
   }
   for (const [name, { n, e }] of Object.entries(sets)) {

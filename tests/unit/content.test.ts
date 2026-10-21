@@ -139,7 +139,8 @@ describe("catalog search", () => {
 
   it("finds entries by name, alias and tag", () => {
     expect(slugs({ query: "bubble" })).toEqual(["bubble-sort"]);
-    expect(slugs({ query: "BFS" })).toEqual(["bfs"]);
+    // Level-order traversal is tagged "bfs" too, but the algorithm named BFS ranks first.
+    expect(slugs({ query: "BFS" })).toEqual(["bfs", "tree-traversals"]);
     expect(slugs({ query: "levenshtein" })).toEqual(["edit-distance"]);
     expect(slugs({ query: "shortest path" })).toEqual(expect.arrayContaining(["bfs", "dijkstra"]));
     expect(slugs({ query: "stable sort" }).sort()).toEqual([
@@ -157,15 +158,19 @@ describe("catalog search", () => {
     expect(slugs({ maxWorst: "n log n" }).sort()).toEqual([
       "bfs",
       "binary-search",
+      "bst",
       "dfs",
       "dijkstra",
       "heap-sort",
       "kmp",
       "linear-search",
       "merge-sort",
+      "segment-tree",
       "topological-sort",
+      "tree-traversals",
+      "trie",
     ]);
-    expect(slugs({ maxWorst: "log n" })).toEqual(["binary-search"]);
+    expect(slugs({ maxWorst: "log n" }).sort()).toEqual(["binary-search", "segment-tree"]);
     expect(slugs({ domain: "searching-sorting" }).sort()).toEqual([
       "binary-search",
       "bubble-sort",
@@ -423,5 +428,50 @@ describe("worked examples agree with the engine", () => {
     ]);
     expect(runAlgorithm(m, { a: "abababa", b: "aba" }).output.matches).toEqual([0, 2, 4]);
     expect(runAlgorithm(m, { a: "aaaaab", b: "aaa" }).output.matches).toEqual([0, 1, 2]);
+  });
+
+  it("tree lessons: BST example, traversals table, trie counts, segment-tree sums", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    expect(
+      runAlgorithm(getModule("bst")!, {
+        insert: [50, 30, 70, 20, 40, 60, 80],
+        search: [60, 35],
+        remove: [20, 30, 50],
+      }).output,
+    ).toEqual({ inorder: [40, 60, 70, 80], found: [true, false], removed: [true, true, true] });
+    expect(
+      runAlgorithm(getModule("bst")!, { insert: [1, 2, 3, 4, 5, 6, 7], search: [], remove: [] })
+        .trace.meta.counters.comparisons,
+    ).toBe(21);
+    expect(runAlgorithm(getModule("tree-traversals")!, [1, 2, 3, 4, 5, null, 6]).output).toEqual({
+      preorder: [1, 2, 4, 5, 3, 6],
+      inorder: [4, 2, 5, 1, 3, 6],
+      postorder: [4, 5, 2, 6, 3, 1],
+      levelorder: [1, 2, 3, 4, 5, 6],
+    });
+    expect(
+      runAlgorithm(getModule("trie")!, {
+        words: ["car", "cart", "care", "cat", "dog"],
+        search: ["car", "ca", "dot"],
+        prefixes: ["ca", "do", "z"],
+      }).output,
+    ).toEqual({ found: [true, false, false], prefixFound: [true, true, false], nodes: 10 });
+    expect(
+      runAlgorithm(getModule("trie")!, {
+        words: ["to", "tea", "ten", "in"],
+        search: [],
+        prefixes: [],
+      }).output.nodes,
+    ).toBe(8);
+    expect(
+      runAlgorithm(getModule("segment-tree")!, {
+        values: [5, 8, 6, 3, 2, 7, 2, 6],
+        ops: [
+          { kind: "sum", l: 2, r: 5 },
+          { kind: "set", i: 3, value: 10 },
+          { kind: "sum", l: 0, r: 7 },
+        ],
+      }).output.sums,
+    ).toEqual([18, 46]);
   });
 });

@@ -11,6 +11,7 @@ import {
   type TraceEvent,
 } from "./protocol";
 import { TracePlayer } from "./player";
+import { checkTreeShape } from "./tree";
 import { TraceReplayError } from "./reduce";
 
 /**
@@ -24,6 +25,7 @@ export const TRACE_LIMITS = {
   maxGraphEdges: 5_000,
   maxGridCells: 40_000,
   maxStructures: 32,
+  maxTreeNodes: 500,
   maxStringLength: 500,
 } as const;
 
@@ -153,6 +155,41 @@ function checkStructure(raw: unknown, path: string, c: Collector): void {
       }
       return;
     }
+    case "tree": {
+      const { nodes, root, binary, nodeStatus, annotations } = raw;
+      if (typeof binary !== "boolean") c.add(`${path}.binary`, "must be boolean");
+      if (!isObject(nodes)) return c.add(`${path}.nodes`, "must be an object");
+      const ids = Object.keys(nodes);
+      if (ids.length > TRACE_LIMITS.maxTreeNodes)
+        return c.add(`${path}.nodes`, `exceeds ${TRACE_LIMITS.maxTreeNodes} nodes`);
+      if (!(root === null || (isStr(root) && root in nodes)))
+        c.add(`${path}.root`, "must be null or a node id");
+      for (const id of ids) {
+        const n = nodes[id];
+        if (!isStr(id) || !isObject(n) || !isScalar(n.value) || !Array.isArray(n.children)) {
+          c.add(`${path}.nodes.${id}`, "needs a scalar value and a children array");
+          continue;
+        }
+        if (!n.children.every((ch) => ch === null || (isStr(ch) && ch in nodes))) {
+          c.add(`${path}.nodes.${id}.children`, "must reference existing nodes or be null");
+        }
+        if (n.edgeLabel !== undefined && !isStr(n.edgeLabel))
+          c.add(`${path}.nodes.${id}.edgeLabel`, "must be a string");
+        for (const k of Object.keys(n)) {
+          if (!["value", "children", "edgeLabel"].includes(k))
+            c.add(`${path}.nodes.${id}.${k}`, "unknown field");
+        }
+      }
+      if (!isObject(nodeStatus) || !Object.values(nodeStatus).every(oneOf(NODE_STATUSES)))
+        c.add(`${path}.nodeStatus`, "invalid");
+      if (!isObject(annotations) || !Object.values(annotations).every(isStr))
+        c.add(`${path}.annotations`, "invalid");
+      if (c.errors.length === 0 && typeof binary === "boolean") {
+        const shape = checkTreeShape(raw as unknown as Parameters<typeof checkTreeShape>[0]);
+        if (shape) c.add(path, shape);
+      }
+      return;
+    }
     default:
       c.add(`${path}.kind`, `unknown structure kind ${JSON.stringify(raw.kind)}`);
   }
@@ -178,6 +215,13 @@ const EVENT_FIELDS: Record<TraceEvent["type"], Record<string, (v: unknown) => bo
   "grid.write": { s: isStr, r: isInt, c: isInt, value: isScalar },
   "grid.read": { s: isStr, cells: isCellList },
   "grid.mark": { s: isStr, cells: isCellList, mark: (v) => v === null || oneOf(GRID_MARKS)(v) },
+  "tree.add": { s: isStr, node: isStr, value: isScalar, parent: (v) => v === null || isStr(v) },
+  "tree.set": { s: isStr, node: isStr, value: isScalar },
+  "tree.compare": { s: isStr, node: isStr, value: isScalar },
+  "tree.node": { s: isStr, node: isStr, status: oneOf(NODE_STATUSES) },
+  "tree.annotate": { s: isStr, node: isStr, text: (v) => v === null || isStr(v) },
+  "tree.remove": { s: isStr, node: isStr },
+  "tree.splice": { s: isStr, node: isStr },
   "structure.create": { s: isStr, structure: isObject },
   "structure.remove": { s: isStr },
   step: {},
@@ -188,6 +232,7 @@ const OPTIONAL_EVENT_FIELDS: Partial<
 > = {
   "array.compare": { j: isInt, value: isScalar },
   "seq.pop": { index: isInt },
+  "tree.add": { slot: isInt, edgeLabel: isStr },
 };
 const META_FIELDS = new Set(["type", "line", "note", "vars", "count"]);
 
@@ -228,16 +273,25 @@ function checkEvent(raw: unknown, path: string, c: Collector): void {
 }
 
 /**
- * Upgrade older protocol versions to the current one. Version 1 is the first
- * published version, so there is nothing to migrate yet; future versions add a step
- * here (v1→v2, v2→v3 …) so that saved traces keep loading.
+ * Upgrade older protocol versions to the current one, one step at a time, so saved
+ * traces keep loading. Newer versions than this application are rejected: they may
+ * contain structures it cannot draw.
  */
-export function migrateTrace(raw: Record<string, unknown>): {
+const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string, unknown>> = {
+  // v2 only added the tree kind; every v1 trace is a valid v2 trace.
+  1: (raw) => ({ ...raw, version: 2 }),
+};
+
+export function migrateTrace(input: Record<string, unknown>): {
   trace?: Record<string, unknown>;
   error?: string;
 } {
-  if (raw.protocol !== TRACE_PROTOCOL)
-    return { error: `not an ALGORITHMA trace (protocol ${JSON.stringify(raw.protocol)})` };
+  if (input.protocol !== TRACE_PROTOCOL)
+    return { error: `not an ALGORITHMA trace (protocol ${JSON.stringify(input.protocol)})` };
+  let raw = input;
+  while (isInt(raw.version) && raw.version < TRACE_VERSION && MIGRATIONS[raw.version]) {
+    raw = MIGRATIONS[raw.version]!(raw);
+  }
   if (raw.version === TRACE_VERSION) return { trace: raw };
   if (isInt(raw.version) && raw.version > TRACE_VERSION) {
     return {

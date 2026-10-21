@@ -7,6 +7,10 @@ import { topologicalSort } from "./graph/topological-sort";
 import { lcs } from "./dp/lcs";
 import { knapsack } from "./dp/knapsack";
 import { kmp } from "./strings/kmp";
+import { bst } from "./trees/bst";
+import { binaryTreeTraversals } from "./trees/traversals";
+import { trie } from "./trees/trie";
+import { segmentTree } from "./trees/segment-tree";
 import { insertionSort } from "./sorting/insertion-sort";
 import { mergeSort } from "./sorting/merge-sort";
 import { quickSort } from "./sorting/quick-sort";
@@ -38,6 +42,10 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   lcs,
   knapsack,
   kmp,
+  binaryTreeTraversals,
+  bst,
+  trie,
+  segmentTree,
 ];
 
 const byId = new Map(ALGORITHM_MODULES.map((m) => [m.id, m]));

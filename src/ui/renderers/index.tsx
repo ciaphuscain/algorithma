@@ -4,6 +4,7 @@ import { ArrayView } from "./ArrayView";
 import { GraphLegend, GraphView } from "./GraphView";
 import { GridView } from "./GridView";
 import { SequenceView } from "./SequenceView";
+import { TreeView } from "./TreeView";
 
 /**
  * Renderer selection by structure kind. This is the whole contract between traces and
@@ -40,6 +41,16 @@ export function StructureView({
       return <SequenceView structure={structure} />;
     case "grid":
       return <GridView name={name} structure={structure} focus={focus} />;
+    case "tree":
+      return (
+        <>
+          <TreeView name={name} structure={structure} focus={focus} />
+          <GraphLegend
+            nodeStatuses={legend?.nodeStatuses ?? [...new Set(Object.values(structure.nodeStatus))]}
+            edgeStatuses={[]}
+          />
+        </>
+      );
   }
 }
 
@@ -48,6 +59,7 @@ const KIND_LABEL: Record<Structure["kind"], string> = {
   graph: "graph",
   sequence: "",
   grid: "table",
+  tree: "tree",
 };
 
 export function StructurePanel({

@@ -17,6 +17,8 @@ for (const path of [
   "/algorithms/topological-sort",
   "/algorithms/knapsack",
   "/algorithms/kmp",
+  "/algorithms/bst",
+  "/algorithms/trie",
   "/arena",
   "/studio",
 ]) {

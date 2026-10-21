@@ -17,6 +17,10 @@ import { lcsEntry } from "./entries/lcs";
 import { linearSearchEntry } from "./entries/linear-search";
 import { selectionSortEntry } from "./entries/selection-sort";
 import { topologicalSortEntry } from "./entries/topological-sort";
+import { bstEntry } from "./entries/bst";
+import { segmentTreeEntry } from "./entries/segment-tree";
+import { treeTraversalsEntry } from "./entries/tree-traversals";
+import { trieEntry } from "./entries/trie";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -36,6 +40,10 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   lcsEntry,
   knapsackEntry,
   kmpEntry,
+  treeTraversalsEntry,
+  bstEntry,
+  trieEntry,
+  segmentTreeEntry,
 ];
 
 const bySlug = new Map(ENTRIES.map((e) => [e.slug, e]));

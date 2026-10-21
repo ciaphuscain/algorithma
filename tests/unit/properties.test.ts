@@ -425,3 +425,110 @@ describe("topological sort properties", () => {
     );
   });
 });
+
+/* -------------------------------------------------------------------- trees */
+
+import { bst } from "@/algorithms/trees/bst";
+import { segmentTree } from "@/algorithms/trees/segment-tree";
+import { binaryTreeTraversals } from "@/algorithms/trees/traversals";
+import { trie } from "@/algorithms/trees/trie";
+import type { TreeStructure } from "@/engine/protocol";
+import { createRng } from "@/lib/random";
+
+const keys = fc.array(fc.integer({ min: -20, max: 20 }), { maxLength: 15 });
+
+describe("BST properties", () => {
+  it("behaves like a set, and the search-tree order holds at every intermediate step", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: -20, max: 20 }), { minLength: 1, maxLength: 15 }),
+        keys,
+        keys,
+        (ins, sea, rem) => {
+          const input = { insert: ins, search: sea.slice(0, 5), remove: rem.slice(0, 5) };
+          const { output, trace } = runAlgorithm(bst, input);
+          expect(bst.check(input, output)).toBeNull();
+          const player = new TracePlayer(trace);
+          for (let p = 0; p <= player.length; p += Math.max(1, Math.floor(player.length / 40))) {
+            const T = player.stateAt(p).structures.T as TreeStructure;
+            const ok = (id: string | null, lo: number, hi: number): boolean => {
+              if (id === null) return true;
+              const v = T.nodes[id]!.value as number;
+              return (
+                v >= lo &&
+                v <= hi &&
+                ok(T.nodes[id]!.children[0] ?? null, lo, v) &&
+                ok(T.nodes[id]!.children[1] ?? null, v, hi)
+              );
+            };
+            expect(ok(T.root, -Infinity, Infinity)).toBe(true);
+          }
+        },
+      ),
+      { numRuns: 60 },
+    );
+  });
+});
+
+describe("segment tree properties", () => {
+  it("answers range sums correctly and visits at most 4 nodes per level per query", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: -9, max: 9 }), { minLength: 1, maxLength: 16 }).chain((values) =>
+          fc.record({
+            values: fc.constant(values),
+            ops: fc.array(
+              fc
+                .integer({ min: 0, max: values.length - 1 })
+                .chain((l) =>
+                  fc
+                    .integer({ min: l, max: values.length - 1 })
+                    .map((r) => ({ kind: "sum" as const, l, r })),
+                ),
+              { minLength: 1, maxLength: 1 },
+            ),
+          }),
+        ),
+        (input) => {
+          const { output, trace } = runAlgorithm(segmentTree, input, { mode: "count" });
+          expect(segmentTree.check(input, output)).toBeNull();
+          const height = Math.ceil(Math.log2(input.values.length)) + 1;
+          expect(trace.meta.counters["nodes visited"]).toBeLessThanOrEqual(4 * height);
+        },
+      ),
+    );
+  });
+});
+
+describe("traversal and trie properties", () => {
+  it("traversals agree with the oracle on arbitrary tree shapes", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 1000 }),
+        fc.integer({ min: 1, max: 15 }),
+        (seed, size) => {
+          const tree = binaryTreeTraversals.input.random(createRng(seed), size);
+          const { output } = runAlgorithm(binaryTreeTraversals, tree);
+          expect(binaryTreeTraversals.check(tree, output)).toBeNull();
+          expect([...output.inorder].sort((a, b) => a - b)).toEqual(
+            [...output.preorder].sort((a, b) => a - b),
+          );
+        },
+      ),
+    );
+  });
+
+  it("trie answers match a set of words and its prefixes", () => {
+    const w = fc.string({ unit: fc.constantFrom("a", "b", "c"), minLength: 1, maxLength: 5 });
+    fc.assert(
+      fc.property(
+        fc.array(w, { minLength: 1, maxLength: 8 }),
+        fc.array(w, { maxLength: 4 }),
+        (words, queries) => {
+          const input = { words, search: queries, prefixes: queries };
+          expect(trie.check(input, runAlgorithm(trie, input).output)).toBeNull();
+        },
+      ),
+    );
+  });
+});

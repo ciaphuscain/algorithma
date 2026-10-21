@@ -1188,6 +1188,10 @@ pre.code {
   fill: var(--ink-2);
   font-family: var(--font-mono);
   font-size: 12px;
+  /* A halo keeps annotations legible where a tree's child edges pass beneath them. */
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
 }
 .g-weight {
   fill: var(--ink-2);

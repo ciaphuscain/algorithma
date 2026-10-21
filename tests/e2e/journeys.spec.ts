@@ -145,7 +145,7 @@ test("explore search and filters, shareable via URL", async ({ page }) => {
   await expect(page).toHaveURL(/query=shortest/);
   await page.getByLabel("Search").fill("");
   await page.getByLabel("Worst-case time at most").selectOption("n log n");
-  await expect(page.getByTestId("result-count")).toContainText("9 interactive entries");
+  await expect(page.getByTestId("result-count")).toContainText("13 interactive entries");
   await page.goto("/explore?domain=searching-sorting");
   await expect(page.getByTestId("results")).toContainText("Bubble Sort");
   await expect(page.getByTestId("results")).not.toContainText("Breadth-First");
@@ -163,7 +163,7 @@ test("roadmap lists the curriculum honestly", async ({ page }) => {
   await expect(page.locator('[data-number="220"]')).toContainText("Same as #218");
   await page.getByLabel("Search the curriculum").fill("");
   await page.getByLabel("Status").selectOption("available");
-  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 19 of 600");
+  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 27 of 600");
   await page.locator('[data-number="11"]').getByRole("link", { name: "Bubble Sort" }).click();
   await expect(page).toHaveURL(/\/algorithms\/bubble-sort/);
 });
@@ -197,6 +197,23 @@ test("priority-queue renderer: Dijkstra settles vertices by distance", async ({ 
   await expect(page.locator(".alert--error")).toContainText("below the minimum 0");
 });
 
+test("tree renderer: BST inserts, searches and deletes with a successor", async ({ page }) => {
+  await page.goto("/algorithms/bst");
+  const tree = page.locator('[data-kind="tree"]');
+  await expect(tree).toBeVisible();
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(tree.locator("[data-node]")).toHaveCount(4);
+  await expect(page.getByTestId("result")).toContainText("In-order: 40, 60, 70, 80");
+  await page.getByLabel("Then delete").fill("");
+  await page.getByLabel("Insert, in order").fill("1, 2, 3, 4");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(tree.locator("[data-node]")).toHaveCount(4);
+  await page.getByLabel("Insert, in order").fill("1, 2, 300");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText("99");
+});
+
 test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(String(e)));
@@ -218,6 +235,10 @@ test("every catalogue entry renders its visualizer without console errors", asyn
     "lcs",
     "knapsack",
     "kmp",
+    "tree-traversals",
+    "bst",
+    "trie",
+    "segment-tree",
   ]) {
     await page.goto(`/algorithms/${slug}`);
     await page.getByRole("button", { name: "Jump to end" }).click();

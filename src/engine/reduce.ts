@@ -6,8 +6,10 @@ import type {
   Structure,
   StructureKind,
   TraceEvent,
+  TreeStructure,
 } from "./protocol";
 import type { TraceState } from "./state";
+import { treeAdd, treeRemove, treeSplice } from "./tree";
 
 /** Raised when an event cannot be applied to the current state (e.g. index out of range). */
 export class TraceReplayError extends Error {
@@ -26,7 +28,23 @@ type KindMap = {
   graph: GraphStructure;
   sequence: SequenceStructure;
   grid: GridStructure;
+  tree: TreeStructure;
 };
+
+/** Run a shared tree operation, converting its errors into replay errors. */
+function treeOp(fn: () => void): void {
+  try {
+    fn();
+  } catch (err) {
+    throw new TraceReplayError((err as Error).message);
+  }
+}
+
+function treeNode(t: TreeStructure, node: string, s: string) {
+  const data = t.nodes[node];
+  if (!data) throw new TraceReplayError(`unknown node "${node}" in tree "${s}"`);
+  return data;
+}
 
 function get<K extends StructureKind>(state: TraceState, s: string, kind: K): KindMap[K] {
   const structure = state.structures[s];
@@ -233,6 +251,51 @@ function applyUnchecked(state: TraceState, e: TraceEvent): void {
         checkCell(g, r, c, e.s);
         g.marks[r]![c] = e.mark;
       }
+      break;
+    }
+    case "tree.add": {
+      const t = get(state, e.s, "tree");
+      treeOp(() => treeAdd(t, e.node, e.value, e.parent, e.slot, e.edgeLabel));
+      state.focus.push({ s: e.s, tone: "write", nodes: [e.node] });
+      bump(state, "writes");
+      break;
+    }
+    case "tree.set": {
+      const t = get(state, e.s, "tree");
+      treeNode(t, e.node, e.s).value = e.value;
+      state.focus.push({ s: e.s, tone: "write", nodes: [e.node] });
+      bump(state, "writes");
+      break;
+    }
+    case "tree.compare": {
+      const t = get(state, e.s, "tree");
+      treeNode(t, e.node, e.s);
+      state.focus.push({ s: e.s, tone: "compare", nodes: [e.node], value: e.value });
+      bump(state, "comparisons");
+      break;
+    }
+    case "tree.node": {
+      const t = get(state, e.s, "tree");
+      treeNode(t, e.node, e.s);
+      t.nodeStatus[e.node] = e.status;
+      state.focus.push({ s: e.s, tone: "visit", nodes: [e.node] });
+      break;
+    }
+    case "tree.annotate": {
+      const t = get(state, e.s, "tree");
+      treeNode(t, e.node, e.s);
+      if (e.text === null) delete t.annotations[e.node];
+      else t.annotations[e.node] = e.text;
+      break;
+    }
+    case "tree.remove": {
+      const t = get(state, e.s, "tree");
+      treeOp(() => treeRemove(t, e.node));
+      break;
+    }
+    case "tree.splice": {
+      const t = get(state, e.s, "tree");
+      treeOp(() => treeSplice(t, e.node));
       break;
     }
     case "structure.create": {

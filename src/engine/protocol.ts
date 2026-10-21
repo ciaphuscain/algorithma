@@ -15,7 +15,12 @@
  */
 
 export const TRACE_PROTOCOL = "algorithma.trace" as const;
-export const TRACE_VERSION = 1 as const;
+/**
+ * Version history:
+ *   1 — arrays, graphs, sequences, grids.
+ *   2 — adds the tree structure kind and tree.* events (v1 traces are valid v2 traces).
+ */
+export const TRACE_VERSION = 2 as const;
 
 export type Scalar = number | string | boolean | null;
 export type VarValue = Scalar | Scalar[];
@@ -121,7 +126,30 @@ export interface GridStructure {
   colHeaders?: string[];
 }
 
-export type Structure = ArrayStructure | GraphStructure | SequenceStructure | GridStructure;
+export interface TreeNodeData {
+  value: Scalar;
+  /**
+   * Ordered child ids. Binary trees always have exactly two slots, [left, right],
+   * with null for an empty slot, so a node's shape (left vs right child) is kept.
+   */
+  children: (string | null)[];
+  /** Label drawn on the edge from the parent, e.g. a trie character. */
+  edgeLabel?: string;
+}
+
+export interface TreeStructure {
+  kind: "tree";
+  label?: string;
+  binary: boolean;
+  root: string | null;
+  nodes: Record<string, TreeNodeData>;
+  nodeStatus: Record<string, NodeStatus>;
+  /** Short per-node annotation, e.g. a segment "[0,3]" or a height. */
+  annotations: Record<string, string>;
+}
+
+export type Structure =
+  ArrayStructure | GraphStructure | SequenceStructure | GridStructure | TreeStructure;
 export type StructureKind = Structure["kind"];
 
 /* -------------------------------------------------------------------- events */
@@ -154,6 +182,25 @@ export type TraceEvent = EventMeta &
     | { type: "grid.write"; s: string; r: number; c: number; value: Scalar }
     | { type: "grid.read"; s: string; cells: [number, number][] }
     | { type: "grid.mark"; s: string; cells: [number, number][]; mark: GridMark | null }
+    | {
+        type: "tree.add";
+        s: string;
+        node: string;
+        value: Scalar;
+        /** null makes the node the root (the tree must be empty). */
+        parent: string | null;
+        /** Child slot: 0 = left, 1 = right for binary trees; insertion index otherwise (default: append). */
+        slot?: number;
+        edgeLabel?: string;
+      }
+    | { type: "tree.set"; s: string; node: string; value: Scalar }
+    | { type: "tree.compare"; s: string; node: string; value: Scalar }
+    | { type: "tree.node"; s: string; node: string; status: NodeStatus }
+    | { type: "tree.annotate"; s: string; node: string; text: string | null }
+    /** Delete a node that has no children. */
+    | { type: "tree.remove"; s: string; node: string }
+    /** Delete a node with at most one child; that child takes its place. */
+    | { type: "tree.splice"; s: string; node: string }
     | { type: "structure.create"; s: string; structure: Structure }
     | { type: "structure.remove"; s: string }
     | { type: "step" }

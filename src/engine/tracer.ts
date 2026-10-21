@@ -14,8 +14,10 @@ import {
   type Trace,
   type TraceEvent,
   type TraceTruncation,
+  type TreeStructure,
   type VarValue,
 } from "./protocol";
+import { emptyTree, treeAdd, treeRemove, treeSplice } from "./tree";
 
 /**
  * Metadata for an operation. A function is evaluated only when the tracer records,
@@ -140,6 +142,12 @@ export class Tracer {
       items: [],
     });
     return new TracedSequence(this, name, discipline);
+  }
+
+  /** A rooted tree. Binary trees keep separate left/right slots. */
+  tree(name: string, options: { binary: boolean; label?: string }): TracedTree {
+    this.register(name, emptyTree(options.binary, options.label));
+    return new TracedTree(this, name, emptyTree(options.binary, options.label));
   }
 
   grid(
@@ -453,5 +461,122 @@ export class TracedGrid {
     if (r < 0 || c < 0 || r >= this.cells.length || c >= (this.cells[0]?.length ?? 0)) {
       throw new RangeError(`cell (${r}, ${c}) out of range for ${this.name}`);
     }
+  }
+}
+
+/**
+ * A traced tree. The wrapper keeps its own copy of the tree, edited by the same
+ * functions the reducer uses, so algorithms can read the structure they are drawing.
+ */
+export class TracedTree {
+  private counter = 0;
+
+  constructor(
+    private readonly tracer: Tracer,
+    readonly name: string,
+    private readonly t: TreeStructure,
+  ) {}
+
+  get root(): string | null {
+    return this.t.root;
+  }
+
+  get size(): number {
+    return Object.keys(this.t.nodes).length;
+  }
+
+  has(id: string): boolean {
+    return id in this.t.nodes;
+  }
+
+  value(id: string): Scalar {
+    return this.node(id).value;
+  }
+
+  num(id: string): number {
+    const v = this.value(id);
+    if (typeof v !== "number") throw new Error(`tree node ${id} does not hold a number`);
+    return v;
+  }
+
+  children(id: string): (string | null)[] {
+    return [...this.node(id).children];
+  }
+
+  /** Binary trees: the left (0) or right (1) child. */
+  child(id: string, slot: 0 | 1): string | null {
+    return this.node(id).children[slot] ?? null;
+  }
+
+  edgeLabel(id: string): string | undefined {
+    return this.node(id).edgeLabel;
+  }
+
+  /** Add a node and return its id (generated unless given). */
+  add(
+    value: Scalar,
+    parent: string | null,
+    slot?: number,
+    meta?: MetaArg,
+    options: { id?: string; edgeLabel?: string } = {},
+  ): string {
+    const id = options.id ?? `n${this.counter++}`;
+    treeAdd(this.t, id, value, parent, slot, options.edgeLabel);
+    this.tracer.emit(
+      {
+        type: "tree.add",
+        s: this.name,
+        node: id,
+        value,
+        parent,
+        ...(slot !== undefined ? { slot } : {}),
+        ...(options.edgeLabel !== undefined ? { edgeLabel: options.edgeLabel } : {}),
+      },
+      meta,
+      "writes",
+    );
+    return id;
+  }
+
+  set(id: string, value: Scalar, meta?: MetaArg): void {
+    this.node(id).value = value;
+    this.tracer.emit({ type: "tree.set", s: this.name, node: id, value }, meta, "writes");
+  }
+
+  /** Compare the node's value with `value`: negative, zero or positive. */
+  compare(id: string, value: Scalar, meta?: MetaArg): number {
+    const v = this.value(id);
+    this.tracer.emit({ type: "tree.compare", s: this.name, node: id, value }, meta, "comparisons");
+    if (typeof v === "number" && typeof value === "number")
+      return v < value ? -1 : v > value ? 1 : 0;
+    const [a, b] = [String(v), String(value)];
+    return a < b ? -1 : a > b ? 1 : 0;
+  }
+
+  status(id: string, status: NodeStatus, meta?: MetaArg): void {
+    this.node(id);
+    this.t.nodeStatus[id] = status;
+    this.tracer.emit({ type: "tree.node", s: this.name, node: id, status }, meta);
+  }
+
+  annotate(id: string, text: string | null, meta?: MetaArg): void {
+    this.node(id);
+    this.tracer.emit({ type: "tree.annotate", s: this.name, node: id, text }, meta);
+  }
+
+  remove(id: string, meta?: MetaArg): void {
+    treeRemove(this.t, id);
+    this.tracer.emit({ type: "tree.remove", s: this.name, node: id }, meta);
+  }
+
+  splice(id: string, meta?: MetaArg): void {
+    treeSplice(this.t, id);
+    this.tracer.emit({ type: "tree.splice", s: this.name, node: id }, meta);
+  }
+
+  private node(id: string) {
+    const n = this.t.nodes[id];
+    if (!n) throw new Error(`unknown tree node ${id} in ${this.name}`);
+    return n;
   }
 }

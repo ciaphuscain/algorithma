@@ -35,6 +35,21 @@ export function describeStructure(name: string, s: Structure): string {
     }
     case "sequence":
       return `${label} (${s.discipline}) = [${s.items.map(String).join(", ")}].`;
+    case "tree": {
+      if (s.root === null) return `${label}: empty tree.`;
+      const show = (id: string | null): string => {
+        if (id === null) return "·";
+        const n = s.nodes[id]!;
+        const v = `${n.edgeLabel !== undefined ? `${n.edgeLabel}:` : ""}${String(n.value)}`;
+        const kids = n.children;
+        if (kids.every((c) => c === null)) return v;
+        return `${v}(${kids.map(show).join(", ")})`;
+      };
+      const marked = Object.entries(s.nodeStatus)
+        .filter(([, st]) => st !== "unvisited")
+        .map(([id, st]) => `${String(s.nodes[id]?.value)}:${st}`);
+      return `${label} (tree) = ${show(s.root)}${marked.length ? `; ${marked.join(", ")}` : ""}.`;
+    }
     case "grid":
       return `${label}: ${s.rows}×${s.cols} table; rows ${s.cells.map((r) => `[${r.map((c) => (c === null ? "·" : String(c))).join(" ")}]`).join(" ")}.`;
   }

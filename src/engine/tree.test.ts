@@ -1,0 +1,154 @@
+import { describe, expect, it } from "vitest";
+import { TracePlayer } from "./player";
+import type { Trace, TreeStructure } from "./protocol";
+import { Tracer } from "./tracer";
+import { checkTreeShape, emptyTree, inorder, treeAdd, treeRemove, treeSplice } from "./tree";
+import { validateTrace } from "./validate";
+
+function bst(values: number[]): TreeStructure {
+  const t = emptyTree(true);
+  values.forEach((v, i) => {
+    const id = `n${i}`;
+    if (t.root === null) return treeAdd(t, id, v, null);
+    let cur = t.root;
+    for (;;) {
+      const slot = v < (t.nodes[cur]!.value as number) ? 0 : 1;
+      const next = t.nodes[cur]!.children[slot];
+      if (next == null) return treeAdd(t, id, v, cur, slot);
+      cur = next;
+    }
+  });
+  return t;
+}
+
+describe("tree operations", () => {
+  it("adds binary children into fixed left/right slots", () => {
+    const t = bst([8, 3, 10, 1, 6, 14]);
+    expect(inorder(t)).toEqual([1, 3, 6, 8, 10, 14]);
+    expect(t.nodes.n0!.children).toEqual(["n1", "n2"]);
+    expect(t.nodes.n2!.children).toEqual([null, "n5"]);
+    expect(checkTreeShape(t)).toBeNull();
+  });
+
+  it("rejects a second root, an occupied slot, a bad slot and duplicate ids", () => {
+    const t = bst([5, 2]);
+    expect(() => treeAdd(t, "x", 1, null)).toThrow(/already has a root/);
+    expect(() => treeAdd(t, "x", 1, "n0", 0)).toThrow(/already has a left child/);
+    expect(() => treeAdd(t, "x", 1, "n0", 2)).toThrow(/slot 0 \(left\) or 1 \(right\)/);
+    expect(() => treeAdd(t, "n1", 1, "n0", 1)).toThrow(/already exists/);
+  });
+
+  it("removes only leaves and splices nodes with one child into their parent's slot", () => {
+    const t = bst([8, 3, 10, 1, 6, 14]);
+    expect(() => treeRemove(t, "n1")).toThrow(/still has children/);
+    expect(() => treeSplice(t, "n0")).toThrow(/has 2 children/);
+    treeSplice(t, "n2"); // 10 has only a right child, 14
+    expect(t.nodes.n0!.children).toEqual(["n1", "n5"]);
+    treeRemove(t, "n3");
+    expect(inorder(t)).toEqual([3, 6, 8, 14]);
+    expect(checkTreeShape(t)).toBeNull();
+  });
+
+  it("splicing the root promotes its only child", () => {
+    const t = bst([5, 7]);
+    treeSplice(t, "n0");
+    expect(t.root).toBe("n1");
+    expect(inorder(t)).toEqual([7]);
+  });
+
+  it("general trees insert children in order and keep edge labels", () => {
+    const t = emptyTree(false);
+    treeAdd(t, "r", "", null);
+    treeAdd(t, "b", "", "r", undefined, "b");
+    treeAdd(t, "a", "", "r", 0, "a");
+    expect(t.nodes.r!.children).toEqual(["a", "b"]);
+    treeRemove(t, "a");
+    expect(t.nodes.r!.children).toEqual(["b"]);
+    expect(t.nodes.b!.edgeLabel).toBe("b");
+  });
+
+  it("detects broken shapes", () => {
+    const t = bst([2, 1, 3]);
+    expect(
+      checkTreeShape({ ...t, nodes: { ...t.nodes, n1: { value: 1, children: ["n0", null] } } }),
+    ).toMatch(/reachable twice/);
+    expect(
+      checkTreeShape({ ...t, nodes: { ...t.nodes, z: { value: 9, children: [null, null] } } }),
+    ).toMatch(/not reachable/);
+    expect(checkTreeShape({ ...t, root: null })).toMatch(/no root/);
+    expect(
+      checkTreeShape({ ...t, nodes: { ...t.nodes, n0: { value: 2, children: ["n1"] } } }),
+    ).toMatch(/two child slots/);
+  });
+});
+
+function treeTrace(): Trace {
+  const t = new Tracer({ id: "test-tree", version: 1 });
+  const T = t.tree("T", { binary: true });
+  const r = T.add(5, null);
+  const l = T.add(3, r, 0);
+  const rr = T.add(9, r, 1);
+  T.add(7, rr, 0);
+  T.compare(rr, 7, { note: "compare" });
+  T.status(l, "visited");
+  T.annotate(r, "root");
+  T.set(l, 4);
+  T.splice(rr);
+  T.remove(l);
+  return t.finish(null, null);
+}
+
+describe("tree traces", () => {
+  it("replay matches the tracer and steps backward to identical states", () => {
+    const trace = treeTrace();
+    const ref = new TracePlayer(trace, { keyframeInterval: 1 });
+    const player = new TracePlayer(trace, { keyframeInterval: 3 });
+    for (let p = player.length; p >= 0; p--) expect(player.stateAt(p)).toEqual(ref.stateAt(p));
+    const final = player.finalState().structures.T as TreeStructure;
+    expect(inorder(final)).toEqual([5, 7]);
+    expect(final.annotations).toEqual({ n0: "root" });
+    expect(player.finalState().counters).toMatchObject({ comparisons: 1, writes: 5 });
+  });
+
+  it("validates through JSON and rejects impossible tree edits", () => {
+    const raw = JSON.parse(JSON.stringify(treeTrace()));
+    expect(validateTrace(raw).ok).toBe(true);
+    raw.events.splice(1, 0, { type: "tree.add", s: "T", node: "zz", value: 1, parent: null });
+    raw.meta.eventCount += 1;
+    const result = validateTrace(raw);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.errors[0]).toMatch(/event #1: the tree already has a root/);
+  });
+
+  it("rejects malformed initial trees and unknown tree fields", () => {
+    const raw = JSON.parse(JSON.stringify(treeTrace()));
+    raw.initial.structures.T = {
+      kind: "tree",
+      binary: true,
+      root: "a",
+      nodes: { a: { value: 1, children: ["b", null] }, b: { value: 2, children: ["a", null] } },
+      nodeStatus: {},
+      annotations: {},
+    };
+    const result = validateTrace(raw);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.errors.join()).toMatch(/reachable twice/);
+    const raw2 = JSON.parse(JSON.stringify(treeTrace()));
+    raw2.events[0].colour = "red";
+    expect(validateTrace(raw2).ok).toBe(false);
+  });
+
+  it("migrates version-1 traces and rejects versions from the future", () => {
+    const t = new Tracer({ id: "old", version: 1 });
+    t.array("A", [2, 1]).swap(0, 1);
+    const v1 = { ...JSON.parse(JSON.stringify(t.finish(null, null))), version: 1 };
+    const migrated = validateTrace(v1);
+    expect(migrated.ok).toBe(true);
+    if (migrated.ok) expect(migrated.trace.version).toBe(2);
+    const v3 = { ...v1, version: 3 };
+    const rejected = validateTrace(v3);
+    expect(rejected.ok).toBe(false);
+    if (!rejected.ok)
+      expect(rejected.errors[0]).toMatch(/newer than this application supports \(2\)/);
+  });
+});
