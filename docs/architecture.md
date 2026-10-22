@@ -11,7 +11,7 @@ The difficult parts are not the pages. They are:
 1. **A generalised visualization.** Many unrelated algorithms (sorts, graph searches, DP tables, string matchers) must share one rendering system without per-algorithm animation code, and a newly contributed algorithm must be drawable without touching renderer code.
 2. **Faithfulness.** Every frame must be a state the algorithm actually reached. A smooth animation that diverges from the computation is worse than none.
 3. **Random access over long executions.** Stepping backwards and scrubbing must be fast even for traces with ~10⁵ events, without unbounded memory.
-4. **Running user code safely**, eventually. This is a hostile-input problem and is deliberately not solved by hand-waving (see [ADR-0003](decisions/0003-no-untrusted-execution-yet.md) and [security.md](security.md)).
+4. **Running user code safely.** This is a hostile-input problem and is deliberately not solved by hand-waving: a browser sandbox for the learner's own JavaScript exists and is adversarially tested, but ships switched off until it is independently reviewed (see [ADR-0003](decisions/0003-no-untrusted-execution-yet.md), [ADR-0007](decisions/0007-browser-code-sandbox.md) and [security.md](security.md)).
 5. **Trustworthy content at scale.** The curriculum has 600 items. Quality cannot depend on writing them all at once, and claims must be checkable.
 
 ## 2. Core workflows (in priority order)
@@ -88,25 +88,25 @@ input text ──parse──▶ validated input ──module.run(input, tracer)�
 
 ## 7. Critical risks
 
-| Risk                                     | Mitigation now                                                                              | Still open                                                                                                       |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Untrusted code execution                 | Not offered. Only reviewed modules run.                                                     | Needs an isolation design and adversarial tests before enabling ([security.md](security.md)).                    |
-| Visualization diverging from execution   | Traced wrappers; fidelity + determinism + backward/forward equality tests for every module. | Contributors can still emit misleading narration text; review catches that, tests do not.                        |
-| Abstraction too narrow for some families | Four structure kinds cover sorts, searches, BFS/DFS/shortest paths, DP tables.              | Trees, geometry and timelines need new kinds; adding one is a protocol minor version.                            |
-| Inaccurate educational content           | Draft labels; KaTeX, code samples and worked-example numbers are tested.                    | Prose needs expert review; no reviewer workflow yet.                                                             |
-| Large traces                             | Event budget, validator limits, √N keyframes.                                               | 9 MB JSON at 90k events (47% narration) — gzip gives 10×; compression for stored traces when persistence exists. |
+| Risk                                     | Mitigation now                                                                                                                                                          | Still open                                                                                                                        |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Untrusted code execution                 | Browser sandbox (opaque-origin iframe, CSP without network or eval, Worker with time and output limits), 11 adversarial e2e tests, off by default. Never on the server. | Independent review, Firefox/WebKit runs, memory exhaustion on small devices ([ADR-0007](decisions/0007-browser-code-sandbox.md)). |
+| Visualization diverging from execution   | Traced wrappers; fidelity + determinism + backward/forward equality tests for every module.                                                                             | Contributors can still emit misleading narration text; review catches that, tests do not.                                         |
+| Abstraction too narrow for some families | Five structure kinds cover sorts, searches, graph algorithms, DP tables and trees. The tree kind was added as protocol v2 without per-algorithm renderer code.          | Geometry and timelines need new kinds.                                                                                            |
+| Inaccurate educational content           | Draft labels; KaTeX, code samples and worked-example numbers are tested.                                                                                                | Prose needs expert review; no reviewer workflow yet.                                                                              |
+| Large traces                             | Event budget, validator limits, √N keyframes.                                                                                                                           | 9 MB JSON at 90k events (47% narration) — gzip gives 10×; compression for stored traces when persistence exists.                  |
 
 ## 8. Priorities
 
-- **P0 (done):** trace engine; 16 algorithms on four shared renderers (arrays, graphs incl. directed and weighted, queues/stacks/priority queues, DP tables); learning pages; explore; 600-item roadmap; Arena; Studio import with a tested renderer-reuse guarantee; accessibility baseline; tests and CI.
-- **P0 (next):** a tree structure kind (BSTs, heaps as trees, recursion trees), then the remaining Tier-1 items: Union-Find, Kruskal, Prim, Bellman–Ford, Floyd–Warshall, LIS, Trie, Segment Tree, Fenwick Tree.
+- **P0 (done):** trace engine (protocol v2); 28 algorithms on five shared renderers (arrays, graphs incl. directed and weighted, queues/stacks/priority queues, tables, trees); learning pages; explore; 600-item roadmap; Arena; Studio import with a tested renderer-reuse guarantee; accessibility baseline; error boundaries and CSP; browser code sandbox (off by default); tests and CI.
+- **P0 (next):** independent review of the code sandbox; expert review of lessons; heaps and recursion as trees. See [progress.md](progress.md) for the full backlog.
 - **P1:** exam-question bank growth, trace compression, learning paths from the prerequisite graph, persistence + accounts.
-- **Deferred:** user code execution (until isolation is built and tested), AI tutor (optional, never a dependency of core features), community contributions, educator tools.
+- **Deferred:** enabling user code execution (until the sandbox is independently reviewed), server-side execution, AI tutor (optional, never a dependency of core features), community contributions, educator tools.
 
 ## 9. Definition of the first release
 
-A user can find an algorithm, read it at the depth they choose, run it on their own valid input (invalid input is rejected with a reason), step forwards and backwards through a faithful trace with pseudocode, variables and operation counts, confirm the output was independently checked, and test their understanding — on desktop or phone, by keyboard or pointer, in light or dark mode. This holds today for all 16 interactive entries, which share one visualization pipeline.
+A user can find an algorithm, read it at the depth they choose, run it on their own valid input (invalid input is rejected with a reason), step forwards and backwards through a faithful trace with pseudocode, variables and operation counts, confirm the output was independently checked, and test their understanding — on desktop or phone, by keyboard or pointer, in light or dark mode. This holds today for all 28 interactive entries, which share one visualization pipeline.
 
 ## 10. Verification
 
-See [testing.md](testing.md). In short: the engine has unit tests; every registered algorithm passes a generic conformance suite; sorting and BFS have property-based tests; lesson code runs in tests; e2e tests cover the journeys above; axe checks every page in both colour schemes; CI runs all of it plus `npm audit`.
+See [testing.md](testing.md). In short: the engine has unit tests; every registered algorithm passes a generic conformance suite; property-based tests cover every algorithm family and cross-check algorithms against each other; the code sandbox has an adversarial suite; lesson code runs in tests; e2e tests cover the journeys above; axe checks every page in both colour schemes; CI runs all of it plus `npm audit`.

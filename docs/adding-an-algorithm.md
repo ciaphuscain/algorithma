@@ -1,6 +1,6 @@
 # Adding an algorithm
 
-This guide takes a new algorithm from code to a published, visualized, tested entry. It was written while adding the first nine modules; the pitfalls section lists bugs that actually happened.
+This guide takes a new algorithm from code to a published, visualized, tested entry. It was written while adding the first nine modules and has since been followed for nineteen more; the pitfalls section lists bugs that actually happened.
 
 You will touch at most four files, none of them engine or renderer code:
 
@@ -48,13 +48,14 @@ export const linearSearch: AlgorithmModule<SearchInput, number> = {
 
 Create structures, then mutate them **only through the returned wrappers**. Each wrapper performs the real operation and records it, so the trace cannot disagree with the computation.
 
-| Structure                | Create                                                         | Operations                                                                                                                             |
-| ------------------------ | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Array                    | `t.array(name, values, { label?, display? })`                  | `get`, `num`, `read`, `compare(i, j)`, `compareWith(i, value)`, `write`, `swap`, `mark(indices, mark)`, `pointer(name, index)`         |
-| Graph                    | `t.graph(name, { directed, nodes, edges })`                    | `node(id, status)`, `edge(id, status)`, `annotate(id, text)`                                                                           |
-| Queue / stack / priority | `t.sequence(name, discipline)`                                 | `push`, `pop` (queue/stack), `popAt(index)` (priority), `peekAll`                                                                      |
-| Table                    | `t.grid(name, rows, cols, fill, { rowHeaders?, colHeaders? })` | `get`, `num`, `read(cells)`, `write(r, c, v)`, `mark(cells, mark)`                                                                     |
-| —                        | —                                                              | `t.step(meta)` (narration only), `t.tally(counter)` (custom counter), `t.initVars`, `t.remove(name)`, `t.finish(input, output, meta?)` |
+| Structure                | Create                                                         | Operations                                                                                                                                                                                                                                                                                   |
+| ------------------------ | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Array                    | `t.array(name, values, { label?, display? })`                  | `get`, `num`, `read`, `compare(i, j)`, `compareWith(i, value)`, `write`, `swap`, `mark(indices, mark)`, `pointer(name, index)`                                                                                                                                                               |
+| Graph                    | `t.graph(name, { directed, nodes, edges })`                    | `node(id, status)`, `edge(id, status)`, `annotate(id, text)`                                                                                                                                                                                                                                 |
+| Queue / stack / priority | `t.sequence(name, discipline)`                                 | `push`, `pop` (queue/stack), `popAt(index)` (priority), `peekAll`                                                                                                                                                                                                                            |
+| Table                    | `t.grid(name, rows, cols, fill, { rowHeaders?, colHeaders? })` | `get`, `num`, `read(cells)`, `write(r, c, v)`, `mark(cells, mark)`                                                                                                                                                                                                                           |
+| Tree                     | `t.tree(name, { binary, label? })`                             | `add(value, parent, slot?, meta?, { id?, edgeLabel? })` returns the node id; `set`, `compare(id, value)`, `status`, `annotate`, `remove` (leaf), `splice` (≤ 1 child), `move(id, parent, slot?)`; reads: `root`, `size`, `has`, `value`, `num`, `children`, `child(id, 0 \| 1)`, `edgeLabel` |
+| —                        | —                                                              | `t.step(meta)` (narration only), `t.tally(counter)` (custom counter), `t.initVars`, `t.remove(name)`, `t.finish(input, output, meta?)`                                                                                                                                                       |
 
 Every operation takes optional metadata `{ line, note, vars }`. Pass a **function** returning the metadata when it builds strings: it is evaluated only when recording, so Arena's counting mode stays fast.
 
@@ -62,11 +63,11 @@ Structures created after the first event appear mid-trace (`structure.create`); 
 
 ### Input specs
 
-`parse` is the only way user text becomes input, so it owns every limit. Keep visual inputs small (≤ 40 array elements, ≤ 26 graph nodes): beyond that, steps stop being readable. Presets must round-trip through `format` → `parse` (the conformance suite checks this), and `random(rng, size)` must only produce inputs that `parse` accepts.
+`parse` is the only way user text becomes input, so it owns every limit. For graphs, `graphInput({ directed, weighted, limits, presets })` parses edge lists; pass `withSource: false` when the algorithm has no start vertex (Kruskal, Floyd–Warshall, topological sort), so the form does not ask for one. Keep visual inputs small (≤ 40 array elements, ≤ 26 graph nodes): beyond that, steps stop being readable. Presets must round-trip through `format` → `parse` (the conformance suite checks this), and `random(rng, size)` must only produce inputs that `parse` accepts.
 
 ### The oracle (`check`)
 
-Do not call your own implementation. Use a different method: a library sort, a brute-force search, Bellman–Ford for shortest paths, a memoised recursion for a DP. For problems with many valid answers (DFS orders, shortest-path trees), check the defining properties instead of one exact answer.
+Do not call your own implementation. Use a different method: a library sort, a brute-force search, Bellman–Ford for shortest paths, a memoised recursion for a DP. Pairs of algorithms for the same problem make good mutual oracles: Kruskal is checked by a naive Prim and Prim by a naive Kruskal; Bellman–Ford by Floyd–Warshall and the reverse (`src/algorithms/graph/common.ts`). For problems with many valid answers (DFS orders, shortest-path trees), check the defining properties instead of one exact answer.
 
 ## 2. Register
 
@@ -106,7 +107,7 @@ Open `/algorithms/<slug>`, step through the presets in both colour schemes, and 
 
 ## When no structure kind fits
 
-Trees, geometry and timelines need new kinds. Adding one is a protocol change, made once for all future algorithms of that family:
+Geometry and timelines still need new kinds. Adding one is a protocol change, made once for all future algorithms of that family. The tree kind was added this way (protocol v2: `src/engine/tree.ts`, `TreeView.tsx`) and then used unchanged by five algorithms:
 
 1. Add the type to `src/engine/protocol.ts` and bump `TRACE_VERSION` if old traces would be affected.
 2. Add its events to the reducer (`reduce.ts`), validator (`validate.ts`) and tracer wrappers (`tracer.ts`), with engine tests.
@@ -121,3 +122,7 @@ Do not add algorithm-specific code to renderers; a test fails if renderer source
 - **The final position is the `done` event.** Its narration is "Finished." unless you pass metadata to `finish`.
 - **Ties and iteration order.** Sort neighbours (`adjacency()` does) and break priority ties explicitly, or traces stop being deterministic.
 - **Dangling links.** `related` must name published entries; a test enforces it.
+- **Stale variables.** Variables persist until overwritten, so a value from the previous iteration can sit next to new ones (Kruskal showed the last edge's root beside the current edge). Set every per-iteration variable, or `null`, on the first event of the iteration.
+- **Presets outside your own limits.** A preset with 101 in an input limited to ±99 failed the round-trip check. Keep presets inside the limits `parse` enforces.
+- **`initVars` only works before the first event.** Inside a loop, announce changing state with `t.step({ vars })` instead.
+- **Rows in input order.** Floyd–Warshall first labelled its table A, C, B, D because vertices appear in the order the edge list mentions them. Sort ids where a reader expects order.

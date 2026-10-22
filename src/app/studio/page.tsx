@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { StudioClient } from "@/ui/StudioClient";
+import { CODE_RUNNER_ENABLED } from "@/lib/features";
 
 export const metadata: Metadata = {
   title: "Studio",
@@ -54,13 +55,17 @@ export default function StudioPage() {
           <Link href="/algorithms/binary-search">binary search</Link> visualizer, which uses the
           same pointer and mark operations as the example above.
         </p>
-        <h2>Why you cannot paste code here (yet)</h2>
+        <h2>Why the Studio takes traces, not code</h2>
         <p>
-          Running code typed into a web page safely needs an isolation boundary. ALGORITHMA will not
-          execute user code until that boundary is built and tested against hostile programs
-          (infinite loops, memory exhaustion, data exfiltration). Traces are data, not code: they
-          are checked against size limits, a strict schema and a full replay before anything is
-          drawn, so a malformed or malicious file is rejected with a precise error instead.
+          Running code typed into a web page safely needs an isolation boundary. A browser sandbox
+          for your own JavaScript has been built and tested against hostile programs (infinite
+          loops, network access, memory exhaustion, output floods);{" "}
+          {CODE_RUNNER_ENABLED
+            ? "in this build you can use it from the Code tab of every algorithm."
+            : "it is switched off in this build until it has had an independent security review."}{" "}
+          The Studio itself accepts traces, which are data, not code: they are checked against size
+          limits, a strict schema and a full replay before anything is drawn, so a malformed or
+          malicious file is rejected with a precise error instead.
         </p>
       </section>
     </div>
