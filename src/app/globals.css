@@ -1532,3 +1532,49 @@ pre.code {
   width: 24px;
   height: 12px;
 }
+
+/* ------------------------------------------------------------- code runner */
+
+/* The sandbox iframe has no visible content; it only hosts the worker. */
+.sandbox-frame {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.runner__title {
+  margin: 24px 0 8px;
+  font-size: 1rem;
+}
+.runner__editor {
+  min-height: 180px;
+  line-height: 1.5;
+  tab-size: 2;
+}
+.runner__output {
+  min-height: 64px;
+  max-height: 320px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.runner__hint {
+  color: var(--ink-3);
+}
+.runner__line--warn {
+  color: var(--tone-compare);
+}
+.runner__line--error {
+  color: var(--tone-swap);
+}
+.runner__status {
+  min-height: 1.5em;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+.runner__status--problem {
+  color: var(--tone-swap);
+}

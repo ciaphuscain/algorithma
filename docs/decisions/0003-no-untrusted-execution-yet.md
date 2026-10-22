@@ -1,6 +1,6 @@
 # ADR-0003: Do not execute user-supplied code until an isolation boundary exists and is tested
 
-- Status: accepted (2026-10-19)
+- Status: accepted (2026-10-19). Option 1 below is implemented by [ADR-0007](0007-browser-code-sandbox.md), off by default.
 
 ## Context
 

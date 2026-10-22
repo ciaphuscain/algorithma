@@ -9,6 +9,7 @@ for (const path of [
   "/algorithms/bubble-sort",
   "/algorithms/bfs",
   "/algorithms/bfs#exam",
+  "/algorithms/kruskal#code",
   "/algorithms/merge-sort",
   "/algorithms/binary-search",
   "/algorithms/dfs",

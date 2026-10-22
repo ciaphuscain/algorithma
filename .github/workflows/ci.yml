@@ -29,7 +29,9 @@ jobs:
       # Python reference implementations shown in lessons).
       - run: npm test
       - run: npm audit --audit-level=high
-      - run: npm run build
+      # The e2e build switches on the code runner so its adversarial suite runs;
+      # the default build ships with it off (ADR-0007).
+      - run: npm run build:e2e
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4

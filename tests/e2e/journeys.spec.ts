@@ -133,8 +133,12 @@ test("exam notes and code tabs", async ({ page }) => {
   await page.getByRole("tab", { name: "Code" }).click();
   await expect(page.getByText("from collections import deque")).toBeVisible();
   await page.getByRole("button", { name: "JavaScript" }).click();
-  await expect(page.getByText("function bfs(adj, s)")).toBeVisible();
+  await expect(page.getByLabel("JavaScript implementation")).toContainText("function bfs(adj, s)");
   await expect(page.getByText(/Tested on \d+ cases/)).toBeVisible();
+  // The e2e build enables the runner, pre-filled with the same code and a call.
+  await expect(page.locator("#runner-code")).toHaveValue(
+    /function bfs\(adj, s\)[\s\S]*console\.log\(bfs\(/,
+  );
 });
 
 test("explore search and filters, shareable via URL", async ({ page }) => {

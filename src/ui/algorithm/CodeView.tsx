@@ -2,6 +2,25 @@
 
 import { useState } from "react";
 import type { Implementation } from "@/content/types";
+import { CodeRunner } from "@/ui/code/CodeRunner";
+
+/** A JavaScript expression for a test argument (JSON, plus non-finite numbers). */
+export function jsLiteral(v: unknown): string {
+  if (typeof v === "number" && !Number.isFinite(v)) return String(v);
+  if (Array.isArray(v)) return `[${v.map(jsLiteral).join(", ")}]`;
+  if (v !== null && typeof v === "object")
+    return `{ ${Object.entries(v)
+      .map(([k, x]) => `${JSON.stringify(k)}: ${jsLiteral(x)}`)
+      .join(", ")} }`;
+  return JSON.stringify(v) ?? "undefined";
+}
+
+/** The reference implementation followed by a call on its first test case. */
+export function starterProgram(impl: Implementation): string {
+  const first = impl.tests[0];
+  const call = first ? `${impl.entry}(${first.args.map(jsLiteral).join(", ")})` : `${impl.entry}()`;
+  return `${impl.code.trimEnd()}\n\n// Try it: change the input, or the code, and press Run.\nconsole.log(${call});\n`;
+}
 
 const LANGUAGE_LABEL: Record<Implementation["language"], string> = {
   python: "Python",
@@ -87,10 +106,18 @@ export function CodeView({ implementations }: { implementations: Implementation[
           </table>
         </div>
       </details>
-      <p className="field__help" style={{ marginTop: 12 }}>
-        Running your own code in the browser is not enabled yet: user code needs an isolation
-        boundary first (see the Studio page and docs/security.md).
-      </p>
+      <h3 className="runner__title">Try it yourself</h3>
+      {impl.language === "javascript" ? (
+        <CodeRunner
+          key={impl.entry}
+          initialCode={starterProgram(impl)}
+          label={`Your copy of ${impl.entry}`}
+        />
+      ) : (
+        <p className="field__help">
+          Python runs only in the test suite. Switch to JavaScript to run and edit the code here.
+        </p>
+      )}
     </div>
   );
 }
