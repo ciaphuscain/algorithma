@@ -37,7 +37,7 @@ Build a runner for the visitor's own JavaScript that executes entirely in their 
 | Markup in output                                                                                                        | Shown as text; no element created; page unchanged                                                                                                               |
 | Forged `postMessage` from the program                                                                                   | Ignored; run outcome unchanged                                                                                                                                  |
 | Fork bomb (6 nested looping workers)                                                                                    | Stopped at the limit; all workers gone afterwards                                                                                                               |
-| Unbounded allocation                                                                                                    | Stopped at the limit; page did not crash; worker terminated within 30 s (see below); next run works                                                             |
+| Holding 256 MB, then looping                                                                                            | Stopped at the limit; worker gone; page did not crash; next run works. Unbounded allocation is **not** contained (below)                                        |
 
 Unit tests (`tests/unit/sandbox.test.ts`) cover the console formatter (by evaluating the exact source text that ships), line-number mapping, the CSP string, and message validation.
 
@@ -45,11 +45,11 @@ Unit tests (`tests/unit/sandbox.test.ts`) cover the console formatter (by evalua
 
 - After `terminate()`, a worker in a tight loop kept a CPU core busy for about **2.2 s** (2,217–2,221 ms in three trials) before Chromium stopped it. So a run can use one core for roughly 5 s in total.
 - An unbounded allocation loop reached about **2 GB** of renderer memory before termination, then returned to about 150 MB. Locally its worker was gone about 2 s after the run stopped (1.5–2.2 s over ten trials, including variants that pushed the renderer past 2.8 GB).
-- On GitHub's `ubuntu-latest` runner, the same program's worker was **still running 8 s** after the run stopped, in the first CI run of the suite. The cause is not confirmed: terminating a worker whose heap is nearly full can wait for garbage collection, and the runner may allocate faster than this container. The test now allows 30 s and prints the measured time in the CI log.
+- On GitHub's `ubuntu-latest` runner the same program behaved differently in both CI runs that tried it. In the first, it was stopped at the limit but its worker was **still running 8 s later**. In the second, the page itself slowed so much that the 3 s limit was **not reported within 15 s** (the test runner managed 7 checks of the page in that time). The cause is not confirmed; machine-wide memory pressure (the runner, unlike this container, may have swap) fits both. Either way the parent page's timer, which enforces the limit, could not act in time. The suite therefore tests a bounded allocation, which it can check reliably, and unbounded allocation is listed below as not protected against.
 
 ## What this does not protect against
 
-- **Memory exhaustion on small devices.** Browsers offer no per-worker memory limit. A program can allocate gigabytes within the time limit and may crash the tab on a memory-constrained device, and its worker can take several seconds longer than a plain loop to stop. Impact is limited to the visitor's own tab.
+- **Unbounded memory use.** Browsers offer no per-worker memory limit. A program that allocates without bound can grow to gigabytes, can slow the whole tab (and, under memory pressure, the machine) so that the time limit is not enforced on time, and may crash the tab. This was observed on GitHub's CI runner. Impact is the visitor's own tab and machine; nothing leaves the sandbox.
 - **Browser vulnerabilities.** The boundary is the browser's sandbox and CSP implementation; an exploit for those is out of scope.
 - **Side channels.** The sandboxed iframe may share a renderer process with the app, so Spectre-class side channels are not mitigated. This is acceptable only because the app currently holds no secrets (no accounts or tokens). Revisit before adding any.
 - **Other browsers.** Only Chromium is tested. CSP inheritance into blob workers and worker termination timing must be checked in Firefox and WebKit.
@@ -60,7 +60,7 @@ Unit tests (`tests/unit/sandbox.test.ts`) cover the console formatter (by evalua
 
 1. An independent security review of `src/lib/sandbox/` and this ADR.
 2. Run `tests/e2e/sandbox.spec.ts` on Firefox and WebKit, and fix or document differences.
-3. Decide whether the memory risk is acceptable, or shorten the time limit.
+3. Decide whether the unbounded-memory risk is acceptable. A shorter time limit reduces how much a program can allocate but does not remove the risk; only an out-of-process or server-side runner with a real memory cap would.
 
 ## Consequences
 
