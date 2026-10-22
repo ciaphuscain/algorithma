@@ -219,11 +219,21 @@ test("a fork bomb of nested workers dies with the sandbox", async ({ page }) => 
 test("unbounded memory use is cut off by the time limit without crashing the page", async ({
   page,
 }) => {
+  test.setTimeout(60_000);
   let crashed = false;
   page.on("crash", () => (crashed = true));
   const r = await run(page, "const keep = [];\nfor (;;) keep.push(new Array(1e6).fill(1));");
   expect(["timeout", "error"]).toContain(r.status);
-  await expectNoWorkers(page);
-  expect(crashed).toBe(false);
+  // On GitHub's runner this worker outlived the 8 s allowed for plain loops (locally it
+  // stops in about 2 s); termination may be waiting on garbage collection of a nearly
+  // full heap. Require termination within a wider bound, fail at once if the page
+  // crashed, and record the time measured (ADR-0007).
+  const stopped = Date.now();
+  await expect
+    .poll(() => (crashed ? "page crashed" : page.workers().length), { timeout: 30_000 })
+    .toBe(0);
+  const ms = Date.now() - stopped;
+  test.info().annotations.push({ type: "worker terminated after", description: `${ms} ms` });
+  console.log(`[sandbox] memory-bound worker terminated ${ms} ms after the run stopped`);
   expect((await run(page, 'console.log("alive")')).output.trim()).toBe("alive");
 });
