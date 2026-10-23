@@ -30,6 +30,8 @@ for (const path of [
   "/algorithms/suffix-automaton",
   "/algorithms/binary-lifting",
   "/algorithms/memoization-tabulation",
+  "/algorithms/miller-rabin",
+  "/algorithms/fft",
   "/arena",
   "/studio",
 ]) {

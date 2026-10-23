@@ -163,9 +163,11 @@ describe("catalog search", () => {
       "binary-search",
       "bridges-articulation",
       "bst",
+      "crt",
       "dfs",
       "dijkstra",
       "fenwick-tree",
+      "fft",
       "heap-sort",
       "heavy-light",
       "kmp",
@@ -176,8 +178,10 @@ describe("catalog search", () => {
       "manacher",
       "matrix-exponentiation",
       "merge-sort",
+      "miller-rabin",
       "monotonic-queue",
       "monotonic-stack",
+      "ntt",
       "prefix-sums",
       "prim",
       "segment-tree",
@@ -196,8 +200,10 @@ describe("catalog search", () => {
     ]);
     expect(slugs({ maxWorst: "log n" }).sort()).toEqual([
       "binary-search",
+      "crt",
       "fenwick-tree",
       "matrix-exponentiation",
+      "miller-rabin",
       "segment-tree",
       "union-find",
     ]);
@@ -225,6 +231,8 @@ describe("catalog search", () => {
     expect(entryForItem(247)?.slug).toBe("binary-lifting"); // LCA, duplicate of #188
     expect(entryForItem(249)?.slug).toBe("heavy-light"); // duplicate of #190
     expect(entryForItem(252)?.slug).toBe("memoization-tabulation");
+    expect(entryForItem(371)?.slug).toBe("miller-rabin");
+    expect(entryForItem(393)?.slug).toBe("ntt");
     expect(entryForItem(218)).toBeUndefined(); // Borůvka: planned
     expect(getEntry("nope")).toBeUndefined();
   });
@@ -902,5 +910,83 @@ describe("worked examples agree with the engine", () => {
     ).toEqual([". . .", "1 1 .", "1 2 1", ". 3 3", ". . 6"]);
     const classic = run("memoization-tabulation", "classic").output;
     expect([classic.calls, classic.naiveCalls]).toEqual([19, 39]);
+  });
+
+  it("number theory lessons: worked examples and practice answers match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { TracePlayer } = await import("@/engine/player");
+    const run = (id: string, presetId: string) => {
+      const m = getModule(id)!;
+      return runAlgorithm(m, m.input.presets.find((p) => p.id === presetId)!.value);
+    };
+    type Trace = {
+      events: { type: string; s?: string; structure?: unknown; vars?: Record<string, unknown> }[];
+    };
+    const created = (trace: Trace, name: string) =>
+      (
+        trace.events.find((e) => e.type === "structure.create" && e.s === name)?.structure as {
+          values: unknown[];
+        }
+      ).values;
+
+    const carmichael = run("miller-rabin", "carmichael");
+    expect(carmichael.output.rows).toEqual([[263, 166, 67, 1]]);
+    expect(carmichael.output.witness).toBe(2);
+    expect(carmichael.trace.events.find((e) => e.vars && "d" in e.vars)?.vars).toMatchObject({
+      d: 35,
+      s: 4,
+    });
+    expect(run("miller-rabin", "liar").output).toMatchObject({
+      composite: false,
+      rows: [[1]],
+      certain: false,
+    });
+    expect(run("miller-rabin", "pseudoprime").output.witness).toBe(11);
+
+    const rho = run("pollard-rho", "classic");
+    const rhoGrid = new TracePlayer(rho.trace).finalState().structures.R;
+    expect(rhoGrid?.kind === "grid" ? rhoGrid.cells : []).toEqual([
+      [5, 26, 21, 1],
+      [26, 7474, 7448, 1],
+      [677, 871, 194, 97],
+    ]);
+    const retry = run("pollard-rho", "retry");
+    expect(retry.output).toEqual({ factor: 5, c: 2, iterations: 5 });
+    const retryGrid = new TracePlayer(retry.trace).finalState().structures.R;
+    const firstAttempt =
+      retryGrid?.kind === "grid"
+        ? retryGrid.cells.filter((_, i) => retryGrid.rowHeaders![i]!.startsWith("c=1"))
+        : [];
+    expect(firstAttempt.at(-1)?.[3]).toBe(25);
+
+    const sunzi = run("crt", "classic");
+    const crtGrid = new TracePlayer(sunzi.trace).finalState().structures.S;
+    expect(crtGrid?.kind === "grid" ? crtGrid.cells : []).toEqual([
+      [2, 3, 1, 2, 2, 3],
+      [3, 5, 1, 2, 8, 15],
+      [2, 7, 1, 1, 23, 105],
+    ]);
+    expect(run("crt", "shared").output).toEqual({ x: 23, M: 30 });
+    expect(run("crt", "none").output.x).toBeNull();
+
+    const exact = run("ntt", "classic");
+    const ns = new TracePlayer(exact.trace).finalState().structures;
+    expect(ns.A?.kind === "array" ? ns.A.values : []).toEqual([6, 825076915, 2, 173167434]);
+    expect(ns.B?.kind === "array" ? ns.B.values : []).toEqual([9, 565325767, 998244352, 432918594]);
+    expect(created(exact.trace, "C")).toEqual([54, 173167418, 998244351, 825076899]);
+    expect(exact.output.product).toEqual([4, 13, 22, 15]);
+    const degree5 = runAlgorithm(getModule("ntt")!, {
+      a: [1, 1, 1, 1, 1, 1],
+      b: [1, 1, 1, 1, 1, 1],
+    });
+    expect(degree5.output.N).toBe(16);
+
+    const approx = run("fft", "classic");
+    const fs = new TracePlayer(approx.trace).finalState().structures;
+    expect(fs.A?.kind === "array" ? fs.A.values : []).toEqual(["6", "−2−2i", "2", "−2+2i"]);
+    expect(fs.B?.kind === "array" ? fs.B.values : []).toEqual(["9", "4−5i", "−1", "4+5i"]);
+    expect(created(approx.trace, "C")).toEqual(["54", "−18+2i", "−2", "−18−2i"]);
+    expect(approx.output.maxError).toBeLessThan(1e-15);
+    expect(run("ntt", "full").trace.meta.counters.butterflies).toBe(3 * 12);
   });
 });

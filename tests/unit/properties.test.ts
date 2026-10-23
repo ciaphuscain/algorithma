@@ -1038,3 +1038,94 @@ describe("binary lifting, heavy-light decomposition, matrix powers, memoization"
       }
   });
 });
+
+/* ------------------------------------------------------------- number theory */
+
+import { millerRabin } from "@/algorithms/maths/miller-rabin";
+import { pollardRho } from "@/algorithms/maths/pollard-rho";
+import { crt } from "@/algorithms/maths/crt";
+import { ntt } from "@/algorithms/maths/ntt";
+import { fft } from "@/algorithms/maths/fft";
+
+describe("number theory properties", () => {
+  const smallestFactor = (n: number) => {
+    for (let p = 2; p * p <= n; p++) if (n % p === 0) return p;
+    return n;
+  };
+
+  it("Miller–Rabin with bases 2–13 agrees with trial division on random odd n up to 10^9", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 2, max: 5e8 }), (k) => {
+        const input = { n: 2 * k + 1, bases: [2, 3, 5, 7, 11, 13] };
+        const { output } = runAlgorithm(millerRabin, input, { mode: "count" });
+        expect(millerRabin.check(input, output)).toBeNull();
+        expect(output.certain).toBe(true);
+        expect(output.composite).toBe(smallestFactor(input.n) !== input.n);
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("Pollard's rho: a proper factor, within c · p rounds (p = smallest prime factor)", () => {
+    const composites = fc
+      .integer({ min: 4, max: 499_999 })
+      .map((k) => 2 * k + 1)
+      .filter((n) => smallestFactor(n) !== n);
+    fc.assert(
+      fc.property(composites, fc.integer({ min: 0, max: 8 }), (n, x0) => {
+        const input = { n, x0 };
+        const { output } = runAlgorithm(pollardRho, input, { mode: "count" });
+        expect(pollardRho.check(input, output)).toBeNull();
+        expect(output.iterations).toBeLessThanOrEqual(output.c * smallestFactor(n));
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("CRT: pairwise coprime moduli always have a solution modulo their product", () => {
+    const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31];
+    const systems = fc
+      .shuffledSubarray(primes, { minLength: 1, maxLength: 5 })
+      .chain((ms) =>
+        fc.tuple(...ms.map((m) => fc.integer({ min: 0, max: m - 1 }).map((a) => ({ a, m })))),
+      );
+    fc.assert(
+      fc.property(systems, (system) => {
+        const { output } = runAlgorithm(crt, system, { mode: "count" });
+        expect(crt.check(system, output)).toBeNull();
+        expect(output.M).toBe(system.reduce((p, { m }) => p * m, 1));
+      }),
+      { numRuns: 300 },
+    );
+    fc.assert(
+      fc.property(
+        fc.array(fc.tuple(fc.integer({ min: 2, max: 60 }), fc.nat()), {
+          minLength: 1,
+          maxLength: 5,
+        }),
+        (pairs) => {
+          const system = pairs.map(([m, a]) => ({ a: a % m, m }));
+          expect(crt.check(system, runAlgorithm(crt, system, { mode: "count" }).output)).toBeNull();
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("NTT and FFT agree with the schoolbook product, using (N/2) log₂ N butterflies per transform", () => {
+    const poly = fc.array(fc.integer({ min: 0, max: 9 }), { minLength: 1, maxLength: 8 });
+    fc.assert(
+      fc.property(poly, poly, (a, b) => {
+        const input = { a, b };
+        const exact = runAlgorithm(ntt, input, { mode: "count" });
+        const approx = runAlgorithm(fft, input, { mode: "count" });
+        expect(ntt.check(input, exact.output)).toBeNull();
+        expect(fft.check(input, approx.output)).toBeNull();
+        expect(approx.output.product).toEqual(exact.output.product);
+        const N = exact.output.N;
+        expect(exact.trace.meta.counters.butterflies ?? 0).toBe(3 * (N / 2) * Math.log2(N));
+      }),
+      { numRuns: 300 },
+    );
+  });
+});

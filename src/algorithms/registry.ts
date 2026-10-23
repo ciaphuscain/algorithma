@@ -46,6 +46,11 @@ import { binaryLifting } from "./trees/binary-lifting";
 import { heavyLight } from "./trees/heavy-light";
 import { matrixExponentiation } from "./maths/matrix-exponentiation";
 import { memoVsTab } from "./dp/memo-vs-tab";
+import { millerRabin } from "./maths/miller-rabin";
+import { pollardRho } from "./maths/pollard-rho";
+import { crt } from "./maths/crt";
+import { ntt } from "./maths/ntt";
+import { fft } from "./maths/fft";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -100,6 +105,11 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   heavyLight,
   matrixExponentiation,
   memoVsTab,
+  millerRabin,
+  pollardRho,
+  crt,
+  ntt,
+  fft,
 ];
 
 const byId = new Map(ALGORITHM_MODULES.map((m) => [m.id, m]));

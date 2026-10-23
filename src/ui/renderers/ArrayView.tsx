@@ -18,6 +18,12 @@ const FOCUS_WORD: Partial<Record<FocusTone, string>> = {
   write: "write",
 };
 
+/** Advance width of a monospace character, in ems. */
+const CHAR_EM = 0.62;
+const MAX_CELL = 110;
+const asBarsDisplay = (values: readonly unknown[], display: ArrayStructure["display"]) =>
+  values.every((v) => typeof v === "number") && display !== "cells";
+
 export function ArrayView({
   name,
   structure,
@@ -37,11 +43,17 @@ export function ArrayView({
     if (f.value !== undefined) compareValue = f.value;
   }
 
-  const numeric = values.every((v) => typeof v === "number");
-  const asBars = numeric && structure.display !== "cells";
+  const asBars = asBarsDisplay(values, structure.display);
   // A fixed 760-unit coordinate space keeps text and bars the same size for every n;
   // small arrays are centred rather than stretched.
-  const slot = Math.max(8, Math.min(56, 760 / Math.max(n, 1)));
+  const labels = values.map((v) => (v === null ? "" : String(v)));
+  // Cells widen to fit long labels (e.g. 9-digit residues), up to a limit; past that the
+  // label's font shrinks instead of spilling into the next cell.
+  const longest = Math.max(1, ...labels.map((l) => l.length));
+  const fitSlot = asBarsDisplay(values, structure.display)
+    ? 0
+    : Math.min(MAX_CELL, (longest * CHAR_EM * 14) / 0.8 + 8);
+  const slot = Math.max(8, Math.min(56, 760 / Math.max(n, 1)), fitSlot);
   const width = Math.max(760, slot * n);
   const x0 = (width - slot * n) / 2;
   const showValues = slot >= 18;
@@ -95,9 +107,13 @@ export function ArrayView({
                 x={x + w / 2}
                 y={asBars ? (nums[i]! >= 0 ? y - 4 : y + h + 12) : top + chartH / 2 + 5}
                 textAnchor="middle"
-                fontSize={Math.min(14, slot * 0.38)}
+                fontSize={Math.min(
+                  14,
+                  slot * 0.38,
+                  (w - 6) / (Math.max(1, labels[i]!.length) * CHAR_EM),
+                )}
               >
-                {v === null ? "" : String(v)}
+                {labels[i]}
               </text>
             )}
             {t && FOCUS_WORD[t] && slot >= 24 && (

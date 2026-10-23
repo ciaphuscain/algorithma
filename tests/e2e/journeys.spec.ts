@@ -149,7 +149,7 @@ test("explore search and filters, shareable via URL", async ({ page }) => {
   await expect(page).toHaveURL(/query=shortest/);
   await page.getByLabel("Search").fill("");
   await page.getByLabel("Worst-case time at most").selectOption("n log n");
-  await expect(page.getByTestId("result-count")).toContainText("37 interactive entries");
+  await expect(page.getByTestId("result-count")).toContainText("41 interactive entries");
   await page.goto("/explore?domain=searching-sorting");
   await expect(page.getByTestId("results")).toContainText("Bubble Sort");
   await expect(page.getByTestId("results")).not.toContainText("Breadth-First");
@@ -169,7 +169,7 @@ test("roadmap lists the curriculum honestly", async ({ page }) => {
   await expect(page.locator('[data-number="220"]')).toContainText("Same as #218");
   await page.getByLabel("Search the curriculum").fill("");
   await page.getByLabel("Status").selectOption("available");
-  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 66 of 600");
+  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 71 of 600");
   await page.locator('[data-number="11"]').getByRole("link", { name: "Bubble Sort" }).click();
   await expect(page).toHaveURL(/\/algorithms\/bubble-sort/);
 });
@@ -312,6 +312,28 @@ test("tree queries reject non-trees; memoization and tabulation side by side", a
   await expect(page.getByRole("table", { name: "Table Bottom-up: table[a][b]" })).toBeVisible();
 });
 
+test("number theory: a strong liar, a prime refused for factoring, contradictory congruences", async ({
+  page,
+}) => {
+  await page.goto("/algorithms/miller-rabin");
+  await page
+    .getByLabel("Load an example")
+    .selectOption({ label: "2047 with base 2 only (a strong liar)" });
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText("Probably prime");
+
+  await page.goto("/algorithms/pollard-rho");
+  await page.getByLabel("n (composite, to factor)").fill("101");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText("101 is prime");
+
+  await page.goto("/algorithms/crt");
+  await page.getByLabel("Congruences x ≡ a (mod m)").fill("1 mod 4, 2 mod 6");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText("No solution");
+});
+
 test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(String(e)));
@@ -364,6 +386,11 @@ test("every catalogue entry renders its visualizer without console errors", asyn
     "heavy-light",
     "matrix-exponentiation",
     "memoization-tabulation",
+    "miller-rabin",
+    "pollard-rho",
+    "crt",
+    "ntt",
+    "fft",
   ]) {
     await page.goto(`/algorithms/${slug}`);
     await page.getByRole("button", { name: "Jump to end" }).click();

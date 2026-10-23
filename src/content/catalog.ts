@@ -48,6 +48,11 @@ import { binaryLiftingEntry } from "./entries/binary-lifting";
 import { heavyLightEntry } from "./entries/heavy-light";
 import { matrixExponentiationEntry } from "./entries/matrix-exponentiation";
 import { memoizationTabulationEntry } from "./entries/memoization-tabulation";
+import { millerRabinEntry } from "./entries/miller-rabin";
+import { pollardRhoEntry } from "./entries/pollard-rho";
+import { crtEntry } from "./entries/crt";
+import { nttEntry } from "./entries/ntt";
+import { fftEntry } from "./entries/fft";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -98,6 +103,11 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   binaryLiftingEntry,
   heavyLightEntry,
   matrixExponentiationEntry,
+  millerRabinEntry,
+  pollardRhoEntry,
+  crtEntry,
+  fftEntry,
+  nttEntry,
 ];
 
 const bySlug = new Map(ENTRIES.map((e) => [e.slug, e]));
