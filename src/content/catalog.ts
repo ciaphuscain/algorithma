@@ -35,6 +35,10 @@ import { twoPointersEntry } from "./entries/two-pointers";
 import { monotonicStackEntry } from "./entries/monotonic-stack";
 import { monotonicQueueEntry } from "./entries/monotonic-queue";
 import { sparseTableEntry } from "./entries/sparse-table";
+import { kosarajuEntry } from "./entries/kosaraju";
+import { tarjanSccEntry } from "./entries/tarjan-scc";
+import { bridgesArticulationEntry } from "./entries/bridges-articulation";
+import { aStarEntry } from "./entries/a-star";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -56,8 +60,12 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   dijkstraEntry,
   bellmanFordEntry,
   floydWarshallEntry,
+  aStarEntry,
   topologicalSortEntry,
   topologicalSortDfsEntry,
+  kosarajuEntry,
+  tarjanSccEntry,
+  bridgesArticulationEntry,
   unionFindEntry,
   kruskalEntry,
   primEntry,

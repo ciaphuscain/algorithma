@@ -149,7 +149,7 @@ test("explore search and filters, shareable via URL", async ({ page }) => {
   await expect(page).toHaveURL(/query=shortest/);
   await page.getByLabel("Search").fill("");
   await page.getByLabel("Worst-case time at most").selectOption("n log n");
-  await expect(page.getByTestId("result-count")).toContainText("25 interactive entries");
+  await expect(page.getByTestId("result-count")).toContainText("29 interactive entries");
   await page.goto("/explore?domain=searching-sorting");
   await expect(page.getByTestId("results")).toContainText("Bubble Sort");
   await expect(page.getByTestId("results")).not.toContainText("Breadth-First");
@@ -169,7 +169,7 @@ test("roadmap lists the curriculum honestly", async ({ page }) => {
   await expect(page.locator('[data-number="220"]')).toContainText("Same as #218");
   await page.getByLabel("Search the curriculum").fill("");
   await page.getByLabel("Status").selectOption("available");
-  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 46 of 600");
+  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 51 of 600");
   await page.locator('[data-number="11"]').getByRole("link", { name: "Bubble Sort" }).click();
   await expect(page).toHaveURL(/\/algorithms\/bubble-sort/);
 });
@@ -252,6 +252,29 @@ test("deque renderer: the monotonic queue shows both ends and the window maxima"
   await expect(page.locator(".alert--error")).toContainText("between 1 and 8");
 });
 
+test("A* on a grid map, and highlighted bridges and cut vertices", async ({ page }) => {
+  await page.goto("/algorithms/a-star");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText(
+    "Shortest path: 11 moves; expanded 17 cells",
+  );
+  await expect(page.locator(".grid-view td.cell--path")).toHaveCount(12);
+  await page.getByLabel("Map", { exact: true }).fill("S.#\n.#G");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText("No path");
+  await page.getByLabel("Map", { exact: true }).fill("S..\n..X");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText('Unknown map character "X"');
+
+  await page.goto("/algorithms/bridges-articulation");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  const drawing = page.locator('svg[aria-label^="Graph"]');
+  await expect(drawing.locator(".g-node--highlight")).toHaveCount(3);
+  await expect(drawing.locator(".g-edge--highlight")).toHaveCount(2);
+  await expect(page.getByText("highlighted (long dashes)")).toBeVisible();
+});
+
 test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(String(e)));
@@ -291,6 +314,10 @@ test("every catalogue entry renders its visualizer without console errors", asyn
     "monotonic-stack",
     "monotonic-queue",
     "sparse-table",
+    "kosaraju",
+    "tarjan-scc",
+    "bridges-articulation",
+    "a-star",
   ]) {
     await page.goto(`/algorithms/${slug}`);
     await page.getByRole("button", { name: "Jump to end" }).click();

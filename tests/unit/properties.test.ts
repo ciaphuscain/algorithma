@@ -824,3 +824,70 @@ describe("array technique properties", () => {
     );
   });
 });
+
+/* --------------------------------------------------------------- graphs III */
+
+import { kosaraju } from "@/algorithms/graph/kosaraju";
+import { tarjanScc } from "@/algorithms/graph/tarjan-scc";
+import { bridges } from "@/algorithms/graph/bridges";
+import { aStar } from "@/algorithms/graph/a-star";
+
+describe("strongly connected components, bridges and A*", () => {
+  const plainGraphs = (directed: boolean) =>
+    simpleGraphs(directed, 1, 1, 8).map((g) => ({
+      ...g,
+      weighted: false,
+      edges: g.edges.map(({ from, to }) => ({ from, to })),
+    }));
+
+  it("Kosaraju and Tarjan find the same components, in opposite topological orders", () => {
+    fc.assert(
+      fc.property(plainGraphs(true), (g) => {
+        const k = runAlgorithm(kosaraju, g).output;
+        const t = runAlgorithm(tarjanScc, g).output;
+        expect(kosaraju.check(g, k)).toBeNull();
+        expect(tarjanScc.check(g, t)).toBeNull();
+        const norm = (cs: string[][]) => cs.map((c) => [...c].sort().join("")).sort();
+        expect(norm(k.components)).toEqual(norm(t.components));
+      }),
+    );
+  });
+
+  it("bridges and articulation points match deletion-based brute force", () => {
+    fc.assert(
+      fc.property(plainGraphs(false), (g) => {
+        expect(bridges.check(g, runAlgorithm(bridges, g).output)).toBeNull();
+      }),
+    );
+  });
+
+  it("A* returns a shortest path on random maps, never expanding more cells than are reachable", () => {
+    const maps = fc
+      .record({
+        rows: fc.integer({ min: 1, max: 8 }),
+        cols: fc.integer({ min: 2, max: 12 }),
+        seed: fc.integer({ min: 0, max: 1_000_000 }),
+      })
+      .map(({ rows, cols, seed }) => {
+        const rng = createRng(seed);
+        const cells = Array.from({ length: rows }, () =>
+          Array.from({ length: cols }, (): string => (rng.next() < 0.3 ? "#" : ".")),
+        );
+        const s = rng.int(0, rows * cols - 1);
+        let goal = rng.int(0, rows * cols - 1);
+        if (goal === s) goal = (s + 1) % (rows * cols);
+        cells[Math.floor(s / cols)]![s % cols] = "S";
+        cells[Math.floor(goal / cols)]![goal % cols] = "G";
+        return { rows: cells.map((r) => r.join("")) };
+      });
+    fc.assert(
+      fc.property(maps, (map) => {
+        const out = runAlgorithm(aStar, map, { mode: "count" }).output;
+        expect(aStar.check(map, out)).toBeNull();
+        const free = map.rows.join("").replace(/#/g, "").length;
+        expect(out.expanded).toBeLessThanOrEqual(free);
+      }),
+      { numRuns: 300 },
+    );
+  });
+});

@@ -13,6 +13,7 @@ const ARROW_STATUSES: EdgeStatus[] = [
   "rejected",
   "path",
   "back",
+  "highlight",
 ];
 
 export function GraphView({
@@ -108,6 +109,9 @@ export function GraphView({
             key={n.id}
             className={`g-node g-node--${status}${focusNodes.has(n.id) ? " g-node--focus" : ""}`}
           >
+            {status === "highlight" && (
+              <circle className="g-node__ring" cx={p.x} cy={p.y} r={R + 5} />
+            )}
             <circle cx={p.x} cy={p.y} r={R} />
             <text className="g-node__label" x={p.x} y={p.y + 5} textAnchor="middle">
               {n.label ?? n.id}
@@ -131,6 +135,7 @@ const NODE_LEGEND: Record<string, string> = {
   visited: "done",
   path: "on path",
   unreachable: "unreachable (dotted)",
+  highlight: "highlighted (double ring)",
 };
 const EDGE_LEGEND: Record<string, string> = {
   examining: "being examined",
@@ -139,6 +144,7 @@ const EDGE_LEGEND: Record<string, string> = {
   rejected: "discarded (dotted)",
   path: "path",
   back: "back edge (dashed)",
+  highlight: "highlighted (long dashes)",
 };
 
 /**
@@ -160,7 +166,8 @@ export function GraphLegend({
           <span className="legend__item" key={`n-${s}`}>
             <svg viewBox="0 0 22 14" aria-hidden="true">
               <g className={`g-node g-node--${s}`}>
-                <circle cx="11" cy="7" r="5.5" />
+                {s === "highlight" && <circle className="g-node__ring" cx="11" cy="7" r="6.5" />}
+                <circle cx="11" cy="7" r={s === "highlight" ? 4 : 5.5} />
               </g>
             </svg>
             {NODE_LEGEND[s]}

@@ -135,3 +135,45 @@ export function mstEdgesFidelity(
   }
   return null;
 }
+
+export interface SccOutput {
+  /** Strongly connected components in the order the algorithm found them. */
+  components: string[][];
+}
+
+/**
+ * Check a claimed partition into strongly connected components against mutual
+ * reachability (transitive closure), and the order in which the components came
+ * out: Kosaraju finds them in topological order of the component graph, Tarjan in
+ * reverse topological order.
+ */
+export function sccCheck(
+  g: { nodes: { id: string }[]; edges: { from: string; to: string }[] },
+  out: SccOutput,
+  order: "topological" | "reverse-topological",
+): string | null {
+  const ids = g.nodes.map((n) => n.id);
+  const ix = new Map(ids.map((v, i) => [v, i]));
+  const reach = ids.map((_, i) => ids.map((_, j) => i === j));
+  for (const e of g.edges) reach[ix.get(e.from)!]![ix.get(e.to)!] = true;
+  for (let k = 0; k < ids.length; k++)
+    for (let i = 0; i < ids.length; i++)
+      if (reach[i]![k]) for (let j = 0; j < ids.length; j++) if (reach[k]![j]) reach[i]![j] = true;
+  const compOf = new Map<string, number>();
+  out.components.forEach((c, k) => c.forEach((v) => compOf.set(v, k)));
+  if (compOf.size !== ids.length || out.components.flat().length !== ids.length)
+    return "the components do not partition the vertices";
+  for (const a of ids)
+    for (const b of ids) {
+      const same = reach[ix.get(a)!]![ix.get(b)!]! && reach[ix.get(b)!]![ix.get(a)!]!;
+      if (same !== (compOf.get(a) === compOf.get(b)))
+        return `${a} and ${b} are ${same ? "mutually reachable but split" : "grouped but not mutually reachable"}`;
+    }
+  for (const e of g.edges) {
+    const [ca, cb] = [compOf.get(e.from)!, compOf.get(e.to)!];
+    if (ca === cb) continue;
+    if (order === "topological" ? ca > cb : ca < cb)
+      return `edge ${e.from}→${e.to} goes against the ${order} order of components`;
+  }
+  return null;
+}

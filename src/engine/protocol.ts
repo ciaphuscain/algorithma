@@ -18,8 +18,9 @@ export const TRACE_PROTOCOL = "algorithma.trace" as const;
 /**
  * Version history:
  *   1 — arrays, graphs, sequences, grids.
- *   2 — adds the tree structure kind and tree.* events, including tree.move, and the
- *       deque sequence discipline (v1 traces are valid v2 traces).
+ *   2 — adds the tree structure kind and tree.* events, including tree.move, the deque
+ *       sequence discipline and the "highlight" node and edge statuses (v1 traces are
+ *       valid v2 traces).
  */
 export const TRACE_VERSION = 2 as const;
 
@@ -39,6 +40,7 @@ export const NODE_STATUSES = [
   "visited",
   "path",
   "unreachable",
+  "highlight",
 ] as const;
 export type NodeStatus = (typeof NODE_STATUSES)[number];
 
@@ -50,6 +52,7 @@ export const EDGE_STATUSES = [
   "rejected",
   "path",
   "back",
+  "highlight",
 ] as const;
 export type EdgeStatus = (typeof EDGE_STATUSES)[number];
 

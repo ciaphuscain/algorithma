@@ -1142,6 +1142,11 @@ pre.code {
   stroke-dasharray: 8 5;
   stroke-width: 3;
 }
+.g-edge--highlight {
+  stroke: var(--tone-read);
+  stroke-dasharray: 16 4;
+  stroke-width: 6;
+}
 .g-node circle {
   fill: var(--surface);
   stroke: var(--ink-3);
@@ -1169,6 +1174,17 @@ pre.code {
   fill: var(--tone-path-soft);
   stroke: var(--tone-path);
   stroke-width: 4;
+}
+.g-node--highlight circle {
+  fill: var(--tone-read-soft);
+  stroke: var(--tone-read);
+  stroke-width: 3;
+}
+/* Second ring: a non-colour cue for highlighted nodes. */
+.g-node .g-node__ring {
+  fill: none;
+  stroke: var(--tone-read);
+  stroke-width: 2;
 }
 .g-node--unreachable circle {
   fill: var(--tone-muted-soft);

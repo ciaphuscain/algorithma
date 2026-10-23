@@ -27,6 +27,7 @@ function graphLegends(player: TracePlayer) {
     "visited",
     "path",
     "unreachable",
+    "highlight",
     "idle",
     "examining",
     "tree",

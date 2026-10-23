@@ -156,14 +156,17 @@ describe("catalog search", () => {
 
   it("filters by complexity bound and domain", () => {
     expect(slugs({ maxWorst: "n log n" }).sort()).toEqual([
+      "a-star",
       "bfs",
       "binary-search",
+      "bridges-articulation",
       "bst",
       "dfs",
       "dijkstra",
       "fenwick-tree",
       "heap-sort",
       "kmp",
+      "kosaraju",
       "kruskal",
       "linear-search",
       "lis",
@@ -175,6 +178,7 @@ describe("catalog search", () => {
       "segment-tree",
       "sliding-window",
       "sparse-table",
+      "tarjan-scc",
       "topological-sort",
       "topological-sort-dfs",
       "tree-traversals",
@@ -643,5 +647,82 @@ describe("worked examples agree with the engine", () => {
     ]);
     expect(sparse.output.answers).toEqual([2, 1, 4]);
     expect(sparse.trace.meta.counters.comparisons).toBe(16);
+  });
+
+  it("connectivity and A* lessons: worked examples and practice answers match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { TracePlayer } = await import("@/engine/player");
+    const { graphPreset } = await import("@/algorithms/inputs");
+    const preset = (id: string, presetId: string) =>
+      getModule(id)!.input.presets.find((p) => p.id === presetId)!.value;
+    const directed = {
+      directed: true,
+      weighted: false,
+      limits: { maxNodes: 20, maxEdges: 40 },
+      withSource: false,
+    };
+    const undirected = { ...directed, directed: false };
+
+    const k = runAlgorithm(getModule("kosaraju")!, preset("kosaraju", "classic"));
+    expect(k.output.components).toEqual([
+      ["G", "H"],
+      ["A", "C", "B"],
+      ["D", "F", "E"],
+    ]);
+    const g = new TracePlayer(k.trace).finalState().structures.G;
+    const finishes = g?.kind === "graph" ? g.annotations : {};
+    expect(["C", "F", "E", "D", "B", "A", "H", "G"].map((v) => finishes[v])).toEqual([
+      "f1",
+      "f2",
+      "f3",
+      "f4",
+      "f5",
+      "f6",
+      "f7",
+      "f8",
+    ]);
+    expect(
+      runAlgorithm(getModule("kosaraju")!, graphPreset("A->B, B->C, C->A, C->D", "", directed))
+        .output.components,
+    ).toHaveLength(2);
+
+    expect(
+      runAlgorithm(getModule("tarjan-scc")!, preset("tarjan-scc", "classic")).output.components,
+    ).toEqual([
+      ["F", "E", "D"],
+      ["C", "B", "A"],
+      ["H", "G"],
+    ]);
+
+    const b = runAlgorithm(
+      getModule("bridges-articulation")!,
+      preset("bridges-articulation", "classic"),
+    );
+    expect(b.output).toEqual({
+      bridges: [
+        ["D", "E"],
+        ["C", "D"],
+      ],
+      articulation: ["C", "D", "E"],
+    });
+    const bg = new TracePlayer(b.trace).finalState().structures.G;
+    const lows = bg?.kind === "graph" ? bg.annotations : {};
+    expect(["A", "B", "C", "D", "E", "F", "G"].map((v) => lows[v])).toEqual([
+      "0/0",
+      "1/0",
+      "2/0",
+      "3/3",
+      "4/4",
+      "5/4",
+      "6/4",
+    ]);
+    const tree = graphPreset("A-B, B-C, C-D, D-E, E-F, F-G, G-H, H-I", "", undirected);
+    expect(runAlgorithm(getModule("bridges-articulation")!, tree).output.bridges).toHaveLength(8);
+
+    const a = runAlgorithm(getModule("a-star")!, preset("a-star", "classic"));
+    expect(a.output.length).toBe(11);
+    expect(a.output.expanded).toBe(17);
+    expect(preset("a-star", "classic").rows.join("").replace(/#/g, "").length).toBe(33);
+    expect(runAlgorithm(getModule("a-star")!, preset("a-star", "trap")).output.length).toBe(5);
   });
 });

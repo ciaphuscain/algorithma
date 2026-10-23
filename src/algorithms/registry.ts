@@ -33,6 +33,10 @@ import { twoPointers } from "./arrays/two-pointers";
 import { monotonicStack } from "./arrays/monotonic-stack";
 import { monotonicQueue } from "./arrays/monotonic-queue";
 import { sparseTable } from "./arrays/sparse-table";
+import { kosaraju } from "./graph/kosaraju";
+import { tarjanScc } from "./graph/tarjan-scc";
+import { bridges } from "./graph/bridges";
+import { aStar } from "./graph/a-star";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -74,6 +78,10 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   monotonicStack,
   monotonicQueue,
   sparseTable,
+  kosaraju,
+  tarjanScc,
+  bridges,
+  aStar,
 ];
 
 const byId = new Map(ALGORITHM_MODULES.map((m) => [m.id, m]));

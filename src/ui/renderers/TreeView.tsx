@@ -92,6 +92,9 @@ export function TreeView({
             className={`g-node g-node--${status}${tone ? " g-node--focus" : ""}`}
             data-node={id}
           >
+            {status === "highlight" && (
+              <circle className="g-node__ring" cx={px(p.x)} cy={py(p.y)} r={R + 5} />
+            )}
             <circle cx={px(p.x)} cy={py(p.y)} r={R} />
             <text
               className="g-node__label"
