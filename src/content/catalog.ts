@@ -44,6 +44,10 @@ import { ahoCorasickEntry } from "./entries/aho-corasick";
 import { suffixArrayEntry } from "./entries/suffix-array";
 import { suffixTreeEntry } from "./entries/suffix-tree";
 import { suffixAutomatonEntry } from "./entries/suffix-automaton";
+import { binaryLiftingEntry } from "./entries/binary-lifting";
+import { heavyLightEntry } from "./entries/heavy-light";
+import { matrixExponentiationEntry } from "./entries/matrix-exponentiation";
+import { memoizationTabulationEntry } from "./entries/memoization-tabulation";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -74,6 +78,7 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   unionFindEntry,
   kruskalEntry,
   primEntry,
+  memoizationTabulationEntry,
   editDistanceEntry,
   lcsEntry,
   lisEntry,
@@ -90,6 +95,9 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   segmentTreeEntry,
   fenwickTreeEntry,
   sparseTableEntry,
+  binaryLiftingEntry,
+  heavyLightEntry,
+  matrixExponentiationEntry,
 ];
 
 const bySlug = new Map(ENTRIES.map((e) => [e.slug, e]));

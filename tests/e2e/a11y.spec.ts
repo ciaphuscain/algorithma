@@ -28,6 +28,8 @@ for (const path of [
   "/algorithms/bridges-articulation",
   "/algorithms/suffix-tree",
   "/algorithms/suffix-automaton",
+  "/algorithms/binary-lifting",
+  "/algorithms/memoization-tabulation",
   "/arena",
   "/studio",
 ]) {

@@ -42,6 +42,10 @@ import { ahoCorasick } from "./strings/aho-corasick";
 import { suffixArray } from "./strings/suffix-array";
 import { suffixTree } from "./strings/suffix-tree";
 import { suffixAutomaton } from "./strings/suffix-automaton";
+import { binaryLifting } from "./trees/binary-lifting";
+import { heavyLight } from "./trees/heavy-light";
+import { matrixExponentiation } from "./maths/matrix-exponentiation";
+import { memoVsTab } from "./dp/memo-vs-tab";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -92,6 +96,10 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   suffixArray,
   suffixTree,
   suffixAutomaton,
+  binaryLifting,
+  heavyLight,
+  matrixExponentiation,
+  memoVsTab,
 ];
 
 const byId = new Map(ALGORITHM_MODULES.map((m) => [m.id, m]));

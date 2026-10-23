@@ -149,7 +149,7 @@ test("explore search and filters, shareable via URL", async ({ page }) => {
   await expect(page).toHaveURL(/query=shortest/);
   await page.getByLabel("Search").fill("");
   await page.getByLabel("Worst-case time at most").selectOption("n log n");
-  await expect(page.getByTestId("result-count")).toContainText("34 interactive entries");
+  await expect(page.getByTestId("result-count")).toContainText("37 interactive entries");
   await page.goto("/explore?domain=searching-sorting");
   await expect(page.getByTestId("results")).toContainText("Bubble Sort");
   await expect(page.getByTestId("results")).not.toContainText("Breadth-First");
@@ -169,7 +169,7 @@ test("roadmap lists the curriculum honestly", async ({ page }) => {
   await expect(page.locator('[data-number="220"]')).toContainText("Same as #218");
   await page.getByLabel("Search the curriculum").fill("");
   await page.getByLabel("Status").selectOption("available");
-  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 58 of 600");
+  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 66 of 600");
   await page.locator('[data-number="11"]').getByRole("link", { name: "Bubble Sort" }).click();
   await expect(page).toHaveURL(/\/algorithms\/bubble-sort/);
 });
@@ -295,6 +295,23 @@ test("string algorithms: dictionary matches, a suffix tree with long edge labels
   await expect(page.locator(".alert--error")).toContainText("lowercase letters a–z only");
 });
 
+test("tree queries reject non-trees; memoization and tabulation side by side", async ({ page }) => {
+  await page.goto("/algorithms/binary-lifting");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText("LCAs: B, E, A");
+  await page.getByLabel("Tree edges").fill("A-B, B-C, C-A");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText("need exactly 2 edges");
+
+  await page.goto("/algorithms/memoization-tabulation");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText(
+    "top-down: 15 subproblems, 19 calls; bottom-up: 22 cells",
+  );
+  await expect(page.getByRole("table", { name: "Table Top-down: memo[a][b]" })).toBeVisible();
+  await expect(page.getByRole("table", { name: "Table Bottom-up: table[a][b]" })).toBeVisible();
+});
+
 test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(String(e)));
@@ -343,6 +360,10 @@ test("every catalogue entry renders its visualizer without console errors", asyn
     "suffix-array",
     "suffix-tree",
     "suffix-automaton",
+    "binary-lifting",
+    "heavy-light",
+    "matrix-exponentiation",
+    "memoization-tabulation",
   ]) {
     await page.goto(`/algorithms/${slug}`);
     await page.getByRole("button", { name: "Jump to end" }).click();

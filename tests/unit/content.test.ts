@@ -159,6 +159,7 @@ describe("catalog search", () => {
       "a-star",
       "aho-corasick",
       "bfs",
+      "binary-lifting",
       "binary-search",
       "bridges-articulation",
       "bst",
@@ -166,12 +167,14 @@ describe("catalog search", () => {
       "dijkstra",
       "fenwick-tree",
       "heap-sort",
+      "heavy-light",
       "kmp",
       "kosaraju",
       "kruskal",
       "linear-search",
       "lis",
       "manacher",
+      "matrix-exponentiation",
       "merge-sort",
       "monotonic-queue",
       "monotonic-stack",
@@ -194,6 +197,7 @@ describe("catalog search", () => {
     expect(slugs({ maxWorst: "log n" }).sort()).toEqual([
       "binary-search",
       "fenwick-tree",
+      "matrix-exponentiation",
       "segment-tree",
       "union-find",
     ]);
@@ -218,6 +222,9 @@ describe("catalog search", () => {
     expect(entryForItem(173)?.slug).toBe("fenwick-tree"); // duplicate of #61
     expect(entryForItem(317)?.slug).toBe("suffix-tree"); // Ukkonen's construction
     expect(entryForItem(345)?.slug).toBe("manacher"); // duplicate of #328
+    expect(entryForItem(247)?.slug).toBe("binary-lifting"); // LCA, duplicate of #188
+    expect(entryForItem(249)?.slug).toBe("heavy-light"); // duplicate of #190
+    expect(entryForItem(252)?.slug).toBe("memoization-tabulation");
     expect(entryForItem(218)).toBeUndefined(); // Borůvka: planned
     expect(getEntry("nope")).toBeUndefined();
   });
@@ -814,5 +821,86 @@ describe("worked examples agree with the engine", () => {
     expect(sam.output.terminal).toEqual([0, 6, 7]);
     expect(sam.output.distinct).toBe(12);
     expect(run("suffix-automaton", "repeat").output.len).toHaveLength(5);
+  });
+
+  it("tree and maths lessons: worked examples and practice answers match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { TracePlayer } = await import("@/engine/player");
+    const run = (id: string, presetId: string) => {
+      const m = getModule(id)!;
+      return runAlgorithm(m, m.input.presets.find((p) => p.id === presetId)!.value);
+    };
+
+    const bl = run("binary-lifting", "classic");
+    expect(bl.output.lca).toEqual(["B", "E", "A"]);
+    expect(["E", "I", "J", "L"].map((v) => bl.output.up[v])).toEqual([
+      ["B", "A", "A"],
+      ["G", "E", "A"],
+      ["I", "G", "B"],
+      ["K", "F", "A"],
+    ]);
+    expect(["D", "F", "G", "H"].map((v) => bl.output.up[v])).toEqual([
+      ["B", "A", "A"],
+      ["C", "A", "A"],
+      ["E", "B", "A"],
+      ["E", "B", "A"],
+    ]);
+    expect(run("binary-lifting", "path").output.up.J).toHaveLength(4);
+
+    const hl = run("heavy-light", "classic");
+    expect(hl.output.sums).toEqual([17, 41, 7]);
+    expect(hl.output.ranges).toEqual([2, 3, 1]);
+    expect(new Set(Object.values(hl.output.head))).toEqual(new Set(["A", "H", "D", "C"]));
+    const hs = new TracePlayer(hl.trace).finalState().structures;
+    expect(hs.N?.kind === "array" ? hs.N.values : []).toEqual([
+      "A",
+      "B",
+      "E",
+      "G",
+      "I",
+      "J",
+      "H",
+      "D",
+      "C",
+      "F",
+      "K",
+      "L",
+    ]);
+    expect(hs.B?.kind === "array" ? hs.B.values : []).toEqual([3, 1, 5, 2, 5, 3, 6, 1, 4, 9, 5, 8]);
+
+    const mx = run("matrix-exponentiation", "classic");
+    expect(mx.output).toEqual({
+      value: 55,
+      result: [
+        [89, 55],
+        [55, 34],
+      ],
+      multiplications: 5,
+    });
+    const squares = mx.trace.events
+      .filter((e) => e.type === "grid.write" && e.s === "M")
+      .map((e) => (e as { value: unknown }).value);
+    expect([4, 8, 12].map((i) => squares.slice(i, i + 4))).toEqual([
+      [2, 1, 1, 1],
+      [5, 3, 3, 2],
+      [34, 21, 21, 13],
+    ]);
+    expect(run("matrix-exponentiation", "power").output.multiplications).toBe(7);
+
+    const small = run("memoization-tabulation", "small");
+    expect(small.output).toEqual({
+      value: 6,
+      calls: 9,
+      memoStates: 8,
+      tableCells: 12,
+      naiveCalls: 11,
+    });
+    expect(small.trace.meta.counters["memo hits"]).toBe(1);
+    const memo = new TracePlayer(small.trace).finalState().structures.memo;
+    expect(
+      memo?.kind === "grid" ? memo.cells.map((row) => row.map((x) => x ?? ".").join(" ")) : [],
+    ).toEqual([". . .", "1 1 .", "1 2 1", ". 3 3", ". . 6"]);
+    const classic = run("memoization-tabulation", "classic").output;
+    expect([classic.calls, classic.naiveCalls]).toEqual([19, 39]);
   });
 });

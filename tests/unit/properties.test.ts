@@ -958,3 +958,83 @@ describe("string algorithm properties", () => {
     );
   });
 });
+
+/* ------------------------------------------------------- trees and maths II */
+
+import { binaryLifting, liftRows } from "@/algorithms/trees/binary-lifting";
+import { heavyLight } from "@/algorithms/trees/heavy-light";
+import { rootTree, type TreeQueryInput } from "@/algorithms/trees/rooted";
+import { matrixExponentiation } from "@/algorithms/maths/matrix-exponentiation";
+import { memoVsTab } from "@/algorithms/dp/memo-vs-tab";
+
+describe("binary lifting, heavy-light decomposition, matrix powers, memoization", () => {
+  const trees = fc
+    .record({
+      n: fc.integer({ min: 1, max: 16 }),
+      seed: fc.integer({ min: 0, max: 1_000_000 }),
+    })
+    .map(({ n, seed }): TreeQueryInput => {
+      const rng = createRng(seed);
+      const names = Array.from({ length: n }, (_, i) => String.fromCharCode(65 + i));
+      // Mostly long, thin trees (deep lifts) mixed with bushy ones.
+      const edges = names
+        .slice(1)
+        .map((v, i): [string, string] => [names[rng.next() < 0.6 ? i : rng.int(0, i)]!, v]);
+      const pick = () => names[rng.int(0, n - 1)]!;
+      const queries = Array.from({ length: 4 }, (): [string, string] => [pick(), pick()]);
+      const values = Object.fromEntries(names.map((v) => [v, rng.int(-9, 9)]));
+      return { edges, root: names[rng.int(0, n - 1)]!, queries, values };
+    });
+
+  it("binary lifting: LCAs match parent walking, within 3K + 1 lookups per query", () => {
+    fc.assert(
+      fc.property(trees, (input) => {
+        const { output, trace } = runAlgorithm(binaryLifting, input, { mode: "count" });
+        expect(binaryLifting.check(input, output)).toBeNull();
+        const { order, depth } = rootTree(input.edges, input.root);
+        const K = liftRows(Math.max(...order.map((v) => depth[v]!)));
+        const build = 2 * (K - 1) * order.length;
+        expect(trace.meta.counters.reads).toBeLessThanOrEqual(
+          build + input.queries.length * (3 * K + 1),
+        );
+      }),
+      { numRuns: 400 },
+    );
+  });
+
+  it("heavy-light: path sums match parent walking, within 2⌊log₂ n⌋ + 1 ranges per path", () => {
+    fc.assert(
+      fc.property(trees, (input) => {
+        const { output } = runAlgorithm(heavyLight, input, { mode: "count" });
+        expect(heavyLight.check(input, output)).toBeNull();
+      }),
+      { numRuns: 400 },
+    );
+  });
+
+  it("matrix exponentiation: F(n) mod m with ⌊log₂ n⌋ + popcount(n) multiplications", () => {
+    const inputs = fc.record({
+      n: fc.oneof(fc.integer({ min: 0, max: 100 }), fc.integer({ min: 0, max: 1e12 })),
+      m: fc.integer({ min: 2, max: 1e6 }),
+    });
+    fc.assert(
+      fc.property(inputs, (input) => {
+        const { output } = runAlgorithm(matrixExponentiation, input, { mode: "count" });
+        expect(matrixExponentiation.check(input, output)).toBeNull();
+        expect(output.multiplications).toBeLessThanOrEqual(2 * Math.log2(Math.max(1, input.n)) + 1);
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("memoization touches 1 + k(k + 1)/2 fewer subproblems than the table fills, for every n ≤ 12", () => {
+    for (let n = 0; n <= 12; n++)
+      for (let k = 0; k <= n; k++) {
+        const { output } = runAlgorithm(memoVsTab, { n, k }, { mode: "count" });
+        expect(memoVsTab.check({ n, k }, output)).toBeNull();
+        if (k > 0 && k < n)
+          expect(output.tableCells - output.memoStates).toBe(1 + (k * (k + 1)) / 2);
+        else expect(output.memoStates).toBe(1);
+      }
+  });
+});
