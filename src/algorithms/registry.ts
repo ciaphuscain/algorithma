@@ -51,6 +51,9 @@ import { pollardRho } from "./maths/pollard-rho";
 import { crt } from "./maths/crt";
 import { ntt } from "./maths/ntt";
 import { fft } from "./maths/fft";
+import { dinic } from "./graph/dinic";
+import { pushRelabel } from "./graph/push-relabel";
+import { hopcroftKarp } from "./graph/hopcroft-karp";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -110,6 +113,9 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   crt,
   ntt,
   fft,
+  dinic,
+  pushRelabel,
+  hopcroftKarp,
 ];
 
 const byId = new Map(ALGORITHM_MODULES.map((m) => [m.id, m]));

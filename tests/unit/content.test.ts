@@ -139,8 +139,11 @@ describe("catalog search", () => {
 
   it("finds entries by name, alias and tag", () => {
     expect(slugs({ query: "bubble" })).toEqual(["bubble-sort"]);
-    // Level-order traversal is tagged "bfs" too, but the algorithm named BFS ranks first.
-    expect(slugs({ query: "BFS" })).toEqual(["bfs", "tree-traversals"]);
+    // Level-order traversal, Dinic and Hopcroft–Karp are tagged "bfs" too, but the
+    // algorithm named BFS ranks first.
+    const bfsHits = slugs({ query: "BFS" });
+    expect(bfsHits[0]).toBe("bfs");
+    expect([...bfsHits].sort()).toEqual(["bfs", "dinic", "hopcroft-karp", "tree-traversals"]);
     expect(slugs({ query: "levenshtein" })).toEqual(["edit-distance"]);
     expect(slugs({ query: "shortest path" })).toEqual(expect.arrayContaining(["bfs", "dijkstra"]));
     expect(slugs({ query: "stable sort" }).sort()).toEqual([
@@ -233,6 +236,8 @@ describe("catalog search", () => {
     expect(entryForItem(252)?.slug).toBe("memoization-tabulation");
     expect(entryForItem(371)?.slug).toBe("miller-rabin");
     expect(entryForItem(393)?.slug).toBe("ntt");
+    expect(entryForItem(235)?.slug).toBe("dinic");
+    expect(entryForItem(237)?.slug).toBe("hopcroft-karp");
     expect(entryForItem(218)).toBeUndefined(); // Borůvka: planned
     expect(getEntry("nope")).toBeUndefined();
   });
@@ -988,5 +993,72 @@ describe("worked examples agree with the engine", () => {
     expect(created(approx.trace, "C")).toEqual(["54", "−18+2i", "−2", "−18−2i"]);
     expect(approx.output.maxError).toBeLessThan(1e-15);
     expect(run("ntt", "full").trace.meta.counters.butterflies).toBe(3 * 12);
+  });
+
+  it("flow and matching lessons: worked examples and practice answers match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const run = (id: string, presetId: string) => {
+      const m = getModule(id)!;
+      return runAlgorithm(m, m.input.presets.find((p) => p.id === presetId)!.value);
+    };
+    const notes = (trace: { events: { note?: string }[] }) =>
+      trace.events.flatMap((e) => (e.note ? [e.note] : []));
+
+    const d = run("dinic", "classic");
+    expect(d.output.maxFlow).toBe(23);
+    expect(d.output.cut).toEqual(["A", "B", "D", "S"]);
+    expect(d.trace.meta.counters.phases).toBe(2);
+    expect(notes(d.trace).filter((n) => n.startsWith("Augment"))).toEqual([
+      "Augment 12 along S → A → C → T.",
+      "Augment 4 along S → B → D → T.",
+      "Augment 7 along S → B → D → C → T.",
+    ]);
+    expect(
+      notes(d.trace)
+        .filter((n) => n.startsWith("Phase"))
+        .map((n) => n.slice(0, 26)),
+    ).toEqual(["Phase 1: t is at level 3. ", "Phase 2: t is at level 4. "]);
+
+    const pr = run("push-relabel", "undo");
+    expect(pr.output.maxFlow).toBe(2);
+    expect(notes(pr.trace).filter((n) => n.startsWith("Push"))).toEqual([
+      "Push 1 from S to A.",
+      "Push 1 from S to B.",
+      "Push 1 from A to B.",
+      "Push 1 from B to T.",
+      "Push 1 from B to A (cancelling flow on the edge back).",
+      "Push 1 from A to T.",
+    ]);
+    const relabels = pr.trace.events.filter(
+      (e) =>
+        e.type === "graph.annotate" &&
+        (e as { note?: string }).note?.startsWith("No edge goes downhill"),
+    );
+    expect(
+      relabels.map(
+        (e) => (e as { node: string; text: string }).node + (e as { text: string }).text,
+      ),
+    ).toEqual(["Ah1 e1", "Bh1 e2", "Bh2 e1"]);
+    expect(run("push-relabel", "classic").output.maxFlow).toBe(23);
+
+    const hk = run("hopcroft-karp", "classic");
+    expect(hk.output).toEqual({
+      size: 5,
+      matching: [
+        ["A", "2"],
+        ["B", "1"],
+        ["C", "3"],
+        ["D", "4"],
+        ["E", "5"],
+      ],
+      phases: 2,
+    });
+    expect(notes(hk.trace).filter((n) => n.startsWith("Augmenting path"))).toEqual([
+      "Augmenting path from A: A–1 (with the matched edges between them).",
+      "Augmenting path from C: C–2 (with the matched edges between them).",
+      "Augmenting path from D: D–3 (with the matched edges between them).",
+      "Augmenting path from E: E–4 (with the matched edges between them).",
+      "Augmenting path from B: B–1, A–2, C–3, D–4, E–5 (with the matched edges between them).",
+    ]);
   });
 });

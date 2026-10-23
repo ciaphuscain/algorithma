@@ -53,6 +53,9 @@ import { pollardRhoEntry } from "./entries/pollard-rho";
 import { crtEntry } from "./entries/crt";
 import { nttEntry } from "./entries/ntt";
 import { fftEntry } from "./entries/fft";
+import { dinicEntry } from "./entries/dinic";
+import { pushRelabelEntry } from "./entries/push-relabel";
+import { hopcroftKarpEntry } from "./entries/hopcroft-karp";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -80,6 +83,9 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   kosarajuEntry,
   tarjanSccEntry,
   bridgesArticulationEntry,
+  dinicEntry,
+  pushRelabelEntry,
+  hopcroftKarpEntry,
   unionFindEntry,
   kruskalEntry,
   primEntry,

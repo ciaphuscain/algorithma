@@ -169,7 +169,7 @@ test("roadmap lists the curriculum honestly", async ({ page }) => {
   await expect(page.locator('[data-number="220"]')).toContainText("Same as #218");
   await page.getByLabel("Search the curriculum").fill("");
   await page.getByLabel("Status").selectOption("available");
-  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 71 of 600");
+  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 74 of 600");
   await page.locator('[data-number="11"]').getByRole("link", { name: "Bubble Sort" }).click();
   await expect(page).toHaveURL(/\/algorithms\/bubble-sort/);
 });
@@ -334,6 +334,20 @@ test("number theory: a strong liar, a prime refused for factoring, contradictory
   await expect(page.getByTestId("result")).toContainText("No solution");
 });
 
+test("flows and matchings: a maximum flow with its cut, and input checks", async ({ page }) => {
+  await page.goto("/algorithms/dinic");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText("Maximum flow 23; cut {A, B, D, S}");
+  await page.getByLabel("Sink").fill("S");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText("The sink must differ from the source");
+
+  await page.goto("/algorithms/hopcroft-karp");
+  await page.getByLabel("Edges (left-right)").fill("A-1, 1-B");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText('"1" appears on both sides');
+});
+
 test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(String(e)));
@@ -391,6 +405,9 @@ test("every catalogue entry renders its visualizer without console errors", asyn
     "crt",
     "ntt",
     "fft",
+    "dinic",
+    "push-relabel",
+    "hopcroft-karp",
   ]) {
     await page.goto(`/algorithms/${slug}`);
     await page.getByRole("button", { name: "Jump to end" }).click();

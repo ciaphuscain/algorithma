@@ -1129,3 +1129,49 @@ describe("number theory properties", () => {
     );
   });
 });
+
+/* ---------------------------------------------------------- flows, matching */
+
+import { dinic } from "@/algorithms/graph/dinic";
+import { pushRelabel } from "@/algorithms/graph/push-relabel";
+import { hopcroftKarp } from "@/algorithms/graph/hopcroft-karp";
+import { flowInput } from "@/algorithms/graph/flow-common";
+
+describe("maximum flow and matching properties", () => {
+  const networks = fc
+    .record({ seed: fc.integer({ min: 0, max: 1_000_000 }), size: fc.integer({ min: 3, max: 10 }) })
+    .map(({ seed, size }) => flowInput.random(createRng(seed), size));
+
+  it("Dinic and push–relabel find the same maximum flow, within their phase and relabel bounds", () => {
+    fc.assert(
+      fc.property(networks, (input) => {
+        const a = runAlgorithm(dinic, input, { mode: "count" });
+        const b = runAlgorithm(pushRelabel, input, { mode: "count" });
+        expect(dinic.check(input, a.output)).toBeNull();
+        expect(pushRelabel.check(input, b.output)).toBeNull();
+        expect(a.output.maxFlow).toBe(b.output.maxFlow);
+        const V = input.nodes.length;
+        expect(a.trace.meta.counters.phases ?? 0).toBeLessThanOrEqual(V - 1);
+        expect(b.trace.meta.counters.relabels ?? 0).toBeLessThanOrEqual((2 * V - 1) * (V - 2));
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("Hopcroft–Karp finds a maximum matching (Kuhn oracle) in at most 2√V + 2 phases", () => {
+    const graphs = fc
+      .record({
+        seed: fc.integer({ min: 0, max: 1_000_000 }),
+        size: fc.integer({ min: 2, max: 16 }),
+      })
+      .map(({ seed, size }) => hopcroftKarp.input.random(createRng(seed), size));
+    fc.assert(
+      fc.property(graphs, (input) => {
+        expect(
+          hopcroftKarp.check(input, runAlgorithm(hopcroftKarp, input, { mode: "count" }).output),
+        ).toBeNull();
+      }),
+      { numRuns: 400 },
+    );
+  });
+});

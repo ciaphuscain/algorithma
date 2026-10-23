@@ -32,6 +32,8 @@ for (const path of [
   "/algorithms/memoization-tabulation",
   "/algorithms/miller-rabin",
   "/algorithms/fft",
+  "/algorithms/dinic",
+  "/algorithms/hopcroft-karp",
   "/arena",
   "/studio",
 ]) {
