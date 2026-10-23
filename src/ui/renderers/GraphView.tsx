@@ -147,6 +147,27 @@ const EDGE_LEGEND: Record<string, string> = {
   highlight: "highlighted (long dashes)",
 };
 
+/** Geometry wording for the same statuses: points are considered, kept or discarded. */
+const POINT_LEGEND: Record<string, string> = {
+  unvisited: "not yet considered",
+  frontier: "candidate (dashed)",
+  current: "current",
+  visited: "considered",
+  path: "in the answer",
+  unreachable: "discarded (dotted)",
+  highlight: "highlighted (double ring)",
+};
+const SHAPE_LEGEND: Record<string, string> = {
+  idle: "drawn",
+  examining: "being examined",
+  tree: "kept",
+  relaxed: "improved",
+  rejected: "discarded (dotted)",
+  path: "in the answer",
+  back: "dashed",
+  highlight: "highlighted (long dashes)",
+};
+
 /**
  * Legend for the statuses that occur anywhere in this trace, with wording that does
  * not assume a particular algorithm.
@@ -154,14 +175,19 @@ const EDGE_LEGEND: Record<string, string> = {
 export function GraphLegend({
   nodeStatuses,
   edgeStatuses,
+  plane = false,
 }: {
   nodeStatuses: string[];
   edgeStatuses: string[];
+  /** Use point and shape wording. */
+  plane?: boolean;
 }) {
+  const nodeWords = plane ? POINT_LEGEND : NODE_LEGEND;
+  const edgeWords = plane ? SHAPE_LEGEND : EDGE_LEGEND;
   return (
-    <div className="legend" aria-label="Graph legend">
+    <div className="legend" aria-label={plane ? "Plane legend" : "Graph legend"}>
       {nodeStatuses
-        .filter((s) => NODE_LEGEND[s])
+        .filter((s) => nodeWords[s])
         .map((s) => (
           <span className="legend__item" key={`n-${s}`}>
             <svg viewBox="0 0 22 14" aria-hidden="true">
@@ -170,17 +196,17 @@ export function GraphLegend({
                 <circle cx="11" cy="7" r={s === "highlight" ? 4 : 5.5} />
               </g>
             </svg>
-            {NODE_LEGEND[s]}
+            {nodeWords[s]}
           </span>
         ))}
       {edgeStatuses
-        .filter((s) => EDGE_LEGEND[s])
+        .filter((s) => edgeWords[s])
         .map((s) => (
           <span className="legend__item" key={`e-${s}`}>
             <svg viewBox="0 0 22 14" aria-hidden="true">
               <line className={`g-edge g-edge--${s}`} x1="1" y1="7" x2="21" y2="7" />
             </svg>
-            {EDGE_LEGEND[s]}
+            {edgeWords[s]}
           </span>
         ))}
     </div>

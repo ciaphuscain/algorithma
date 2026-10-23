@@ -36,6 +36,8 @@ for (const path of [
   "/algorithms/hopcroft-karp",
   "/algorithms/held-karp",
   "/algorithms/digit-dp",
+  "/algorithms/graham-scan",
+  "/algorithms/kd-tree",
   "/arena",
   "/studio",
 ]) {

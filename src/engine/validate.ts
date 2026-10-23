@@ -2,6 +2,7 @@ import {
   ARRAY_MARKS,
   EDGE_STATUSES,
   GRID_MARKS,
+  MAX_PLANE_SHAPES,
   NODE_STATUSES,
   SEQUENCE_DISCIPLINES,
   TRACE_PROTOCOL,
@@ -26,6 +27,8 @@ export const TRACE_LIMITS = {
   maxGridCells: 40_000,
   maxStructures: 32,
   maxTreeNodes: 500,
+  maxPlanePoints: 500,
+  maxPlaneShapes: MAX_PLANE_SHAPES,
   maxStringLength: 500,
 } as const;
 
@@ -52,6 +55,20 @@ const isStr = (v: unknown): v is string =>
 const isCellList = (v: unknown): boolean =>
   Array.isArray(v) &&
   v.every((c) => Array.isArray(c) && c.length === 2 && isInt(c[0]) && isInt(c[1]));
+const isNum = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+const GEOMETRY_FIELDS: Record<string, string[]> = {
+  segment: ["x1", "y1", "x2", "y2"],
+  rect: ["x1", "y1", "x2", "y2"],
+  circle: ["x", "y", "r"],
+};
+/** A plane shape's geometry: exactly the numeric fields its kind needs. */
+const isGeometry = (v: unknown): boolean => {
+  if (!isObject(v) || typeof v.kind !== "string") return false;
+  const fields = GEOMETRY_FIELDS[v.kind];
+  if (!fields || Object.keys(v).length !== fields.length + 1) return false;
+  if (!fields.every((f) => isNum(v[f]))) return false;
+  return v.kind !== "circle" || (v.r as number) >= 0;
+};
 const oneOf =
   <T extends string>(values: readonly T[]) =>
   (v: unknown): v is T =>
@@ -190,6 +207,55 @@ function checkStructure(raw: unknown, path: string, c: Collector): void {
       }
       return;
     }
+    case "plane": {
+      const { bounds, points, pointStatus, annotations, shapes } = raw;
+      if (
+        !isObject(bounds) ||
+        ![bounds.minX, bounds.minY, bounds.maxX, bounds.maxY].every(isNum) ||
+        !((bounds.minX as number) < (bounds.maxX as number)) ||
+        !((bounds.minY as number) < (bounds.maxY as number))
+      ) {
+        c.add(`${path}.bounds`, "needs finite minX < maxX and minY < maxY");
+      }
+      if (!Array.isArray(points)) return c.add(`${path}.points`, "must be an array");
+      if (points.length > TRACE_LIMITS.maxPlanePoints)
+        return c.add(`${path}.points`, `exceeds ${TRACE_LIMITS.maxPlanePoints} points`);
+      const ids = new Set<string>();
+      points.forEach((p, i) => {
+        if (!isObject(p) || !isStr(p.id) || !isNum(p.x) || !isNum(p.y)) {
+          c.add(`${path}.points[${i}]`, "needs string id and finite x, y");
+        } else if (ids.has(p.id)) {
+          c.add(`${path}.points[${i}]`, `duplicate id "${p.id}"`);
+        } else ids.add(p.id);
+        if (isObject(p) && p.label !== undefined && !isStr(p.label))
+          c.add(`${path}.points[${i}].label`, "must be a string");
+      });
+      if (
+        !isObject(pointStatus) ||
+        !Object.entries(pointStatus).every(([k, v]) => ids.has(k) && oneOf(NODE_STATUSES)(v))
+      )
+        c.add(`${path}.pointStatus`, "must map known points to statuses");
+      if (
+        !isObject(annotations) ||
+        !Object.entries(annotations).every(([k, v]) => ids.has(k) && isStr(v))
+      )
+        c.add(`${path}.annotations`, "must map known points to strings");
+      if (!Array.isArray(shapes)) return c.add(`${path}.shapes`, "must be an array");
+      if (shapes.length > TRACE_LIMITS.maxPlaneShapes)
+        return c.add(`${path}.shapes`, `exceeds ${TRACE_LIMITS.maxPlaneShapes} shapes`);
+      const shapeIds = new Set<string>();
+      shapes.forEach((sh, i) => {
+        if (!isObject(sh) || !isStr(sh.id) || !oneOf(EDGE_STATUSES)(sh.status))
+          return c.add(`${path}.shapes[${i}]`, "needs string id and an edge status");
+        if (shapeIds.has(sh.id)) c.add(`${path}.shapes[${i}]`, `duplicate id "${sh.id}"`);
+        shapeIds.add(sh.id);
+        const { id: _id, status: _status, label, ...geometry } = sh;
+        if (label !== undefined && !isStr(label))
+          c.add(`${path}.shapes[${i}].label`, "must be a string");
+        if (!isGeometry(geometry)) c.add(`${path}.shapes[${i}]`, "invalid geometry");
+      });
+      return;
+    }
     default:
       c.add(`${path}.kind`, `unknown structure kind ${JSON.stringify(raw.kind)}`);
   }
@@ -223,6 +289,10 @@ const EVENT_FIELDS: Record<TraceEvent["type"], Record<string, (v: unknown) => bo
   "tree.remove": { s: isStr, node: isStr },
   "tree.splice": { s: isStr, node: isStr },
   "tree.move": { s: isStr, node: isStr, parent: isStr },
+  "plane.point": { s: isStr, point: isStr, status: oneOf(NODE_STATUSES) },
+  "plane.annotate": { s: isStr, point: isStr, text: (v) => v === null || isStr(v) },
+  "plane.draw": { s: isStr, id: isStr, shape: isGeometry, status: oneOf(EDGE_STATUSES) },
+  "plane.erase": { s: isStr, id: isStr },
   "structure.create": { s: isStr, structure: isObject },
   "structure.remove": { s: isStr },
   step: {},
@@ -235,6 +305,7 @@ const OPTIONAL_EVENT_FIELDS: Partial<
   "seq.pop": { index: isInt },
   "tree.add": { slot: isInt, edgeLabel: isStr },
   "tree.move": { slot: isInt },
+  "plane.draw": { label: isStr },
 };
 const META_FIELDS = new Set(["type", "line", "note", "vars", "count"]);
 
@@ -280,7 +351,7 @@ function checkEvent(raw: unknown, path: string, c: Collector): void {
  * contain structures it cannot draw.
  */
 const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string, unknown>> = {
-  // v2 only added the tree kind; every v1 trace is a valid v2 trace.
+  // v2 only added kinds, events and statuses; every v1 trace is a valid v2 trace.
   1: (raw) => ({ ...raw, version: 2 }),
 };
 

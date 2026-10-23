@@ -8,6 +8,9 @@ import {
   type GraphNode,
   type GridMark,
   type NodeStatus,
+  type PlaneGeometry,
+  type PlanePoint,
+  type PlaneStructure,
   type Scalar,
   type SequenceDiscipline,
   type Structure,
@@ -150,6 +153,28 @@ export class Tracer {
     return new TracedTree(this, name, emptyTree(options.binary, options.label));
   }
 
+  /**
+   * Points in the plane, with shapes drawn over them. The window defaults to the
+   * points' bounding box plus a margin.
+   */
+  plane(
+    name: string,
+    def: { points: PlanePoint[]; label?: string; bounds?: PlaneStructure["bounds"] },
+  ): TracedPlane {
+    const pointStatus: Record<string, NodeStatus> = {};
+    for (const p of def.points) pointStatus[p.id] = "unvisited";
+    this.register(name, {
+      kind: "plane",
+      ...(def.label ? { label: def.label } : {}),
+      bounds: def.bounds ?? planeBounds(def.points),
+      points: def.points.map((p) => ({ ...p })),
+      pointStatus,
+      annotations: {},
+      shapes: [],
+    });
+    return new TracedPlane(this, name);
+  }
+
   grid(
     name: string,
     rows: number,
@@ -276,6 +301,17 @@ export class Tracer {
   get counts(): Readonly<Record<string, number>> {
     return this.counters;
   }
+}
+
+/** The points' bounding box with a 10% margin (at least 1 unit) on every side. */
+export function planeBounds(points: readonly { x: number; y: number }[]): PlaneStructure["bounds"] {
+  const xs = points.map((p) => p.x);
+  const ys = points.map((p) => p.y);
+  const [minX, maxX] = xs.length ? [Math.min(...xs), Math.max(...xs)] : [0, 1];
+  const [minY, maxY] = ys.length ? [Math.min(...ys), Math.max(...ys)] : [0, 1];
+  const mx = Math.max(1, (maxX - minX) / 10);
+  const my = Math.max(1, (maxY - minY) / 10);
+  return { minX: minX - mx, maxX: maxX + mx, minY: minY - my, maxY: maxY + my };
 }
 
 export class TracedArray {
@@ -621,5 +657,58 @@ export class TracedTree {
     const n = this.t.nodes[id];
     if (!n) throw new Error(`unknown tree node ${id} in ${this.name}`);
     return n;
+  }
+}
+
+/**
+ * A traced plane. It remembers each shape's geometry, so `restyle` can change a
+ * shape's status without the algorithm repeating its coordinates.
+ */
+export class TracedPlane {
+  private readonly shapes = new Map<string, { shape: PlaneGeometry; label?: string }>();
+
+  constructor(
+    private readonly tracer: Tracer,
+    readonly name: string,
+  ) {}
+
+  point(id: string, status: NodeStatus, meta?: MetaArg): void {
+    this.tracer.emit({ type: "plane.point", s: this.name, point: id, status }, meta);
+  }
+
+  annotate(id: string, text: string | null, meta?: MetaArg): void {
+    this.tracer.emit({ type: "plane.annotate", s: this.name, point: id, text }, meta);
+  }
+
+  /** Add a shape, or replace the one with this id. */
+  draw(id: string, shape: PlaneGeometry, status: EdgeStatus, meta?: MetaArg, label?: string): void {
+    this.shapes.set(id, { shape, ...(label !== undefined ? { label } : {}) });
+    this.tracer.emit(
+      {
+        type: "plane.draw",
+        s: this.name,
+        id,
+        shape: { ...shape },
+        status,
+        ...(label !== undefined ? { label } : {}),
+      },
+      meta,
+    );
+  }
+
+  /** Change a drawn shape's status. */
+  restyle(id: string, status: EdgeStatus, meta?: MetaArg): void {
+    const known = this.shapes.get(id);
+    if (!known) throw new Error(`unknown shape ${id} in ${this.name}`);
+    this.draw(id, known.shape, status, meta, known.label);
+  }
+
+  erase(id: string, meta?: MetaArg): void {
+    if (!this.shapes.delete(id)) throw new Error(`unknown shape ${id} in ${this.name}`);
+    this.tracer.emit({ type: "plane.erase", s: this.name, id }, meta);
+  }
+
+  has(id: string): boolean {
+    return this.shapes.has(id);
   }
 }

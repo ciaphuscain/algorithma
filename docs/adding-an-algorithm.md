@@ -107,7 +107,7 @@ Open `/algorithms/<slug>`, step through the presets in both colour schemes, and 
 
 ## When no structure kind fits
 
-Geometry and timelines still need new kinds. Adding one is a protocol change, made once for all future algorithms of that family. The tree kind was added this way (protocol v2: `src/engine/tree.ts`, `TreeView.tsx`) and then used unchanged by five algorithms:
+Adding a kind is a protocol change, made once for all future algorithms of that family. The tree kind was added this way (protocol v2: `src/engine/tree.ts`, `TreeView.tsx`) and then used unchanged by many algorithms; the plane kind (`PlaneView.tsx`, `src/engine/plane.test.ts`) followed for geometry:
 
 1. Add the type to `src/engine/protocol.ts` and bump `TRACE_VERSION` if old traces would be affected.
 2. Add its events to the reducer (`reduce.ts`), validator (`validate.ts`) and tracer wrappers (`tracer.ts`), with engine tests.

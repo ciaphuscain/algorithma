@@ -3,6 +3,7 @@ import type { Focus } from "@/engine/state";
 import { ArrayView } from "./ArrayView";
 import { GraphLegend, GraphView } from "./GraphView";
 import { GridView } from "./GridView";
+import { PlaneView } from "./PlaneView";
 import { SequenceView } from "./SequenceView";
 import { TreeView } from "./TreeView";
 
@@ -51,6 +52,21 @@ export function StructureView({
           />
         </>
       );
+    case "plane":
+      return (
+        <>
+          <PlaneView name={name} structure={structure} focus={focus} />
+          <GraphLegend
+            nodeStatuses={
+              legend?.nodeStatuses ?? [...new Set(Object.values(structure.pointStatus))]
+            }
+            edgeStatuses={
+              legend?.edgeStatuses ?? [...new Set(structure.shapes.map((s) => s.status))]
+            }
+            plane
+          />
+        </>
+      );
   }
 }
 
@@ -60,6 +76,7 @@ const KIND_LABEL: Record<Structure["kind"], string> = {
   sequence: "",
   grid: "table",
   tree: "tree",
+  plane: "plane",
 };
 
 export function StructurePanel({

@@ -60,6 +60,9 @@ import { heldKarpEntry } from "./entries/held-karp";
 import { assignmentDpEntry } from "./entries/assignment-dp";
 import { digitDpEntry } from "./entries/digit-dp";
 import { convexHullTrickEntry } from "./entries/convex-hull-trick";
+import { grahamScanEntry } from "./entries/graham-scan";
+import { closestPairEntry } from "./entries/closest-pair";
+import { kdTreeEntry } from "./entries/kd-tree";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -102,6 +105,9 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   assignmentDpEntry,
   digitDpEntry,
   convexHullTrickEntry,
+  grahamScanEntry,
+  closestPairEntry,
+  kdTreeEntry,
   kmpEntry,
   ahoCorasickEntry,
   manacherEntry,

@@ -58,6 +58,9 @@ import { heldKarp } from "./dp/held-karp";
 import { assignmentDp } from "./dp/assignment-dp";
 import { digitDp } from "./dp/digit-dp";
 import { convexHullTrick } from "./dp/convex-hull-trick";
+import { grahamScan } from "./geometry/graham-scan";
+import { closestPair } from "./geometry/closest-pair";
+import { kdTree } from "./geometry/kd-tree";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -124,6 +127,9 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   assignmentDp,
   digitDp,
   convexHullTrick,
+  grahamScan,
+  closestPair,
+  kdTree,
 ];
 
 const byId = new Map(ALGORITHM_MODULES.map((m) => [m.id, m]));

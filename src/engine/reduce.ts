@@ -1,12 +1,14 @@
-import type {
-  ArrayStructure,
-  GraphStructure,
-  GridStructure,
-  SequenceStructure,
-  Structure,
-  StructureKind,
-  TraceEvent,
-  TreeStructure,
+import {
+  MAX_PLANE_SHAPES,
+  type ArrayStructure,
+  type GraphStructure,
+  type GridStructure,
+  type PlaneStructure,
+  type SequenceStructure,
+  type Structure,
+  type StructureKind,
+  type TraceEvent,
+  type TreeStructure,
 } from "./protocol";
 import type { TraceState } from "./state";
 import { treeAdd, treeMove, treeRemove, treeSplice } from "./tree";
@@ -29,6 +31,7 @@ type KindMap = {
   sequence: SequenceStructure;
   grid: GridStructure;
   tree: TreeStructure;
+  plane: PlaneStructure;
 };
 
 /** Run a shared tree operation, converting its errors into replay errors. */
@@ -44,6 +47,11 @@ function treeNode(t: TreeStructure, node: string, s: string) {
   const data = t.nodes[node];
   if (!data) throw new TraceReplayError(`unknown node "${node}" in tree "${s}"`);
   return data;
+}
+
+function planePoint(p: PlaneStructure, point: string, s: string): void {
+  if (!p.points.some((x) => x.id === point))
+    throw new TraceReplayError(`unknown point "${point}" in plane "${s}"`);
 }
 
 function get<K extends StructureKind>(state: TraceState, s: string, kind: K): KindMap[K] {
@@ -309,6 +317,43 @@ function applyUnchecked(state: TraceState, e: TraceEvent): void {
       // Structural, like remove and splice: no counter, so drawing a pointer change
       // that the algorithm also writes to an array is not counted twice.
       state.focus.push({ s: e.s, tone: "write", nodes: [e.node] });
+      break;
+    }
+    case "plane.point": {
+      const p = get(state, e.s, "plane");
+      planePoint(p, e.point, e.s);
+      p.pointStatus[e.point] = e.status;
+      state.focus.push({ s: e.s, tone: "visit", nodes: [e.point] });
+      break;
+    }
+    case "plane.annotate": {
+      const p = get(state, e.s, "plane");
+      planePoint(p, e.point, e.s);
+      if (e.text === null) delete p.annotations[e.point];
+      else p.annotations[e.point] = e.text;
+      break;
+    }
+    case "plane.draw": {
+      const p = get(state, e.s, "plane");
+      const shape = {
+        ...structuredClone(e.shape),
+        id: e.id,
+        status: e.status,
+        ...(e.label !== undefined ? { label: e.label } : {}),
+      };
+      const at = p.shapes.findIndex((x) => x.id === e.id);
+      if (at !== -1) p.shapes[at] = shape;
+      else if (p.shapes.length >= MAX_PLANE_SHAPES)
+        throw new TraceReplayError(`plane "${e.s}" already holds ${MAX_PLANE_SHAPES} shapes`);
+      else p.shapes.push(shape);
+      state.focus.push({ s: e.s, tone: "visit", edges: [e.id] });
+      break;
+    }
+    case "plane.erase": {
+      const p = get(state, e.s, "plane");
+      const at = p.shapes.findIndex((x) => x.id === e.id);
+      if (at === -1) throw new TraceReplayError(`unknown shape "${e.id}" in plane "${e.s}"`);
+      p.shapes.splice(at, 1);
       break;
     }
     case "structure.create": {

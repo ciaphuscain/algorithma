@@ -1594,3 +1594,84 @@ pre.code {
 .runner__status--problem {
   color: var(--tone-swap);
 }
+
+/* Plane */
+.p-grid line {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.p-frame {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+.p-tick {
+  fill: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.p-label {
+  fill: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+}
+.p-point__label {
+  fill: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 13px;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+}
+.p-rect {
+  fill: var(--tone-muted-soft);
+  fill-opacity: 0.55;
+  stroke: var(--tone-muted);
+  stroke-width: 1;
+}
+.p-rect--examining {
+  fill: var(--tone-compare-soft);
+  stroke: var(--tone-compare);
+  stroke-dasharray: 6 4;
+}
+.p-rect--tree {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+}
+.p-rect--path {
+  fill: var(--tone-path-soft);
+  stroke: var(--tone-path);
+  stroke-width: 2;
+}
+.p-rect--highlight {
+  fill: var(--tone-read-soft);
+  stroke: var(--tone-read);
+  stroke-dasharray: 16 4;
+}
+.p-rect--rejected {
+  fill: none;
+  stroke-dasharray: 2 6;
+}
+.p-circle {
+  fill: none;
+  stroke: var(--tone-muted);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+}
+.p-circle--examining {
+  stroke: var(--tone-compare);
+}
+.p-circle--path {
+  stroke: var(--tone-path);
+  stroke-width: 3;
+}
+.p-circle--highlight {
+  stroke: var(--tone-read);
+}
+.p-shape--focus {
+  stroke-width: 3;
+}

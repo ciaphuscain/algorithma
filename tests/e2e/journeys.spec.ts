@@ -149,7 +149,7 @@ test("explore search and filters, shareable via URL", async ({ page }) => {
   await expect(page).toHaveURL(/query=shortest/);
   await page.getByLabel("Search").fill("");
   await page.getByLabel("Worst-case time at most").selectOption("n log n");
-  await expect(page.getByTestId("result-count")).toContainText("42 interactive entries");
+  await expect(page.getByTestId("result-count")).toContainText("45 interactive entries");
   await page.goto("/explore?domain=searching-sorting");
   await expect(page.getByTestId("results")).toContainText("Bubble Sort");
   await expect(page.getByTestId("results")).not.toContainText("Breadth-First");
@@ -169,7 +169,7 @@ test("roadmap lists the curriculum honestly", async ({ page }) => {
   await expect(page.locator('[data-number="220"]')).toContainText("Same as #218");
   await page.getByLabel("Search the curriculum").fill("");
   await page.getByLabel("Status").selectOption("available");
-  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 78 of 600");
+  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 82 of 600");
   await page.locator('[data-number="11"]').getByRole("link", { name: "Bubble Sort" }).click();
   await expect(page).toHaveURL(/\/algorithms\/bubble-sort/);
 });
@@ -362,6 +362,29 @@ test("DP techniques: an optimal tour, and checks on matrices and heights", async
   await expect(page.locator(".alert--error")).toContainText("strictly increasing");
 });
 
+test("geometry: a hull on the plane, and checks on point lists", async ({ page }) => {
+  await page.goto("/algorithms/graham-scan");
+  await expect(page.locator('[data-kind="plane"]')).toBeVisible();
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText(
+    "Hull corners 0, 1, 3, 4, 5 (5); 6 popped",
+  );
+  await expect(page.getByLabel("Plane legend")).toContainText("in the answer");
+
+  await page.goto("/algorithms/closest-pair");
+  await page.getByLabel("Points (x,y pairs)").fill("3,4");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText("Give 2–32 points; got 1");
+
+  await page.goto("/algorithms/kd-tree");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText("Nearest: E (distance² 2)");
+  await expect(page.locator('[data-kind="tree"]')).toBeVisible();
+  await page.getByLabel("Query point q").fill("1,2,3");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText("Every point needs both an x and a y");
+});
+
 test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(String(e)));
@@ -426,6 +449,9 @@ test("every catalogue entry renders its visualizer without console errors", asyn
     "assignment-dp",
     "digit-dp",
     "convex-hull-trick",
+    "graham-scan",
+    "closest-pair",
+    "kd-tree",
   ]) {
     await page.goto(`/algorithms/${slug}`);
     await page.getByRole("button", { name: "Jump to end" }).click();

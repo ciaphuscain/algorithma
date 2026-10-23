@@ -50,6 +50,25 @@ export function describeStructure(name: string, s: Structure): string {
         .map(([id, st]) => `${String(s.nodes[id]?.value)}:${st}`);
       return `${label} (tree) = ${show(s.root)}${marked.length ? `; ${marked.join(", ")}` : ""}.`;
     }
+    case "plane": {
+      const byStatus = new Map<string, string[]>();
+      for (const p of s.points) {
+        const st = s.pointStatus[p.id] ?? "unvisited";
+        byStatus.set(st, [
+          ...(byStatus.get(st) ?? []),
+          `${p.label ?? p.id} (${p.x}, ${p.y})${s.annotations[p.id] ? ` ${s.annotations[p.id]}` : ""}`,
+        ]);
+      }
+      const points = [...byStatus].map(([st, ids]) => `${st}: ${ids.join(", ")}`).join("; ");
+      const shapes = s.shapes.map((sh) => {
+        const at =
+          sh.kind === "circle"
+            ? `circle at (${sh.x}, ${sh.y}) radius ${sh.r}`
+            : `${sh.kind === "rect" ? "box" : "segment"} (${sh.x1}, ${sh.y1})–(${sh.x2}, ${sh.y2})`;
+        return `${sh.label ? `${sh.label}: ` : ""}${at}, ${sh.status}`;
+      });
+      return `${label} (plane) — ${points}${shapes.length ? `; shapes: ${shapes.join("; ")}` : ""}.`;
+    }
     case "grid":
       return `${label}: ${s.rows}×${s.cols} table; rows ${s.cells.map((r) => `[${r.map((c) => (c === null ? "·" : String(c))).join(" ")}]`).join(" ")}.`;
   }

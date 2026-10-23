@@ -18,9 +18,9 @@ export const TRACE_PROTOCOL = "algorithma.trace" as const;
 /**
  * Version history:
  *   1 — arrays, graphs, sequences, grids.
- *   2 — adds the tree structure kind and tree.* events, including tree.move, the deque
- *       sequence discipline and the "highlight" node and edge statuses (v1 traces are
- *       valid v2 traces).
+ *   2 — adds the tree structure kind and tree.* events, including tree.move, the plane
+ *       structure kind and plane.* events, the deque sequence discipline and the
+ *       "highlight" node and edge statuses (v1 traces are valid v2 traces).
  */
 export const TRACE_VERSION = 2 as const;
 
@@ -152,8 +152,46 @@ export interface TreeStructure {
   annotations: Record<string, string>;
 }
 
+export interface PlanePoint {
+  id: string;
+  label?: string;
+  /** Data coordinates; y grows upwards. */
+  x: number;
+  y: number;
+}
+
+/** A segment from (x1, y1) to (x2, y2), an axis-aligned box with those corners, or a circle. */
+export type PlaneGeometry =
+  | { kind: "segment"; x1: number; y1: number; x2: number; y2: number }
+  | { kind: "rect"; x1: number; y1: number; x2: number; y2: number }
+  | { kind: "circle"; x: number; y: number; r: number };
+
+/** A drawn shape: hull edges, split lines, a strip, a search radius. Status reuses edge statuses. */
+export type PlaneShape = PlaneGeometry & { id: string; status: EdgeStatus; label?: string };
+
+/** Most shapes a plane may hold at once, so untrusted traces stay cheap to draw. */
+export const MAX_PLANE_SHAPES = 1_000;
+
+export interface PlaneStructure {
+  kind: "plane";
+  label?: string;
+  /** The visible window in data coordinates. */
+  bounds: { minX: number; minY: number; maxX: number; maxY: number };
+  points: PlanePoint[];
+  pointStatus: Record<string, NodeStatus>;
+  /** Short per-point annotation, e.g. a polar angle or a depth. */
+  annotations: Record<string, string>;
+  /** Drawn in order: later shapes on top. */
+  shapes: PlaneShape[];
+}
+
 export type Structure =
-  ArrayStructure | GraphStructure | SequenceStructure | GridStructure | TreeStructure;
+  | ArrayStructure
+  | GraphStructure
+  | SequenceStructure
+  | GridStructure
+  | TreeStructure
+  | PlaneStructure;
 export type StructureKind = Structure["kind"];
 
 /* -------------------------------------------------------------------- events */
@@ -207,6 +245,18 @@ export type TraceEvent = EventMeta &
     | { type: "tree.splice"; s: string; node: string }
     /** Re-attach a non-root node, with its subtree, under another node (not inside the subtree). */
     | { type: "tree.move"; s: string; node: string; parent: string; slot?: number }
+    | { type: "plane.point"; s: string; point: string; status: NodeStatus }
+    | { type: "plane.annotate"; s: string; point: string; text: string | null }
+    /** Add a shape, or replace the one with the same id (keeping its place in the drawing order). */
+    | {
+        type: "plane.draw";
+        s: string;
+        id: string;
+        shape: PlaneGeometry;
+        status: EdgeStatus;
+        label?: string;
+      }
+    | { type: "plane.erase"; s: string; id: string }
     | { type: "structure.create"; s: string; structure: Structure }
     | { type: "structure.remove"; s: string }
     | { type: "step" }

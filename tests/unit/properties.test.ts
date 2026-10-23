@@ -8,6 +8,10 @@ import { describe, expect, it } from "vitest";
 import { bfs } from "@/algorithms/graph/bfs";
 import { bubbleSort } from "@/algorithms/sorting/bubble-sort";
 import { runAlgorithm } from "@/algorithms/run";
+import { cross } from "@/algorithms/geometry/common";
+import { grahamScan } from "@/algorithms/geometry/graham-scan";
+import { closestPair } from "@/algorithms/geometry/closest-pair";
+import { kdTree } from "@/algorithms/geometry/kd-tree";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -1254,5 +1258,78 @@ describe("bitmask, digit and convex-hull DP properties", () => {
       }),
       { numRuns: 300 },
     );
+  });
+});
+
+describe("geometry properties", () => {
+  // Small coordinate ranges force repeated and collinear points.
+  const points = (min: number, max: number, range: number) =>
+    fc.array(
+      fc.record({ x: fc.integer({ min: 0, max: range }), y: fc.integer({ min: 0, max: range }) }),
+      { minLength: min, maxLength: max },
+    );
+
+  it("Graham scan: strictly convex, counter-clockwise, and every point inside or on it", () => {
+    fc.assert(
+      fc.property(fc.oneof(points(1, 40, 4), points(1, 40, 60)), (pts) => {
+        const { output, trace } = runAlgorithm(grahamScan, pts, { mode: "count" });
+        expect(grahamScan.check(pts, output)).toBeNull();
+        const h = output.hull.map((i) => pts[i]!);
+        if (h.length >= 3) {
+          for (let k = 0; k < h.length; k++) {
+            const [a, b, c] = [h[k]!, h[(k + 1) % h.length]!, h[(k + 2) % h.length]!];
+            expect(cross(a, b, c)).toBeGreaterThan(0);
+            for (const p of pts) expect(cross(a, b, p)).toBeGreaterThanOrEqual(0);
+          }
+        }
+        // Each point is pushed once and popped at most once, each pop costing one test.
+        const n = pts.length;
+        expect(output.popped).toBeLessThanOrEqual(n);
+        expect(trace.meta.counters["orientation tests"] ?? 0).toBeLessThanOrEqual(2 * n);
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("closest pair: matches brute force, with at most 7 strip comparisons per point", () => {
+    fc.assert(
+      fc.property(fc.oneof(points(2, 32, 5), points(2, 32, 100)), (pts) => {
+        const { output, trace } = runAlgorithm(closestPair, pts, { mode: "count" });
+        expect(closestPair.check(pts, output)).toBeNull();
+        expect(output.maxStrip).toBeLessThanOrEqual(7);
+        // Base cases cost at most 3 per 3 points and each strip point at most 7.
+        const n = pts.length;
+        const depth = Math.ceil(Math.log2(n));
+        expect(trace.meta.counters["distance computations"] ?? 0).toBeLessThanOrEqual(
+          n + 7 * n * depth,
+        );
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("2-d tree: nearest point matches brute force, and the tree has ⌊log₂ n⌋ + 1 levels", () => {
+    fc.assert(
+      fc.property(
+        fc.oneof(points(1, 26, 4), points(1, 26, 60)),
+        fc.record({ x: fc.integer({ min: -10, max: 70 }), y: fc.integer({ min: -10, max: 70 }) }),
+        (pts, q) => {
+          const input = { points: pts, q };
+          const { output } = runAlgorithm(kdTree, input, { mode: "count" });
+          expect(kdTree.check(input, output)).toBeNull();
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("2-d tree: the pruning examines fewer points than a full scan on spread-out inputs", () => {
+    const grid = Array.from({ length: 25 }, (_, i) => ({
+      x: (i % 5) * 10,
+      y: Math.floor(i / 5) * 10,
+    }));
+    const { output } = runAlgorithm(kdTree, { points: grid, q: { x: 1, y: 2 } });
+    expect(output.nearest).toBe(0);
+    expect(output.visited).toBeLessThan(grid.length / 2);
   });
 });

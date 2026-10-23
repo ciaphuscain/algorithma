@@ -166,14 +166,17 @@ describe("catalog search", () => {
       "binary-search",
       "bridges-articulation",
       "bst",
+      "closest-pair",
       "convex-hull-trick",
       "crt",
       "dfs",
       "dijkstra",
       "fenwick-tree",
       "fft",
+      "graham-scan",
       "heap-sort",
       "heavy-light",
+      "kd-tree",
       "kmp",
       "kosaraju",
       "kruskal",
@@ -241,6 +244,9 @@ describe("catalog search", () => {
     expect(entryForItem(237)?.slug).toBe("hopcroft-karp");
     expect(entryForItem(296)?.slug).toBe("held-karp");
     expect(entryForItem(300)?.slug).toBe("convex-hull-trick");
+    expect(entryForItem(406)?.slug).toBe("graham-scan");
+    expect(entryForItem(410)?.slug).toBe("closest-pair");
+    expect(entryForItem(418)?.slug).toBe("kd-tree"); // KD-tree search, duplicate of #177
     expect(entryForItem(218)).toBeUndefined(); // Borůvka: planned
     expect(getEntry("nope")).toBeUndefined();
   });
@@ -1116,5 +1122,67 @@ describe("worked examples agree with the engine", () => {
     expect(notes.some((n) => n.startsWith("Line 1 lies above the envelope of lines 0 and 2"))).toBe(
       true,
     );
+  });
+
+  it("geometry lessons: worked examples and practice answers match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const run = (id: string, presetId: string) => {
+      const m = getModule(id)!;
+      return runAlgorithm(m, m.input.presets.find((p) => p.id === presetId)!.value);
+    };
+    const notes = (trace: { events: { note?: string }[] }) =>
+      trace.events.flatMap((e) => (e.note ? [e.note] : []));
+
+    const hull = run("graham-scan", "classic");
+    expect(hull.output).toEqual({ hull: [0, 1, 3, 4, 5], popped: 6 });
+    expect(hull.trace.meta.counters["orientation tests"]).toBe(14);
+    const pushes = hull.trace.events.flatMap((e) => (e.type === "seq.push" ? [e.value] : []));
+    expect(pushes).toEqual([0, 2, 1, 7, 3, 9, 10, 6, 4, 8, 5]);
+    const turns = hull.trace.events.flatMap((e) =>
+      e.type === "step" && e.vars?.["cross product"] !== undefined ? [e.vars["cross product"]] : [],
+    );
+    expect(turns).toEqual([0, 24, -16, 40, 12, 14, -4, 8, -16, -4, 28, 24, -9, 28]);
+    expect(run("graham-scan", "grid").output.hull).toHaveLength(4);
+
+    const cp = run("closest-pair", "classic");
+    expect(cp.output).toMatchObject({ pair: [2, 7], d2: 5 });
+    expect(cp.trace.meta.counters["distance computations"]).toBe(23);
+    const halves = notes(cp.trace).filter((n) => n.startsWith("Best inside the halves"));
+    expect(halves).toEqual([
+      "Best inside the halves: √117 ≈ 10.82. A closer pair must straddle x = 12.",
+      "Best inside the halves: √185 ≈ 13.60. A closer pair must straddle x = 31.",
+      "Best inside the halves: √98 ≈ 9.90. A closer pair must straddle x = 21.",
+    ]);
+    const strips = notes(cp.trace).filter((n) => n.includes("of the split line"));
+    expect(strips.map((n) => n.split(" ")[0])).toEqual(["6", "6", "6"]);
+    const pts = getModule("closest-pair")!.input.presets[0]!.value as { x: number; y: number }[];
+    expect((pts.length * (pts.length - 1)) / 2).toBe(66);
+
+    const kd = run("kd-tree", "classic");
+    expect(kd.output).toEqual({ nearest: 4, d2: 2, visited: 3, height: 3 });
+    const kdNotes = notes(kd.trace);
+    expect(kdNotes.filter((n) => n.includes("nearest so far")).map((n) => n.slice(0, 1))).toEqual([
+      "F",
+      "E",
+    ]);
+    expect(kdNotes.some((n) => n.startsWith("Skip the subtree under B"))).toBe(true);
+    expect(run("kd-tree", "prune").output).toMatchObject({ visited: 5, height: 4 });
+    // The lesson's worst case: points around a circle centred on q are all measured.
+    const circle = [
+      [5, 0],
+      [-5, 0],
+      [0, 5],
+      [0, -5],
+      [3, 4],
+      [-3, 4],
+      [3, -4],
+      [-3, -4],
+      [4, 3],
+      [-4, 3],
+      [4, -3],
+      [-4, -3],
+    ].map(([x, y]) => ({ x: x! + 10, y: y! + 10 }));
+    const ring = runAlgorithm(getModule("kd-tree")!, { points: circle, q: { x: 10, y: 10 } });
+    expect(ring.output.visited).toBe(12);
   });
 });
