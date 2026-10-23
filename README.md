@@ -6,7 +6,7 @@ ALGORITHMA is an algorithm encyclopedia whose entries can be run. Pick an algori
 
 ## What is here
 
-- **28 interactive algorithms**: linear and binary search; bubble, selection, insertion, merge, quick and heap sort; BFS, DFS, Dijkstra, Bellman–Ford, Floyd–Warshall, topological sort (Kahn and DFS), union-find, Kruskal and Prim; edit distance, LCS, 0/1 knapsack and longest increasing subsequence; KMP string matching; tree traversals, binary search trees, tries, segment trees and Fenwick trees.
+- **47 interactive algorithms**, covering every Tier 1 and Tier 2 item of the curriculum: linear and binary search; bubble, selection, insertion, merge, quick and heap sort; prefix sums, sliding window, two pointers, monotonic stack and queue, sparse table; BFS, DFS, Dijkstra, A\*, Bellman–Ford, Floyd–Warshall, topological sort (Kahn and DFS), strongly connected components (Kosaraju, Tarjan), bridges and articulation points, union-find, Kruskal and Prim; memoization vs tabulation, edit distance, LCS, 0/1 knapsack and longest increasing subsequence; KMP, Aho–Corasick, Manacher, suffix array, suffix tree and suffix automaton; tree traversals, binary search trees, tries, segment trees, Fenwick trees, binary lifting (LCA) and heavy-light decomposition; matrix exponentiation.
 - **Lessons at five depths** (intuition → mechanics → implementation → mathematics → advanced), tested Python and JavaScript code, practice questions with hints, and printable exam notes.
 - **A 600-algorithm roadmap** with priority tiers, showing honestly which entries exist and which are planned.
 - **Arena**: compare sorting algorithms on identical, seeded inputs by exact operation counts.

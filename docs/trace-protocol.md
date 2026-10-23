@@ -47,9 +47,11 @@ Position _p_ means "after the first _p_ events"; position 0 is the initial state
 | ---------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | `array`    | `values`, `marks[]`, `pointers{}`, optional `display: "bars" \| "cells"`                                             | marks: `sorted`, `pivot`, `found`, `discarded`, `active`, `min`                                                                            |
 | `graph`    | `directed`, `nodes[{id,x,y,label?}]`, `edges[{id,from,to,weight?}]`, `nodeStatus{}`, `edgeStatus{}`, `annotations{}` | x, y in the unit square, supplied by the producer so replay draws the same picture                                                         |
-| `sequence` | `discipline: queue \| stack \| priority`, `items[]`                                                                  | priority pops name the index removed                                                                                                       |
+| `sequence` | `discipline: queue \| stack \| priority \| deque`, `items[]`                                                         | priority pops name the index removed; deque pops name index 0 (front) or the last index (back)                                             |
 | `grid`     | `rows`, `cols`, `cells[][]`, `marks[][]`, optional `rowHeaders`, `colHeaders`                                        | DP tables, matrices                                                                                                                        |
 | `tree`     | `binary`, `root`, `nodes{id: {value, children[], edgeLabel?}}`, `nodeStatus{}`, `annotations{}`                      | binary trees keep two slots `[left, right]` (`null` = empty); general trees keep an ordered child list. Layout is computed by the renderer |
+
+Node statuses (graphs and trees): `unvisited`, `frontier`, `current`, `visited`, `path`, `unreachable`, `highlight`. Edge statuses: `idle`, `examining`, `tree`, `relaxed`, `rejected`, `path`, `back`, `highlight`. Renderers draw `highlight` as a double ring on nodes and long dashes on edges, and the legend names every status in use.
 
 ## Events
 
@@ -67,7 +69,7 @@ Every event may carry `line` (1-based pseudocode line; persists until changed), 
 | `graph.edge {s,edge,status}`                      | edge status; focus its endpoints                                                                            |                |
 | `graph.annotate {s,node,text}`                    | short label under a node (`null` clears)                                                                    |                |
 | `seq.push {s,value}`                              | append                                                                                                      |                |
-| `seq.pop {s,index?}`                              | remove front (queue), back (stack) or `index` (priority)                                                    |                |
+| `seq.pop {s,index?}`                              | remove front (queue), back (stack) or `index` (priority; deque: 0 or last)                                  |                |
 | `grid.write {s,r,c,value}`                        | set a cell                                                                                                  | writes +1      |
 | `grid.read {s,cells}`                             | focus cells                                                                                                 | reads +cells   |
 | `grid.mark {s,cells,mark}`                        | persistent cell marks                                                                                       |                |
@@ -110,10 +112,10 @@ Producers have an event budget (default 50,000). When it is exhausted the tracer
 
 ## Versions
 
-| version | change                                                                                                                        |
-| ------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| 1       | arrays, graphs, sequences, grids                                                                                              |
-| 2       | adds the `tree` structure and the eight `tree.*` events. Every v1 trace is a valid v2 trace; migration only bumps the version |
+| version | change                                                                                                                                                                                                                                                                                                |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1       | arrays, graphs, sequences, grids                                                                                                                                                                                                                                                                      |
+| 2       | adds the `tree` structure and the eight `tree.*` events, the `deque` sequence discipline and the `highlight` node and edge status. Every v1 trace is a valid v2 trace; migration only bumps the version. (Version 2 has not been released yet, so these were added to it rather than to a version 3.) |
 
 `tree.move`, `tree.remove` and `tree.splice` change no counter: they are structural. When an algorithm both stores a pointer in an array and draws it as a tree edge (union-find), the array write is the counted operation.
 

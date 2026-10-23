@@ -98,14 +98,14 @@ input text ──parse──▶ validated input ──module.run(input, tracer)�
 
 ## 8. Priorities
 
-- **P0 (done):** trace engine (protocol v2); 28 algorithms on five shared renderers (arrays, graphs incl. directed and weighted, queues/stacks/priority queues, tables, trees); learning pages; explore; 600-item roadmap; Arena; Studio import with a tested renderer-reuse guarantee; accessibility baseline; error boundaries and CSP; browser code sandbox (off by default); tests and CI.
+- **P0 (done):** trace engine (protocol v2); 47 algorithms, every Tier 1 and Tier 2 curriculum item, on five shared renderers (arrays, graphs incl. directed and weighted, queues/stacks/priority queues/deques, tables, trees); learning pages; explore; 600-item roadmap; Arena; Studio import with a tested renderer-reuse guarantee; accessibility baseline; error boundaries and CSP; browser code sandbox (off by default); tests and CI.
 - **P0 (next):** independent review of the code sandbox; expert review of lessons; heaps and recursion as trees. See [progress.md](progress.md) for the full backlog.
 - **P1:** exam-question bank growth, trace compression, learning paths from the prerequisite graph, persistence + accounts.
 - **Deferred:** enabling user code execution (until the sandbox is independently reviewed), server-side execution, AI tutor (optional, never a dependency of core features), community contributions, educator tools.
 
 ## 9. Definition of the first release
 
-A user can find an algorithm, read it at the depth they choose, run it on their own valid input (invalid input is rejected with a reason), step forwards and backwards through a faithful trace with pseudocode, variables and operation counts, confirm the output was independently checked, and test their understanding — on desktop or phone, by keyboard or pointer, in light or dark mode. This holds today for all 28 interactive entries, which share one visualization pipeline.
+A user can find an algorithm, read it at the depth they choose, run it on their own valid input (invalid input is rejected with a reason), step forwards and backwards through a faithful trace with pseudocode, variables and operation counts, confirm the output was independently checked, and test their understanding — on desktop or phone, by keyboard or pointer, in light or dark mode. This holds today for all 47 interactive entries, which share one visualization pipeline.
 
 ## 10. Verification
 
