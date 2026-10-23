@@ -168,12 +168,18 @@ describe("catalog search", () => {
       "linear-search",
       "lis",
       "merge-sort",
+      "monotonic-queue",
+      "monotonic-stack",
+      "prefix-sums",
       "prim",
       "segment-tree",
+      "sliding-window",
+      "sparse-table",
       "topological-sort",
       "topological-sort-dfs",
       "tree-traversals",
       "trie",
+      "two-pointers",
       "union-find",
     ]);
     expect(slugs({ maxWorst: "log n" }).sort()).toEqual([
@@ -584,5 +590,58 @@ describe("worked examples agree with the engine", () => {
       13, 17, 45,
     ]);
     expect(fw.trace.meta.counters["nodes visited"]).toBe(9);
+  });
+
+  it("array technique lessons: worked examples and practice answers match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const run = (id: string, input: unknown) => runAlgorithm(getModule(id)!, input);
+
+    const prefix = run("prefix-sums", {
+      values: [3, 1, 4, 1, 5, 9, 2, 6],
+      queries: [
+        [2, 5],
+        [0, 7],
+        [6, 6],
+        [3, 6],
+      ],
+    }).output;
+    expect(prefix.prefix).toEqual([0, 3, 4, 8, 9, 14, 23, 25, 31]);
+    expect(prefix.sums).toEqual([19, 31, 2, 17]); // 17 is the practice answer
+
+    const window = run("sliding-window", { values: [2, 3, 1, 2, 4, 3], target: 7 });
+    expect(window.output).toEqual({ length: 2, start: 4 });
+    expect(window.trace.meta.counters.reads).toBe(11);
+    expect(run("sliding-window", { values: [1, 2, 3, 4, 5], target: 11 }).output.length).toBe(3);
+
+    const pair = run("two-pointers", { values: [1, 3, 4, 6, 8, 10, 13], target: 13 });
+    expect(pair.output).toEqual([1, 5]);
+    expect(pair.trace.meta.counters["pair checks"]).toBe(3);
+
+    const stack = run("monotonic-stack", [73, 74, 75, 71, 69, 72, 76, 73]);
+    expect(stack.output).toEqual([74, 75, 76, 72, 72, 76, null, null]);
+    expect(stack.trace.meta.counters.comparisons).toBe(10);
+    expect(run("monotonic-stack", [2, 1, 2, 4, 3]).output[1]).toBe(2);
+
+    const queue = run("monotonic-queue", { values: [1, 3, -1, -3, 5, 3, 6, 7], k: 3 });
+    expect(queue.output).toEqual([3, 3, 5, 5, 6, 7]);
+    expect(queue.trace.meta.counters.comparisons).toBe(10);
+    expect(run("monotonic-queue", { values: [4, 2, 12, 3], k: 2 }).output.at(-1)).toBe(12);
+
+    const sparse = run("sparse-table", {
+      values: [5, 2, 4, 7, 6, 3, 1, 2],
+      queries: [
+        [0, 4],
+        [3, 6],
+        [2, 3],
+      ],
+    });
+    expect(sparse.output.table).toEqual([
+      [5, 2, 4, 7, 6, 3, 1, 2],
+      [2, 2, 4, 6, 3, 1, 1, null],
+      [2, 2, 3, 1, 1, null, null, null],
+      [1, null, null, null, null, null, null, null],
+    ]);
+    expect(sparse.output.answers).toEqual([2, 1, 4]);
+    expect(sparse.trace.meta.counters.comparisons).toBe(16);
   });
 });

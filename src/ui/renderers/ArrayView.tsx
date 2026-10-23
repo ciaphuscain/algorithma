@@ -49,11 +49,13 @@ export function ArrayView({
   const chartH = asBars ? 180 : 44;
   const top = 26; // room for focus labels
   const pointerRows = Object.keys(structure.pointers).length > 0 ? 2 : 0;
-  const height = top + chartH + (showIndices ? 18 : 0) + 16 + pointerRows * 14 + 4;
-
   const nums = values.map((v) => (typeof v === "number" ? v : 0));
   const maxV = Math.max(1, ...nums.map((v) => Math.max(v, 0)));
   const minV = Math.min(0, ...nums);
+  // Labels of negative bars sit below the bar; keep them clear of the index row.
+  const negativeLabels = asBars && showValues && minV < 0 ? 14 : 0;
+  const height = top + chartH + negativeLabels + (showIndices ? 18 : 0) + 16 + pointerRows * 14 + 4;
+
   const span = maxV - minV || 1;
   const baseline = top + chartH * (maxV / span);
 
@@ -83,7 +85,7 @@ export function ArrayView({
           y = val >= 0 ? baseline - barH : baseline;
           h = barH;
         }
-        const below = top + chartH;
+        const below = top + chartH + negativeLabels;
         return (
           <g key={i}>
             <rect className={cls} x={x} y={y} width={w} height={h} rx={Math.min(4, w / 4)} />

@@ -18,8 +18,8 @@ export const TRACE_PROTOCOL = "algorithma.trace" as const;
 /**
  * Version history:
  *   1 — arrays, graphs, sequences, grids.
- *   2 — adds the tree structure kind and tree.* events, including tree.move (v1 traces
- *       are valid v2 traces).
+ *   2 — adds the tree structure kind and tree.* events, including tree.move, and the
+ *       deque sequence discipline (v1 traces are valid v2 traces).
  */
 export const TRACE_VERSION = 2 as const;
 
@@ -56,7 +56,7 @@ export type EdgeStatus = (typeof EDGE_STATUSES)[number];
 export const GRID_MARKS = ["filled", "active", "path", "base"] as const;
 export type GridMark = (typeof GRID_MARKS)[number];
 
-export const SEQUENCE_DISCIPLINES = ["queue", "stack", "priority"] as const;
+export const SEQUENCE_DISCIPLINES = ["queue", "stack", "priority", "deque"] as const;
 export type SequenceDiscipline = (typeof SEQUENCE_DISCIPLINES)[number];
 
 /** Transient emphasis tone attached to the elements an event touched. */

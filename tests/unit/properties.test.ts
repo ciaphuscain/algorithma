@@ -729,3 +729,98 @@ describe("Fenwick tree properties", () => {
     );
   });
 });
+
+/* ------------------------------------------------------- array techniques */
+
+import { prefixSums } from "@/algorithms/arrays/prefix-sums";
+import { slidingWindow } from "@/algorithms/arrays/sliding-window";
+import { twoPointers } from "@/algorithms/arrays/two-pointers";
+import { monotonicStack } from "@/algorithms/arrays/monotonic-stack";
+import { monotonicQueue } from "@/algorithms/arrays/monotonic-queue";
+import { sparseTable } from "@/algorithms/arrays/sparse-table";
+
+const ranged = (maxN: number) =>
+  fc.integer({ min: 1, max: maxN }).chain((n) =>
+    fc.record({
+      values: fc.array(fc.integer({ min: -99, max: 99 }), { minLength: n, maxLength: n }),
+      queries: fc.array(
+        fc
+          .tuple(fc.integer({ min: 0, max: n - 1 }), fc.integer({ min: 0, max: n - 1 }))
+          .map(([a, b]): [number, number] => [Math.min(a, b), Math.max(a, b)]),
+        { maxLength: 6 },
+      ),
+    }),
+  );
+
+describe("array technique properties", () => {
+  it("prefix sums: correct, and every range costs exactly two reads of P", () => {
+    fc.assert(
+      fc.property(ranged(16), (input) => {
+        const { output, trace } = runAlgorithm(prefixSums, input, { mode: "count" });
+        expect(prefixSums.check(input, output)).toBeNull();
+        expect(trace.meta.counters.reads).toBe(input.values.length + 2 * input.queries.length);
+      }),
+    );
+  });
+
+  it("sparse table: correct, n·⌊lg n⌋-sized build, and two table reads per query", () => {
+    fc.assert(
+      fc.property(ranged(16), (input) => {
+        const { output, trace } = runAlgorithm(sparseTable, input, { mode: "count" });
+        expect(sparseTable.check(input, output)).toBeNull();
+        const n = input.values.length;
+        let blocks = 0;
+        for (let j = 1; 2 ** j <= n; j++) blocks += n - 2 ** j + 1;
+        expect(trace.meta.counters.writes).toBe(n + blocks);
+        expect(trace.meta.counters.reads).toBe(2 * blocks + 2 * input.queries.length);
+      }),
+    );
+  });
+
+  it("sliding window: matches brute force and reads each element at most twice", () => {
+    const inputs = fc.record({
+      values: fc.array(fc.integer({ min: 1, max: 20 }), { minLength: 1, maxLength: 20 }),
+      target: fc.integer({ min: 1, max: 150 }),
+    });
+    fc.assert(
+      fc.property(inputs, (input) => {
+        const { output, trace } = runAlgorithm(slidingWindow, input, { mode: "count" });
+        expect(slidingWindow.check(input, output)).toBeNull();
+        expect(trace.meta.counters.reads).toBeLessThanOrEqual(2 * input.values.length);
+      }),
+    );
+  });
+
+  it("two pointers: agrees with brute force within n − 1 pair checks", () => {
+    const inputs = fc.record({
+      values: fc
+        .array(fc.integer({ min: -30, max: 30 }), { minLength: 2, maxLength: 20 })
+        .map((v) => v.sort((a, b) => a - b)),
+      target: fc.integer({ min: -60, max: 60 }),
+    });
+    fc.assert(
+      fc.property(inputs, (input) => {
+        const { output, trace } = runAlgorithm(twoPointers, input, { mode: "count" });
+        expect(twoPointers.check(input, output)).toBeNull();
+        expect(trace.meta.counters["pair checks"] ?? 0).toBeLessThanOrEqual(
+          input.values.length - 1,
+        );
+      }),
+    );
+  });
+
+  it("monotonic stack and queue: correct, with at most 2n comparisons", () => {
+    const values = fc.array(fc.integer({ min: -9, max: 9 }), { minLength: 1, maxLength: 16 });
+    fc.assert(
+      fc.property(values, fc.integer({ min: 1, max: 16 }), (a, k0) => {
+        const stack = runAlgorithm(monotonicStack, a, { mode: "count" });
+        expect(monotonicStack.check(a, stack.output)).toBeNull();
+        expect(stack.trace.meta.counters.comparisons).toBeLessThanOrEqual(2 * a.length - 1);
+        const input = { values: a, k: Math.min(k0, a.length) };
+        const queue = runAlgorithm(monotonicQueue, input, { mode: "count" });
+        expect(monotonicQueue.check(input, queue.output)).toBeNull();
+        expect(queue.trace.meta.counters.comparisons).toBeLessThanOrEqual(2 * a.length);
+      }),
+    );
+  });
+});

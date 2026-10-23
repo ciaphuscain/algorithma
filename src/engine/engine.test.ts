@@ -257,3 +257,38 @@ describe("validateTrace", () => {
     }
   });
 });
+
+describe("deque sequences", () => {
+  function dequeTrace(): Trace {
+    const t = new Tracer({ id: "deque", version: 1 });
+    const D = t.sequence("D", "deque");
+    D.push(1);
+    D.push(2);
+    D.push(3);
+    D.popFront();
+    D.popBack();
+    return t.finish(null, null);
+  }
+
+  it("pops from both ends and replays backward to the same states", () => {
+    const trace = dequeTrace();
+    const player = new TracePlayer(trace, { keyframeInterval: 2 });
+    const final = player.finalState().structures.D;
+    expect(final?.kind === "sequence" && final.items).toEqual([2]);
+    const forward = Array.from({ length: player.length + 1 }, (_, p) => player.stateAt(p));
+    for (let p = player.length; p >= 0; p--) expect(player.stateAt(p)).toEqual(forward[p]);
+    expect(validateTrace(JSON.parse(JSON.stringify(trace))).ok).toBe(true);
+  });
+
+  it("rejects a pop from the middle, and the SDK refuses queue-style pops", () => {
+    const raw = JSON.parse(JSON.stringify(dequeTrace()));
+    raw.events[3] = { type: "seq.pop", s: "D", index: 1 };
+    const result = validateTrace(raw);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.errors[0]).toMatch(/must name the front \(0\) or the back/);
+    const t = new Tracer({ id: "deque", version: 1 });
+    const D = t.sequence("D", "deque");
+    D.push(1);
+    expect(() => D.pop()).toThrow(/popFront or popBack/);
+  });
+});

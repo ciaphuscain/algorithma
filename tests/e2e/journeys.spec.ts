@@ -149,7 +149,7 @@ test("explore search and filters, shareable via URL", async ({ page }) => {
   await expect(page).toHaveURL(/query=shortest/);
   await page.getByLabel("Search").fill("");
   await page.getByLabel("Worst-case time at most").selectOption("n log n");
-  await expect(page.getByTestId("result-count")).toContainText("19 interactive entries");
+  await expect(page.getByTestId("result-count")).toContainText("25 interactive entries");
   await page.goto("/explore?domain=searching-sorting");
   await expect(page.getByTestId("results")).toContainText("Bubble Sort");
   await expect(page.getByTestId("results")).not.toContainText("Breadth-First");
@@ -169,7 +169,7 @@ test("roadmap lists the curriculum honestly", async ({ page }) => {
   await expect(page.locator('[data-number="220"]')).toContainText("Same as #218");
   await page.getByLabel("Search the curriculum").fill("");
   await page.getByLabel("Status").selectOption("available");
-  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 38 of 600");
+  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 46 of 600");
   await page.locator('[data-number="11"]').getByRole("link", { name: "Bubble Sort" }).click();
   await expect(page).toHaveURL(/\/algorithms\/bubble-sort/);
 });
@@ -238,6 +238,20 @@ test("union-find moves subtrees; Bellman–Ford reports a negative cycle", async
   await expect(page.getByTestId("result")).toContainText("negative cycle");
 });
 
+test("deque renderer: the monotonic queue shows both ends and the window maxima", async ({
+  page,
+}) => {
+  await page.goto("/algorithms/monotonic-queue");
+  const deque = page.locator('[data-kind="sequence"]');
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(deque).toContainText("front");
+  await expect(deque).toContainText("back");
+  await expect(page.getByTestId("result")).toContainText("Window maxima: 3, 3, 5, 5, 6, 7");
+  await page.getByLabel("Window size k").fill("9");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText("between 1 and 8");
+});
+
 test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(String(e)));
@@ -271,6 +285,12 @@ test("every catalogue entry renders its visualizer without console errors", asyn
     "topological-sort-dfs",
     "lis",
     "fenwick-tree",
+    "prefix-sums",
+    "sliding-window",
+    "two-pointers",
+    "monotonic-stack",
+    "monotonic-queue",
+    "sparse-table",
   ]) {
     await page.goto(`/algorithms/${slug}`);
     await page.getByRole("button", { name: "Jump to end" }).click();

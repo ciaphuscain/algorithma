@@ -223,6 +223,11 @@ function applyUnchecked(state: TraceState, e: TraceEvent): void {
           throw new TraceReplayError(`priority pop on "${e.s}" needs a valid index`);
         }
         q.items.splice(e.index, 1);
+      } else if (q.discipline === "deque") {
+        if (e.index !== 0 && e.index !== q.items.length - 1) {
+          throw new TraceReplayError(`deque pop on "${e.s}" must name the front (0) or the back`);
+        }
+        q.items.splice(e.index, 1);
       } else if (q.discipline === "queue") {
         q.items.shift();
       } else {

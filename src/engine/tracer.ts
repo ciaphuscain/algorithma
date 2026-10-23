@@ -405,10 +405,38 @@ export class TracedSequence {
   /** Remove from the front (queue) or back (stack). */
   pop(meta?: MetaArg): Scalar {
     if (this.discipline === "priority") throw new Error("use popAt for priority sequences");
+    if (this.discipline === "deque") throw new Error("use popFront or popBack for deques");
     if (this.items.length === 0) throw new Error(`pop from empty ${this.discipline} ${this.name}`);
     const value = this.discipline === "queue" ? this.items.shift()! : this.items.pop()!;
     this.tracer.emit({ type: "seq.pop", s: this.name }, meta);
     return value;
+  }
+
+  /** Deques: remove the first item. */
+  popFront(meta?: MetaArg): Scalar {
+    return this.popEnd(0, meta);
+  }
+
+  /** Deques: remove the last item. */
+  popBack(meta?: MetaArg): Scalar {
+    return this.popEnd(this.items.length - 1, meta);
+  }
+
+  /** Deques: the items, front first. */
+  get front(): Scalar | undefined {
+    return this.items[0];
+  }
+
+  get back(): Scalar | undefined {
+    return this.items[this.items.length - 1];
+  }
+
+  private popEnd(index: number, meta?: MetaArg): Scalar {
+    if (this.discipline !== "deque") throw new Error("popFront/popBack are only for deques");
+    if (this.items.length === 0) throw new Error(`pop from empty deque ${this.name}`);
+    const [value] = this.items.splice(index, 1);
+    this.tracer.emit({ type: "seq.pop", s: this.name, index }, meta);
+    return value!;
   }
 
   /** Remove the item at `index` (priority sequences: the algorithm chooses the minimum). */

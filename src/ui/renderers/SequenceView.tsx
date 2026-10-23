@@ -4,6 +4,7 @@ const ENDS: Record<SequenceStructure["discipline"], [string, string]> = {
   queue: ["front", "back"],
   stack: ["bottom", "top"],
   priority: ["", ""],
+  deque: ["front", "back"],
 };
 
 export function SequenceView({ structure }: { structure: SequenceStructure }) {

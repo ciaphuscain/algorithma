@@ -29,11 +29,22 @@ import { floydWarshallEntry } from "./entries/floyd-warshall";
 import { topologicalSortDfsEntry } from "./entries/topological-sort-dfs";
 import { lisEntry } from "./entries/lis";
 import { fenwickTreeEntry } from "./entries/fenwick-tree";
+import { prefixSumsEntry } from "./entries/prefix-sums";
+import { slidingWindowEntry } from "./entries/sliding-window";
+import { twoPointersEntry } from "./entries/two-pointers";
+import { monotonicStackEntry } from "./entries/monotonic-stack";
+import { monotonicQueueEntry } from "./entries/monotonic-queue";
+import { sparseTableEntry } from "./entries/sparse-table";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
   linearSearchEntry,
   binarySearchEntry,
+  prefixSumsEntry,
+  twoPointersEntry,
+  slidingWindowEntry,
+  monotonicStackEntry,
+  monotonicQueueEntry,
   bubbleSortEntry,
   selectionSortEntry,
   insertionSortEntry,
@@ -60,6 +71,7 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   trieEntry,
   segmentTreeEntry,
   fenwickTreeEntry,
+  sparseTableEntry,
 ];
 
 const bySlug = new Map(ENTRIES.map((e) => [e.slug, e]));
