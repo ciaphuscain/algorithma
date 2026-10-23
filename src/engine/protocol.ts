@@ -15,7 +15,14 @@
  */
 
 export const TRACE_PROTOCOL = "algorithma.trace" as const;
-export const TRACE_VERSION = 1 as const;
+/**
+ * Version history:
+ *   1 — arrays, graphs, sequences, grids.
+ *   2 — adds the tree structure kind and tree.* events, including tree.move, the plane
+ *       structure kind and plane.* events, the deque sequence discipline and the
+ *       "highlight" node and edge statuses (v1 traces are valid v2 traces).
+ */
+export const TRACE_VERSION = 2 as const;
 
 export type Scalar = number | string | boolean | null;
 export type VarValue = Scalar | Scalar[];
@@ -26,25 +33,53 @@ export type VarValue = Scalar | Scalar[];
 export const ARRAY_MARKS = ["sorted", "pivot", "found", "discarded", "active", "min"] as const;
 export type ArrayMark = (typeof ARRAY_MARKS)[number];
 
-export const NODE_STATUSES = ["unvisited", "frontier", "current", "visited", "path", "unreachable"] as const;
+export const NODE_STATUSES = [
+  "unvisited",
+  "frontier",
+  "current",
+  "visited",
+  "path",
+  "unreachable",
+  "highlight",
+] as const;
 export type NodeStatus = (typeof NODE_STATUSES)[number];
 
-export const EDGE_STATUSES = ["idle", "examining", "tree", "relaxed", "rejected", "path", "back"] as const;
+export const EDGE_STATUSES = [
+  "idle",
+  "examining",
+  "tree",
+  "relaxed",
+  "rejected",
+  "path",
+  "back",
+  "highlight",
+] as const;
 export type EdgeStatus = (typeof EDGE_STATUSES)[number];
 
 export const GRID_MARKS = ["filled", "active", "path", "base"] as const;
 export type GridMark = (typeof GRID_MARKS)[number];
 
-export const SEQUENCE_DISCIPLINES = ["queue", "stack", "priority"] as const;
+export const SEQUENCE_DISCIPLINES = ["queue", "stack", "priority", "deque"] as const;
 export type SequenceDiscipline = (typeof SEQUENCE_DISCIPLINES)[number];
 
 /** Transient emphasis tone attached to the elements an event touched. */
-export const FOCUS_TONES = ["compare", "swap", "read", "write", "visit", "relax", "match", "mismatch"] as const;
+export const FOCUS_TONES = [
+  "compare",
+  "swap",
+  "read",
+  "write",
+  "visit",
+  "relax",
+  "match",
+  "mismatch",
+] as const;
 export type FocusTone = (typeof FOCUS_TONES)[number];
 
 export interface ArrayStructure {
   kind: "array";
   label?: string;
+  /** Rendering hint only: "bars" (heights) or "cells" (boxes). Renderers may ignore it. */
+  display?: "bars" | "cells";
   values: Scalar[];
   marks: (ArrayMark | null)[];
   pointers: Record<string, number>;
@@ -95,7 +130,68 @@ export interface GridStructure {
   colHeaders?: string[];
 }
 
-export type Structure = ArrayStructure | GraphStructure | SequenceStructure | GridStructure;
+export interface TreeNodeData {
+  value: Scalar;
+  /**
+   * Ordered child ids. Binary trees always have exactly two slots, [left, right],
+   * with null for an empty slot, so a node's shape (left vs right child) is kept.
+   */
+  children: (string | null)[];
+  /** Label drawn on the edge from the parent, e.g. a trie character. */
+  edgeLabel?: string;
+}
+
+export interface TreeStructure {
+  kind: "tree";
+  label?: string;
+  binary: boolean;
+  root: string | null;
+  nodes: Record<string, TreeNodeData>;
+  nodeStatus: Record<string, NodeStatus>;
+  /** Short per-node annotation, e.g. a segment "[0,3]" or a height. */
+  annotations: Record<string, string>;
+}
+
+export interface PlanePoint {
+  id: string;
+  label?: string;
+  /** Data coordinates; y grows upwards. */
+  x: number;
+  y: number;
+}
+
+/** A segment from (x1, y1) to (x2, y2), an axis-aligned box with those corners, or a circle. */
+export type PlaneGeometry =
+  | { kind: "segment"; x1: number; y1: number; x2: number; y2: number }
+  | { kind: "rect"; x1: number; y1: number; x2: number; y2: number }
+  | { kind: "circle"; x: number; y: number; r: number };
+
+/** A drawn shape: hull edges, split lines, a strip, a search radius. Status reuses edge statuses. */
+export type PlaneShape = PlaneGeometry & { id: string; status: EdgeStatus; label?: string };
+
+/** Most shapes a plane may hold at once, so untrusted traces stay cheap to draw. */
+export const MAX_PLANE_SHAPES = 1_000;
+
+export interface PlaneStructure {
+  kind: "plane";
+  label?: string;
+  /** The visible window in data coordinates. */
+  bounds: { minX: number; minY: number; maxX: number; maxY: number };
+  points: PlanePoint[];
+  pointStatus: Record<string, NodeStatus>;
+  /** Short per-point annotation, e.g. a polar angle or a depth. */
+  annotations: Record<string, string>;
+  /** Drawn in order: later shapes on top. */
+  shapes: PlaneShape[];
+}
+
+export type Structure =
+  | ArrayStructure
+  | GraphStructure
+  | SequenceStructure
+  | GridStructure
+  | TreeStructure
+  | PlaneStructure;
 export type StructureKind = Structure["kind"];
 
 /* -------------------------------------------------------------------- events */
@@ -128,6 +224,39 @@ export type TraceEvent = EventMeta &
     | { type: "grid.write"; s: string; r: number; c: number; value: Scalar }
     | { type: "grid.read"; s: string; cells: [number, number][] }
     | { type: "grid.mark"; s: string; cells: [number, number][]; mark: GridMark | null }
+    | {
+        type: "tree.add";
+        s: string;
+        node: string;
+        value: Scalar;
+        /** null makes the node the root (the tree must be empty). */
+        parent: string | null;
+        /** Child slot: 0 = left, 1 = right for binary trees; insertion index otherwise (default: append). */
+        slot?: number;
+        edgeLabel?: string;
+      }
+    | { type: "tree.set"; s: string; node: string; value: Scalar }
+    | { type: "tree.compare"; s: string; node: string; value: Scalar }
+    | { type: "tree.node"; s: string; node: string; status: NodeStatus }
+    | { type: "tree.annotate"; s: string; node: string; text: string | null }
+    /** Delete a node that has no children. */
+    | { type: "tree.remove"; s: string; node: string }
+    /** Delete a node with at most one child; that child takes its place. */
+    | { type: "tree.splice"; s: string; node: string }
+    /** Re-attach a non-root node, with its subtree, under another node (not inside the subtree). */
+    | { type: "tree.move"; s: string; node: string; parent: string; slot?: number }
+    | { type: "plane.point"; s: string; point: string; status: NodeStatus }
+    | { type: "plane.annotate"; s: string; point: string; text: string | null }
+    /** Add a shape, or replace the one with the same id (keeping its place in the drawing order). */
+    | {
+        type: "plane.draw";
+        s: string;
+        id: string;
+        shape: PlaneGeometry;
+        status: EdgeStatus;
+        label?: string;
+      }
+    | { type: "plane.erase"; s: string; id: string }
     | { type: "structure.create"; s: string; structure: Structure }
     | { type: "structure.remove"; s: string }
     | { type: "step" }
