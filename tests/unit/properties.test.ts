@@ -1175,3 +1175,84 @@ describe("maximum flow and matching properties", () => {
     );
   });
 });
+
+/* ------------------------------------------------------------- DP techniques */
+
+import { heldKarp } from "@/algorithms/dp/held-karp";
+import { assignmentDp } from "@/algorithms/dp/assignment-dp";
+import { digitDp } from "@/algorithms/dp/digit-dp";
+import { convexHullTrick } from "@/algorithms/dp/convex-hull-trick";
+
+describe("bitmask, digit and convex-hull DP properties", () => {
+  const matrices = (min: number, max: number) =>
+    fc.integer({ min, max }).chain((n) =>
+      fc.array(fc.array(fc.integer({ min: 0, max: 50 }), { minLength: n, maxLength: n }), {
+        minLength: n,
+        maxLength: n,
+      }),
+    );
+  const choose = (n: number, k: number): number =>
+    k < 0 || k > n ? 0 : k === 0 ? 1 : (choose(n - 1, k - 1) * n) / k;
+
+  it("Held–Karp: optimal tours (brute force) with the exact number of transitions", () => {
+    fc.assert(
+      fc.property(matrices(2, 6), (raw) => {
+        const w = raw.map((r, i) => r.map((x, j) => (i === j ? 0 : x)));
+        const { output, trace } = runAlgorithm(heldKarp, w, { mode: "count" });
+        expect(heldKarp.check(w, output)).toBeNull();
+        const n = w.length;
+        let want = n - 1;
+        for (let s = 3; s <= n; s++) want += choose(n - 1, s - 1) * (s - 1) * (s - 2);
+        expect(trace.meta.counters.transitions ?? 0).toBe(want);
+      }),
+      { numRuns: 200 },
+    );
+  });
+
+  it("assignment DP: optimal (brute force) with n·2ⁿ⁻¹ transitions", () => {
+    fc.assert(
+      fc.property(matrices(1, 5), (cost) => {
+        const { output, trace } = runAlgorithm(assignmentDp, cost, { mode: "count" });
+        expect(assignmentDp.check(cost, output)).toBeNull();
+        expect(trace.meta.counters.transitions ?? 0).toBe(cost.length * 2 ** (cost.length - 1));
+      }),
+      { numRuns: 200 },
+    );
+  });
+
+  it("digit DP: matches counting every number, and never revisits a free state", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 50_000 }), fc.integer({ min: 0, max: 27 }), (N, S) => {
+        const input = { N, S };
+        const { output } = runAlgorithm(digitDp, input, { mode: "count" });
+        expect(digitDp.check(input, output)).toBeNull();
+        const L = String(N).length;
+        expect(output.calls - output.memoHits).toBeLessThanOrEqual(1 + 10 * L * (S + 2));
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("convex hull trick: equals the O(n²) DP with at most 3n line comparisons", () => {
+    const inputs = fc
+      .record({
+        steps: fc.array(fc.integer({ min: 1, max: 9 }), { minLength: 1, maxLength: 11 }),
+        start: fc.integer({ min: 0, max: 5 }),
+        C: fc.integer({ min: 0, max: 200 }),
+      })
+      .map(({ steps, start, C }) => ({
+        h: steps.reduce((h, s) => [...h, h[h.length - 1]! + s], [start]),
+        C,
+      }));
+    fc.assert(
+      fc.property(inputs, (input) => {
+        const { output, trace } = runAlgorithm(convexHullTrick, input, { mode: "count" });
+        expect(convexHullTrick.check(input, output)).toBeNull();
+        expect(trace.meta.counters["line comparisons"] ?? 0).toBeLessThanOrEqual(
+          3 * input.h.length,
+        );
+      }),
+      { numRuns: 300 },
+    );
+  });
+});

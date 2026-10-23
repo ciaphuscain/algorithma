@@ -56,6 +56,10 @@ import { fftEntry } from "./entries/fft";
 import { dinicEntry } from "./entries/dinic";
 import { pushRelabelEntry } from "./entries/push-relabel";
 import { hopcroftKarpEntry } from "./entries/hopcroft-karp";
+import { heldKarpEntry } from "./entries/held-karp";
+import { assignmentDpEntry } from "./entries/assignment-dp";
+import { digitDpEntry } from "./entries/digit-dp";
+import { convexHullTrickEntry } from "./entries/convex-hull-trick";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -94,6 +98,10 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   lcsEntry,
   lisEntry,
   knapsackEntry,
+  heldKarpEntry,
+  assignmentDpEntry,
+  digitDpEntry,
+  convexHullTrickEntry,
   kmpEntry,
   ahoCorasickEntry,
   manacherEntry,

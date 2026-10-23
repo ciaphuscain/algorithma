@@ -54,6 +54,10 @@ import { fft } from "./maths/fft";
 import { dinic } from "./graph/dinic";
 import { pushRelabel } from "./graph/push-relabel";
 import { hopcroftKarp } from "./graph/hopcroft-karp";
+import { heldKarp } from "./dp/held-karp";
+import { assignmentDp } from "./dp/assignment-dp";
+import { digitDp } from "./dp/digit-dp";
+import { convexHullTrick } from "./dp/convex-hull-trick";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -116,6 +120,10 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   dinic,
   pushRelabel,
   hopcroftKarp,
+  heldKarp,
+  assignmentDp,
+  digitDp,
+  convexHullTrick,
 ];
 
 const byId = new Map(ALGORITHM_MODULES.map((m) => [m.id, m]));

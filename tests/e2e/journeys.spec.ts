@@ -149,7 +149,7 @@ test("explore search and filters, shareable via URL", async ({ page }) => {
   await expect(page).toHaveURL(/query=shortest/);
   await page.getByLabel("Search").fill("");
   await page.getByLabel("Worst-case time at most").selectOption("n log n");
-  await expect(page.getByTestId("result-count")).toContainText("41 interactive entries");
+  await expect(page.getByTestId("result-count")).toContainText("42 interactive entries");
   await page.goto("/explore?domain=searching-sorting");
   await expect(page.getByTestId("results")).toContainText("Bubble Sort");
   await expect(page.getByTestId("results")).not.toContainText("Breadth-First");
@@ -169,7 +169,7 @@ test("roadmap lists the curriculum honestly", async ({ page }) => {
   await expect(page.locator('[data-number="220"]')).toContainText("Same as #218");
   await page.getByLabel("Search the curriculum").fill("");
   await page.getByLabel("Status").selectOption("available");
-  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 74 of 600");
+  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 78 of 600");
   await page.locator('[data-number="11"]').getByRole("link", { name: "Bubble Sort" }).click();
   await expect(page).toHaveURL(/\/algorithms\/bubble-sort/);
 });
@@ -348,6 +348,20 @@ test("flows and matchings: a maximum flow with its cut, and input checks", async
   await expect(page.locator(".alert--error")).toContainText('"1" appears on both sides');
 });
 
+test("DP techniques: an optimal tour, and checks on matrices and heights", async ({ page }) => {
+  await page.goto("/algorithms/held-karp");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText("Tour A → C → D → B → A, length 21");
+  await page.getByLabel("Distances (row = from, column = to)").fill("0 1 2\n1 0");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText("the matrix must be 2 × 2");
+
+  await page.goto("/algorithms/convex-hull-trick");
+  await page.getByLabel("Stone heights (strictly increasing)").fill("1, 3, 3");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText("strictly increasing");
+});
+
 test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(String(e)));
@@ -408,6 +422,10 @@ test("every catalogue entry renders its visualizer without console errors", asyn
     "dinic",
     "push-relabel",
     "hopcroft-karp",
+    "held-karp",
+    "assignment-dp",
+    "digit-dp",
+    "convex-hull-trick",
   ]) {
     await page.goto(`/algorithms/${slug}`);
     await page.getByRole("button", { name: "Jump to end" }).click();

@@ -166,6 +166,7 @@ describe("catalog search", () => {
       "binary-search",
       "bridges-articulation",
       "bst",
+      "convex-hull-trick",
       "crt",
       "dfs",
       "dijkstra",
@@ -238,6 +239,8 @@ describe("catalog search", () => {
     expect(entryForItem(393)?.slug).toBe("ntt");
     expect(entryForItem(235)?.slug).toBe("dinic");
     expect(entryForItem(237)?.slug).toBe("hopcroft-karp");
+    expect(entryForItem(296)?.slug).toBe("held-karp");
+    expect(entryForItem(300)?.slug).toBe("convex-hull-trick");
     expect(entryForItem(218)).toBeUndefined(); // Borůvka: planned
     expect(getEntry("nope")).toBeUndefined();
   });
@@ -1060,5 +1063,58 @@ describe("worked examples agree with the engine", () => {
       "Augmenting path from E: E–4 (with the matched edges between them).",
       "Augmenting path from B: B–1, A–2, C–3, D–4, E–5 (with the matched edges between them).",
     ]);
+  });
+
+  it("bitmask, digit and convex-hull DP lessons: worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { TracePlayer } = await import("@/engine/player");
+    const run = (id: string, presetId: string) => {
+      const m = getModule(id)!;
+      return runAlgorithm(m, m.input.presets.find((p) => p.id === presetId)!.value);
+    };
+    const rows = (trace: ConstructorParameters<typeof TracePlayer>[0], name: string) => {
+      const g = new TracePlayer(trace).finalState().structures[name];
+      return g?.kind === "grid"
+        ? Object.fromEntries(g.rowHeaders!.map((h, i) => [h, g.cells[i]]))
+        : {};
+    };
+
+    const tsp = run("held-karp", "classic");
+    expect(tsp.output).toEqual({ cost: 21, tour: [0, 2, 3, 1, 0] });
+    const t = rows(tsp.trace, "dp");
+    expect(t["{A,B,C}"]).toEqual([null, 16, 8, null]);
+    expect(t["{A,B,D}"]).toEqual([null, 13, null, 6]);
+    expect(t["{A,C,D}"]).toEqual([null, null, 22, 17]);
+    expect(t["{A,B,C,D}"]).toEqual([null, 20, 18, 16]);
+    expect(Object.keys(t)).toHaveLength(8);
+
+    const asg = run("assignment-dp", "classic");
+    expect(asg.output).toEqual({ cost: 13, job: [1, 0, 2, 3] });
+    const a = rows(asg.trace, "dp");
+    expect([a["{2}"], a["{1,2}"], a["{1,2,3}"], a["{1,2,3,4}"]]).toEqual([
+      [2, 2],
+      [8, 1],
+      [9, 3],
+      [13, 4],
+    ]);
+    expect(asg.trace.meta.counters.transitions).toBe(32);
+    expect(run("assignment-dp", "greedy").output.cost).toBe(5);
+
+    const dd = run("digit-dp", "classic");
+    expect(dd.output.count).toBe(33);
+    const m = rows(dd.trace, "memo");
+    expect(m["pos 1"]!.slice(8)).toEqual([9, 10, 9]);
+    expect(m["pos 2"]).toEqual([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]);
+    expect(run("digit-dp", "round").output.count).toBe(10);
+
+    const cht = run("convex-hull-trick", "classic");
+    expect(cht.output).toEqual({ dp: [0, 7, 10, 15, 20], popsFront: 1, popsBack: 1 });
+    const notes = cht.trace.events.flatMap((e) => (e.note ? [e.note] : []));
+    expect(notes.filter((n) => n.startsWith("Jump from stone")).map((n) => n.slice(0, 17))).toEqual(
+      ["Jump from stone 0", "Jump from stone 0", "Jump from stone 0", "Jump from stone 2"],
+    );
+    expect(notes.some((n) => n.startsWith("Line 1 lies above the envelope of lines 0 and 2"))).toBe(
+      true,
+    );
   });
 });
