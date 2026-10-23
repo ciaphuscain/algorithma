@@ -39,6 +39,11 @@ import { kosarajuEntry } from "./entries/kosaraju";
 import { tarjanSccEntry } from "./entries/tarjan-scc";
 import { bridgesArticulationEntry } from "./entries/bridges-articulation";
 import { aStarEntry } from "./entries/a-star";
+import { manacherEntry } from "./entries/manacher";
+import { ahoCorasickEntry } from "./entries/aho-corasick";
+import { suffixArrayEntry } from "./entries/suffix-array";
+import { suffixTreeEntry } from "./entries/suffix-tree";
+import { suffixAutomatonEntry } from "./entries/suffix-automaton";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -74,6 +79,11 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   lisEntry,
   knapsackEntry,
   kmpEntry,
+  ahoCorasickEntry,
+  manacherEntry,
+  suffixArrayEntry,
+  suffixTreeEntry,
+  suffixAutomatonEntry,
   treeTraversalsEntry,
   bstEntry,
   trieEntry,

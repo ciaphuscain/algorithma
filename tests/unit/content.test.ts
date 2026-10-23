@@ -157,6 +157,7 @@ describe("catalog search", () => {
   it("filters by complexity bound and domain", () => {
     expect(slugs({ maxWorst: "n log n" }).sort()).toEqual([
       "a-star",
+      "aho-corasick",
       "bfs",
       "binary-search",
       "bridges-articulation",
@@ -170,6 +171,7 @@ describe("catalog search", () => {
       "kruskal",
       "linear-search",
       "lis",
+      "manacher",
       "merge-sort",
       "monotonic-queue",
       "monotonic-stack",
@@ -178,6 +180,9 @@ describe("catalog search", () => {
       "segment-tree",
       "sliding-window",
       "sparse-table",
+      "suffix-array",
+      "suffix-automaton",
+      "suffix-tree",
       "tarjan-scc",
       "topological-sort",
       "topological-sort-dfs",
@@ -211,6 +216,8 @@ describe("catalog search", () => {
     expect(entryForItem(1)?.slug).toBe("linear-search");
     expect(entryForItem(208)?.slug).toBe("bellman-ford");
     expect(entryForItem(173)?.slug).toBe("fenwick-tree"); // duplicate of #61
+    expect(entryForItem(317)?.slug).toBe("suffix-tree"); // Ukkonen's construction
+    expect(entryForItem(345)?.slug).toBe("manacher"); // duplicate of #328
     expect(entryForItem(218)).toBeUndefined(); // Borůvka: planned
     expect(getEntry("nope")).toBeUndefined();
   });
@@ -724,5 +731,88 @@ describe("worked examples agree with the engine", () => {
     expect(a.output.expanded).toBe(17);
     expect(preset("a-star", "classic").rows.join("").replace(/#/g, "").length).toBe(33);
     expect(runAlgorithm(getModule("a-star")!, preset("a-star", "trap")).output.length).toBe(5);
+  });
+
+  it("string lessons: worked examples and practice answers match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { TracePlayer } = await import("@/engine/player");
+    const run = (id: string, presetId: string) => {
+      const m = getModule(id)!;
+      return runAlgorithm(m, m.input.presets.find((p) => p.id === presetId)!.value);
+    };
+    const writes = (
+      trace: { events: { type: string; s?: string; value?: unknown }[] },
+      s: string,
+    ) => trace.events.filter((e) => e.type === "array.write" && e.s === s).map((e) => e.value);
+
+    const m = run("manacher", "classic");
+    expect(m.output.palindrome).toBe("abacaba");
+    expect([1, 3, 5, 7, 9, 11, 13, 15].map((i) => m.output.radii[i])).toEqual([
+      1, 3, 1, 7, 1, 3, 1, 1,
+    ]);
+    expect(m.trace.meta.counters.comparisons).toBe(23);
+    const centres = m.trace.events.flatMap((e) =>
+      e.vars && "C" in e.vars ? [`${e.vars.C}, ${e.vars.R}`] : [],
+    );
+    expect(centres).toEqual(["0, 0", "1, 2", "3, 6", "7, 14", "15, 16"]);
+    expect(Math.max(...run("manacher", "even").output.radii)).toBe(2);
+
+    const a = run("aho-corasick", "classic");
+    expect(a.output.matches).toEqual([
+      { word: "she", start: 1 },
+      { word: "he", start: 2 },
+      { word: "hers", start: 2 },
+    ]);
+    expect(a.output.fail).toEqual({
+      h: "",
+      s: "",
+      he: "",
+      hi: "",
+      sh: "h",
+      her: "",
+      his: "s",
+      she: "he",
+      hers: "s",
+    });
+    expect(a.trace.meta.counters["failure steps"]).toBe(1);
+    expect(run("aho-corasick", "overlap").output.matches).toHaveLength(9);
+
+    const sa = run("suffix-array", "classic");
+    expect(sa.output).toEqual({ sa: [5, 3, 1, 0, 4, 2], rounds: 2 });
+    const ranks = writes(sa.trace, "rank");
+    expect([ranks.slice(0, 6), ranks.slice(6, 12), ranks.slice(12)]).toEqual([
+      [1, 0, 2, 0, 2, 0],
+      [2, 1, 3, 1, 3, 0],
+      [3, 2, 5, 1, 4, 0],
+    ]);
+    const grid = new TracePlayer(sa.trace).finalState().structures.R;
+    expect(grid?.kind === "grid" ? grid.cells.map((row) => row[2]) : []).toEqual([
+      "(0, -1)",
+      "(1, 0)",
+      "(1, 1)",
+      "(2, 3)",
+      "(3, -1)",
+      "(3, 3)",
+    ]);
+    expect(run("suffix-array", "repeat").output.rounds).toBe(3);
+
+    const st = run("suffix-tree", "classic");
+    expect(st.output).toEqual({ order: [6, 5, 3, 1, 0, 4, 2], nodes: 11, distinct: 15 });
+    const tree = new TracePlayer(st.trace).finalState().structures.T;
+    const labels = (id: string) =>
+      tree?.kind === "tree"
+        ? tree.nodes[id]!.children.map((c) => String(tree.nodes[c!]!.value))
+        : [];
+    expect(labels("root")).toEqual(["$", "a", "banana$", "na"]);
+    const inner = tree?.kind === "tree" ? tree.nodes.root!.children : [];
+    expect(labels(inner[1]!)).toEqual(["$", "na"]);
+    expect(labels(inner[3]!)).toEqual(["$", "na$"]);
+
+    const sam = run("suffix-automaton", "classic");
+    expect(sam.output.len).toEqual([0, 1, 2, 3, 4, 1, 5, 2]);
+    expect(sam.output.link).toEqual([-1, 0, 5, 7, 5, 0, 7, 0]);
+    expect(sam.output.terminal).toEqual([0, 6, 7]);
+    expect(sam.output.distinct).toBe(12);
+    expect(run("suffix-automaton", "repeat").output.len).toHaveLength(5);
   });
 });

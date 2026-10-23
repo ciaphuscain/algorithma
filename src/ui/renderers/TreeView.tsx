@@ -6,10 +6,13 @@ const SLOT = 52;
 const LEVEL = 74;
 const R = 18;
 
-const short = (v: unknown) => {
+const MAX_LABEL = 10;
+/** Values of up to 3 characters sit in a circle; longer ones get a pill that fits them. */
+const label = (v: unknown) => {
   const s = v === null ? "" : String(v);
-  return s.length > 5 ? `${s.slice(0, 4)}…` : s;
+  return s.length > MAX_LABEL ? `${s.slice(0, MAX_LABEL - 1)}…` : s;
 };
+const nodeWidth = (text: string) => (text.length <= 3 ? 2 * R : text.length * 8 + 16);
 
 export function TreeView({
   name,
@@ -35,10 +38,12 @@ export function TreeView({
       </p>
     );
   }
-  const width = Math.max(760, columns * SLOT + 40);
-  const offset = (width - columns * SLOT) / 2 + SLOT / 2;
+  const labels = new Map([...pos.keys()].map((id) => [id, label(structure.nodes[id]!.value)]));
+  const slot = Math.max(SLOT, ...[...labels.values()].map((s) => nodeWidth(s) + 12));
+  const width = Math.max(760, columns * slot + 40);
+  const offset = (width - columns * slot) / 2 + slot / 2;
   const height = depth * LEVEL + 30;
-  const px = (x: number) => offset + x * SLOT;
+  const px = (x: number) => offset + x * slot;
   const py = (y: number) => 30 + y * LEVEL;
 
   const edges: { from: string; to: string; label?: string }[] = [];
@@ -86,16 +91,33 @@ export function TreeView({
         const status = structure.nodeStatus[id] ?? "unvisited";
         const tone = focusNodes.get(id);
         const ann = structure.annotations[id];
+        const text = labels.get(id)!;
+        const w = nodeWidth(text);
+        const [cx, cy] = [px(p.x), py(p.y)];
         return (
           <g
             key={id}
             className={`g-node g-node--${status}${tone ? " g-node--focus" : ""}`}
             data-node={id}
           >
-            {status === "highlight" && (
-              <circle className="g-node__ring" cx={px(p.x)} cy={py(p.y)} r={R + 5} />
+            {status === "highlight" &&
+              (w === 2 * R ? (
+                <circle className="g-node__ring" cx={cx} cy={cy} r={R + 5} />
+              ) : (
+                <rect
+                  className="g-node__ring"
+                  x={cx - w / 2 - 5}
+                  y={cy - R - 5}
+                  width={w + 10}
+                  height={2 * R + 10}
+                  rx={R + 5}
+                />
+              ))}
+            {w === 2 * R ? (
+              <circle cx={cx} cy={cy} r={R} />
+            ) : (
+              <rect x={cx - w / 2} y={cy - R} width={w} height={2 * R} rx={R} />
             )}
-            <circle cx={px(p.x)} cy={py(p.y)} r={R} />
             <text
               className="g-node__label"
               x={px(p.x)}
@@ -103,7 +125,7 @@ export function TreeView({
               textAnchor="middle"
               style={{ fontSize: 13 }}
             >
-              {short(structure.nodes[id]!.value)}
+              {text}
             </text>
             {ann && (
               <text className="g-node__ann" x={px(p.x)} y={py(p.y) + R + 14} textAnchor="middle">
@@ -113,7 +135,7 @@ export function TreeView({
             {tone === "compare" && compareValue !== undefined && (
               <text
                 className="focus-label focus-label--compare"
-                x={px(p.x) + R + 4}
+                x={cx + w / 2 + 4}
                 y={py(p.y) - R + 2}
               >
                 vs {String(compareValue)}

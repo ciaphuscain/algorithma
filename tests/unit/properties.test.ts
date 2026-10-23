@@ -891,3 +891,70 @@ describe("strongly connected components, bridges and A*", () => {
     );
   });
 });
+
+/* ------------------------------------------------------------------ strings */
+
+import { manacher } from "@/algorithms/strings/manacher";
+import { ahoCorasick } from "@/algorithms/strings/aho-corasick";
+import { suffixArray } from "@/algorithms/strings/suffix-array";
+import { suffixTree } from "@/algorithms/strings/suffix-tree";
+import { suffixAutomaton } from "@/algorithms/strings/suffix-automaton";
+
+describe("string algorithm properties", () => {
+  const words = (alphabet: string, maxLength: number) =>
+    fc
+      .array(fc.constantFrom(...alphabet), { minLength: 1, maxLength })
+      .map((letters) => letters.join(""));
+
+  it("Manacher: matches brute force within 2m − 1 comparisons on the m = 2n + 1 letters of T", () => {
+    fc.assert(
+      fc.property(words("ab", 14), (s) => {
+        const { output, trace } = runAlgorithm(manacher, s, { mode: "count" });
+        expect(manacher.check(s, output)).toBeNull();
+        expect(trace.meta.counters.comparisons).toBeLessThanOrEqual(2 * (2 * s.length + 1) - 1);
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("Aho–Corasick: matches naive search; failure steps ≤ text length + total pattern length", () => {
+    const inputs = fc.record({
+      patterns: fc.uniqueArray(words("ab", 4), { minLength: 1, maxLength: 5 }),
+      text: words("ab", 16),
+    });
+    fc.assert(
+      fc.property(inputs, (input) => {
+        const { output, trace } = runAlgorithm(ahoCorasick, input, { mode: "count" });
+        expect(ahoCorasick.check(input, output)).toBeNull();
+        const total = input.patterns.reduce((sum, p) => sum + p.length, 0);
+        expect(trace.meta.counters["failure steps"] ?? 0).toBeLessThanOrEqual(
+          input.text.length + total,
+        );
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("suffix array, suffix tree and suffix automaton agree with each other and stay within their size bounds", () => {
+    fc.assert(
+      fc.property(words("abc", 8), (s) => {
+        const n = s.length;
+        const sa = runAlgorithm(suffixArray, s, { mode: "count" }).output;
+        const tree = runAlgorithm(suffixTree, s, { mode: "count" }).output;
+        const dawg = runAlgorithm(suffixAutomaton, s, { mode: "count" }).output;
+        expect(suffixArray.check(s, sa)).toBeNull();
+        expect(suffixTree.check(s, tree)).toBeNull();
+        expect(suffixAutomaton.check(s, dawg)).toBeNull();
+        expect(sa.rounds).toBeLessThanOrEqual(Math.ceil(Math.log2(n)));
+        // "$" sorts before every letter, so the tree's leaves read "$" first, then SA.
+        expect(tree.order).toEqual([n, ...sa.sa]);
+        expect(tree.nodes).toBeLessThanOrEqual(2 * (n + 1));
+        expect(dawg.distinct).toBe(tree.distinct);
+        expect(dawg.len.length).toBeLessThanOrEqual(Math.max(2, 2 * n - 1));
+        const transitions = dawg.next.reduce((sum, m) => sum + Object.keys(m).length, 0);
+        if (n >= 3) expect(transitions).toBeLessThanOrEqual(3 * n - 4);
+      }),
+      { numRuns: 300 },
+    );
+  });
+});

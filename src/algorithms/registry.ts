@@ -37,6 +37,11 @@ import { kosaraju } from "./graph/kosaraju";
 import { tarjanScc } from "./graph/tarjan-scc";
 import { bridges } from "./graph/bridges";
 import { aStar } from "./graph/a-star";
+import { manacher } from "./strings/manacher";
+import { ahoCorasick } from "./strings/aho-corasick";
+import { suffixArray } from "./strings/suffix-array";
+import { suffixTree } from "./strings/suffix-tree";
+import { suffixAutomaton } from "./strings/suffix-automaton";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -82,6 +87,11 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   tarjanScc,
   bridges,
   aStar,
+  manacher,
+  ahoCorasick,
+  suffixArray,
+  suffixTree,
+  suffixAutomaton,
 ];
 
 const byId = new Map(ALGORITHM_MODULES.map((m) => [m.id, m]));

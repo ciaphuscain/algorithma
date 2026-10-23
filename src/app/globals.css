@@ -1147,18 +1147,18 @@ pre.code {
   stroke-dasharray: 16 4;
   stroke-width: 6;
 }
-.g-node circle {
+.g-node :is(circle, rect) {
   fill: var(--surface);
   stroke: var(--ink-3);
   stroke-width: 2;
 }
-.g-node--frontier circle {
+.g-node--frontier :is(circle, rect) {
   fill: var(--tone-compare-soft);
   stroke: var(--tone-compare);
   stroke-dasharray: 5 3;
   stroke-width: 3;
 }
-.g-node--current circle {
+.g-node--current :is(circle, rect) {
   fill: var(--accent);
   stroke: var(--accent);
   stroke-width: 4;
@@ -1166,16 +1166,16 @@ pre.code {
 .g-node--current .g-node__label {
   fill: var(--accent-ink);
 }
-.g-node--visited circle {
+.g-node--visited :is(circle, rect) {
   fill: var(--accent-soft);
   stroke: var(--accent);
 }
-.g-node--path circle {
+.g-node--path :is(circle, rect) {
   fill: var(--tone-path-soft);
   stroke: var(--tone-path);
   stroke-width: 4;
 }
-.g-node--highlight circle {
+.g-node--highlight :is(circle, rect) {
   fill: var(--tone-read-soft);
   stroke: var(--tone-read);
   stroke-width: 3;
@@ -1186,12 +1186,12 @@ pre.code {
   stroke: var(--tone-read);
   stroke-width: 2;
 }
-.g-node--unreachable circle {
+.g-node--unreachable :is(circle, rect) {
   fill: var(--tone-muted-soft);
   stroke: var(--tone-muted);
   stroke-dasharray: 2 3;
 }
-.g-node--focus circle {
+.g-node--focus :is(circle, rect) {
   stroke-width: 5;
 }
 .g-node__label {

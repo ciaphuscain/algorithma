@@ -26,6 +26,8 @@ for (const path of [
   "/algorithms/sparse-table",
   "/algorithms/a-star",
   "/algorithms/bridges-articulation",
+  "/algorithms/suffix-tree",
+  "/algorithms/suffix-automaton",
   "/arena",
   "/studio",
 ]) {

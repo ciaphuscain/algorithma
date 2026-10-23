@@ -149,7 +149,7 @@ test("explore search and filters, shareable via URL", async ({ page }) => {
   await expect(page).toHaveURL(/query=shortest/);
   await page.getByLabel("Search").fill("");
   await page.getByLabel("Worst-case time at most").selectOption("n log n");
-  await expect(page.getByTestId("result-count")).toContainText("29 interactive entries");
+  await expect(page.getByTestId("result-count")).toContainText("34 interactive entries");
   await page.goto("/explore?domain=searching-sorting");
   await expect(page.getByTestId("results")).toContainText("Bubble Sort");
   await expect(page.getByTestId("results")).not.toContainText("Breadth-First");
@@ -169,7 +169,7 @@ test("roadmap lists the curriculum honestly", async ({ page }) => {
   await expect(page.locator('[data-number="220"]')).toContainText("Same as #218");
   await page.getByLabel("Search the curriculum").fill("");
   await page.getByLabel("Status").selectOption("available");
-  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 51 of 600");
+  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 58 of 600");
   await page.locator('[data-number="11"]').getByRole("link", { name: "Bubble Sort" }).click();
   await expect(page).toHaveURL(/\/algorithms\/bubble-sort/);
 });
@@ -275,6 +275,26 @@ test("A* on a grid map, and highlighted bridges and cut vertices", async ({ page
   await expect(page.getByText("highlighted (long dashes)")).toBeVisible();
 });
 
+test("string algorithms: dictionary matches, a suffix tree with long edge labels, input checks", async ({
+  page,
+}) => {
+  await page.goto("/algorithms/aho-corasick");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText("Matches: she@1, he@2, hers@2");
+
+  await page.goto("/algorithms/suffix-tree");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText("11 nodes");
+  const tree = page.locator('svg[aria-label^="Tree"]');
+  await expect(tree.getByText("banana$", { exact: true })).toBeVisible();
+  await expect(tree.locator("rect")).not.toHaveCount(0);
+
+  await page.goto("/algorithms/manacher");
+  await page.getByLabel("Text").fill("Abc");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText("lowercase letters a–z only");
+});
+
 test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(String(e)));
@@ -318,6 +338,11 @@ test("every catalogue entry renders its visualizer without console errors", asyn
     "tarjan-scc",
     "bridges-articulation",
     "a-star",
+    "manacher",
+    "aho-corasick",
+    "suffix-array",
+    "suffix-tree",
+    "suffix-automaton",
   ]) {
     await page.goto(`/algorithms/${slug}`);
     await page.getByRole("button", { name: "Jump to end" }).click();
