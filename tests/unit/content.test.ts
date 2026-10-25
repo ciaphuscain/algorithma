@@ -1338,6 +1338,34 @@ describe("worked examples agree with the engine", () => {
     expect(fig8.output.leaders[2].log).toEqual(["1:c1", "1:c2"]);
     expect(fig8.output.logs.every((l: string[]) => l.join() === "3:c3,3:c4")).toBe(true);
     expect(fig8.output.commitIndex).toEqual([0, 0, 0]);
+
+    const noop = run("raft", "figure8-noop");
+    expect(leaders("figure8-noop")).toEqual([
+      [1, 2, 15],
+      [4, 2, 53],
+      [6, 3, 95],
+    ]);
+    const all = "1:no-op,1:c1,1:c2,4:no-op,4:c3,4:c4,6:no-op";
+    expect(noop.output.logs.every((l: string[]) => l.join() === all)).toBe(true);
+    expect(noop.output.commitIndex).toEqual([7, 7, 7]);
+    expect(
+      noop.output.commits
+        .filter((c: { server: number; time: number }) => c.server === 1 && c.time === 62)
+        .map((c: { index: number }) => c.index),
+    ).toEqual([2, 3, 4, 5, 6]);
+
+    const cut = run("raft", "partition");
+    expect(leaders("partition")).toEqual([
+      [1, 2, 15],
+      [2, 5, 46],
+    ]);
+    expect(cut.output.logs.every((l: string[]) => l.join() === "1:x=1,2:z=3")).toBe(true);
+    const cutNotes = notes(cut.trace);
+    expect(cutNotes).toContain(
+      "The client sends y=2 to the leader S2, which appends it at index 2 in term 1.",
+    );
+    expect(cutNotes).toContain("S5 commits up to entry 2: a majority (3 of 5) store it.");
+    expect(cut.output.commits.filter((c: { entry: string }) => c.entry === "1:y=2")).toEqual([]);
   });
 });
 

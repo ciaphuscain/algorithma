@@ -20,13 +20,14 @@ export interface Alarm {
   seq: number;
 }
 
-type Queued<M> = (Delivery<M> & { lost: boolean }) | Alarm;
+type Queued<M> = (Delivery<M> & { lost: boolean; cut: boolean }) | Alarm;
 
 /**
  * A deterministic discrete-event network for protocol visualizers. Every message gets
  * a random delay and may be lost, both drawn from a seeded generator when it is sent,
- * so a seed replays the same run. Events at the same time run in the order they were
- * scheduled. Messages and timers are drawn on a timeline as they happen.
+ * so a seed replays the same run. A network partition (`cut`) also loses a message when
+ * it separates sender and receiver at the time it is sent or the time it would arrive.
+ * Events at the same time run in the order they were scheduled. Messages and timers are drawn on a timeline as they happen.
  */
 export class Simulation<M> {
   readonly rng: Rng;
@@ -43,6 +44,8 @@ export class Simulation<M> {
       lossPercent: number;
       minDelay: number;
       maxDelay: number;
+      /** True when a partition separates `from` and `to` at `time`. */
+      cut?: (from: string, to: string, time: number) => boolean;
     },
   ) {
     this.rng = createRng(options.seed);
@@ -57,7 +60,10 @@ export class Simulation<M> {
     this.t.tally("messages");
     const lost = this.rng.next() * 100 < this.options.lossPercent;
     const delay = this.rng.int(this.options.minDelay, this.options.maxDelay);
-    this.push({ kind: "message", id, from, to, msg, lost, time: this.now + delay, seq: 0 });
+    const time = this.now + delay;
+    const cut = this.options.cut;
+    const isCut = !!cut && (cut(from, to, this.now) || cut(from, to, time));
+    this.push({ kind: "message", id, from, to, msg, lost, cut: isCut, time, seq: 0 });
   }
 
   setTimer(node: string, tag: string, delay: number): void {
@@ -85,11 +91,17 @@ export class Simulation<M> {
         return item;
       }
       this.T.tick(item.time);
+      if (item.cut) {
+        this.T.lose(item.id, {
+          note: `The partition separates ${item.from} from ${item.to}: the message is lost.`,
+        });
+        continue;
+      }
       if (item.lost) {
         this.T.lose(item.id, { note: `A message from ${item.from} to ${item.to} is lost.` });
         continue;
       }
-      const { lost: _lost, ...delivery } = item;
+      const { lost: _lost, cut: _cut, ...delivery } = item;
       return delivery;
     }
     return null;

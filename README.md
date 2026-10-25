@@ -16,7 +16,7 @@ ALGORITHMA is an algorithm encyclopedia whose entries can be run. Pick an algori
   - maths: matrix exponentiation, Miller–Rabin, Pollard's rho, the Chinese remainder theorem, NTT and FFT;
   - geometry: Graham scan, closest pair of points;
   - search and learning: Monte Carlo tree search, gradient descent;
-  - parallel and distributed: MapReduce, Paxos, Raft.
+  - parallel and distributed: MapReduce, Paxos, Raft, on a simulated network with message loss, crashes and partitions.
 - **Lessons at five depths** (intuition → mechanics → implementation → mathematics → advanced), tested Python and JavaScript code, practice questions with hints, and printable exam notes. Each lesson shows a learning path through its prerequisites and links to the entries that build on it.
 - **Progress**: practice results by topic, kept in the browser, with suggestions for what is ready to learn next.
 - **A 600-algorithm roadmap** with priority tiers, showing honestly which entries exist and which are planned.

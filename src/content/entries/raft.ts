@@ -22,7 +22,7 @@ export const raftEntry: AlgorithmEntry = {
   related: ["paxos", "mapreduce"],
   problem: {
     input:
-      "3 or 5 servers, client commands with arrival times, up to three crashes (a server stops and later restarts), a message-loss rate and a seed.",
+      "3 or 5 servers, client commands with arrival times, up to three crashes (a server stops and later restarts), up to two network partitions, whether a new leader appends a no-op entry, a message-loss rate and a seed.",
     output:
       "Each server's log and commit index, and the elections won, such that every server applies the same committed commands in the same order.",
   },
@@ -67,6 +67,12 @@ export const raftEntry: AlgorithmEntry = {
             "1:c1, 1:c2, 1:c3, 3:c5",
           ],
           ["Figure 8", "1: S2 at 15; 3: S3 at 46; 4: S2 at 53; 6: S3 at 94", "nothing"],
+          [
+            "Figure 8 with a no-op",
+            "1: S2 at 15; 4: S2 at 53; 6: S3 at 95",
+            "1:no-op, 1:c1, 1:c2, 4:no-op, 4:c3, 4:c4, 6:no-op",
+          ],
+          ["Partition", "1: S2 at 15; 2: S5 at 46", "1:x=1, 2:z=3"],
         ],
       },
       {
@@ -77,6 +83,14 @@ export const raftEntry: AlgorithmEntry = {
         kind: "p",
         text: "The Figure 8 preset (named after the figure in the Raft paper) shows why that last rule matters. S2 leads term 4 with the term-1 entries c1 and c2 and copies c1 to S1, so c1 is on a majority (S1 and S2). But no client command arrives in term 4, so S2 has no entry of its own term and commits nothing. S2 then crashes, S3 wins term 6, and its term-3 entries c3 and c4 overwrite c1 and c2 everywhere. Had S2 committed c1 by counting copies, a committed entry would now be lost: with that rule removed from the code, the tests report “index 1 committed as 1:c1 and 3:c3”. Here nothing is committed by the end, a liveness cost that real Raft avoids by having each new leader append a no-op entry of its own term.",
       },
+      {
+        kind: "p",
+        text: "The next preset runs the same input with that no-op. The run takes a different course from the first election on, because the logs differ, but the point shows: at time 62 S2, leader of term 4, learns that its term-4 no-op is on a majority and commits entries 2 to 6 at once (c1 and c2 from term 1, its no-op, c3 and c4). By the end all seven entries, three of them no-ops, are committed on every server.",
+      },
+      {
+        kind: "p",
+        text: "The partition preset cuts S2, the term-1 leader, off with S3 from time 30 to 80. S2 still believes it leads: it appends y=2 at time 34 and copies it to S3, but two of five servers are not a majority, so y=2 never commits. On the other side S5 times out, wins term 2 at 46 with the votes of S1 and S4, and commits z=3 at index 2 by time 65. When the partition heals, S2 hears the higher term, steps down, and at time 85 S2 and S3 replace y=2 with z=3. A minority can never commit, so the two sides can never commit different entries at the same index.",
+      },
     ],
     implementation: [
       {
@@ -85,7 +99,7 @@ export const raftEntry: AlgorithmEntry = {
           "currentTerm, votedFor and the log must be on stable storage before replying; the commit index can be relearned after a restart, as here.",
           "Randomized election timeouts make split votes rare; the timeout must be much longer than a round trip and the heartbeat interval.",
           "Never commit an entry from an earlier term by counting replicas alone; commit a current-term entry and the earlier ones follow (the Raft paper's Figure 8 shows a log being lost otherwise).",
-          "Production systems add log compaction (snapshots), membership changes, pre-vote, and read leases; this visualizer has none of them, at most three crashes, and a client that does not retry.",
+          "Production systems add log compaction (snapshots), membership changes, pre-vote, and read leases; this visualizer has none of them, at most three crashes and two partitions, and a client that does not retry. Its client always reaches the leader with the highest term, even across a partition.",
           "The Python sample is the follower side of AppendEntries, including the conflict rule; the JavaScript sample is the leader's commit rule.",
         ],
       },
@@ -328,7 +342,7 @@ function newCommitIndex(matchIndex, logTerms, currentTerm, commit) {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked examples are checked by automated tests, and every visualizer run is checked against four of Raft's safety properties; the prose has not yet had expert review. The visualizer omits snapshots, membership changes and client retries, and allows at most three crashes.",
+    note: "Written with AI assistance. Code samples and the worked examples are checked by automated tests, and every visualizer run is checked against four of Raft's safety properties; the prose has not yet had expert review. The visualizer omits snapshots, membership changes and client retries, and allows at most three crashes and two partitions.",
   },
   version: 1,
   updated: "2026-10-25",

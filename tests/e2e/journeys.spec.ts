@@ -432,6 +432,17 @@ test("distributed protocols: timelines, failures and input checks", async ({ pag
   await expect(page.locator(".alert--error")).toContainText(
     "The crashed server must be from 1 to 3",
   );
+  await page.getByLabel("Crashes (server@from-to, optional)").fill("");
+  await page.getByLabel("Partitions (servers@from-to, optional)").fill("1+2+3@30-60");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText(
+    "A partition must leave at least one server on the other side",
+  );
+  await page.getByLabel("Partitions (servers@from-to, optional)").fill("2+3@30-80");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.locator('[data-kind="timeline"]')).toContainText("cut off");
+  await expect(page.locator('[data-kind="timeline"]')).toContainText("healed");
 
   await page.goto("/algorithms/mapreduce");
   await page.getByRole("button", { name: "Jump to end" }).click();

@@ -103,7 +103,7 @@ test("studio: a compressed trace exports and re-imports", async ({ page }) => {
     mimeType: "application/gzip",
     buffer: (await import("node:fs")).readFileSync(path!),
   });
-  await expect(page.getByTestId("studio-summary")).toContainText("“raft” v2");
+  await expect(page.getByTestId("studio-summary")).toContainText("“raft” v3");
   await expect(page.locator('[data-kind="timeline"]')).toBeVisible();
 });
 

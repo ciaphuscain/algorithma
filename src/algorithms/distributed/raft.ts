@@ -8,6 +8,10 @@ export interface RaftInput {
   commands: { cmd: string; time: number }[];
   /** Servers that go down at `from` and restart at `to` (at most three). */
   crashes: { server: number; from: number; to: number }[];
+  /** Network partitions: `servers` are cut off from the rest from `from` until `to`. */
+  partitions: { servers: number[]; from: number; to: number }[];
+  /** Whether a new leader appends a no-op entry of its own term (Raft paper, §8). */
+  noop: boolean;
   loss: number;
   seed: number;
 }
@@ -20,6 +24,8 @@ export interface RaftOutput {
   commitIndex: number[];
   /** Every advance of a server's commit index, entry by entry. */
   commits: { server: number; index: number; entry: string; time: number }[];
+  /** Elections started (won or not). */
+  elections: number;
 }
 
 interface Entry {
@@ -44,6 +50,10 @@ const HEARTBEAT = 4;
 const ELECTION = 12;
 const MAX_COMMANDS = 6;
 const MAX_CRASHES = 3;
+const MAX_PARTITIONS = 2;
+const NOOP = "no-op";
+/** Log columns drawn beyond one per command, for no-op entries. */
+const NOOP_COLUMNS = 4;
 const show = (e: Entry) => `${e.term}:${e.cmd}`;
 
 const input: InputSpec<RaftInput> = {
@@ -60,10 +70,21 @@ const input: InputSpec<RaftInput> = {
       placeholder: "e.g. 1@40-70, 3@80-100",
       help: "Each server stops at the first time and restarts at the second.",
     },
+    {
+      name: "partitions",
+      label: "Partitions (servers@from-to, optional)",
+      placeholder: "e.g. 1+2@30-70",
+      help: "The listed servers can talk to each other but not to the rest, from the first time until the second.",
+    },
+    {
+      name: "noop",
+      label: "New leader appends a no-op (yes or no)",
+      placeholder: "no",
+    },
     { name: "loss", label: "Message loss (%)", placeholder: "e.g. 0" },
     { name: "seed", label: "Random seed", placeholder: "e.g. 1" },
   ],
-  constraints: `3 or 5 servers; 1–${MAX_COMMANDS} commands (letters, digits, = + -) at times from 0 to 80; up to ${MAX_CRASHES} crashes between times 0 and 100 (one server's crashes may not overlap); loss 0–30%; seed 0–999999. Messages take 1–3 time units; heartbeats every ${HEARTBEAT}; election timeouts are random between ${ELECTION} and ${2 * ELECTION}.`,
+  constraints: `3 or 5 servers; 1–${MAX_COMMANDS} commands (letters, digits, = + -) at times from 0 to 80; up to ${MAX_CRASHES} crashes between times 0 and 100 (one server's crashes may not overlap); up to ${MAX_PARTITIONS} partitions between times 0 and 100, not overlapping in time, each cutting off 1 to n − 1 servers; loss 0–30%; seed 0–999999. Messages take 1–3 time units; heartbeats every ${HEARTBEAT}; election timeouts are random between ${ELECTION} and ${2 * ELECTION}.`,
   parse(fields) {
     const errors: string[] = [];
     const servers = wholeIn(fields.servers, 3, 5);
@@ -96,6 +117,34 @@ const input: InputSpec<RaftInput> = {
       if (clash) errors.push(`Server ${server}'s crashes overlap`);
       crashes.push({ server: server - 1, from, to });
     }
+    const partitions: RaftInput["partitions"] = [];
+    const cuts = (fields.partitions ?? "")
+      .split(/[,;\n]+/)
+      .map((x) => x.trim())
+      .filter(Boolean);
+    if (cuts.length > MAX_PARTITIONS) errors.push(`Give at most ${MAX_PARTITIONS} partitions`);
+    for (const item of cuts) {
+      const m = /^(S?\d+(?:\s*\+\s*S?\d+)*)\s*@\s*(\d+)\s*-\s*(\d+)$/i.exec(item);
+      if (!m) {
+        errors.push(`Write each partition as servers@from-to, e.g. "1+2@30-70" (not "${item}")`);
+        continue;
+      }
+      const side = [...new Set(m[1]!.split("+").map((x) => Number(x.trim().replace(/^S/i, ""))))];
+      const [from, to] = [Number(m[2]), Number(m[3])];
+      if (servers !== null && side.some((x) => x < 1 || x > servers))
+        errors.push(`Partitioned servers must be from 1 to ${servers}`);
+      else if (servers !== null && side.length >= servers)
+        errors.push("A partition must leave at least one server on the other side");
+      if (!(from < to) || to > 100) errors.push("Each partition needs from < to ≤ 100");
+      if (partitions.some((p) => from < p.to && p.from < to))
+        errors.push("Partitions may not overlap in time");
+      partitions.push({ servers: side.map((x) => x - 1).sort((a, b) => a - b), from, to });
+    }
+    const noopText = (fields.noop ?? "").trim().toLowerCase();
+    if (!["", "yes", "no"].includes(noopText))
+      errors.push('The no-op setting must be "yes" or "no"');
+    if (commands.ok && commands.value.some((c) => c.label === NOOP))
+      errors.push(`"${NOOP}" is reserved for the leader's no-op entry`);
     const loss = wholeIn(fields.loss, 0, 30);
     if (loss === null) errors.push("Message loss must be a whole number from 0 to 30");
     const seed = wholeIn(fields.seed, 0, 999_999);
@@ -107,6 +156,8 @@ const input: InputSpec<RaftInput> = {
         servers: servers!,
         commands: commands.value.map((c) => ({ cmd: c.label, time: c.time })),
         crashes,
+        partitions,
+        noop: noopText === "yes",
         loss: loss!,
         seed: seed!,
       },
@@ -116,6 +167,10 @@ const input: InputSpec<RaftInput> = {
     servers: String(v.servers),
     commands: v.commands.map((c) => `${c.cmd}@${c.time}`).join(", "),
     crashes: v.crashes.map((c) => `${c.server + 1}@${c.from}-${c.to}`).join(", "),
+    partitions: v.partitions
+      .map((p) => `${p.servers.map((x) => x + 1).join("+")}@${p.from}-${p.to}`)
+      .join(", "),
+    noop: v.noop ? "yes" : "no",
     loss: String(v.loss),
     seed: String(v.seed),
   }),
@@ -130,6 +185,8 @@ const input: InputSpec<RaftInput> = {
           { cmd: "y=2", time: 38 },
         ],
         crashes: [],
+        partitions: [],
+        noop: false,
         loss: 0,
         seed: 1,
       },
@@ -144,6 +201,8 @@ const input: InputSpec<RaftInput> = {
           { cmd: "y=2", time: 70 },
         ],
         crashes: [{ server: 2, from: 40, to: 90 }],
+        partitions: [],
+        noop: false,
         loss: 0,
         seed: 2,
       },
@@ -158,6 +217,8 @@ const input: InputSpec<RaftInput> = {
           time: [21, 25, 28, 31, 34, 37][i]!,
         })),
         crashes: [{ server: 2, from: 29, to: 46 }],
+        partitions: [],
+        noop: false,
         loss: 27,
         seed: 216195,
       },
@@ -173,8 +234,44 @@ const input: InputSpec<RaftInput> = {
           { server: 1, from: 65, to: 83 },
           { server: 0, from: 24, to: 41 },
         ],
+        partitions: [],
+        noop: false,
         loss: 22,
         seed: 838040,
+      },
+    },
+    {
+      id: "figure8-noop",
+      label: "The same input with a no-op entry: everything commits",
+      value: {
+        servers: 3,
+        commands: ["c1", "c2", "c3", "c4"].map((cmd, i) => ({ cmd, time: [22, 26, 33, 42][i]! })),
+        crashes: [
+          { server: 0, from: 71, to: 88 },
+          { server: 1, from: 65, to: 83 },
+          { server: 0, from: 24, to: 41 },
+        ],
+        partitions: [],
+        noop: true,
+        loss: 22,
+        seed: 838040,
+      },
+    },
+    {
+      id: "partition",
+      label: "A leader cut off in a minority cannot commit, and loses its entry",
+      value: {
+        servers: 5,
+        commands: [
+          { cmd: "x=1", time: 22 },
+          { cmd: "y=2", time: 34 },
+          { cmd: "z=3", time: 62 },
+        ],
+        crashes: [],
+        partitions: [{ servers: [1, 2], from: 30, to: 80 }],
+        noop: false,
+        loss: 0,
+        seed: 3,
       },
     },
     {
@@ -188,6 +285,8 @@ const input: InputSpec<RaftInput> = {
           { cmd: "c", time: 50 },
         ],
         crashes: [],
+        partitions: [],
+        noop: false,
         loss: 10,
         seed: 4,
       },
@@ -204,6 +303,18 @@ const input: InputSpec<RaftInput> = {
       if (!crashes.some((x) => x.server === server && from <= x.to && x.from <= to))
         crashes.push({ server, from, to });
     }
+    const partitions: RaftInput["partitions"] = [];
+    if (rng.int(0, 2) === 0) {
+      const from = rng.int(20, 70);
+      const size = rng.int(1, Math.floor(n / 2));
+      const side = new Set<number>();
+      while (side.size < size) side.add(rng.int(0, n - 1));
+      partitions.push({
+        servers: [...side].sort((a, b) => a - b),
+        from,
+        to: Math.min(100, from + rng.int(10, 40)),
+      });
+    }
     return {
       servers: n,
       commands: Array.from({ length: k }, (_, i) => ({
@@ -211,6 +322,8 @@ const input: InputSpec<RaftInput> = {
         time: 25 + 10 * i + rng.int(0, 5),
       })),
       crashes,
+      partitions,
+      noop: rng.int(0, 1) === 1,
       loss: rng.int(0, 2) === 0 ? rng.int(5, 20) : 0,
       seed: rng.int(0, 999_999),
     };
@@ -222,15 +335,16 @@ const input: InputSpec<RaftInput> = {
  * a majority, and voters refuse candidates whose logs are behind theirs). The leader
  * appends client commands to its log and replicates them with AppendEntries, which
  * also act as heartbeats; an entry is committed once a majority stores it and it
- * belongs to the leader's current term.
+ * belongs to the leader's current term. Optionally, a new leader appends a no-op entry
+ * of its term, so that earlier entries can commit without waiting for a client command.
  */
 export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
   id: "raft",
-  version: 2,
+  version: 3,
   pseudocode: [
     "on election timeout: term += 1; become candidate; vote for self; send RequestVote(term, last log index and term)",
     "on RequestVote: grant if the term is current, no other vote this term, and the candidate's log is at least as up to date",
-    "candidate with votes from a majority: become leader; send AppendEntries (heartbeats) every few time units",
+    "candidate with votes from a majority: become leader (with the no-op option, append a no-op entry); send AppendEntries (heartbeats) every few time units",
     "leader on a client command: append (term, command) to its log",
     "on AppendEntries: if the log matches at prev, keep the new entries (dropping conflicts), follow the leader's commit index",
     "leader: commit index N once a majority stores entry N and its term is the current term",
@@ -243,14 +357,18 @@ export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
     const need = majority(n);
     const S = (i: number) => `S${i + 1}`;
     const cmds = [...input.commands].sort((a, b) => a.time - b.time);
-    const lastEvent = Math.max(cmds[cmds.length - 1]!.time, ...input.crashes.map((c) => c.to));
+    const lastEvent = Math.max(
+      cmds[cmds.length - 1]!.time,
+      ...input.crashes.map((c) => c.to),
+      ...input.partitions.map((p) => p.to),
+    );
     const END = Math.min(150, Math.max(60, lastEvent + 40));
     const T = t.timeline("T", {
       label: "Servers",
       horizon: END,
       lanes: Array.from({ length: n }, (_, i) => ({ id: S(i) })),
     });
-    const width = Math.max(1, cmds.length);
+    const width = Math.max(1, cmds.length + (input.noop ? NOOP_COLUMNS : 0));
     const L = t.grid("L", n, width, null, {
       label: "Logs (term:command); committed entries marked",
       rowHeaders: Array.from({ length: n }, (_, i) => S(i)),
@@ -261,6 +379,14 @@ export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
       lossPercent: input.loss,
       minDelay: 1,
       maxDelay: 3,
+      cut: (a, b, time) =>
+        input.partitions.some(
+          (p) =>
+            p.from <= time &&
+            time < p.to &&
+            p.servers.includes(Number(a.slice(1)) - 1) !==
+              p.servers.includes(Number(b.slice(1)) - 1),
+        ),
     });
     const srv = Array.from({ length: n }, () => ({
       term: 0,
@@ -276,6 +402,7 @@ export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
       shownCommit: 0,
     }));
     const leaders: RaftOutput["leaders"] = [];
+    let elections = 0;
     const commits: RaftOutput["commits"] = [];
     const STATUS = { follower: "unvisited", candidate: "frontier", leader: "current" } as const;
 
@@ -369,6 +496,10 @@ export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
       electionTimer(i);
     }
     cmds.forEach((c, k) => sim.setTimer("client", `c${k}`, c.time));
+    input.partitions.forEach((p, k) => {
+      sim.setTimer("net", `cut${k}`, p.from);
+      sim.setTimer("net", `heal${k}`, p.to);
+    });
     input.crashes.forEach((c, k) => {
       sim.setTimer(S(c.server), `crash${k}`, c.from);
       sim.setTimer(S(c.server), `restart${k}`, c.to);
@@ -398,6 +529,22 @@ export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
             note: `The client sends ${c.cmd} to the leader ${S(leader)}, which appends it at index ${s.log.length} in term ${s.term}.`,
           });
           for (let f = 0; f < n; f++) if (f !== leader) sendAppend(leader, f);
+          continue;
+        }
+        if (ev.node === "net") {
+          const p = input.partitions[Number(ev.tag.replace(/\D/g, ""))]!;
+          const names = p.servers.map(S).join(", ");
+          const heal = ev.tag.startsWith("heal");
+          p.servers.forEach((x, k) =>
+            T.mark(S(x), heal ? "healed" : "cut off", {
+              note:
+                k > 0
+                  ? undefined
+                  : heal
+                    ? `The partition heals: ${names} can reach the other servers again.`
+                    : `A partition cuts ${names} off from the other servers. Messages across it are lost.`,
+            }),
+          );
           continue;
         }
         const i = Number(ev.node.slice(1)) - 1;
@@ -434,6 +581,7 @@ export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
           s.votedFor = i;
           s.votes = new Set([i]);
           t.tally("elections");
+          elections++;
           label(i);
           const lastIndex = s.log.length;
           const lastTerm = lastIndex ? s.log[lastIndex - 1]!.term : 0;
@@ -498,11 +646,16 @@ export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
             s.match.fill(0);
             s.match[i] = s.log.length;
             leaders.push({ term: s.term, server: i, time: sim.now, log: s.log.map(show) });
+            if (input.noop) {
+              s.log.push({ term: s.term, cmd: NOOP });
+              s.match[i] = s.log.length;
+              drawLog(i);
+            }
             sim.cancelTimer(S(i), "election");
             label(i);
             T.mark(S(i), `leader t${s.term}`, {
               line: 3,
-              note: `${S(i)} has votes from ${s.votes.size} of ${n} servers: it is the leader for term ${s.term}.`,
+              note: `${S(i)} has votes from ${s.votes.size} of ${n} servers: it is the leader for term ${s.term}${input.noop ? `, and appends a no-op entry at index ${s.log.length}` : ""}.`,
             });
             for (let f = 0; f < n; f++) if (f !== i) sendAppend(i, f);
             sim.setTimer(S(i), "heartbeat", HEARTBEAT);
@@ -576,6 +729,7 @@ export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
       logs: srv.map((s) => s.log.map(show)),
       commitIndex: srv.map((s) => s.commit),
       commits,
+      elections,
     };
     const top = Math.max(...output.commitIndex);
     t.finish(input, output, {
@@ -623,16 +777,27 @@ export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
       for (let i = 1; i <= out.commitIndex[s]!; i++)
         if (out.logs[s]![i - 1] !== committed.get(i))
           return `server ${s + 1}'s committed entry ${i} differs`;
-    // With a reliable network and no crash, every command commits exactly once. (Their
-    // order may differ from the arrival order: commands that arrive while there is no
-    // leader are retried independently.)
-    if (input.loss === 0 && input.crashes.length === 0) {
+    // Raft promises safety, not progress: split votes can repeat until the run ends. On
+    // a reliable network with no crash or partition, a run with a single election, and
+    // that one won, has every command committed exactly once: no server ever sees a
+    // higher term, so the leader never steps down; it is elected by time 30 (timeout at
+    // most 24, then a vote round trip of at most 6); a command waiting for it is retried
+    // every 2; replication and the reply take at most 6; and the run lasts until at least
+    // 40 after the last command and never ends before 60. (The order may differ from the
+    // arrival order: commands that arrive while there is no leader are retried
+    // independently.)
+    if (
+      input.loss === 0 &&
+      input.crashes.length === 0 &&
+      input.partitions.length === 0 &&
+      out.elections === 1 &&
+      out.leaders.length === 1
+    ) {
       const want = input.commands.map((c) => c.cmd).sort();
       const top = Math.max(...out.commitIndex);
-      const got = Array.from(
-        { length: top },
-        (_, i) => committed.get(i + 1)!.split(":")[1]!,
-      ).sort();
+      const got = Array.from({ length: top }, (_, i) => committed.get(i + 1)!.split(":")[1]!)
+        .filter((c) => c !== NOOP)
+        .sort();
       if (got.join() !== want.join()) return `committed ${got} instead of ${want}`;
     }
     return null;
