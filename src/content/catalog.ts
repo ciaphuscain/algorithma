@@ -87,6 +87,11 @@ import { floydCycleEntry } from "./entries/floyd-cycle";
 import { mergeSortedListsEntry } from "./entries/merge-sorted-lists";
 import { listTwoPointersEntry } from "./entries/list-two-pointers";
 import { copyRandomListEntry } from "./entries/copy-random-list";
+import { balancedBracketsEntry } from "./entries/balanced-brackets";
+import { shuntingYardEntry } from "./entries/shunting-yard";
+import { postfixEvaluationEntry } from "./entries/postfix-evaluation";
+import { expressionTreeEntry } from "./entries/expression-tree";
+import { towerOfHanoiEntry } from "./entries/tower-of-hanoi";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -116,6 +121,11 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   mergeSortedListsEntry,
   listTwoPointersEntry,
   copyRandomListEntry,
+  balancedBracketsEntry,
+  shuntingYardEntry,
+  postfixEvaluationEntry,
+  expressionTreeEntry,
+  towerOfHanoiEntry,
   mergeSortEntry,
   quickSortEntry,
   heapSortEntry,

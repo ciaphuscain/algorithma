@@ -25,6 +25,8 @@ for (const path of [
   "/algorithms/reverse-linked-list",
   "/algorithms/floyd-cycle",
   "/algorithms/copy-random-list",
+  "/algorithms/shunting-yard",
+  "/algorithms/tower-of-hanoi",
   "/algorithms/heap-sort",
   "/algorithms/binary-search",
   "/algorithms/dfs",

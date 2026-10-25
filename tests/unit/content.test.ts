@@ -165,6 +165,7 @@ describe("catalog search", () => {
     expect(slugs({ maxWorst: "n log n" }).sort()).toEqual([
       "a-star",
       "aho-corasick",
+      "balanced-brackets",
       "bfs",
       "binary-lifting",
       "binary-search",
@@ -180,6 +181,7 @@ describe("catalog search", () => {
       "dfs",
       "dijkstra",
       "euclid",
+      "expression-tree",
       "fenwick-tree",
       "fft",
       "floyd-cycle",
@@ -204,6 +206,7 @@ describe("catalog search", () => {
       "monotonic-stack",
       "ntt",
       "open-addressing",
+      "postfix-evaluation",
       "prefix-sums",
       "prim",
       "radix-sort",
@@ -211,6 +214,7 @@ describe("catalog search", () => {
       "reverse-linked-list",
       "robin-hood-hashing",
       "segment-tree",
+      "shunting-yard",
       "sliding-window",
       "sparse-table",
       "suffix-array",
@@ -1652,6 +1656,86 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("stack lessons (batch S): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const run = (id: string, value: unknown) => runAlgorithm(getModule(id)!, value);
+    const parse = (id: string, fields: Record<string, string>) => {
+      const p = getModule(id)!.input.parse(fields);
+      if (!p.ok) throw new Error(p.errors.join());
+      return p.value;
+    };
+
+    type Br = { balanced: boolean; errorAt: number | null; reason: string };
+    const b1 = run("balanced-brackets", "{[()()]}");
+    expect([(b1.output as Br).balanced, b1.trace.meta.counters.comparisons]).toEqual([true, 4]);
+    const b2 = run("balanced-brackets", "([)]");
+    expect([(b2.output as Br).errorAt, b2.trace.meta.counters.comparisons]).toEqual([2, 1]);
+    expect(run("balanced-brackets", "((a+b)*[c-d]").output).toMatchObject({
+      balanced: false,
+      errorAt: 0,
+      reason: "left open",
+    });
+    expect((run("balanced-brackets", "f(a[i],{x:1})").output as Br).balanced).toBe(true);
+    expect((run("balanced-brackets", "[(])").output as Br).errorAt).toBe(2);
+
+    type Sy = { postfix: (string | number)[]; maxStack: number };
+    const postfix = (expr: string) => {
+      const r = run("shunting-yard", parse("shunting-yard", { expr }));
+      return [
+        (r.output as Sy).postfix.join(" "),
+        (r.output as Sy).maxStack,
+        r.trace.meta.counters.comparisons,
+      ];
+    };
+    expect(postfix("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3")).toEqual(["3 4 2 * 1 5 - 2 3 ^ ^ / +", 4, 5]);
+    expect(postfix("8 - 3 - 2")[0]).toBe("8 3 - 2 -");
+    expect(postfix("(1+2)*(3+4)")[0]).toBe("1 2 + 3 4 + *");
+    expect(postfix("2 * (3 + 4) - 5")[0]).toBe("2 3 4 + * 5 -");
+    expect(postfix("1 + 2 * 3 ^ 4")[1]).toBe(3);
+
+    type Ev = { value: number; maxStack: number };
+    const evaluate = (tokens: string, notation: string) => {
+      const r = run("postfix-evaluation", parse("postfix-evaluation", { tokens, notation }));
+      return [(r.output as Ev).value, (r.output as Ev).maxStack, r.trace.meta.counters.operations];
+    };
+    expect(evaluate("5 1 2 + 4 * + 3 -", "postfix")).toEqual([14, 3, 4]);
+    expect(evaluate("- + 5 * + 1 2 4 3", "prefix")).toEqual([14, 4, 4]);
+    expect(evaluate("2 3 2 ^ ^", "postfix")[0]).toBe(512);
+    expect(evaluate("6 2 3 + -", "postfix")[0]).toBe(1);
+    expect(evaluate("* - 9 4 + 1 1", "prefix")[0]).toBe(10);
+    expect(evaluate("8 2 /", "postfix")[0]).toBe(4);
+    expect(evaluate("1 2 + 3 + 4 +", "postfix")[1]).toBe(2);
+    expect(evaluate("1 2 3 4 + + +", "postfix")[1]).toBe(4);
+
+    type Et = { value: number; infix: string; height: number };
+    const tree = (expr: string) =>
+      run("expression-tree", parse("expression-tree", { expr })).output as Et;
+    expect(tree("(3 + 4) * (5 - 2)")).toMatchObject({
+      value: 21,
+      infix: "((3 + 4) * (5 - 2))",
+      height: 2,
+    });
+    expect(tree("2 + 3 * 4 - 6 / 2")).toMatchObject({
+      value: 11,
+      infix: "((2 + (3 * 4)) - (6 / 2))",
+      height: 3,
+    });
+    expect(tree("2 ^ 3 ^ 2")).toMatchObject({ value: 512, infix: "(2 ^ (3 ^ 2))" });
+    expect(tree("2 * 3 + 4").infix).toBe("((2 * 3) + 4)");
+
+    const P = ["A", "B", "C"];
+    const moves = (n: number) =>
+      (run("tower-of-hanoi", n).output as { moves: [number, number][] }).moves.map(
+        ([f, t]) => `${P[f]}${P[t]}`,
+      );
+    expect(moves(3)).toEqual(["AC", "AB", "CB", "AC", "BA", "BC", "AC"]);
+    expect(moves(4)).toHaveLength(15);
+    expect(moves(1)).toEqual(["AC"]);
+    expect(moves(5)).toHaveLength(31);
+    // The largest of 4 disks moves on move 8 (A to C), and nowhere else.
+    expect(moves(4)[7]).toBe("AC");
   });
 
   it("hashing lessons (batch P): worked examples match the engine", async () => {

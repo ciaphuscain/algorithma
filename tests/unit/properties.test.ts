@@ -36,6 +36,12 @@ import { reverseList } from "@/algorithms/lists/reverse";
 import { floydCycle } from "@/algorithms/lists/floyd-cycle";
 import { mergeLists } from "@/algorithms/lists/merge-lists";
 import { listTwoPointers } from "@/algorithms/lists/list-two-pointers";
+import { shuntingYard } from "@/algorithms/stacks/shunting-yard";
+import { rpnEval } from "@/algorithms/stacks/rpn-eval";
+import { expressionTree } from "@/algorithms/stacks/expression-tree";
+import { hanoi } from "@/algorithms/stacks/hanoi";
+import { balancedBrackets } from "@/algorithms/stacks/balanced-brackets";
+import { evalPostfix, postfixByDescent, type Op, type Token } from "@/algorithms/stacks/expr";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -1883,6 +1889,98 @@ describe("linked list properties", () => {
         );
         expect(rem.output.values.length).toBe(values.length - 1);
       }),
+    );
+  });
+});
+
+describe("stack application properties", () => {
+  type E = { v: number } | { op: "+" | "-" | "*"; l: E; r: E };
+  const expr: fc.Arbitrary<E> = fc.letrec<{ e: E }>((tie) => ({
+    e: fc.oneof(
+      { depthSize: "small", withCrossShrink: true },
+      fc.integer({ min: 0, max: 20 }).map((v) => ({ v })),
+      fc.record({ op: fc.constantFrom<"+" | "-" | "*">("+", "-", "*"), l: tie("e"), r: tie("e") }),
+    ),
+  })).e;
+  const size = (e: E): number => ("v" in e ? 1 : 1 + size(e.l) + size(e.r));
+  const infix = (e: E): Token[] =>
+    "v" in e ? [e.v] : ["(", ...infix(e.l), e.op, ...infix(e.r), ")"];
+  const postfix = (e: E): Token[] => ("v" in e ? [e.v] : [...postfix(e.l), ...postfix(e.r), e.op]);
+  const prefix = (e: E): Token[] => ("v" in e ? [e.v] : [e.op, ...prefix(e.l), ...prefix(e.r)]);
+  const value = (e: E): number =>
+    "v" in e
+      ? e.v
+      : e.op === "+"
+        ? value(e.l) + value(e.r)
+        : e.op === "-"
+          ? value(e.l) - value(e.r)
+          : value(e.l) * value(e.r);
+  const small = expr.filter((e) => size(e) <= 9 && Math.abs(value(e)) < 1e9);
+
+  it("shunting-yard, postfix and prefix evaluation and the expression tree agree on every expression", () => {
+    fc.assert(
+      fc.property(small, (e) => {
+        const inf = infix(e);
+        if (inf.length > 19) return;
+        const sy = runAlgorithm(shuntingYard, inf, { mode: "count" }).output;
+        expect(sy.postfix).toEqual(postfix(e));
+        expect(
+          runAlgorithm(rpnEval, { tokens: postfix(e), notation: "postfix" }, { mode: "count" })
+            .output.value,
+        ).toBe(value(e));
+        expect(
+          runAlgorithm(rpnEval, { tokens: prefix(e), notation: "prefix" }, { mode: "count" }).output
+            .value,
+        ).toBe(value(e));
+        const tree = runAlgorithm(expressionTree, inf, { mode: "count" }).output;
+        expect(tree.value).toBe(value(e));
+        expect(evalPostfix(sy.postfix)).toBe(value(e));
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("shunting-yard matches recursive descent on unparenthesised chains of all five operators", () => {
+    // Without parentheses, only precedence and associativity decide the grouping.
+    const chain = fc
+      .tuple(
+        fc.integer({ min: 1, max: 9 }),
+        fc.array(
+          fc.tuple(fc.constantFrom<Op>("+", "-", "*", "/", "^"), fc.integer({ min: 1, max: 9 })),
+          { minLength: 1, maxLength: 9 },
+        ),
+      )
+      .map(([first, rest]): Token[] => [first, ...rest.flat()]);
+    fc.assert(
+      fc.property(chain, (tokens) => {
+        const { output } = runAlgorithm(shuntingYard, tokens, { mode: "count" });
+        expect(output.postfix).toEqual(postfixByDescent(tokens));
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("Tower of Hanoi: disk k moves exactly 2^(n-k) times", () => {
+    for (let n = 1; n <= 6; n++) {
+      const { output } = runAlgorithm(hanoi, n, { mode: "count" });
+      const moved = new Array(n + 1).fill(0);
+      const pegs: number[][] = [Array.from({ length: n }, (_, i) => n - i), [], []];
+      for (const [f, t] of output.moves) {
+        const d = pegs[f]!.pop()!;
+        moved[d]++;
+        pegs[t]!.push(d);
+      }
+      for (let k = 1; k <= n; k++) expect(moved[k], `n = ${n}, disk ${k}`).toBe(2 ** (n - k));
+    }
+  });
+
+  it("brackets are balanced exactly when pair deletion empties them", () => {
+    fc.assert(
+      fc.property(fc.stringMatching(/^[()[\]{}a]{1,30}$/), (text) => {
+        const { output } = runAlgorithm(balancedBrackets, text, { mode: "count" });
+        expect(balancedBrackets.check(text, output)).toBeNull();
+      }),
+      { numRuns: 300 },
     );
   });
 });

@@ -85,6 +85,11 @@ import { floydCycle } from "./lists/floyd-cycle";
 import { mergeLists } from "./lists/merge-lists";
 import { listTwoPointers } from "./lists/list-two-pointers";
 import { copyRandom } from "./lists/copy-random";
+import { balancedBrackets } from "./stacks/balanced-brackets";
+import { shuntingYard } from "./stacks/shunting-yard";
+import { rpnEval } from "./stacks/rpn-eval";
+import { expressionTree } from "./stacks/expression-tree";
+import { hanoi } from "./stacks/hanoi";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -111,6 +116,11 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   mergeLists,
   listTwoPointers,
   copyRandom,
+  balancedBrackets,
+  shuntingYard,
+  rpnEval,
+  expressionTree,
+  hanoi,
   mergeSort,
   quickSort,
   heapSort,
