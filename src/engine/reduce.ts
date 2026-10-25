@@ -1,4 +1,5 @@
 import {
+  MAX_GRAPH_EDGES,
   MAX_PLANE_SHAPES,
   MAX_TIMELINE_ITEMS,
   type ArrayStructure,
@@ -222,6 +223,31 @@ function applyUnchecked(state: TraceState, e: TraceEvent): void {
         edges: [e.edge],
         nodes: [edge.from, edge.to],
       });
+      break;
+    }
+    case "graph.link": {
+      const g = get(state, e.s, "graph");
+      for (const n of [e.from, e.to])
+        if (!g.nodes.some((x) => x.id === n))
+          throw new TraceReplayError(`unknown node "${n}" in graph "${e.s}"`);
+      if (g.edges.some((x) => x.id === e.id))
+        throw new TraceReplayError(`edge "${e.id}" already exists in graph "${e.s}"`);
+      if (g.edges.length >= MAX_GRAPH_EDGES)
+        throw new TraceReplayError(`graph "${e.s}" would exceed ${MAX_GRAPH_EDGES} edges`);
+      g.edges.push({ id: e.id, from: e.from, to: e.to });
+      g.edgeStatus[e.id] = e.status;
+      bump(state, "writes");
+      state.focus.push({ s: e.s, tone: "write", edges: [e.id], nodes: [e.from, e.to] });
+      break;
+    }
+    case "graph.unlink": {
+      const g = get(state, e.s, "graph");
+      const at = g.edges.findIndex((x) => x.id === e.id);
+      if (at < 0) throw new TraceReplayError(`unknown edge "${e.id}" in graph "${e.s}"`);
+      const [gone] = g.edges.splice(at, 1);
+      delete g.edgeStatus[e.id];
+      bump(state, "writes");
+      state.focus.push({ s: e.s, tone: "write", nodes: [gone!.from, gone!.to] });
       break;
     }
     case "graph.annotate": {

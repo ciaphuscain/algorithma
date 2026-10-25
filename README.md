@@ -6,8 +6,9 @@ ALGORITHMA is an algorithm encyclopedia whose entries can be run. Pick an algori
 
 ## What is here
 
-- **81 interactive algorithms**, covering every Tier 1, 2 and 3 item of the curriculum and more:
+- **86 interactive algorithms**, covering every Tier 1, 2 and 3 item of the curriculum and more:
   - searching and sorting: linear and binary search; bubble, selection, insertion, Shell, merge, quick and heap sort; counting and radix sort; randomized quickselect;
+  - linked lists: reversal (whole and in groups of k), Floyd's cycle detection, merging sorted lists, two-pointer techniques (palindrome, rotate, remove n-th from end), copying a list with random pointers;
   - hashing: separate chaining, open addressing (linear probing, double hashing), Robin Hood and cuckoo hashing; consistent and rendezvous hashing; Zobrist hashing;
   - arrays: prefix sums, sliding window, two pointers, monotonic stack and queue, sparse table;
   - graphs: BFS, DFS, Dijkstra, A\*, Bellman–Ford, Floyd–Warshall, topological sort (Kahn and DFS), strongly connected components (Kosaraju, Tarjan), bridges and articulation points, union-find, Kruskal, Prim; maximum flow (Dinic, push–relabel) and bipartite matching (Hopcroft–Karp);

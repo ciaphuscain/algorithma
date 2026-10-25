@@ -32,6 +32,10 @@ import { rabinKarp } from "@/algorithms/strings/rabin-karp";
 import { consistentHashing } from "@/algorithms/hashing/consistent-hashing";
 import { rendezvousHashing } from "@/algorithms/hashing/rendezvous-hashing";
 import { zobrist } from "@/algorithms/hashing/zobrist";
+import { reverseList } from "@/algorithms/lists/reverse";
+import { floydCycle } from "@/algorithms/lists/floyd-cycle";
+import { mergeLists } from "@/algorithms/lists/merge-lists";
+import { listTwoPointers } from "@/algorithms/lists/list-two-pointers";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -1815,6 +1819,70 @@ describe("hash function properties", () => {
           expect(output.hashes[0]!.at(-1)).toBe(output.hashes[1]!.at(-1));
         },
       ),
+    );
+  });
+});
+
+describe("linked list properties", () => {
+  const list = fc.array(fc.integer({ min: -99, max: 99 }), { minLength: 1, maxLength: 10 });
+
+  it("reversal in groups makes exactly (groups) × (k + 1) pointer assignments", () => {
+    fc.assert(
+      fc.property(list, fc.nat(), (values, r) => {
+        const k = 1 + (r % values.length);
+        const { output } = runAlgorithm(reverseList, { values, k }, { mode: "count" });
+        expect(reverseList.check({ values, k }, output)).toBeNull();
+        expect(output.pointerWrites).toBe(Math.floor(values.length / k) * (k + 1));
+      }),
+    );
+  });
+
+  it("Floyd's pointers meet within mu + lambda slow steps", () => {
+    fc.assert(
+      fc.property(list, fc.nat(), (values, r) => {
+        const pos = r % (values.length + 1) === values.length ? -1 : r % values.length;
+        const { output } = runAlgorithm(floydCycle, { values, pos }, { mode: "count" });
+        expect(floydCycle.check({ values, pos }, output)).toBeNull();
+        if (pos >= 0) expect(output.slowSteps).toBeLessThanOrEqual(values.length);
+      }),
+    );
+  });
+
+  it("merging k lists makes at most N(k - 1) comparisons and is stable", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.array(fc.integer({ min: 0, max: 9 }), { minLength: 1, maxLength: 5 }), {
+          minLength: 2,
+          maxLength: 4,
+        }),
+        (raw) => {
+          const lists = raw.map((l) => [...l].sort((a, b) => a - b));
+          const { output, trace } = runAlgorithm(mergeLists, { lists }, { mode: "count" });
+          expect(mergeLists.check({ lists }, output)).toBeNull();
+          const N = lists.reduce((a, l) => a + l.length, 0);
+          expect(trace.meta.counters.comparisons).toBeLessThanOrEqual(N * (lists.length - 1));
+        },
+      ),
+    );
+  });
+
+  it("rotating by a multiple of the length changes nothing; removing then counts n - 1 nodes", () => {
+    fc.assert(
+      fc.property(list, fc.integer({ min: 0, max: 9 }), (values, m) => {
+        const rot = runAlgorithm(
+          listTwoPointers,
+          { values, op: { kind: "rotate", k: m * values.length } },
+          { mode: "count" },
+        );
+        expect(rot.output.values).toEqual(values);
+        const n = 1 + (m % values.length);
+        const rem = runAlgorithm(
+          listTwoPointers,
+          { values, op: { kind: "remove", n } },
+          { mode: "count" },
+        );
+        expect(rem.output.values.length).toBe(values.length - 1);
+      }),
     );
   });
 });

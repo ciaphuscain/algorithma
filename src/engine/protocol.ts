@@ -173,6 +173,9 @@ export type PlaneGeometry =
 /** A drawn shape: hull edges, split lines, a strip, a search radius. Status reuses edge statuses. */
 export type PlaneShape = PlaneGeometry & { id: string; status: EdgeStatus; label?: string };
 
+/** Most edges a graph may hold, at creation or after graph.link events. */
+export const MAX_GRAPH_EDGES = 5_000;
+
 /** Most shapes a plane may hold at once, so untrusted traces stay cheap to draw. */
 export const MAX_PLANE_SHAPES = 1_000;
 
@@ -269,6 +272,10 @@ export type TraceEvent = EventMeta &
     | { type: "graph.node"; s: string; node: string; status: NodeStatus }
     | { type: "graph.edge"; s: string; edge: string; status: EdgeStatus }
     | { type: "graph.annotate"; s: string; node: string; text: string | null }
+    /** Add an edge after creation (pointer structures: linked lists, random pointers). */
+    | { type: "graph.link"; s: string; id: string; from: string; to: string; status: EdgeStatus }
+    /** Remove an edge added earlier or given at creation. */
+    | { type: "graph.unlink"; s: string; id: string }
     | { type: "seq.push"; s: string; value: Scalar }
     | { type: "seq.pop"; s: string; index?: number }
     | { type: "grid.write"; s: string; r: number; c: number; value: Scalar }

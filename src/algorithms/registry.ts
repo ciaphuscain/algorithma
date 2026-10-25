@@ -80,6 +80,11 @@ import { rabinKarp } from "./strings/rabin-karp";
 import { consistentHashing } from "./hashing/consistent-hashing";
 import { rendezvousHashing } from "./hashing/rendezvous-hashing";
 import { zobrist } from "./hashing/zobrist";
+import { reverseList } from "./lists/reverse";
+import { floydCycle } from "./lists/floyd-cycle";
+import { mergeLists } from "./lists/merge-lists";
+import { listTwoPointers } from "./lists/list-two-pointers";
+import { copyRandom } from "./lists/copy-random";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -101,6 +106,11 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   rendezvousHashing,
   zobrist,
   rabinKarp,
+  reverseList,
+  floydCycle,
+  mergeLists,
+  listTwoPointers,
+  copyRandom,
   mergeSort,
   quickSort,
   heapSort,

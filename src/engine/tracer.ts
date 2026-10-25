@@ -436,6 +436,16 @@ export class TracedGraph {
   annotate(node: string, text: string | null, meta?: MetaArg): void {
     this.tracer.emit({ type: "graph.annotate", s: this.name, node, text }, meta);
   }
+
+  /** Add the edge `id` from → to (counted as a write: a pointer is set). */
+  link(id: string, from: string, to: string, status: EdgeStatus, meta?: MetaArg): void {
+    this.tracer.emit({ type: "graph.link", s: this.name, id, from, to, status }, meta, "writes");
+  }
+
+  /** Remove the edge `id` (counted as a write: a pointer is cleared). */
+  unlink(id: string, meta?: MetaArg): void {
+    this.tracer.emit({ type: "graph.unlink", s: this.name, id }, meta, "writes");
+  }
 }
 
 export class TracedSequence {

@@ -152,6 +152,7 @@ describe("catalog search", () => {
       "counting-sort",
       "insertion-sort",
       "merge-sort",
+      "merge-sorted-lists",
       "radix-sort",
     ]);
   });
@@ -172,6 +173,7 @@ describe("catalog search", () => {
       "closest-pair",
       "consistent-hashing",
       "convex-hull-trick",
+      "copy-random-list",
       "counting-sort",
       "crt",
       "cuckoo-hashing",
@@ -180,6 +182,7 @@ describe("catalog search", () => {
       "euclid",
       "fenwick-tree",
       "fft",
+      "floyd-cycle",
       "graham-scan",
       "hash-chaining",
       "heap-sort",
@@ -190,10 +193,12 @@ describe("catalog search", () => {
       "kruskal",
       "linear-search",
       "lis",
+      "list-two-pointers",
       "manacher",
       "mapreduce",
       "matrix-exponentiation",
       "merge-sort",
+      "merge-sorted-lists",
       "miller-rabin",
       "monotonic-queue",
       "monotonic-stack",
@@ -203,6 +208,7 @@ describe("catalog search", () => {
       "prim",
       "radix-sort",
       "rendezvous-hashing",
+      "reverse-linked-list",
       "robin-hood-hashing",
       "segment-tree",
       "sliding-window",
@@ -1566,6 +1572,86 @@ describe("worked examples agree with the engine", () => {
       ["8da7", "0542", "0642"],
     ]);
     expect(z.repeats.map((r: { sameBoard: boolean }) => r.sameBoard)).toEqual([true, true]);
+  });
+
+  it("linked-list lessons (batch R): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const run = (id: string, value: unknown) => runAlgorithm(getModule(id)!, value).output as never;
+    type Rev = { values: number[]; pointerWrites: number };
+    const r1: Rev = run("reverse-linked-list", { values: [1, 2, 3, 4, 5], k: 5 });
+    const r2: Rev = run("reverse-linked-list", { values: [1, 2, 3, 4, 5], k: 2 });
+    const r3: Rev = run("reverse-linked-list", { values: [10, 20, 30, 40, 50, 60, 70, 80], k: 3 });
+    expect([r1.values, r1.pointerWrites]).toEqual([[5, 4, 3, 2, 1], 6]);
+    expect([r2.values, r2.pointerWrites]).toEqual([[2, 1, 4, 3, 5], 6]);
+    expect([r3.values, r3.pointerWrites]).toEqual([[30, 20, 10, 60, 50, 40, 70, 80], 8]);
+    expect(
+      (run("reverse-linked-list", { values: [1, 2, 3, 4, 5, 6, 7], k: 3 }) as Rev).values,
+    ).toEqual([3, 2, 1, 6, 5, 4, 7]);
+    expect(
+      (run("reverse-linked-list", { values: [1, 2, 3, 4, 5, 6, 7, 8, 9], k: 4 }) as Rev)
+        .pointerWrites,
+    ).toBe(10);
+
+    type Cyc = { meet: number; start: number; slowSteps: number };
+    const c1: Cyc = run("floyd-cycle", { values: [3, 1, 4, 1, 5, 9, 2, 6], pos: 2 });
+    expect([c1.slowSteps, c1.meet, c1.start]).toEqual([6, 6, 2]);
+    const c2: Cyc = run("floyd-cycle", { values: [1, 2, 3, 4, 5], pos: 0 });
+    expect([c2.slowSteps, c2.meet]).toEqual([5, 0]);
+    expect((run("floyd-cycle", { values: [1, 2, 3, 4, 5, 6], pos: -1 }) as Cyc).slowSteps).toBe(2);
+    expect((run("floyd-cycle", { values: [1, 2, 3, 4, 5, 6, 7], pos: 4 }) as Cyc).slowSteps).toBe(
+      6,
+    );
+
+    const m1 = runAlgorithm(getModule("merge-sorted-lists")!, {
+      lists: [
+        [1, 2, 4],
+        [1, 3, 4],
+      ],
+    });
+    const m2 = runAlgorithm(getModule("merge-sorted-lists")!, {
+      lists: [
+        [1, 4, 5],
+        [1, 3, 4],
+        [2, 6],
+      ],
+    });
+    expect([
+      (m1.output as { values: number[] }).values,
+      m1.trace.meta.counters.comparisons,
+    ]).toEqual([[1, 1, 2, 3, 4, 4], 5]);
+    expect(m2.trace.meta.counters.comparisons).toBe(13);
+    const m3 = runAlgorithm(getModule("merge-sorted-lists")!, {
+      lists: [
+        [1, 2, 3, 4],
+        [5, 6, 7, 8, 9],
+      ],
+    });
+    expect(m3.trace.meta.counters.comparisons).toBeLessThanOrEqual(8);
+
+    type TP = { values: number[]; palindrome: boolean | null };
+    const tp = (values: number[], op: unknown) =>
+      runAlgorithm(getModule("list-two-pointers")!, { values, op });
+    const pal = tp([1, 2, 3, 2, 1], { kind: "palindrome" });
+    expect([(pal.output as TP).palindrome, pal.trace.meta.counters.comparisons]).toEqual([true, 2]);
+    expect((tp([1, 2, 3, 3, 1], { kind: "palindrome" }).output as TP).palindrome).toBe(false);
+    const rem = tp([1, 2, 3, 4, 5], { kind: "remove", n: 2 });
+    expect([(rem.output as TP).values, rem.trace.meta.counters.moves]).toEqual([[1, 2, 3, 5], 8]);
+    expect((tp([1, 2, 3, 4, 5], { kind: "rotate", k: 7 }).output as TP).values).toEqual([
+      4, 5, 1, 2, 3,
+    ]);
+    expect((tp([1, 2, 3, 4, 5], { kind: "rotate", k: 12 }).output as TP).values).toEqual([
+      4, 5, 1, 2, 3,
+    ]);
+    expect((tp([10, 20, 30, 40, 50], { kind: "remove", n: 3 }).output as TP).values).toEqual([
+      10, 20, 40, 50,
+    ]);
+
+    const cr = runAlgorithm(getModule("copy-random-list")!, {
+      values: [7, 13, 11, 10, 1],
+      random: [null, 0, 4, 2, 0],
+    });
+    expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
+    expect(cr.trace.meta.counters.copies).toBe(5);
   });
 
   it("hashing lessons (batch P): worked examples match the engine", async () => {

@@ -82,6 +82,11 @@ import { rabinKarpEntry } from "./entries/rabin-karp";
 import { consistentHashingEntry } from "./entries/consistent-hashing";
 import { rendezvousHashingEntry } from "./entries/rendezvous-hashing";
 import { zobristHashingEntry } from "./entries/zobrist-hashing";
+import { reverseLinkedListEntry } from "./entries/reverse-linked-list";
+import { floydCycleEntry } from "./entries/floyd-cycle";
+import { mergeSortedListsEntry } from "./entries/merge-sorted-lists";
+import { listTwoPointersEntry } from "./entries/list-two-pointers";
+import { copyRandomListEntry } from "./entries/copy-random-list";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -106,6 +111,11 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   rendezvousHashingEntry,
   zobristHashingEntry,
   rabinKarpEntry,
+  reverseLinkedListEntry,
+  floydCycleEntry,
+  mergeSortedListsEntry,
+  listTwoPointersEntry,
+  copyRandomListEntry,
   mergeSortEntry,
   quickSortEntry,
   heapSortEntry,
