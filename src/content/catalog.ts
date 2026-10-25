@@ -66,6 +66,9 @@ import { kdTreeEntry } from "./entries/kd-tree";
 import { quickselectEntry } from "./entries/quickselect";
 import { mctsEntry } from "./entries/mcts";
 import { gradientDescentEntry } from "./entries/gradient-descent";
+import { mapReduceEntry } from "./entries/mapreduce";
+import { paxosEntry } from "./entries/paxos";
+import { raftEntry } from "./entries/raft";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -114,6 +117,9 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   quickselectEntry,
   mctsEntry,
   gradientDescentEntry,
+  mapReduceEntry,
+  paxosEntry,
+  raftEntry,
   kmpEntry,
   ahoCorasickEntry,
   manacherEntry,

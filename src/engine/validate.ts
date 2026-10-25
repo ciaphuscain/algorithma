@@ -3,6 +3,7 @@ import {
   EDGE_STATUSES,
   GRID_MARKS,
   MAX_PLANE_SHAPES,
+  MAX_TIMELINE_ITEMS,
   NODE_STATUSES,
   SEQUENCE_DISCIPLINES,
   TRACE_PROTOCOL,
@@ -29,6 +30,9 @@ export const TRACE_LIMITS = {
   maxTreeNodes: 500,
   maxPlanePoints: 500,
   maxPlaneShapes: MAX_PLANE_SHAPES,
+  maxTimelineLanes: 16,
+  maxTimelineItems: MAX_TIMELINE_ITEMS,
+  maxTime: 1_000_000,
   maxStringLength: 500,
 } as const;
 
@@ -69,6 +73,7 @@ const isGeometry = (v: unknown): boolean => {
   if (!fields.every((f) => isNum(v[f]))) return false;
   return v.kind !== "circle" || (v.r as number) >= 0;
 };
+const isTime = (v: unknown): v is number => isInt(v) && v >= 0 && v <= TRACE_LIMITS.maxTime;
 const oneOf =
   <T extends string>(values: readonly T[]) =>
   (v: unknown): v is T =>
@@ -256,6 +261,71 @@ function checkStructure(raw: unknown, path: string, c: Collector): void {
       });
       return;
     }
+    case "timeline": {
+      const { lanes, laneStatus, annotations, now, horizon, messages, marks } = raw;
+      if (!Array.isArray(lanes) || lanes.length === 0)
+        return c.add(`${path}.lanes`, "must be a non-empty array");
+      if (lanes.length > TRACE_LIMITS.maxTimelineLanes)
+        return c.add(`${path}.lanes`, `exceeds ${TRACE_LIMITS.maxTimelineLanes} lanes`);
+      const ids = new Set<string>();
+      lanes.forEach((l, i) => {
+        if (!isObject(l) || !isStr(l.id) || (l.label !== undefined && !isStr(l.label)))
+          c.add(`${path}.lanes[${i}]`, "needs a string id and an optional string label");
+        else if (ids.has(l.id)) c.add(`${path}.lanes[${i}]`, `duplicate id "${l.id}"`);
+        else ids.add(l.id);
+      });
+      if (
+        !isObject(laneStatus) ||
+        !Object.entries(laneStatus).every(([k, v]) => ids.has(k) && oneOf(NODE_STATUSES)(v))
+      )
+        c.add(`${path}.laneStatus`, "must map known lanes to statuses");
+      if (
+        !isObject(annotations) ||
+        !Object.entries(annotations).every(([k, v]) => ids.has(k) && isStr(v))
+      )
+        c.add(`${path}.annotations`, "must map known lanes to strings");
+      if (!isTime(now))
+        c.add(`${path}.now`, `must be a whole number from 0 to ${TRACE_LIMITS.maxTime}`);
+      if (horizon !== undefined && !isTime(horizon))
+        c.add(`${path}.horizon`, `must be a whole number from 0 to ${TRACE_LIMITS.maxTime}`);
+      if (!Array.isArray(messages) || !Array.isArray(marks))
+        return c.add(path, "messages and marks must be arrays");
+      if (messages.length + marks.length > TRACE_LIMITS.maxTimelineItems)
+        return c.add(path, `exceeds ${TRACE_LIMITS.maxTimelineItems} messages and marks`);
+      const seen = new Set<string>();
+      messages.forEach((m, i) => {
+        const at = `${path}.messages[${i}]`;
+        if (
+          !isObject(m) ||
+          !isStr(m.id) ||
+          !ids.has(m.from as string) ||
+          !ids.has(m.to as string) ||
+          !isTime(m.sent) ||
+          !(m.received === null || (isTime(m.received) && m.received >= m.sent)) ||
+          !oneOf(EDGE_STATUSES)(m.status) ||
+          (m.label !== undefined && !isStr(m.label)) ||
+          (m.lost !== undefined && m.lost !== true)
+        )
+          return c.add(at, "needs an id, known lanes, sent ≤ received (or null) and a status");
+        if (seen.has(m.id)) c.add(at, `duplicate id "${m.id}"`);
+        seen.add(m.id);
+      });
+      const markIds = new Set<string>();
+      marks.forEach((m, i) => {
+        const at = `${path}.marks[${i}]`;
+        if (
+          !isObject(m) ||
+          !isStr(m.id) ||
+          !ids.has(m.lane as string) ||
+          !isTime(m.time) ||
+          !isStr(m.label)
+        )
+          return c.add(at, "needs an id, a known lane, a time and a label");
+        if (markIds.has(m.id)) c.add(at, `duplicate id "${m.id}"`);
+        markIds.add(m.id);
+      });
+      return;
+    }
     default:
       c.add(`${path}.kind`, `unknown structure kind ${JSON.stringify(raw.kind)}`);
   }
@@ -293,6 +363,13 @@ const EVENT_FIELDS: Record<TraceEvent["type"], Record<string, (v: unknown) => bo
   "plane.annotate": { s: isStr, point: isStr, text: (v) => v === null || isStr(v) },
   "plane.draw": { s: isStr, id: isStr, shape: isGeometry, status: oneOf(EDGE_STATUSES) },
   "plane.erase": { s: isStr, id: isStr },
+  "timeline.tick": { s: isStr, time: isTime },
+  "timeline.send": { s: isStr, id: isStr, from: isStr, to: isStr },
+  "timeline.deliver": { s: isStr, id: isStr, status: oneOf(EDGE_STATUSES) },
+  "timeline.lose": { s: isStr, id: isStr },
+  "timeline.lane": { s: isStr, lane: isStr, status: oneOf(NODE_STATUSES) },
+  "timeline.annotate": { s: isStr, lane: isStr, text: (v) => v === null || isStr(v) },
+  "timeline.mark": { s: isStr, id: isStr, lane: isStr, label: isStr },
   "structure.create": { s: isStr, structure: isObject },
   "structure.remove": { s: isStr },
   step: {},
@@ -306,6 +383,7 @@ const OPTIONAL_EVENT_FIELDS: Partial<
   "tree.add": { slot: isInt, edgeLabel: isStr },
   "tree.move": { slot: isInt },
   "plane.draw": { label: isStr },
+  "timeline.send": { label: isStr },
 };
 const META_FIELDS = new Set(["type", "line", "note", "vars", "count"]);
 

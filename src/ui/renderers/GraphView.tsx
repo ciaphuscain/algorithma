@@ -168,6 +168,32 @@ const SHAPE_LEGEND: Record<string, string> = {
   highlight: "highlighted (long dashes)",
 };
 
+/** Processes and messages: lanes are active, waiting or down; messages fly, arrive or get lost. */
+const LANE_LEGEND: Record<string, string> = {
+  unvisited: "idle",
+  frontier: "waiting (dashed)",
+  current: "active",
+  visited: "finished",
+  path: "decided",
+  unreachable: "down (dotted)",
+  highlight: "highlighted (double ring)",
+};
+const MESSAGE_LEGEND: Record<string, string> = {
+  idle: "sent",
+  examining: "in flight",
+  tree: "delivered",
+  relaxed: "accepted",
+  rejected: "lost or refused (dotted)",
+  path: "decisive",
+  back: "reply (dashed)",
+  highlight: "highlighted (long dashes)",
+};
+const WORDING = {
+  graph: { nodes: NODE_LEGEND, edges: EDGE_LEGEND, name: "Graph legend" },
+  plane: { nodes: POINT_LEGEND, edges: SHAPE_LEGEND, name: "Plane legend" },
+  timeline: { nodes: LANE_LEGEND, edges: MESSAGE_LEGEND, name: "Timeline legend" },
+};
+
 /**
  * Legend for the statuses that occur anywhere in this trace, with wording that does
  * not assume a particular algorithm.
@@ -175,17 +201,16 @@ const SHAPE_LEGEND: Record<string, string> = {
 export function GraphLegend({
   nodeStatuses,
   edgeStatuses,
-  plane = false,
+  wording = "graph",
 }: {
   nodeStatuses: string[];
   edgeStatuses: string[];
-  /** Use point and shape wording. */
-  plane?: boolean;
+  /** Graph, geometry or process wording for the same statuses. */
+  wording?: keyof typeof WORDING;
 }) {
-  const nodeWords = plane ? POINT_LEGEND : NODE_LEGEND;
-  const edgeWords = plane ? SHAPE_LEGEND : EDGE_LEGEND;
+  const { nodes: nodeWords, edges: edgeWords, name } = WORDING[wording];
   return (
-    <div className="legend" aria-label={plane ? "Plane legend" : "Graph legend"}>
+    <div className="legend" aria-label={name}>
       {nodeStatuses
         .filter((s) => nodeWords[s])
         .map((s) => (

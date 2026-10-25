@@ -40,6 +40,8 @@ for (const path of [
   "/algorithms/kd-tree",
   "/algorithms/mcts",
   "/algorithms/gradient-descent",
+  "/algorithms/paxos",
+  "/algorithms/raft",
   "/arena",
   "/studio",
 ]) {

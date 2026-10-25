@@ -14,6 +14,7 @@ import {
   type Scalar,
   type SequenceDiscipline,
   type Structure,
+  type TimelineLane,
   type Trace,
   type TraceEvent,
   type TraceTruncation,
@@ -173,6 +174,27 @@ export class Tracer {
       shapes: [],
     });
     return new TracedPlane(this, name);
+  }
+
+  /** Processes as lanes, with messages between them over time. */
+  timeline(
+    name: string,
+    def: { lanes: TimelineLane[]; label?: string; horizon?: number },
+  ): TracedTimeline {
+    const laneStatus: Record<string, NodeStatus> = {};
+    for (const l of def.lanes) laneStatus[l.id] = "unvisited";
+    this.register(name, {
+      kind: "timeline",
+      ...(def.label ? { label: def.label } : {}),
+      lanes: def.lanes.map((l) => ({ ...l })),
+      laneStatus,
+      annotations: {},
+      now: 0,
+      ...(def.horizon !== undefined ? { horizon: def.horizon } : {}),
+      messages: [],
+      marks: [],
+    });
+    return new TracedTimeline(this, name);
   }
 
   grid(
@@ -710,5 +732,77 @@ export class TracedPlane {
 
   has(id: string): boolean {
     return this.shapes.has(id);
+  }
+}
+
+/**
+ * A traced timeline. It keeps the clock and the set of messages in flight, so an
+ * algorithm cannot deliver a message twice or move time backwards.
+ */
+export class TracedTimeline {
+  private time = 0;
+  private counter = 0;
+  private marks = 0;
+  private readonly flying = new Set<string>();
+
+  constructor(
+    private readonly tracer: Tracer,
+    readonly name: string,
+  ) {}
+
+  get now(): number {
+    return this.time;
+  }
+
+  /** Move the clock forwards to `time` (no event if it is already there). */
+  tick(time: number, meta?: MetaArg): void {
+    if (time < this.time) throw new Error(`time ${time} is before ${this.time} in ${this.name}`);
+    if (time === this.time) return;
+    this.time = time;
+    this.tracer.emit({ type: "timeline.tick", s: this.name, time }, meta);
+  }
+
+  /** Send a message now; returns its id. */
+  send(from: string, to: string, label?: string, meta?: MetaArg): string {
+    const id = `m${this.counter++}`;
+    this.flying.add(id);
+    this.tracer.emit(
+      {
+        type: "timeline.send",
+        s: this.name,
+        id,
+        from,
+        to,
+        ...(label !== undefined ? { label } : {}),
+      },
+      meta,
+    );
+    return id;
+  }
+
+  deliver(id: string, status: EdgeStatus = "tree", meta?: MetaArg): void {
+    if (!this.flying.delete(id)) throw new Error(`message ${id} is not in flight in ${this.name}`);
+    this.tracer.emit({ type: "timeline.deliver", s: this.name, id, status }, meta);
+  }
+
+  lose(id: string, meta?: MetaArg): void {
+    if (!this.flying.delete(id)) throw new Error(`message ${id} is not in flight in ${this.name}`);
+    this.tracer.emit({ type: "timeline.lose", s: this.name, id }, meta);
+  }
+
+  lane(id: string, status: NodeStatus, meta?: MetaArg): void {
+    this.tracer.emit({ type: "timeline.lane", s: this.name, lane: id, status }, meta);
+  }
+
+  annotate(lane: string, text: string | null, meta?: MetaArg): void {
+    this.tracer.emit({ type: "timeline.annotate", s: this.name, lane, text }, meta);
+  }
+
+  /** A local event on a lane at the current time. */
+  mark(lane: string, label: string, meta?: MetaArg): void {
+    this.tracer.emit(
+      { type: "timeline.mark", s: this.name, id: `k${this.marks++}`, lane, label },
+      meta,
+    );
   }
 }

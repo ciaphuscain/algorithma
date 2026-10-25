@@ -1,5 +1,6 @@
 import {
   MAX_PLANE_SHAPES,
+  MAX_TIMELINE_ITEMS,
   type ArrayStructure,
   type GraphStructure,
   type GridStructure,
@@ -7,6 +8,7 @@ import {
   type SequenceStructure,
   type Structure,
   type StructureKind,
+  type TimelineStructure,
   type TraceEvent,
   type TreeStructure,
 } from "./protocol";
@@ -32,6 +34,7 @@ type KindMap = {
   grid: GridStructure;
   tree: TreeStructure;
   plane: PlaneStructure;
+  timeline: TimelineStructure;
 };
 
 /** Run a shared tree operation, converting its errors into replay errors. */
@@ -52,6 +55,23 @@ function treeNode(t: TreeStructure, node: string, s: string) {
 function planePoint(p: PlaneStructure, point: string, s: string): void {
   if (!p.points.some((x) => x.id === point))
     throw new TraceReplayError(`unknown point "${point}" in plane "${s}"`);
+}
+
+function lane(t: TimelineStructure, id: string, s: string): void {
+  if (!t.lanes.some((l) => l.id === id))
+    throw new TraceReplayError(`unknown lane "${id}" in timeline "${s}"`);
+}
+
+function inFlight(t: TimelineStructure, id: string, s: string) {
+  const m = t.messages.find((x) => x.id === id);
+  if (!m) throw new TraceReplayError(`unknown message "${id}" in timeline "${s}"`);
+  if (m.received !== null) throw new TraceReplayError(`message "${id}" is no longer in flight`);
+  return m;
+}
+
+function roomFor(t: TimelineStructure, s: string): void {
+  if (t.messages.length + t.marks.length >= MAX_TIMELINE_ITEMS)
+    throw new TraceReplayError(`timeline "${s}" already holds ${MAX_TIMELINE_ITEMS} items`);
 }
 
 function get<K extends StructureKind>(state: TraceState, s: string, kind: K): KindMap[K] {
@@ -354,6 +374,73 @@ function applyUnchecked(state: TraceState, e: TraceEvent): void {
       const at = p.shapes.findIndex((x) => x.id === e.id);
       if (at === -1) throw new TraceReplayError(`unknown shape "${e.id}" in plane "${e.s}"`);
       p.shapes.splice(at, 1);
+      break;
+    }
+    case "timeline.tick": {
+      const t = get(state, e.s, "timeline");
+      if (!Number.isInteger(e.time) || e.time <= t.now)
+        throw new TraceReplayError(`time ${e.time} does not move timeline "${e.s}" forwards`);
+      t.now = e.time;
+      break;
+    }
+    case "timeline.send": {
+      const t = get(state, e.s, "timeline");
+      lane(t, e.from, e.s);
+      lane(t, e.to, e.s);
+      if (t.messages.some((m) => m.id === e.id))
+        throw new TraceReplayError(`message "${e.id}" already exists in timeline "${e.s}"`);
+      roomFor(t, e.s);
+      t.messages.push({
+        id: e.id,
+        from: e.from,
+        to: e.to,
+        ...(e.label !== undefined ? { label: e.label } : {}),
+        sent: t.now,
+        received: null,
+        status: "examining",
+      });
+      state.focus.push({ s: e.s, tone: "write", edges: [e.id] });
+      break;
+    }
+    case "timeline.deliver": {
+      const t = get(state, e.s, "timeline");
+      const m = inFlight(t, e.id, e.s);
+      m.received = t.now;
+      m.status = e.status;
+      state.focus.push({ s: e.s, tone: "read", edges: [e.id], nodes: [m.to] });
+      break;
+    }
+    case "timeline.lose": {
+      const t = get(state, e.s, "timeline");
+      const m = inFlight(t, e.id, e.s);
+      m.received = t.now;
+      m.lost = true;
+      m.status = "rejected";
+      state.focus.push({ s: e.s, tone: "mismatch", edges: [e.id] });
+      break;
+    }
+    case "timeline.lane": {
+      const t = get(state, e.s, "timeline");
+      lane(t, e.lane, e.s);
+      t.laneStatus[e.lane] = e.status;
+      state.focus.push({ s: e.s, tone: "visit", nodes: [e.lane] });
+      break;
+    }
+    case "timeline.annotate": {
+      const t = get(state, e.s, "timeline");
+      lane(t, e.lane, e.s);
+      if (e.text === null) delete t.annotations[e.lane];
+      else t.annotations[e.lane] = e.text;
+      break;
+    }
+    case "timeline.mark": {
+      const t = get(state, e.s, "timeline");
+      lane(t, e.lane, e.s);
+      if (t.marks.some((m) => m.id === e.id))
+        throw new TraceReplayError(`mark "${e.id}" already exists in timeline "${e.s}"`);
+      roomFor(t, e.s);
+      t.marks.push({ id: e.id, lane: e.lane, time: t.now, label: e.label });
+      state.focus.push({ s: e.s, tone: "write", nodes: [e.lane] });
       break;
     }
     case "structure.create": {

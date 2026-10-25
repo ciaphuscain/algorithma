@@ -149,7 +149,7 @@ test("explore search and filters, shareable via URL", async ({ page }) => {
   await expect(page).toHaveURL(/query=shortest/);
   await page.getByLabel("Search").fill("");
   await page.getByLabel("Worst-case time at most").selectOption("n log n");
-  await expect(page.getByTestId("result-count")).toContainText("45 interactive entries");
+  await expect(page.getByTestId("result-count")).toContainText("46 interactive entries");
   await page.goto("/explore?domain=searching-sorting");
   await expect(page.getByTestId("results")).toContainText("Bubble Sort");
   await expect(page.getByTestId("results")).not.toContainText("Breadth-First");
@@ -169,7 +169,7 @@ test("roadmap lists the curriculum honestly", async ({ page }) => {
   await expect(page.locator('[data-number="220"]')).toContainText("Same as #218");
   await page.getByLabel("Search the curriculum").fill("");
   await page.getByLabel("Status").selectOption("available");
-  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 85 of 600");
+  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 88 of 600");
   await page.locator('[data-number="11"]').getByRole("link", { name: "Bubble Sort" }).click();
   await expect(page).toHaveURL(/\/algorithms\/bubble-sort/);
 });
@@ -407,7 +407,30 @@ test("randomized search and optimisation: seeds, budgets and learning rates", as
   await expect(page.locator(".alert--error")).toContainText("η must be a number greater than 0");
 });
 
+test("distributed protocols: timelines, failures and input checks", async ({ page }) => {
+  await page.goto("/algorithms/paxos");
+  await expect(page.locator('[data-kind="timeline"]')).toBeVisible();
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText(
+    "Chosen: X (1 ballot, 1 proposer learned it)",
+  );
+  await expect(page.getByLabel("Timeline legend")).toContainText("delivered");
+
+  await page.goto("/algorithms/raft");
+  await page.getByLabel("Crash (server@from-to, optional)").fill("9@10-20");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText(
+    "The crashed server must be from 1 to 3",
+  );
+
+  await page.goto("/algorithms/mapreduce");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText("the 3 · 14 pairs shuffled");
+});
+
 test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
+  // One navigation per entry (about 0.2–0.5 s each): the default 30 s is too short for 68.
+  test.setTimeout(120_000);
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(String(e)));
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
@@ -477,6 +500,9 @@ test("every catalogue entry renders its visualizer without console errors", asyn
     "quickselect",
     "mcts",
     "gradient-descent",
+    "mapreduce",
+    "paxos",
+    "raft",
   ]) {
     await page.goto(`/algorithms/${slug}`);
     await page.getByRole("button", { name: "Jump to end" }).click();

@@ -183,6 +183,7 @@ describe("catalog search", () => {
       "linear-search",
       "lis",
       "manacher",
+      "mapreduce",
       "matrix-exponentiation",
       "merge-sort",
       "miller-rabin",
@@ -250,6 +251,9 @@ describe("catalog search", () => {
     expect(entryForItem(427)?.slug).toBe("quickselect");
     expect(entryForItem(455)?.slug).toBe("mcts");
     expect(entryForItem(496)?.slug).toBe("gradient-descent");
+    expect(entryForItem(461)?.slug).toBe("mapreduce");
+    expect(entryForItem(466)?.slug).toBe("paxos");
+    expect(entryForItem(467)?.slug).toBe("raft");
     expect(entryForItem(218)).toBeUndefined(); // Borůvka: planned
     expect(getEntry("nope")).toBeUndefined();
   });
@@ -1232,5 +1236,96 @@ describe("worked examples agree with the engine", () => {
     ).toEqual([-0.8, 0.82]);
     expect(run("gradient-descent", "diverge").output.factors[0]).toBeCloseTo(-1.2, 12);
     expect(run("gradient-descent", "slow").output.factors[0]).toBeCloseTo(0.96, 12);
+  });
+
+  it("distributed lessons: worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { TracePlayer } = await import("@/engine/player");
+    const run = (id: string, presetId: string) => {
+      const m = getModule(id)!;
+      return runAlgorithm(m, m.input.presets.find((p) => p.id === presetId)!.value);
+    };
+    const notes = (trace: { events: { note?: string }[] }) =>
+      trace.events.flatMap((e) => (e.note ? [e.note] : []));
+
+    const mr = run("mapreduce", "classic");
+    expect(mr.output.counts).toEqual([
+      ["a", 2],
+      ["and", 1],
+      ["cat", 2],
+      ["dog", 2],
+      ["mat", 1],
+      ["on", 1],
+      ["sat", 2],
+      ["the", 3],
+    ]);
+    expect(mr.output.shuffled).toBe(14);
+    const G = new TracePlayer(mr.trace).finalState().structures.G;
+    expect(G?.kind === "grid" && G.cells).toEqual([
+      [3, 3],
+      [2, 1],
+      [2, 3],
+    ]);
+    expect(
+      Object.entries(mr.output.reducerOf)
+        .filter(([, r]) => r === 0)
+        .map(([w]) => w)
+        .sort(),
+    ).toEqual(["cat", "dog", "mat", "sat"]);
+    expect(run("mapreduce", "combiner").output.shuffled).toBe(12);
+    expect(run("mapreduce", "failure").output.reassigned).toBe(1);
+
+    const px = run("paxos", "duel").output;
+    expect(px.chosen).toBe("Y");
+    expect(
+      px.accepts.map((a: { acceptor: number; ballot: number; value: string; time: number }) => [
+        a.acceptor + 1,
+        a.ballot,
+        a.value,
+        a.time,
+      ]),
+    ).toEqual([
+      [3, 3, "X", 4],
+      [1, 4, "Y", 9],
+      [3, 4, "Y", 9],
+      [2, 4, "Y", 10],
+      [2, 7, "Y", 15],
+      [1, 7, "Y", 17],
+      [3, 7, "Y", 17],
+    ]);
+    expect(
+      px.decisions.map((d: { proposer: number; time: number }) => [d.proposer + 1, d.time]),
+    ).toEqual([
+      [2, 11],
+      [1, 19],
+    ]);
+
+    const leaders = (id: string) =>
+      run("raft", id).output.leaders.map((l: { term: number; server: number; time: number }) => [
+        l.term,
+        l.server + 1,
+        l.time,
+      ]);
+    const classic = run("raft", "classic");
+    expect(leaders("classic")).toEqual([[1, 2, 16]]);
+    expect(Math.max(...classic.output.commits.map((c: { time: number }) => c.time))).toBe(47);
+    expect(classic.output.logs.every((l: string[]) => l.join() === "1:x=1,1:y=2")).toBe(true);
+    expect(leaders("failover")).toEqual([
+      [1, 3, 20],
+      [2, 1, 59],
+    ]);
+    expect(
+      run("raft", "failover").output.logs.every((l: string[]) => l.join() === "1:x=1,2:y=2"),
+    ).toBe(true);
+    const over = run("raft", "overwrite");
+    expect(leaders("overwrite")).toEqual([
+      [1, 3, 16],
+      [2, 2, 59],
+      [3, 1, 60],
+    ]);
+    expect(over.output.logs[0].join()).toBe("1:c1,1:c2,1:c3,3:c5");
+    expect(notes(over.trace)).toContain(
+      "S1 commits up to entry 4: a majority (2 of 3) store it (3 entries at once).",
+    );
   });
 });

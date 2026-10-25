@@ -69,6 +69,24 @@ export function describeStructure(name: string, s: Structure): string {
       });
       return `${label} (plane) — ${points}${shapes.length ? `; shapes: ${shapes.join("; ")}` : ""}.`;
     }
+    case "timeline": {
+      const lanes = s.lanes
+        .map((l) => {
+          const st = s.laneStatus[l.id] ?? "unvisited";
+          const ann = s.annotations[l.id];
+          return `${l.label ?? l.id} (${st}${ann ? `, ${ann}` : ""})`;
+        })
+        .join("; ");
+      const name = (id: string) => s.lanes.find((l) => l.id === id)?.label ?? id;
+      const flying = s.messages.filter((m) => m.received === null);
+      const recent = s.messages.filter((m) => m.received === s.now || m.sent === s.now);
+      const show = (m: (typeof s.messages)[number]) =>
+        `${m.label ?? "message"} ${name(m.from)} → ${name(m.to)}${m.lost ? " (lost)" : ""}`;
+      const marks = s.marks
+        .filter((m) => m.time === s.now)
+        .map((m) => `${name(m.lane)}: ${m.label}`);
+      return `${label} (timeline) at time ${s.now} — ${lanes}. ${s.messages.length} messages so far${flying.length ? `; in flight: ${flying.map(show).join(", ")}` : ""}${recent.length ? `; now: ${recent.map(show).join(", ")}` : ""}${marks.length ? `; events: ${marks.join(", ")}` : ""}.`;
+    }
     case "grid":
       return `${label}: ${s.rows}×${s.cols} table; rows ${s.cells.map((r) => `[${r.map((c) => (c === null ? "·" : String(c))).join(" ")}]`).join(" ")}.`;
   }

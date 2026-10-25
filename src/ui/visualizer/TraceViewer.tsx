@@ -48,10 +48,22 @@ function graphLegends(player: TracePlayer) {
         n: new Set(Object.values(s.pointStatus)),
         e: new Set(s.shapes.map((x) => x.status)),
       };
+    else if (s.kind === "timeline")
+      sets[name] = {
+        n: new Set(Object.values(s.laneStatus)),
+        e: new Set(s.messages.map((x) => x.status)),
+      };
   }
   for (const e of player.trace.events) {
-    if (e.type === "graph.node" || e.type === "tree.node" || e.type === "plane.point")
+    if (
+      e.type === "graph.node" ||
+      e.type === "tree.node" ||
+      e.type === "plane.point" ||
+      e.type === "timeline.lane"
+    )
       sets[e.s]?.n.add(e.status);
+    else if (e.type === "timeline.send") sets[e.s]?.e.add("examining");
+    else if (e.type === "timeline.lose") sets[e.s]?.e.add("rejected");
     else if (e.type === "structure.create" && e.structure.kind === "tree")
       sets[e.s] = { n: new Set(["unvisited"]), e: new Set() };
     else if (e.type === "structure.create" && e.structure.kind === "plane")
@@ -59,7 +71,13 @@ function graphLegends(player: TracePlayer) {
         n: new Set(Object.values(e.structure.pointStatus)),
         e: new Set(e.structure.shapes.map((x) => x.status)),
       };
-    else if (e.type === "graph.edge" || e.type === "plane.draw") sets[e.s]?.e.add(e.status);
+    else if (e.type === "structure.create" && e.structure.kind === "timeline")
+      sets[e.s] = {
+        n: new Set(Object.values(e.structure.laneStatus)),
+        e: new Set(e.structure.messages.map((x) => x.status)),
+      };
+    else if (e.type === "graph.edge" || e.type === "plane.draw" || e.type === "timeline.deliver")
+      sets[e.s]?.e.add(e.status);
   }
   for (const [name, { n, e }] of Object.entries(sets)) {
     out[name] = {

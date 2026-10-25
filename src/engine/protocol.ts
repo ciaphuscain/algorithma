@@ -19,8 +19,8 @@ export const TRACE_PROTOCOL = "algorithma.trace" as const;
  * Version history:
  *   1 — arrays, graphs, sequences, grids.
  *   2 — adds the tree structure kind and tree.* events, including tree.move, the plane
- *       structure kind and plane.* events, the deque sequence discipline and the
- *       "highlight" node and edge statuses (v1 traces are valid v2 traces).
+ *       and timeline structure kinds with their events, the deque sequence discipline
+ *       and the "highlight" node and edge statuses (v1 traces are valid v2 traces).
  */
 export const TRACE_VERSION = 2 as const;
 
@@ -185,13 +185,59 @@ export interface PlaneStructure {
   shapes: PlaneShape[];
 }
 
+export interface TimelineLane {
+  id: string;
+  label?: string;
+}
+
+export interface TimelineMessage {
+  id: string;
+  from: string;
+  to: string;
+  label?: string;
+  /** Time sent, and time delivered or lost (null while in flight). */
+  sent: number;
+  received: number | null;
+  /** Lost in the network rather than delivered. */
+  lost?: boolean;
+  status: EdgeStatus;
+}
+
+/** A local event on one lane, such as a commit or a crash. */
+export interface TimelineMark {
+  id: string;
+  lane: string;
+  time: number;
+  label: string;
+}
+
+/** Most messages plus marks a timeline may hold, so untrusted traces stay cheap to draw. */
+export const MAX_TIMELINE_ITEMS = 5_000;
+
+export interface TimelineStructure {
+  kind: "timeline";
+  label?: string;
+  /** One lane per process; time runs left to right. */
+  lanes: TimelineLane[];
+  laneStatus: Record<string, NodeStatus>;
+  /** Short per-lane state, e.g. "leader, term 2". */
+  annotations: Record<string, string>;
+  /** The current time; only moves forward. */
+  now: number;
+  /** Rendering hint: the time the axis should at least cover. */
+  horizon?: number;
+  messages: TimelineMessage[];
+  marks: TimelineMark[];
+}
+
 export type Structure =
   | ArrayStructure
   | GraphStructure
   | SequenceStructure
   | GridStructure
   | TreeStructure
-  | PlaneStructure;
+  | PlaneStructure
+  | TimelineStructure;
 export type StructureKind = Structure["kind"];
 
 /* -------------------------------------------------------------------- events */
@@ -257,6 +303,15 @@ export type TraceEvent = EventMeta &
         label?: string;
       }
     | { type: "plane.erase"; s: string; id: string }
+    /** Advance the clock (strictly forwards). */
+    | { type: "timeline.tick"; s: string; time: number }
+    /** A message leaves `from` now; it is in flight until delivered or lost. */
+    | { type: "timeline.send"; s: string; id: string; from: string; to: string; label?: string }
+    | { type: "timeline.deliver"; s: string; id: string; status: EdgeStatus }
+    | { type: "timeline.lose"; s: string; id: string }
+    | { type: "timeline.lane"; s: string; lane: string; status: NodeStatus }
+    | { type: "timeline.annotate"; s: string; lane: string; text: string | null }
+    | { type: "timeline.mark"; s: string; id: string; lane: string; label: string }
     | { type: "structure.create"; s: string; structure: Structure }
     | { type: "structure.remove"; s: string }
     | { type: "step" }

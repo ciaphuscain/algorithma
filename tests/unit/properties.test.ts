@@ -15,6 +15,9 @@ import { kdTree } from "@/algorithms/geometry/kd-tree";
 import { quickselect } from "@/algorithms/randomized/quickselect";
 import { mcts } from "@/algorithms/ai/mcts";
 import { gradientDescent } from "@/algorithms/ml/gradient-descent";
+import { paxos } from "@/algorithms/distributed/paxos";
+import { raft } from "@/algorithms/distributed/raft";
+import { mapReduce } from "@/algorithms/distributed/mapreduce";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -1429,6 +1432,62 @@ describe("randomized, search and optimisation properties", () => {
           if (rho < 1)
             for (let t = 1; t < output.f.length; t++)
               expect(output.f[t]!).toBeLessThanOrEqual(rho * output.f[t - 1]! * (1 + 1e-9) + 1e-12);
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+});
+
+describe("distributed protocol properties", () => {
+  const scenario = <I>(gen: (rng: ReturnType<typeof createRng>) => I) =>
+    fc.integer({ min: 0, max: 2 ** 31 - 1 }).map((seed) => gen(createRng(seed)));
+
+  it("Paxos: never two chosen values, on any schedule with losses and racing proposers", () => {
+    fc.assert(
+      fc.property(
+        scenario((rng) => ({ ...paxos.input.random(rng, 8), loss: rng.int(0, 40) })),
+        (input) => {
+          const { output } = runAlgorithm(paxos, input, { mode: "count" });
+          expect(paxos.check(input, output)).toBeNull();
+        },
+      ),
+      { numRuns: 400 },
+    );
+  });
+
+  it("Raft: election safety, log matching, leader completeness and state-machine safety", () => {
+    fc.assert(
+      fc.property(
+        scenario((rng) => ({ ...raft.input.random(rng, 8), loss: rng.int(0, 30) })),
+        (input) => {
+          const { output } = runAlgorithm(raft, input, { mode: "count" });
+          expect(raft.check(input, output)).toBeNull();
+        },
+      ),
+      { numRuns: 400 },
+    );
+  });
+
+  it("MapReduce: the same counts with or without a combiner or a failure, fewer pairs with a combiner", () => {
+    fc.assert(
+      fc.property(
+        scenario((rng) => mapReduce.input.random(rng, 8)),
+        (input) => {
+          const plain = runAlgorithm(
+            mapReduce,
+            { ...input, combiner: false },
+            { mode: "count" },
+          ).output;
+          const combined = runAlgorithm(
+            mapReduce,
+            { ...input, combiner: true },
+            { mode: "count" },
+          ).output;
+          expect(mapReduce.check({ ...input, combiner: false }, plain)).toBeNull();
+          expect(mapReduce.check({ ...input, combiner: true }, combined)).toBeNull();
+          expect(combined.counts).toEqual(plain.counts);
+          expect(combined.shuffled).toBeLessThanOrEqual(plain.shuffled);
         },
       ),
       { numRuns: 300 },

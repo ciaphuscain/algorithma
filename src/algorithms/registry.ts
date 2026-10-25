@@ -64,6 +64,9 @@ import { kdTree } from "./geometry/kd-tree";
 import { quickselect } from "./randomized/quickselect";
 import { mcts } from "./ai/mcts";
 import { gradientDescent } from "./ml/gradient-descent";
+import { mapReduce } from "./distributed/mapreduce";
+import { paxos } from "./distributed/paxos";
+import { raft } from "./distributed/raft";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -136,6 +139,9 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   quickselect,
   mcts,
   gradientDescent,
+  mapReduce,
+  paxos,
+  raft,
 ];
 
 const byId = new Map(ALGORITHM_MODULES.map((m) => [m.id, m]));
