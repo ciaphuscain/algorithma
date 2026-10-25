@@ -89,6 +89,24 @@ test("studio: example traces from unregistered algorithms render; broken ones ar
   await expect(page.getByTestId("studio-errors")).toContainText("Not valid JSON");
 });
 
+test("studio: a compressed trace exports and re-imports", async ({ page }) => {
+  await page.goto("/algorithms/raft");
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Export compressed (.json.gz)" }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("raft-trace.json.gz");
+  const path = await download.path();
+
+  await page.goto("/studio");
+  await page.locator('input[type="file"]').setInputFiles({
+    name: "raft-trace.json.gz",
+    mimeType: "application/gzip",
+    buffer: (await import("node:fs")).readFileSync(path!),
+  });
+  await expect(page.getByTestId("studio-summary")).toContainText("“raft” v2");
+  await expect(page.locator('[data-kind="timeline"]')).toBeVisible();
+});
+
 test("studio: an exported trace re-imports and replays identically", async ({ page }) => {
   await page.goto("/algorithms/merge-sort");
   const downloadPromise = page.waitForEvent("download");

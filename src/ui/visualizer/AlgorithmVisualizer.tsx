@@ -7,6 +7,7 @@ import type { AnyAlgorithmModule } from "@/algorithms/types";
 import { TracePlayer } from "@/engine/player";
 import type { Trace } from "@/engine/protocol";
 import { createRng, randomSeed } from "@/lib/random";
+import { gzipText } from "@/lib/trace-file";
 import { ErrorBoundary } from "@/ui/ErrorBoundary";
 import { TraceViewer } from "./TraceViewer";
 
@@ -82,13 +83,16 @@ export function AlgorithmVisualizer({ moduleId }: { moduleId: string }) {
     load(value, `random input, seed ${seed}`);
   };
 
-  const exportTrace = () => {
+  const exportTrace = async (compressed: boolean) => {
     if (!run) return;
-    const blob = new Blob([JSON.stringify(run.trace, null, 1)], { type: "application/json" });
+    const json = JSON.stringify(run.trace, null, 1);
+    const blob = compressed
+      ? new Blob([(await gzipText(json)) as BlobPart], { type: "application/gzip" })
+      : new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${module.id}-trace.json`;
+    a.download = `${module.id}-trace.json${compressed ? ".gz" : ""}`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -204,9 +208,24 @@ export function AlgorithmVisualizer({ moduleId }: { moduleId: string }) {
                 <p className="field__help" style={{ margin: "8px 0" }}>
                   Input: {run.origin}. {run.trace.meta.eventCount} events.
                 </p>
-                <button type="button" className="btn btn--small" onClick={exportTrace}>
-                  Export trace (JSON)
-                </button>
+                <div className="chip-row">
+                  <button
+                    type="button"
+                    className="btn btn--small"
+                    onClick={() => void exportTrace(false)}
+                  >
+                    Export trace (JSON)
+                  </button>
+                  {typeof CompressionStream !== "undefined" && (
+                    <button
+                      type="button"
+                      className="btn btn--small"
+                      onClick={() => void exportTrace(true)}
+                    >
+                      Export compressed (.json.gz)
+                    </button>
+                  )}
+                </div>
               </section>
             }
           />

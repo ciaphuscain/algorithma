@@ -6,8 +6,8 @@ export interface RaftInput {
   servers: number;
   /** Client commands and when they arrive. */
   commands: { cmd: string; time: number }[];
-  /** One server down from `from` until `to`, or null. */
-  crash: { server: number; from: number; to: number } | null;
+  /** Servers that go down at `from` and restart at `to` (at most three). */
+  crashes: { server: number; from: number; to: number }[];
   loss: number;
   seed: number;
 }
@@ -43,6 +43,7 @@ type Msg =
 const HEARTBEAT = 4;
 const ELECTION = 12;
 const MAX_COMMANDS = 6;
+const MAX_CRASHES = 3;
 const show = (e: Entry) => `${e.term}:${e.cmd}`;
 
 const input: InputSpec<RaftInput> = {
@@ -54,15 +55,15 @@ const input: InputSpec<RaftInput> = {
       placeholder: "e.g. x=1@20, y=2@30",
     },
     {
-      name: "crash",
-      label: "Crash (server@from-to, optional)",
-      placeholder: "e.g. 1@40-70",
-      help: "That server stops at the first time and restarts at the second.",
+      name: "crashes",
+      label: "Crashes (server@from-to, optional)",
+      placeholder: "e.g. 1@40-70, 3@80-100",
+      help: "Each server stops at the first time and restarts at the second.",
     },
     { name: "loss", label: "Message loss (%)", placeholder: "e.g. 0" },
     { name: "seed", label: "Random seed", placeholder: "e.g. 1" },
   ],
-  constraints: `3 or 5 servers; 1–${MAX_COMMANDS} commands (letters, digits, = + -) at times from 0 to 80; an optional crash between times 0 and 100; loss 0–30%; seed 0–999999. Messages take 1–3 time units; heartbeats every ${HEARTBEAT}; election timeouts are random between ${ELECTION} and ${2 * ELECTION}.`,
+  constraints: `3 or 5 servers; 1–${MAX_COMMANDS} commands (letters, digits, = + -) at times from 0 to 80; up to ${MAX_CRASHES} crashes between times 0 and 100 (one server's crashes may not overlap); loss 0–30%; seed 0–999999. Messages take 1–3 time units; heartbeats every ${HEARTBEAT}; election timeouts are random between ${ELECTION} and ${2 * ELECTION}.`,
   parse(fields) {
     const errors: string[] = [];
     const servers = wholeIn(fields.servers, 3, 5);
@@ -75,18 +76,25 @@ const input: InputSpec<RaftInput> = {
       labelHint: "command",
     });
     if (!commands.ok) errors.push(...commands.errors);
-    let crash: RaftInput["crash"] = null;
-    const ct = (fields.crash ?? "").trim();
-    if (ct) {
-      const m = /^S?(\d+)\s*@\s*(\d+)\s*-\s*(\d+)$/i.exec(ct);
-      if (!m) errors.push('Write the crash as server@from-to, e.g. "1@40-70"');
-      else {
-        const [server, from, to] = [Number(m[1]), Number(m[2]), Number(m[3])];
-        if (servers !== null && (server < 1 || server > servers))
-          errors.push(`The crashed server must be from 1 to ${servers}`);
-        if (!(from < to) || to > 100) errors.push("The crash needs from < to ≤ 100");
-        crash = { server: server - 1, from, to };
+    const crashes: RaftInput["crashes"] = [];
+    const items = (fields.crashes ?? "")
+      .split(/[,;\n]+/)
+      .map((x) => x.trim())
+      .filter(Boolean);
+    if (items.length > MAX_CRASHES) errors.push(`Give at most ${MAX_CRASHES} crashes`);
+    for (const item of items) {
+      const m = /^S?(\d+)\s*@\s*(\d+)\s*-\s*(\d+)$/i.exec(item);
+      if (!m) {
+        errors.push(`Write each crash as server@from-to, e.g. "1@40-70" (not "${item}")`);
+        continue;
       }
+      const [server, from, to] = [Number(m[1]), Number(m[2]), Number(m[3])];
+      if (servers !== null && (server < 1 || server > servers))
+        errors.push(`The crashed server must be from 1 to ${servers}`);
+      if (!(from < to) || to > 100) errors.push("Each crash needs from < to ≤ 100");
+      const clash = crashes.find((c) => c.server === server - 1 && from <= c.to && c.from <= to);
+      if (clash) errors.push(`Server ${server}'s crashes overlap`);
+      crashes.push({ server: server - 1, from, to });
     }
     const loss = wholeIn(fields.loss, 0, 30);
     if (loss === null) errors.push("Message loss must be a whole number from 0 to 30");
@@ -98,7 +106,7 @@ const input: InputSpec<RaftInput> = {
       value: {
         servers: servers!,
         commands: commands.value.map((c) => ({ cmd: c.label, time: c.time })),
-        crash,
+        crashes,
         loss: loss!,
         seed: seed!,
       },
@@ -107,7 +115,7 @@ const input: InputSpec<RaftInput> = {
   format: (v) => ({
     servers: String(v.servers),
     commands: v.commands.map((c) => `${c.cmd}@${c.time}`).join(", "),
-    crash: v.crash ? `${v.crash.server + 1}@${v.crash.from}-${v.crash.to}` : "",
+    crashes: v.crashes.map((c) => `${c.server + 1}@${c.from}-${c.to}`).join(", "),
     loss: String(v.loss),
     seed: String(v.seed),
   }),
@@ -121,7 +129,7 @@ const input: InputSpec<RaftInput> = {
           { cmd: "x=1", time: 30 },
           { cmd: "y=2", time: 38 },
         ],
-        crash: null,
+        crashes: [],
         loss: 0,
         seed: 1,
       },
@@ -135,7 +143,7 @@ const input: InputSpec<RaftInput> = {
           { cmd: "x=1", time: 30 },
           { cmd: "y=2", time: 70 },
         ],
-        crash: { server: 2, from: 40, to: 90 },
+        crashes: [{ server: 2, from: 40, to: 90 }],
         loss: 0,
         seed: 2,
       },
@@ -149,9 +157,24 @@ const input: InputSpec<RaftInput> = {
           cmd,
           time: [21, 25, 28, 31, 34, 37][i]!,
         })),
-        crash: { server: 2, from: 29, to: 46 },
+        crashes: [{ server: 2, from: 29, to: 46 }],
         loss: 27,
         seed: 216195,
+      },
+    },
+    {
+      id: "figure8",
+      label: "Why a leader never commits an older term's entries by counting copies",
+      value: {
+        servers: 3,
+        commands: ["c1", "c2", "c3", "c4"].map((cmd, i) => ({ cmd, time: [22, 26, 33, 42][i]! })),
+        crashes: [
+          { server: 0, from: 71, to: 88 },
+          { server: 1, from: 65, to: 83 },
+          { server: 0, from: 24, to: 41 },
+        ],
+        loss: 22,
+        seed: 838040,
       },
     },
     {
@@ -164,7 +187,7 @@ const input: InputSpec<RaftInput> = {
           { cmd: "b", time: 40 },
           { cmd: "c", time: 50 },
         ],
-        crash: null,
+        crashes: [],
         loss: 10,
         seed: 4,
       },
@@ -173,14 +196,21 @@ const input: InputSpec<RaftInput> = {
   random(rng) {
     const n = rng.int(0, 1) ? 5 : 3;
     const k = rng.int(1, 4);
-    const from = rng.int(20, 60);
+    const crashes: RaftInput["crashes"] = [];
+    for (let c = rng.int(0, 2); c > 0; c--) {
+      const server = rng.int(0, n - 1);
+      const from = rng.int(20, 70);
+      const to = Math.min(100, from + rng.int(8, 35));
+      if (!crashes.some((x) => x.server === server && from <= x.to && x.from <= to))
+        crashes.push({ server, from, to });
+    }
     return {
       servers: n,
       commands: Array.from({ length: k }, (_, i) => ({
         cmd: `c${i + 1}`,
         time: 25 + 10 * i + rng.int(0, 5),
       })),
-      crash: rng.int(0, 1) ? { server: rng.int(0, n - 1), from, to: from + rng.int(10, 35) } : null,
+      crashes,
       loss: rng.int(0, 2) === 0 ? rng.int(5, 20) : 0,
       seed: rng.int(0, 999_999),
     };
@@ -196,7 +226,7 @@ const input: InputSpec<RaftInput> = {
  */
 export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
   id: "raft",
-  version: 1,
+  version: 2,
   pseudocode: [
     "on election timeout: term += 1; become candidate; vote for self; send RequestVote(term, last log index and term)",
     "on RequestVote: grant if the term is current, no other vote this term, and the candidate's log is at least as up to date",
@@ -213,7 +243,7 @@ export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
     const need = majority(n);
     const S = (i: number) => `S${i + 1}`;
     const cmds = [...input.commands].sort((a, b) => a.time - b.time);
-    const lastEvent = Math.max(cmds[cmds.length - 1]!.time, input.crash?.to ?? 0);
+    const lastEvent = Math.max(cmds[cmds.length - 1]!.time, ...input.crashes.map((c) => c.to));
     const END = Math.min(150, Math.max(60, lastEvent + 40));
     const T = t.timeline("T", {
       label: "Servers",
@@ -339,10 +369,10 @@ export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
       electionTimer(i);
     }
     cmds.forEach((c, k) => sim.setTimer("client", `c${k}`, c.time));
-    if (input.crash) {
-      sim.setTimer(S(input.crash.server), "crash", input.crash.from);
-      sim.setTimer(S(input.crash.server), "restart", input.crash.to);
-    }
+    input.crashes.forEach((c, k) => {
+      sim.setTimer(S(c.server), `crash${k}`, c.from);
+      sim.setTimer(S(c.server), `restart${k}`, c.to);
+    });
 
     for (let ev = sim.next(END); ev; ev = sim.next(END)) {
       if (ev.kind === "timer") {
@@ -372,7 +402,7 @@ export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
         }
         const i = Number(ev.node.slice(1)) - 1;
         const s = srv[i]!;
-        if (ev.tag === "crash") {
+        if (ev.tag.startsWith("crash")) {
           s.up = false;
           sim.cancelTimer(S(i), "election");
           sim.cancelTimer(S(i), "heartbeat");
@@ -382,7 +412,7 @@ export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
           T.annotate(S(i), "down");
           continue;
         }
-        if (ev.tag === "restart") {
+        if (ev.tag.startsWith("restart")) {
           s.up = true;
           s.role = "follower";
           s.commit = 0; // volatile: relearned from the next leader
@@ -596,7 +626,7 @@ export const raft: AlgorithmModule<RaftInput, RaftOutput> = {
     // With a reliable network and no crash, every command commits exactly once. (Their
     // order may differ from the arrival order: commands that arrive while there is no
     // leader are retried independently.)
-    if (input.loss === 0 && !input.crash) {
+    if (input.loss === 0 && input.crashes.length === 0) {
       const want = input.commands.map((c) => c.cmd).sort();
       const top = Math.max(...out.commitIndex);
       const got = Array.from(

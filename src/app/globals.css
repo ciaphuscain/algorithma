@@ -1776,3 +1776,11 @@ pre.code {
 .stack > * + * {
   margin-top: 28px;
 }
+.tl-old {
+  opacity: 0.25;
+}
+.tl-toggle {
+  display: inline-flex;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+}

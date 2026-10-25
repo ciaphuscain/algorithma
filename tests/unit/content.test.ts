@@ -1328,6 +1328,16 @@ describe("worked examples agree with the engine", () => {
     expect(notes(over.trace)).toContain(
       "S1 commits up to entry 4: a majority (2 of 3) store it (3 entries at once).",
     );
+    const fig8 = run("raft", "figure8");
+    expect(leaders("figure8")).toEqual([
+      [1, 2, 15],
+      [3, 3, 46],
+      [4, 2, 53],
+      [6, 3, 94],
+    ]);
+    expect(fig8.output.leaders[2].log).toEqual(["1:c1", "1:c2"]);
+    expect(fig8.output.logs.every((l: string[]) => l.join() === "3:c3,3:c4")).toBe(true);
+    expect(fig8.output.commitIndex).toEqual([0, 0, 0]);
   });
 });
 

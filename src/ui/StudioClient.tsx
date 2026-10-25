@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, type ChangeEvent } from "react";
+import { MAX_FILE_BYTES, readTraceBytes } from "@/lib/trace-file";
 import type { TracePlayer } from "@/engine/player";
 import { validateTrace } from "@/engine/validate";
 import { STUDIO_EXAMPLES } from "@/studio/examples";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { TraceViewer } from "./visualizer/TraceViewer";
-
-const MAX_FILE_BYTES = 8 * 1024 * 1024;
 
 type Loaded = { player: TracePlayer; pseudocode: string[]; summary: string } | { errors: string[] };
 
@@ -63,9 +62,14 @@ export function StudioClient() {
       });
       return;
     }
-    const text = await file.text();
-    setJson(text.length > 200_000 ? "" : text);
-    visualize(text, pseudocode);
+    // Plain or gzip-compressed JSON; decompression stops at a size limit.
+    const read = await readTraceBytes(new Uint8Array(await file.arrayBuffer()));
+    if (!read.ok) {
+      setLoaded({ errors: [read.error] });
+      return;
+    }
+    setJson(read.text.length > 200_000 ? "" : read.text);
+    visualize(read.text, pseudocode);
   };
 
   return (
@@ -92,10 +96,10 @@ export function StudioClient() {
             ))}
           </select>
           <label className="btn">
-            Upload trace (.json)
+            Upload trace (.json or .json.gz)
             <input
               type="file"
-              accept="application/json,.json"
+              accept="application/json,application/gzip,.json,.gz"
               onChange={onFile}
               className="sr-only"
             />

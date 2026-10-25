@@ -107,6 +107,8 @@ Every event may carry `line` (1-based pseudocode line; persists until changed), 
 
 ## Acceptance rules for untrusted traces
 
+Studio accepts trace files of up to 8 MB, plain or gzip-compressed (`.json.gz`, recognised by its magic bytes rather than its name). Decompression stops as soon as the text passes 64 MB, so a small file cannot expand without bound.
+
 `validateTrace(json)` never throws. It checks protocol and version, every field type, unknown event types and unknown fields (rejected, not ignored), duplicate node and edge ids, dangling edges, matrix shapes, `meta.eventCount`, and these limits:
 
 | limit                     | value       |

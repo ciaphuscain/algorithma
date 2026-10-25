@@ -417,7 +417,17 @@ test("distributed protocols: timelines, failures and input checks", async ({ pag
   await expect(page.getByLabel("Timeline legend")).toContainText("delivered");
 
   await page.goto("/algorithms/raft");
-  await page.getByLabel("Crash (server@from-to, optional)").fill("9@10-20");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  const messages = page.locator('[data-kind="timeline"] .tl-msg');
+  const all = await messages.count();
+  const recentOnly = page.getByLabel(/Show only messages from the last 12 time units/);
+  await recentOnly.check();
+  expect(await messages.count()).toBeLessThan(all);
+  // Back at a quieter moment the checkbox is gone, so nothing may stay hidden.
+  await page.getByLabel("Trace position").fill("100");
+  await expect(recentOnly).toHaveCount(0);
+  await expect(page.locator('[data-kind="timeline"] .tl-old')).not.toHaveCount(0);
+  await page.getByLabel("Crashes (server@from-to, optional)").fill("9@10-20");
   await page.getByRole("button", { name: "Run", exact: true }).click();
   await expect(page.locator(".alert--error")).toContainText(
     "The crashed server must be from 1 to 3",

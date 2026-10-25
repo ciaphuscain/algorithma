@@ -17,10 +17,11 @@ ALGORITHMA is an algorithm encyclopedia whose entries can be run. Pick an algori
   - geometry: Graham scan, closest pair of points;
   - search and learning: Monte Carlo tree search, gradient descent;
   - parallel and distributed: MapReduce, Paxos, Raft.
-- **Lessons at five depths** (intuition → mechanics → implementation → mathematics → advanced), tested Python and JavaScript code, practice questions with hints, and printable exam notes.
+- **Lessons at five depths** (intuition → mechanics → implementation → mathematics → advanced), tested Python and JavaScript code, practice questions with hints, and printable exam notes. Each lesson shows a learning path through its prerequisites and links to the entries that build on it.
+- **Progress**: practice results by topic, kept in the browser, with suggestions for what is ready to learn next.
 - **A 600-algorithm roadmap** with priority tiers, showing honestly which entries exist and which are planned.
-- **Arena**: compare sorting algorithms on identical, seeded inputs by exact operation counts.
-- **Studio**: visualize any algorithm that emits a trace in the documented format; untrusted traces are validated before anything is drawn.
+- **Arena**: compare sorting, searching or shortest-path algorithms on identical, seeded inputs by exact operation counts, in a Web Worker; every output is checked.
+- **Studio**: visualize any algorithm that emits a trace in the documented format, as JSON or gzip-compressed JSON; untrusted traces are validated before anything is drawn.
 - **Code runner** (built and tested, off by default): edit and run each lesson's JavaScript in an isolated browser sandbox with no network access. It stays off in default builds until it has had an independent security review ([ADR-0007](docs/decisions/0007-browser-code-sandbox.md)).
 
 ## How it works
@@ -55,7 +56,7 @@ npm run build:e2e && npm run test:e2e   # e2e against a production build with th
 | [docs/experiments/trace-reconstruction.md](docs/experiments/trace-reconstruction.md) | Measured comparison of snapshot, replay and keyframe strategies                  |
 | [docs/decisions/](docs/decisions/)                                                   | Architecture decision records                                                    |
 | [docs/assumptions.md](docs/assumptions.md)                                           | Assumption register                                                              |
-| [docs/content-review.md](docs/content-review.md)                                     | Review states and what is verified automatically                                 |
+| [docs/content-review.md](docs/content-review.md)                                     | Review states, what is verified automatically, how to record a review            |
 | [docs/progress.md](docs/progress.md)                                                 | Current state, quality gates, backlog, how to resume                             |
 
 ## Status

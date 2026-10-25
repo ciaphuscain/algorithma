@@ -22,7 +22,7 @@ export const raftEntry: AlgorithmEntry = {
   related: ["paxos", "mapreduce"],
   problem: {
     input:
-      "3 or 5 servers, client commands with arrival times, optionally one server crashing and restarting, a message-loss rate and a seed.",
+      "3 or 5 servers, client commands with arrival times, up to three crashes (a server stops and later restarts), a message-loss rate and a seed.",
     output:
       "Each server's log and commit index, and the elections won, such that every server applies the same committed commands in the same order.",
   },
@@ -66,11 +66,16 @@ export const raftEntry: AlgorithmEntry = {
             "1: S3 at 16; 2: S2 at 59; 3: S1 at 60",
             "1:c1, 1:c2, 1:c3, 3:c5",
           ],
+          ["Figure 8", "1: S2 at 15; 3: S3 at 46; 4: S2 at 53; 6: S3 at 94", "nothing"],
         ],
       },
       {
         kind: "p",
         text: "The third preset shows what Raft does **not** promise. With 27% of messages lost, S2 briefly leads term 2 and appends c6 and c4, but they never reach a majority; S1 then wins term 3 and appends c5 at the same index, overwriting them. c4 and c6 were never committed, so losing them is allowed: a real client is told “done” only after its command commits, and otherwise retries. When c5 commits, the older entries c2 and c3, not yet committed, commit with it.",
+      },
+      {
+        kind: "p",
+        text: "The Figure 8 preset (named after the figure in the Raft paper) shows why that last rule matters. S2 leads term 4 with the term-1 entries c1 and c2 and copies c1 to S1, so c1 is on a majority (S1 and S2). But no client command arrives in term 4, so S2 has no entry of its own term and commits nothing. S2 then crashes, S3 wins term 6, and its term-3 entries c3 and c4 overwrite c1 and c2 everywhere. Had S2 committed c1 by counting copies, a committed entry would now be lost: with that rule removed from the code, the tests report “index 1 committed as 1:c1 and 3:c3”. Here nothing is committed by the end, a liveness cost that real Raft avoids by having each new leader append a no-op entry of its own term.",
       },
     ],
     implementation: [
@@ -80,7 +85,7 @@ export const raftEntry: AlgorithmEntry = {
           "currentTerm, votedFor and the log must be on stable storage before replying; the commit index can be relearned after a restart, as here.",
           "Randomized election timeouts make split votes rare; the timeout must be much longer than a round trip and the heartbeat interval.",
           "Never commit an entry from an earlier term by counting replicas alone; commit a current-term entry and the earlier ones follow (the Raft paper's Figure 8 shows a log being lost otherwise).",
-          "Production systems add log compaction (snapshots), membership changes, pre-vote, and read leases; this visualizer has none of them, at most one crash, and a client that does not retry.",
+          "Production systems add log compaction (snapshots), membership changes, pre-vote, and read leases; this visualizer has none of them, at most three crashes, and a client that does not retry.",
           "The Python sample is the follower side of AppendEntries, including the conflict rule; the JavaScript sample is the leader's commit rule.",
         ],
       },
@@ -323,7 +328,7 @@ function newCommitIndex(matchIndex, logTerms, currentTerm, commit) {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked examples are checked by automated tests, and every visualizer run is checked against four of Raft's safety properties; the prose has not yet had expert review. The visualizer omits snapshots, membership changes and client retries, and allows at most one crash.",
+    note: "Written with AI assistance. Code samples and the worked examples are checked by automated tests, and every visualizer run is checked against four of Raft's safety properties; the prose has not yet had expert review. The visualizer omits snapshots, membership changes and client retries, and allows at most three crashes.",
   },
   version: 1,
   updated: "2026-10-25",
