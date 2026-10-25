@@ -74,6 +74,10 @@ import { countingSortEntry } from "./entries/counting-sort";
 import { radixSortEntry } from "./entries/radix-sort";
 import { sieveEntry } from "./entries/sieve";
 import { euclidEntry } from "./entries/euclid";
+import { hashChainingEntry } from "./entries/hash-chaining";
+import { openAddressingEntry } from "./entries/open-addressing";
+import { robinHoodHashingEntry } from "./entries/robin-hood-hashing";
+import { cuckooHashingEntry } from "./entries/cuckoo-hashing";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -90,6 +94,10 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   shellSortEntry,
   countingSortEntry,
   radixSortEntry,
+  hashChainingEntry,
+  openAddressingEntry,
+  robinHoodHashingEntry,
+  cuckooHashingEntry,
   mergeSortEntry,
   quickSortEntry,
   heapSortEntry,

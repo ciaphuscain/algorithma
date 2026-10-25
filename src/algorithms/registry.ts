@@ -72,6 +72,10 @@ import { countingSort } from "./sorting/counting-sort";
 import { radixSort } from "./sorting/radix-sort";
 import { sieve } from "./maths/sieve";
 import { euclid } from "./maths/euclid";
+import { hashChaining } from "./hashing/chaining";
+import { openAddressing } from "./hashing/open-addressing";
+import { robinHood } from "./hashing/robin-hood";
+import { cuckooHashing } from "./hashing/cuckoo";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -85,6 +89,10 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   shellSort,
   countingSort,
   radixSort,
+  hashChaining,
+  openAddressing,
+  robinHood,
+  cuckooHashing,
   mergeSort,
   quickSort,
   heapSort,

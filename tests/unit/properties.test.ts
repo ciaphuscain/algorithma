@@ -23,6 +23,11 @@ import { countingSort } from "@/algorithms/sorting/counting-sort";
 import { radixSort } from "@/algorithms/sorting/radix-sort";
 import { sieve } from "@/algorithms/maths/sieve";
 import { euclid } from "@/algorithms/maths/euclid";
+import { hashChaining } from "@/algorithms/hashing/chaining";
+import { openAddressing, probe } from "@/algorithms/hashing/open-addressing";
+import { robinHood } from "@/algorithms/hashing/robin-hood";
+import { cuckooHashing } from "@/algorithms/hashing/cuckoo";
+import type { HashOp } from "@/algorithms/hashing/common";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -1663,5 +1668,71 @@ describe("sieve and Euclid properties", () => {
         },
       ),
     );
+  });
+});
+
+describe("hash table properties", () => {
+  // Workloads with many collisions: small tables, keys often from a narrow range.
+  const workload = (minM: number, maxM: number) =>
+    fc.record({
+      m: fc.integer({ min: minM, max: maxM }),
+      ops: fc.array(
+        fc.record({
+          kind: fc.constantFrom<HashOp["kind"]>("insert", "insert", "insert", "find", "delete"),
+          key: fc.oneof(fc.integer({ min: 0, max: 40 }), fc.integer({ min: 0, max: 999 })),
+        }),
+        { minLength: 1, maxLength: 20 },
+      ),
+    });
+
+  it("all four tables agree with a set and keep their structural invariants (oracles)", () => {
+    fc.assert(
+      fc.property(workload(5, 8), fc.boolean(), (input, double) => {
+        for (const [mod, value] of [
+          [hashChaining, input],
+          [robinHood, input],
+          [cuckooHashing, { ...input, m: input.m - 2 }],
+          [
+            openAddressing,
+            { ...input, m: [5, 7, 7, 11][input.m - 5]!, probing: double ? "double" : "linear" },
+          ],
+        ] as const) {
+          const { output } = runAlgorithm(mod as never, value as never, { mode: "count" });
+          expect(
+            (mod as { check: (i: unknown, o: unknown) => string | null }).check(value, output),
+          ).toBeNull();
+        }
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("a cuckoo lookup probes at most two slots", () => {
+    fc.assert(
+      fc.property(
+        workload(3, 8),
+        fc.array(fc.integer({ min: 0, max: 999 }), { minLength: 1, maxLength: 10 }),
+        (input, keys) => {
+          const base = runAlgorithm(cuckooHashing, input, { mode: "count" });
+          const finds: HashOp[] = keys.map((key) => ({ kind: "find", key }));
+          const more = runAlgorithm(
+            cuckooHashing,
+            { ...input, ops: [...input.ops, ...finds] },
+            { mode: "count" },
+          );
+          const extra =
+            (more.trace.meta.counters.probes ?? 0) - (base.trace.meta.counters.probes ?? 0);
+          expect(extra).toBeLessThanOrEqual(2 * keys.length);
+        },
+      ),
+    );
+  });
+
+  it("double hashing with a prime m visits every slot", () => {
+    for (const m of [5, 7, 11, 13])
+      for (let k = 0; k <= 999; k++) {
+        const seen = new Set(Array.from({ length: m }, (_, i) => probe("double", m, k, i)));
+        expect(seen.size, `m = ${m}, k = ${k}`).toBe(m);
+      }
   });
 });

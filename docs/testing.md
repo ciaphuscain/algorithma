@@ -30,7 +30,7 @@ Python 3 must be on `PATH` for the Python implementation tests; without it those
 
 ## Evidence the tests can fail
 
-Mutation checks performed while building the suite (2026-10-19 to 25), each reverted afterwards. 116 bugs were injected and 112 caught. Rows below the first fourteen in the first table are the Tier 2 batches; Tier 3 follows in its own table.
+Mutation checks performed while building the suite (2026-10-19 to 25), each reverted afterwards. 124 bugs were injected and 120 caught. Rows below the first fourteen in the first table are the Tier 2 batches; Tier 3 follows in its own table.
 
 | Injected bug                                                        | Caught by                                                                                                                                                                          |
 | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -126,20 +126,28 @@ Mutation checks performed while building the suite (2026-10-19 to 25), each reve
 | MapReduce sends pairs to the next reducer                              | 12 cases                                                                                                                                                                                                                                                                       |
 | MapReduce never re-runs a failed split                                 | 8 cases (a map-phase guard)                                                                                                                                                                                                                                                    |
 
-**Beyond the tiers** (10 mutations, 10 caught), run against the conformance suite and the property tests together.
+**Beyond the tiers** (18 mutations, 18 caught), run against the conformance suite and the property tests together.
 
-| Injected bug                                               | Caught by                                                                                                                          |
-| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Shell sort shifts equal elements too                       | the Shell sort property after 9 inputs: more shifts than inversions                                                                |
-| Shell sort's passes start one element late                 | 15 conformance cases                                                                                                               |
-| Counting sort places elements from left to right           | **only** the stability property, read from the trace: the output is still sorted, but equal values come out in reverse input order |
-| Counting sort's running totals stop one value early        | 29 conformance cases                                                                                                               |
-| Radix sort places elements from left to right in each pass | 26 conformance cases (an unstable pass loses the earlier passes' order)                                                            |
-| Radix sort does not clear its counts between passes        | 31 cases (a placement outside the output array)                                                                                    |
-| The sieve starts crossing out at 2p instead of p²          | the exact crossing-count property (n = 9)                                                                                          |
-| The sieve stops while p² < n                               | 7 conformance cases (49 reported prime)                                                                                            |
-| Extended Euclid adds q·s instead of subtracting it         | 20 conformance cases (Bézout's identity fails)                                                                                     |
-| Extended Euclid takes a quotient one too small             | 31 cases                                                                                                                           |
+| Injected bug                                                             | Caught by                                                                                                                          |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Shell sort shifts equal elements too                                     | the Shell sort property after 9 inputs: more shifts than inversions                                                                |
+| Shell sort's passes start one element late                               | 15 conformance cases                                                                                                               |
+| Counting sort places elements from left to right                         | **only** the stability property, read from the trace: the output is still sorted, but equal values come out in reverse input order |
+| Counting sort's running totals stop one value early                      | 29 conformance cases                                                                                                               |
+| Radix sort places elements from left to right in each pass               | 26 conformance cases (an unstable pass loses the earlier passes' order)                                                            |
+| Radix sort does not clear its counts between passes                      | 31 cases (a placement outside the output array)                                                                                    |
+| The sieve starts crossing out at 2p instead of p²                        | the exact crossing-count property (n = 9)                                                                                          |
+| The sieve stops while p² < n                                             | 7 conformance cases (49 reported prime)                                                                                            |
+| Extended Euclid adds q·s instead of subtracting it                       | 20 conformance cases (Bézout's identity fails)                                                                                     |
+| Extended Euclid takes a quotient one too small                           | 31 cases                                                                                                                           |
+| Chaining inserts without checking for the key first                      | 2 cases (a duplicate overflows the table drawn for the chains)                                                                     |
+| Open addressing empties a deleted slot instead of a tombstone            | 2 conformance cases: a later key is reported missing                                                                               |
+| Open addressing stops searching at the first tombstone                   | 1 conformance case                                                                                                                 |
+| Double hashing with a step that can be 0                                 | the probe-sequence property, at once                                                                                               |
+| Robin Hood never swaps (plain linear probing with early-stopping search) | 9 cases: the early stop then misses keys                                                                                           |
+| Robin Hood deletes without shifting keys back                            | 3 cases                                                                                                                            |
+| Cuckoo eviction limit of n instead of 2(n + 1)                           | 28 cases: the cuckoo-graph oracle shows a placement existed                                                                        |
+| Cuckoo hashing does not undo evictions after a failure                   | the hash-table property after 12 workloads (a key disappears)                                                                      |
 
 Real defects found by the suite rather than injected: a stale pivot mark in quicksort, KMP's comparison count exceeding the bound stated in its lesson, a contradictory practice question, a dangling “related” link, two accessibility violations (unfocusable scroll region, empty ARIA list), an LIS preset outside its own input limits (conformance), and sandbox error line numbers off by one (unit test). Found by other checks: a lost TeX spacing escape in the BST lesson (ESLint), a looping worker that survived removal of its sandbox iframe (a probe script measuring CPU, written before the sandbox suite; the suite now checks that workers are gone after every hostile run); and a Raft checker that demanded progress Raft does not promise (a stress run of 20,000 random schedules: in one reliable-network run, split votes repeated until the run ended, and the checker reported the uncommitted command as a failure). The checker now demands that every command commit only after a single election that was won, when progress is guaranteed; two further stress runs of 20,000 schedules, a third of them with partitions, found no failure.
 

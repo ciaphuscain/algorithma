@@ -17,6 +17,8 @@ for (const path of [
   "/algorithms/counting-sort",
   "/algorithms/sieve",
   "/algorithms/euclid",
+  "/algorithms/open-addressing",
+  "/algorithms/cuckoo-hashing",
   "/algorithms/heap-sort",
   "/algorithms/binary-search",
   "/algorithms/dfs",

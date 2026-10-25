@@ -173,12 +173,14 @@ describe("catalog search", () => {
       "convex-hull-trick",
       "counting-sort",
       "crt",
+      "cuckoo-hashing",
       "dfs",
       "dijkstra",
       "euclid",
       "fenwick-tree",
       "fft",
       "graham-scan",
+      "hash-chaining",
       "heap-sort",
       "heavy-light",
       "kd-tree",
@@ -195,9 +197,11 @@ describe("catalog search", () => {
       "monotonic-queue",
       "monotonic-stack",
       "ntt",
+      "open-addressing",
       "prefix-sums",
       "prim",
       "radix-sort",
+      "robin-hood-hashing",
       "segment-tree",
       "sliding-window",
       "sparse-table",
@@ -215,6 +219,7 @@ describe("catalog search", () => {
     expect(slugs({ maxWorst: "log n" }).sort()).toEqual([
       "binary-search",
       "crt",
+      "cuckoo-hashing",
       "euclid",
       "fenwick-tree",
       "matrix-exponentiation",
@@ -1484,6 +1489,103 @@ describe("worked examples agree with the engine", () => {
         [97, 2],
       ].map(([a, b]) => run("euclid", { a, b }).output.divisions),
     ).toEqual([9, 2, 2, 2]);
+  });
+  it("hashing lessons (batch P): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const run = (id: string, value: unknown) => runAlgorithm(getModule(id)!, value);
+    const preset = (id: string, presetId: string) =>
+      getModule(id)!.input.presets.find((p) => p.id === presetId)!.value as {
+        m: number;
+        ops: unknown[];
+      };
+    const probes = (id: string, value: { ops: unknown[] }) =>
+      run(id, value).trace.meta.counters.probes ?? 0;
+    // Probes made by operation i alone: run the prefixes with and without it.
+    const probesOf = (id: string, value: { ops: unknown[] }, i: number) =>
+      probes(id, { ...value, ops: value.ops.slice(0, i + 1) }) -
+      (i === 0 ? 0 : probes(id, { ...value, ops: value.ops.slice(0, i) }));
+
+    // Separate chaining
+    const ch = preset("hash-chaining", "classic");
+    const chOut = run("hash-chaining", ch).output;
+    expect(chOut.buckets).toEqual([[700], [50, 92], [], [73, 101], [], [], [76]]);
+    expect([7, 8, 10].map((i) => probesOf("hash-chaining", ch, i))).toEqual([3, 3, 2]);
+    expect(probes("hash-chaining", ch)).toBe(14);
+    expect(run("hash-chaining", preset("hash-chaining", "same-bucket")).output.buckets[3]).toEqual([
+      3, 8, 13, 18, 23, 28,
+    ]);
+
+    // Open addressing: linear vs double hashing on the same keys
+    const lin = preset("open-addressing", "classic");
+    const dbl = preset("open-addressing", "double");
+    expect(run("open-addressing", lin).output.slots).toEqual([
+      22,
+      33,
+      44,
+      12,
+      23,
+      5,
+      16,
+      null,
+      null,
+      null,
+      null,
+    ]);
+    expect(run("open-addressing", dbl).output.slots).toEqual([
+      22,
+      12,
+      null,
+      null,
+      33,
+      44,
+      5,
+      null,
+      16,
+      23,
+      null,
+    ]);
+    expect([probesOf("open-addressing", lin, 8), probesOf("open-addressing", dbl, 8)]).toEqual([
+      3, 2,
+    ]);
+    expect([probes("open-addressing", lin), probes("open-addressing", dbl)]).toEqual([21, 20]);
+    const tomb = run("open-addressing", preset("open-addressing", "tombstone"));
+    expect(tomb.output.slots).toEqual([null, null, null, 10, 31, 24, null]);
+    expect(tomb.output.results[4]).toBe("found");
+    expect(run("open-addressing", preset("open-addressing", "full")).output.results.at(-1)).toBe(
+      "full",
+    );
+
+    // Robin Hood vs plain linear probing on 13, 1, 12, 23, 34
+    const rh = preset("robin-hood-hashing", "classic");
+    const rhRun = run("robin-hood-hashing", rh);
+    expect(rhRun.output.slots.slice(0, 7)).toEqual([null, 1, 12, 23, 34, 13, null]);
+    expect(rhRun.output.dist.slice(0, 7)).toEqual([null, 0, 1, 2, 3, 3, null]);
+    expect(rhRun.trace.meta.counters.swaps).toBe(3);
+    expect(probesOf("robin-hood-hashing", rh, 5)).toBe(5);
+    const linSame = { m: 11, probing: "linear", ops: rh.ops.slice(0, 6) };
+    const linOut = run("open-addressing", linSame).output.slots as (number | null)[];
+    expect(linOut.slice(0, 7)).toEqual([null, 1, 13, 12, 23, 34, null]);
+    const linDist = linOut.flatMap((k, s) => (k === null ? [] : [s - (k % 11)]));
+    const rhDist = (rhRun.output.dist as (number | null)[]).flatMap((d) => (d === null ? [] : [d]));
+    expect([linDist.reduce((a, b) => a + b), Math.max(...linDist)]).toEqual([9, 4]);
+    expect([rhDist.reduce((a, b) => a + b), Math.max(...rhDist)]).toEqual([9, 3]);
+    expect(probesOf("open-addressing", linSame, 5)).toBe(6);
+
+    // Cuckoo hashing
+    const ck = preset("cuckoo-hashing", "classic");
+    const ckRun = run("cuckoo-hashing", ck);
+    expect(ckRun.output.t1).toEqual([null, null, null, 52, null, null, null]);
+    expect(ckRun.output.t2).toEqual([3, null, 17, 24, null, null, null]);
+    expect(ckRun.trace.meta.counters.evictions).toBe(4);
+    expect(probesOf("cuckoo-hashing", ck, 6)).toBe(2);
+    const cy = preset("cuckoo-hashing", "cycle");
+    const cyRun = run("cuckoo-hashing", cy);
+    expect(cyRun.output.results).toEqual(["inserted", "inserted", "failed", "missing", "inserted"]);
+    const before =
+      run("cuckoo-hashing", { ...cy, ops: cy.ops.slice(0, 2) }).trace.meta.counters.evictions ?? 0;
+    const after =
+      run("cuckoo-hashing", { ...cy, ops: cy.ops.slice(0, 3) }).trace.meta.counters.evictions ?? 0;
+    expect(after - before).toBe(6);
   });
 });
 
