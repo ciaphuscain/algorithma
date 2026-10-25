@@ -18,6 +18,11 @@ import { gradientDescent } from "@/algorithms/ml/gradient-descent";
 import { paxos } from "@/algorithms/distributed/paxos";
 import { raft } from "@/algorithms/distributed/raft";
 import { mapReduce } from "@/algorithms/distributed/mapreduce";
+import { shellSort, knuthGaps } from "@/algorithms/sorting/shell-sort";
+import { countingSort } from "@/algorithms/sorting/counting-sort";
+import { radixSort } from "@/algorithms/sorting/radix-sort";
+import { sieve } from "@/algorithms/maths/sieve";
+import { euclid } from "@/algorithms/maths/euclid";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -153,6 +158,8 @@ describe.each([
   ["quick sort", quickSort],
   ["selection sort", selectionSort],
   ["heap sort", heapSort],
+  ["shell sort", shellSort],
+  ["radix sort", radixSort],
 ] as const)("%s mark semantics", (_name, sort) => {
   it("a position marked 'sorted' already holds its final value, and keeps it", () => {
     fc.assert(
@@ -1491,6 +1498,170 @@ describe("distributed protocol properties", () => {
         },
       ),
       { numRuns: 300 },
+    );
+  });
+});
+
+describe("Shell, counting and radix sort properties", () => {
+  it("Shell sort: each pass leaves the array h-sorted, and shifts never exceed the inversions", () => {
+    fc.assert(
+      fc.property(arrays, (input) => {
+        const { trace, output } = runAlgorithm(shellSort, input);
+        expect(output).toEqual([...input].sort((a, b) => a - b));
+        // Each shift exchanges a larger element with a smaller one h places later,
+        // which removes at least one inversion.
+        expect(trace.meta.counters.shifts ?? 0).toBeLessThanOrEqual(inversions(input));
+        const player = new TracePlayer(trace);
+        const passEnds = trace.events.flatMap((e, i) =>
+          e.type === "step" && e.line === 9 ? [i + 1] : [],
+        );
+        const gaps = knuthGaps(input.length);
+        expect(passEnds.length).toBe(gaps.length);
+        passEnds.forEach((p, k) => {
+          const A = player.stateAt(p).structures.A!;
+          if (A.kind !== "array") throw new Error("A is not an array");
+          const v = A.values as number[];
+          for (let i = gaps[k]!; i < v.length; i++)
+            expect(v[i - gaps[k]!]!).toBeLessThanOrEqual(v[i]!);
+        });
+      }),
+      { numRuns: 60 },
+    );
+  });
+
+  it("counting sort: no comparisons, exactly 3n + k writes", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 0, max: 20 }), { minLength: 1, maxLength: 30 }),
+        (input) => {
+          const { trace } = runAlgorithm(countingSort, input, { mode: "count" });
+          expect(trace.meta.counters.comparisons).toBe(0);
+          expect(trace.meta.counters.writes).toBe(3 * input.length + Math.max(...input));
+        },
+      ),
+    );
+  });
+
+  it("radix sort: no comparisons, d(4n + 19) writes, and pass p sorts by the last p + 1 digits", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 0, max: 999 }), { minLength: 1, maxLength: 24 }),
+        (input) => {
+          const { trace } = runAlgorithm(radixSort, input);
+          const d = String(Math.max(...input)).length;
+          expect(trace.meta.counters.comparisons).toBe(0);
+          expect(trace.meta.counters.writes).toBe(d * (4 * input.length + 19));
+          const player = new TracePlayer(trace);
+          const passStarts = trace.events.flatMap((e, i) =>
+            e.type === "step" && e.line === 2 ? [i] : [],
+          );
+          // The state just before pass p + 1 starts (or at the end) is sorted modulo 10^(p+1).
+          [...passStarts.slice(1), trace.events.length].forEach((p, k) => {
+            const A = player.stateAt(p).structures.A!;
+            if (A.kind !== "array") throw new Error("A is not an array");
+            const keys = (A.values as number[]).map((x) => x % 10 ** (k + 1));
+            for (let i = 1; i < keys.length; i++)
+              expect(keys[i - 1]!).toBeLessThanOrEqual(keys[i]!);
+          });
+        },
+      ),
+      { numRuns: 60 },
+    );
+  });
+});
+
+/**
+ * Placements into B, recovered from the trace: each write to B follows the read of the
+ * input position it came from. Grouped by pass (a step on line `passLine`), if given.
+ */
+const placements = (
+  events: readonly { type: string; s?: string; i?: number; value?: unknown; line?: number }[],
+  readLine: number,
+  passLine?: number,
+) => {
+  const passes: { slot: number; from: number; value: number }[][] = [[]];
+  let from = -1;
+  for (const e of events) {
+    if (passLine !== undefined && e.type === "step" && e.line === passLine && passes.at(-1)!.length)
+      passes.push([]);
+    if (e.type === "array.read" && e.s === "A" && e.line === readLine) from = e.i!;
+    if (e.type === "array.write" && e.s === "B")
+      passes.at(-1)!.push({ slot: e.i!, from, value: e.value as number });
+  }
+  return passes;
+};
+
+/** Equal keys must keep their input order: a later slot means a later source position. */
+const expectStable = (
+  pass: { slot: number; from: number; value: number }[],
+  key: (v: number) => number,
+) => {
+  const bySlot = [...pass].sort((a, b) => a.slot - b.slot);
+  for (let i = 1; i < bySlot.length; i++)
+    if (key(bySlot[i - 1]!.value) === key(bySlot[i]!.value))
+      expect(bySlot[i - 1]!.from).toBeLessThan(bySlot[i]!.from);
+};
+
+describe("stability of counting and radix sort, read from the trace", () => {
+  it("counting sort places equal values in input order", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 0, max: 5 }), { minLength: 1, maxLength: 30 }),
+        (input) => {
+          const { trace } = runAlgorithm(countingSort, input);
+          const [pass] = placements(trace.events, 5);
+          expect(pass!.length).toBe(input.length);
+          pass!.forEach((p) => expect(input[p.from]).toBe(p.value));
+          expectStable(pass!, (v) => v);
+        },
+      ),
+    );
+  });
+
+  it("each radix pass places equal digits in the order the previous pass left them", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 0, max: 999 }), { minLength: 1, maxLength: 24 }),
+        (input) => {
+          const { trace } = runAlgorithm(radixSort, input);
+          const passes = placements(trace.events, 6, 2);
+          expect(passes.length).toBe(String(Math.max(...input)).length);
+          passes.forEach((pass, p) => expectStable(pass, (v) => Math.floor(v / 10 ** p) % 10));
+        },
+      ),
+    );
+  });
+});
+
+describe("sieve and Euclid properties", () => {
+  it("the sieve crosses out exactly the sum over primes p ≤ √n of ⌊(n − p²)/p⌋ + 1", () => {
+    for (let n = 2; n <= 200; n++) {
+      const { output } = runAlgorithm(sieve, n, { mode: "count" });
+      let want = 0;
+      for (const p of output.primes) if (p * p <= n) want += Math.floor((n - p * p) / p) + 1;
+      expect(output.crossings, `n = ${n}`).toBe(want);
+    }
+  });
+
+  it("extended Euclid: Lamé's bound (a ≥ F(k+2), b ≥ F(k+1) after k divisions) and small coefficients", () => {
+    const fib = [0, 1];
+    while (fib.length < 40) fib.push(fib[fib.length - 1]! + fib[fib.length - 2]!);
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 1, max: 1_000_000 }),
+        fc.integer({ min: 1, max: 1_000_000 }),
+        (a, b) => {
+          const { output } = runAlgorithm(euclid, { a, b }, { mode: "count" });
+          expect(euclid.check({ a, b }, output)).toBeNull();
+          const k = output.divisions;
+          if (a > b) {
+            expect(a).toBeGreaterThanOrEqual(fib[k + 2]!);
+            expect(b).toBeGreaterThanOrEqual(fib[k + 1]!);
+          }
+          expect(Math.abs(output.x)).toBeLessThanOrEqual(Math.max(1, b / output.gcd));
+          expect(Math.abs(output.y)).toBeLessThanOrEqual(Math.max(1, a / output.gcd));
+        },
+      ),
     );
   });
 });

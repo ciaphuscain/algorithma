@@ -69,6 +69,11 @@ import { gradientDescentEntry } from "./entries/gradient-descent";
 import { mapReduceEntry } from "./entries/mapreduce";
 import { paxosEntry } from "./entries/paxos";
 import { raftEntry } from "./entries/raft";
+import { shellSortEntry } from "./entries/shell-sort";
+import { countingSortEntry } from "./entries/counting-sort";
+import { radixSortEntry } from "./entries/radix-sort";
+import { sieveEntry } from "./entries/sieve";
+import { euclidEntry } from "./entries/euclid";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -82,6 +87,9 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   bubbleSortEntry,
   selectionSortEntry,
   insertionSortEntry,
+  shellSortEntry,
+  countingSortEntry,
+  radixSortEntry,
   mergeSortEntry,
   quickSortEntry,
   heapSortEntry,
@@ -137,6 +145,8 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   matrixExponentiationEntry,
   millerRabinEntry,
   pollardRhoEntry,
+  euclidEntry,
+  sieveEntry,
   crtEntry,
   fftEntry,
   nttEntry,

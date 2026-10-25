@@ -149,8 +149,10 @@ describe("catalog search", () => {
     expect(slugs({ query: "shortest path" })).toEqual(expect.arrayContaining(["bfs", "dijkstra"]));
     expect(slugs({ query: "stable sort" }).sort()).toEqual([
       "bubble-sort",
+      "counting-sort",
       "insertion-sort",
       "merge-sort",
+      "radix-sort",
     ]);
   });
 
@@ -169,9 +171,11 @@ describe("catalog search", () => {
       "bst",
       "closest-pair",
       "convex-hull-trick",
+      "counting-sort",
       "crt",
       "dfs",
       "dijkstra",
+      "euclid",
       "fenwick-tree",
       "fft",
       "graham-scan",
@@ -193,6 +197,7 @@ describe("catalog search", () => {
       "ntt",
       "prefix-sums",
       "prim",
+      "radix-sort",
       "segment-tree",
       "sliding-window",
       "sparse-table",
@@ -210,6 +215,7 @@ describe("catalog search", () => {
     expect(slugs({ maxWorst: "log n" }).sort()).toEqual([
       "binary-search",
       "crt",
+      "euclid",
       "fenwick-tree",
       "matrix-exponentiation",
       "miller-rabin",
@@ -219,12 +225,15 @@ describe("catalog search", () => {
     expect(slugs({ domain: "searching-sorting" }).sort()).toEqual([
       "binary-search",
       "bubble-sort",
+      "counting-sort",
       "heap-sort",
       "insertion-sort",
       "linear-search",
       "merge-sort",
       "quick-sort",
+      "radix-sort",
       "selection-sort",
+      "shell-sort",
     ]);
   });
 
@@ -1366,6 +1375,115 @@ describe("worked examples agree with the engine", () => {
     );
     expect(cutNotes).toContain("S5 commits up to entry 2: a majority (3 of 5) store it.");
     expect(cut.output.commits.filter((c: { entry: string }) => c.entry === "1:y=2")).toEqual([]);
+  });
+
+  it("sorting and number-theory lessons (batch O): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { TracePlayer } = await import("@/engine/player");
+    type Ev = { type: string; line?: number; note?: string; s?: string };
+    const run = (id: string, value: unknown) => runAlgorithm(getModule(id)!, value);
+    const preset = (id: string, presetId: string) =>
+      getModule(id)!.input.presets.find((p) => p.id === presetId)!.value;
+    const inv = (a: number[]) =>
+      a.reduce((n, x, i) => n + a.slice(i + 1).filter((y) => y < x).length, 0);
+    const arrayAt = (trace: { events: Ev[] }, at: number, name: string) => {
+      const st = new TracePlayer(trace as never).stateAt(at).structures[name]!;
+      if (st.kind !== "array") throw new Error(`${name} is not an array`);
+      return st.values;
+    };
+
+    // Shell sort
+    const shellIn = preset("shell-sort", "classic") as number[];
+    const shell = run("shell-sort", shellIn);
+    expect(shell.trace.meta.counters.shifts).toBe(25);
+    expect(shell.trace.meta.counters.comparisons).toBe(43);
+    expect(inv(shellIn)).toBe(55);
+    const events = shell.trace.events as Ev[];
+    const firstPassEnd = events.findIndex((e) => e.type === "step" && e.line === 9);
+    const before = events.slice(0, firstPassEnd);
+    expect(before.filter((e) => e.type === "array.write" && e.line === 7).length).toBe(12);
+    expect(before.filter((e) => e.type === "array.compare").length).toBe(18);
+    expect(events.filter((e) => e.type === "array.compare").length).toBe(43);
+    expect(arrayAt(shell.trace, firstPassEnd + 1, "A")).toEqual([
+      7, 4, 18, 28, 30, 17, 25, 53, 47, 69, 95, 86, 62, 83,
+    ]);
+    const shellRev = run("shell-sort", preset("shell-sort", "reversed"));
+    expect(shellRev.trace.meta.counters.shifts).toBe(132);
+    expect(inv(preset("shell-sort", "reversed") as number[])).toBe(780);
+
+    // Counting sort
+    const cs = run("counting-sort", preset("counting-sort", "classic"));
+    const csEvents = cs.trace.events as Ev[];
+    const totalsStart = csEvents.findIndex((e) => e.line === 4);
+    const placeStart = csEvents.findIndex((e) => e.line === 5);
+    expect(arrayAt(cs.trace, totalsStart, "C")).toEqual([2, 0, 2, 3, 0, 1]);
+    expect(arrayAt(cs.trace, placeStart, "C")).toEqual([2, 2, 4, 7, 7, 8]);
+    expect(cs.output).toEqual([0, 0, 2, 2, 3, 3, 3, 5]);
+    expect(cs.trace.meta.counters.writes).toBe(29);
+
+    // Radix sort: the array after each pass
+    const passes = (id: string) => {
+      const r = run("radix-sort", preset("radix-sort", id));
+      const ev = r.trace.events as Ev[];
+      const ends = ev.flatMap((e, i) =>
+        e.type === "array.write" && e.s === "A" && e.note?.startsWith("A is now sorted")
+          ? [i + 1]
+          : [],
+      );
+      return { r, states: ends.map((i) => arrayAt(r.trace, i, "A")) };
+    };
+    const rc = passes("classic");
+    expect(rc.states).toEqual([
+      [720, 355, 436, 457, 657, 329, 839],
+      [720, 329, 436, 839, 355, 457, 657],
+      [329, 355, 436, 457, 657, 720, 839],
+    ]);
+    expect(rc.r.trace.meta.counters.writes).toBe(141);
+    expect(passes("mixed").states.slice(0, 2)).toEqual([
+      [170, 90, 802, 2, 24, 45, 75, 66],
+      [802, 2, 24, 45, 66, 170, 75, 90],
+    ]);
+
+    // Sieve
+    const s30 = run("sieve", 30);
+    expect(s30.output.primes).toEqual([2, 3, 5, 7, 11, 13, 17, 19, 23, 29]);
+    expect(s30.output.crossings).toBe(24);
+    expect(
+      (s30.trace.events as Ev[]).filter((e) => e.note?.includes("already crossed")).length,
+    ).toBe(5);
+    const s100 = run("sieve", 100);
+    expect([s100.output.primes.length, s100.output.crossings]).toEqual([25, 104]);
+    const s120 = run("sieve", 120);
+    const sieving = (s120.trace.events as Ev[]).filter(
+      (e) => e.line === 4 && e.note?.includes("is prime"),
+    );
+    expect(sieving.at(-1)!.note).toMatch(/^7 is still a candidate/);
+
+    // Extended Euclid
+    const e1 = run("euclid", { a: 240, b: 46 });
+    const table = new TracePlayer(e1.trace).stateAt(e1.trace.events.length).structures.E!;
+    if (table.kind !== "grid") throw new Error("E is not a grid");
+    expect(table.cells).toEqual([
+      [null, 240, 1, 0],
+      [null, 46, 0, 1],
+      [5, 10, 1, -5],
+      [4, 6, -4, 21],
+      [1, 4, 5, -26],
+      [1, 2, -9, 47],
+      [2, 0, 23, -120],
+    ]);
+    expect(e1.output).toEqual({ gcd: 2, x: -9, y: 47, divisions: 5 });
+    const inverse = run("euclid", { a: 3120, b: 17 }).output;
+    expect([inverse.x, inverse.y, ((inverse.y % 3120) + 3120) % 3120]).toEqual([2, -367, 2753]);
+    expect(run("euclid", { a: 252, b: 105 }).output.gcd).toBe(21);
+    expect(
+      [
+        [89, 55],
+        [99, 98],
+        [96, 64],
+        [97, 2],
+      ].map(([a, b]) => run("euclid", { a, b }).output.divisions),
+    ).toEqual([9, 2, 2, 2]);
   });
 });
 
