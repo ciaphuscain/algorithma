@@ -13,6 +13,7 @@ import { Tabs } from "@/ui/algorithm/Tabs";
 import { VisitRecorder } from "@/ui/algorithm/VisitRecorder";
 import { AlgorithmVisualizer } from "@/ui/visualizer/AlgorithmVisualizer";
 import { ReviewBadge, DifficultyBadge } from "@/ui/badges";
+import { reviewState } from "@/content/review";
 
 export function generateStaticParams() {
   return ENTRIES.map((e) => ({ slug: e.slug }));
@@ -171,6 +172,7 @@ export default async function AlgorithmPage({ params }: { params: Promise<{ slug
   const entry = getEntry((await params).slug);
   if (!entry) notFound();
   const domain = getDomain(entry.domain);
+  const review = reviewState(entry);
   const related = entry.related.map(getEntry).filter((e): e is AlgorithmEntry => Boolean(e));
 
   const tabs = [
@@ -223,6 +225,14 @@ export default async function AlgorithmPage({ params }: { params: Promise<{ slug
           <p>
             Version {entry.version}, updated {entry.updated}. {entry.review.note}
           </p>
+          {review.kind !== "unreviewed" && (
+            <p data-testid="review-record">
+              Expert review: {review.record.reviewer}
+              {review.record.affiliation ? ` (${review.record.affiliation})` : ""},{" "}
+              {review.record.date}; checked {review.record.scope}.
+              {review.kind === "stale" && " The entry has changed since then."}
+            </p>
+          )}
         </div>
       ),
     },
@@ -249,7 +259,7 @@ export default async function AlgorithmPage({ params }: { params: Promise<{ slug
             Space&nbsp;
             <Tex tex={entry.complexity.space} />
           </span>
-          <ReviewBadge status={entry.review.status} />
+          <ReviewBadge status={entry.review.status} stale={review.kind === "stale"} />
           {entry.aliases.length > 0 && (
             <span className="badge">Also: {entry.aliases.join(", ")}</span>
           )}

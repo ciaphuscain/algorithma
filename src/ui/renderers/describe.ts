@@ -1,5 +1,6 @@
 import type { Structure } from "@/engine/protocol";
 import type { TraceState } from "@/engine/state";
+import { heapSize } from "./heap-view";
 
 /**
  * Plain-text description of a state, for screen readers and the "text view". Every
@@ -16,7 +17,11 @@ export function describeStructure(name: string, s: Structure): string {
       const pointers = Object.entries(s.pointers)
         .map(([p, i]) => `${p}=${i}`)
         .join(", ");
-      return `${label} = [${s.values.map(String).join(", ")}]${marked ? `; marked ${marked}` : ""}${pointers ? `; pointers ${pointers}` : ""}.`;
+      const heap =
+        s.display === "heap"
+          ? `; as a heap, the first ${heapSize(s)} element${heapSize(s) === 1 ? "" : "s"}${heapSize(s) ? ` with root ${String(s.values[0])}` : ""}`
+          : "";
+      return `${label} = [${s.values.map(String).join(", ")}]${marked ? `; marked ${marked}` : ""}${pointers ? `; pointers ${pointers}` : ""}${heap}.`;
     }
     case "graph": {
       const byStatus = new Map<string, string[]>();

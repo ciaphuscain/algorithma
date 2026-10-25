@@ -98,8 +98,8 @@ function checkStructure(raw: unknown, path: string, c: Collector): void {
       }
       if (!isObject(pointers) || !Object.values(pointers).every(isInt))
         c.add(`${path}.pointers`, "must map names to integers");
-      if (raw.display !== undefined && raw.display !== "bars" && raw.display !== "cells")
-        c.add(`${path}.display`, "must be bars or cells");
+      if (raw.display !== undefined && !["bars", "cells", "heap"].includes(raw.display as string))
+        c.add(`${path}.display`, "must be bars, cells or heap");
       return;
     }
     case "graph": {
@@ -380,7 +380,7 @@ const OPTIONAL_EVENT_FIELDS: Partial<
 > = {
   "array.compare": { j: isInt, value: isScalar },
   "seq.pop": { index: isInt },
-  "tree.add": { slot: isInt, edgeLabel: isStr },
+  "tree.add": { slot: isInt, edgeLabel: isStr, view: (v) => v === true },
   "tree.move": { slot: isInt },
   "plane.draw": { label: isStr },
   "timeline.send": { label: isStr },

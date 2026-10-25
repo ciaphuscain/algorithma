@@ -100,7 +100,7 @@ export class Tracer {
   array(
     name: string,
     values: readonly Scalar[],
-    options: { label?: string; display?: "bars" | "cells" } = {},
+    options: { label?: string; display?: "bars" | "cells" | "heap" } = {},
   ): TracedArray {
     this.register(name, {
       kind: "array",
@@ -604,7 +604,8 @@ export class TracedTree {
     parent: string | null,
     slot?: number,
     meta?: MetaArg,
-    options: { id?: string; edgeLabel?: string } = {},
+    /** `view`: a drawing aid such as a recursion tree, not an operation (no counter). */
+    options: { id?: string; edgeLabel?: string; view?: boolean } = {},
   ): string {
     const id = options.id ?? `n${this.counter++}`;
     treeAdd(this.t, id, value, parent, slot, options.edgeLabel);
@@ -617,9 +618,10 @@ export class TracedTree {
         parent,
         ...(slot !== undefined ? { slot } : {}),
         ...(options.edgeLabel !== undefined ? { edgeLabel: options.edgeLabel } : {}),
+        ...(options.view ? { view: true as const } : {}),
       },
       meta,
-      "writes",
+      options.view ? undefined : "writes",
     );
     return id;
   }

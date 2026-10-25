@@ -428,6 +428,22 @@ test("distributed protocols: timelines, failures and input checks", async ({ pag
   await expect(page.getByTestId("result")).toContainText("the 3 · 14 pairs shuffled");
 });
 
+test("sorting views: heap sort as a tree, recursion trees for merge and quick sort", async ({
+  page,
+}) => {
+  await page.goto("/algorithms/heap-sort");
+  await expect(page.getByText("The same array as a heap")).toBeVisible();
+  await expect(page.locator('[data-structure="A"] svg')).toHaveCount(2);
+
+  await page.goto("/algorithms/merge-sort");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.locator('[data-structure="R"]')).toContainText("Recursion tree");
+  await expect(page.getByTestId("result")).toContainText("Verified by an independent checker");
+
+  await page.goto("/algorithms/bfs#code");
+  await expect(page.getByText("Draft · unreviewed prose")).toBeVisible();
+});
+
 test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
   // One navigation per entry (about 0.2–0.5 s each): the default 30 s is too short for 68.
   test.setTimeout(120_000);

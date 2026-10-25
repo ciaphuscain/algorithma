@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import katex from "katex";
 import { describe, expect, it } from "vitest";
+import { contentHash, fnv1a64, reviewState } from "@/content/review";
 import { getModule } from "@/algorithms/registry";
 import {
   ENTRIES,
@@ -1327,5 +1328,57 @@ describe("worked examples agree with the engine", () => {
     expect(notes(over.trace)).toContain(
       "S1 commits up to entry 4: a majority (2 of 3) store it (3 entries at once).",
     );
+  });
+});
+
+describe("expert review records", () => {
+  it("review records are well formed, and every reviewed entry has one", () => {
+    for (const e of ENTRIES) {
+      for (const r of e.review.records ?? []) {
+        expect(r.reviewer.trim(), e.slug).not.toBe("");
+        expect(r.scope.trim(), e.slug).not.toBe("");
+        expect(r.date, e.slug).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(r.contentHash, e.slug).toMatch(/^[0-9a-f]{16}$/);
+      }
+      // A reviewed entry needs a record; if edited since, it shows "Changed since expert review".
+      if (e.review.status === "reviewed")
+        expect(["reviewed", "stale"], e.slug).toContain(reviewState(e).kind);
+    }
+  });
+
+  it("detects edits made after a review", () => {
+    const base = structuredClone(getEntry("bfs")!);
+    expect(reviewState(base).kind).toBe("unreviewed");
+    const reviewed = {
+      ...base,
+      review: {
+        status: "reviewed" as const,
+        note: "test",
+        records: [
+          {
+            reviewer: "Test Reviewer",
+            date: "2026-01-01",
+            scope: "everything",
+            contentHash: contentHash(base),
+          },
+        ],
+      },
+    };
+    expect(reviewState(reviewed).kind).toBe("reviewed");
+    // Version, date and review metadata are not part of the reviewed content.
+    expect(reviewState({ ...reviewed, version: 9, updated: "2027-01-01" }).kind).toBe("reviewed");
+    expect(reviewState({ ...reviewed, summary: `${base.summary} Edited.` }).kind).toBe("stale");
+    const reordered = {
+      ...reviewed,
+      problem: { output: base.problem.output, input: base.problem.input },
+    };
+    expect(reviewState(reordered).kind).toBe("reviewed");
+    expect(contentHash(getEntry("bfs")!)).not.toBe(contentHash(getEntry("dfs")!));
+  });
+
+  it("hashes text stably (FNV-1a test vectors)", () => {
+    expect(fnv1a64("")).toBe("cbf29ce484222325");
+    expect(fnv1a64("a")).toBe("af63dc4c8601ec8c");
+    expect(fnv1a64("foobar")).toBe("85944171f73967e8");
   });
 });

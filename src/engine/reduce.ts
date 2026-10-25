@@ -290,7 +290,7 @@ function applyUnchecked(state: TraceState, e: TraceEvent): void {
       const t = get(state, e.s, "tree");
       treeOp(() => treeAdd(t, e.node, e.value, e.parent, e.slot, e.edgeLabel));
       state.focus.push({ s: e.s, tone: "write", nodes: [e.node] });
-      bump(state, "writes");
+      if (!e.view) bump(state, "writes");
       break;
     }
     case "tree.set": {

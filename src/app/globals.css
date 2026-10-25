@@ -1730,3 +1730,9 @@ pre.code {
 .g-edge.tl-msg.tl-focus {
   stroke-width: 3.5;
 }
+
+.structure__sublabel {
+  margin: 10px 0 0;
+  font-size: 0.82rem;
+  color: var(--ink-3);
+}

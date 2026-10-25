@@ -7,6 +7,7 @@ import { PlaneView } from "./PlaneView";
 import { TimelineView } from "./TimelineView";
 import { SequenceView } from "./SequenceView";
 import { TreeView } from "./TreeView";
+import { heapTree } from "./heap-view";
 
 /**
  * Renderer selection by structure kind. This is the whole contract between traces and
@@ -27,8 +28,21 @@ export function StructureView({
   legend?: { nodeStatuses: string[]; edgeStatuses: string[] };
 }) {
   switch (structure.kind) {
-    case "array":
-      return <ArrayView name={name} structure={structure} focus={focus} />;
+    case "array": {
+      if (structure.display !== "heap")
+        return <ArrayView name={name} structure={structure} focus={focus} />;
+      const treeName = `${name}:heap`;
+      const heap = heapTree(structure, focus, name, treeName);
+      return (
+        <>
+          <ArrayView name={name} structure={structure} focus={focus} />
+          <p className="structure__sublabel">
+            The same array as a heap (children of i at 2i + 1 and 2i + 2)
+          </p>
+          <TreeView name={treeName} structure={heap.tree} focus={heap.focus} />
+        </>
+      );
+    }
     case "graph":
       return (
         <>

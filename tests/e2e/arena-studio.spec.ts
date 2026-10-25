@@ -71,7 +71,7 @@ test("studio: an exported trace re-imports and replays identically", async ({ pa
 
   await page.goto("/studio");
   await page.locator('input[type="file"]').setInputFiles(path!);
-  await expect(page.getByTestId("studio-summary")).toContainText("“merge-sort” v1");
+  await expect(page.getByTestId("studio-summary")).toContainText("“merge-sort” v2");
   await page.getByRole("button", { name: "Jump to end" }).click();
   await page.getByRole("button", { name: /text description/ }).click();
   await expect(page.getByTestId("text-description")).toContainText(

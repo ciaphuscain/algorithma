@@ -98,6 +98,19 @@ export interface Reference {
  * Review states. Content is published only after expert review is "reviewed"; all
  * current entries are honest drafts (see docs/content-review.md).
  */
+/** One expert review, recorded by the reviewer (see docs/content-review.md). */
+export interface ReviewRecord {
+  reviewer: string;
+  /** Optional affiliation or credentials, as the reviewer wishes to be named. */
+  affiliation?: string;
+  /** YYYY-MM-DD. */
+  date: string;
+  /** What was checked, e.g. "all five levels, exam notes, practice and references". */
+  scope: string;
+  /** contentHash() of the entry when it was reviewed. */
+  contentHash: string;
+}
+
 export type ReviewStatus = "reviewed" | "draft" | "community" | "experimental";
 
 export interface AlgorithmEntry {
@@ -128,7 +141,8 @@ export interface AlgorithmEntry {
   practice: Question[];
   exam: ExamNotes;
   references: Reference[];
-  review: { status: ReviewStatus; note: string };
+  /** `reviewed` requires at least one record whose hash matches the current content. */
+  review: { status: ReviewStatus; note: string; records?: ReviewRecord[] };
   version: number;
   updated: string;
 }

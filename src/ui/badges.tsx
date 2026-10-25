@@ -24,7 +24,16 @@ const REVIEW: Record<ReviewStatus, { label: string; cls: string; title: string }
   },
 };
 
-export function ReviewBadge({ status }: { status: ReviewStatus }) {
+export function ReviewBadge({ status, stale = false }: { status: ReviewStatus; stale?: boolean }) {
+  if (status === "reviewed" && stale)
+    return (
+      <span
+        className="badge badge--warn"
+        title="The content has changed since its last expert review; the changes are not yet reviewed."
+      >
+        Changed since expert review
+      </span>
+    );
   const r = REVIEW[status];
   return (
     <span className={`badge ${r.cls}`} title={r.title}>

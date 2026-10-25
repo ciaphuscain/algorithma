@@ -9,7 +9,7 @@ import { arrayFidelity, checkSorted } from "./common";
  */
 export const quickSort: AlgorithmModule<number[], number[]> = {
   id: "quick-sort",
-  version: 1,
+  version: 2,
   pseudocode: [
     "procedure quickSort(A, lo, hi)",
     "  if lo ≥ hi: return",
@@ -34,15 +34,26 @@ export const quickSort: AlgorithmModule<number[], number[]> = {
   run(input, t) {
     const A = t.array("A", input, { label: "A" });
     const n = A.length;
+    // The recursion tree is a drawing aid: its events change no operation counts.
+    const R = t.tree("R", { binary: true, label: "Recursion tree: calls on A[lo..hi]" });
+    const call = (lo: number, hi: number, parent: string | null, slot?: 0 | 1) => {
+      const id = `c${lo}-${hi}`;
+      R.add(lo === hi ? `${lo}` : `${lo}–${hi}`, parent, slot, { line: 1 }, { id, view: true });
+      R.status(id, "current", { line: 1 });
+      return id;
+    };
 
-    const sort = (lo: number, hi: number, depth: number) => {
+    const sort = (lo: number, hi: number, depth: number, parent: string | null, slot?: 0 | 1) => {
       if (lo > hi) return;
+      const node = call(lo, hi, parent, slot);
       if (lo === hi) {
         A.mark(lo, "sorted", {
           line: 2,
           vars: { lo, hi, depth },
           note: `A[${lo}..${hi}] has one element, so it is in its final place.`,
         });
+        R.annotate(node, String(A.get(lo)));
+        R.status(node, "visited");
         return;
       }
       const pivot = A.num(hi);
@@ -97,11 +108,14 @@ export const quickSort: AlgorithmModule<number[], number[]> = {
         vars: { i: null, pivot: null },
         note: `Recurse on A[${lo}..${p - 1}] and A[${p + 1}..${hi}].`,
       });
-      sort(lo, p - 1, depth + 1);
-      sort(p + 1, hi, depth + 1);
+      R.annotate(node, `pivot ${pivot}`);
+      R.status(node, "frontier", { line: 8 });
+      sort(lo, p - 1, depth + 1, node, 0);
+      sort(p + 1, hi, depth + 1, node, 1);
+      R.status(node, "visited", { line: 8 });
     };
 
-    sort(0, n - 1, 0);
+    sort(0, n - 1, 0, null);
     const output = A.toArray() as number[];
     t.finish(input, output, {
       vars: { lo: null, hi: null, depth: null, pivot: null },

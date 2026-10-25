@@ -78,8 +78,12 @@ export type FocusTone = (typeof FOCUS_TONES)[number];
 export interface ArrayStructure {
   kind: "array";
   label?: string;
-  /** Rendering hint only: "bars" (heights) or "cells" (boxes). Renderers may ignore it. */
-  display?: "bars" | "cells";
+  /**
+   * Rendering hint only: "bars" (heights), "cells" (boxes), or "heap": bars plus the
+   * same values drawn as a binary tree (children of i at 2i + 1 and 2i + 2), for the
+   * longest prefix with no "sorted" mark. Renderers may ignore it.
+   */
+  display?: "bars" | "cells" | "heap";
   values: Scalar[];
   marks: (ArrayMark | null)[];
   pointers: Record<string, number>;
@@ -280,6 +284,8 @@ export type TraceEvent = EventMeta &
         /** Child slot: 0 = left, 1 = right for binary trees; insertion index otherwise (default: append). */
         slot?: number;
         edgeLabel?: string;
+        /** A drawing aid (e.g. a recursion tree), not an operation of the algorithm: no counter. */
+        view?: true;
       }
     | { type: "tree.set"; s: string; node: string; value: Scalar }
     | { type: "tree.compare"; s: string; node: string; value: Scalar }

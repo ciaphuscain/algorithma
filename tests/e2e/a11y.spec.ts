@@ -11,6 +11,7 @@ for (const path of [
   "/algorithms/bfs#exam",
   "/algorithms/kruskal#code",
   "/algorithms/merge-sort",
+  "/algorithms/heap-sort",
   "/algorithms/binary-search",
   "/algorithms/dfs",
   "/algorithms/dijkstra",

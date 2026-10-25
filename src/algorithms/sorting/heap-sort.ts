@@ -9,7 +9,7 @@ import { arrayFidelity, checkSorted } from "./common";
  */
 export const heapSort: AlgorithmModule<number[], number[]> = {
   id: "heap-sort",
-  version: 1,
+  version: 2,
   pseudocode: [
     "procedure heapSort(A)",
     "  for i ← ⌊n/2⌋ − 1 down to 0: siftDown(A, i, n)",
@@ -34,7 +34,7 @@ export const heapSort: AlgorithmModule<number[], number[]> = {
   }),
 
   run(input, t) {
-    const A = t.array("A", input, { label: "A (heap stored as an array)" });
+    const A = t.array("A", input, { label: "A (heap stored as an array)", display: "heap" });
     const n = A.length;
 
     const siftDown = (start: number, size: number, caller: number) => {

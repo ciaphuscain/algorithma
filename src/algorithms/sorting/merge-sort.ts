@@ -10,7 +10,7 @@ import { arrayFidelity, checkSorted } from "./common";
  */
 export const mergeSort: AlgorithmModule<number[], number[]> = {
   id: "merge-sort",
-  version: 1,
+  version: 2,
   pseudocode: [
     "procedure mergeSort(A, lo, hi)",
     "  if lo ≥ hi: return",
@@ -42,14 +42,31 @@ export const mergeSort: AlgorithmModule<number[], number[]> = {
       { label: "B (merge buffer)", display: "cells" },
     );
     const n = A.length;
+    // The recursion tree is a drawing aid: its events change no operation counts.
+    const R = t.tree("R", { binary: true, label: "Recursion tree: calls on A[lo..hi]" });
+    const shown = (lo: number, hi: number) => {
+      const vals = A.toArray().slice(lo, hi + 1);
+      return vals.length <= 4 ? vals.join(" ") : `${vals.slice(0, 3).join(" ")} …`;
+    };
 
-    const sort = (lo: number, hi: number, depth: number) => {
+    const sort = (lo: number, hi: number, depth: number, parent: string | null, slot?: 0 | 1) => {
+      const node = `c${lo}-${hi}`;
+      R.add(
+        lo === hi ? `${lo}` : `${lo}–${hi}`,
+        parent,
+        slot,
+        { line: 1 },
+        { id: node, view: true },
+      );
+      R.status(node, "current", { line: 1 });
       if (lo >= hi) {
         t.step({
           line: 2,
           vars: { lo, hi, depth },
           note: `A[${lo}..${hi}] has ${hi - lo + 1} element: already sorted.`,
         });
+        R.annotate(node, shown(lo, hi));
+        R.status(node, "visited");
         return;
       }
       const mid = Math.floor((lo + hi) / 2);
@@ -59,8 +76,10 @@ export const mergeSort: AlgorithmModule<number[], number[]> = {
         note: `Split A[${lo}..${hi}] into A[${lo}..${mid}] and A[${mid + 1}..${hi}].`,
       });
       A.mark(range(lo, hi), null, { line: 4 });
-      sort(lo, mid, depth + 1);
-      sort(mid + 1, hi, depth + 1);
+      R.status(node, "frontier", { line: 4 });
+      sort(lo, mid, depth + 1, node, 0);
+      sort(mid + 1, hi, depth + 1, node, 1);
+      R.status(node, "current", { line: 5 });
 
       t.step({
         line: 5,
@@ -103,9 +122,11 @@ export const mergeSort: AlgorithmModule<number[], number[]> = {
         vars: { i: null, j: null, k: null },
         note: `A[${lo}..${hi}] is now sorted.`,
       });
+      R.annotate(node, shown(lo, hi));
+      R.status(node, "visited");
     };
 
-    sort(0, n - 1, 0);
+    sort(0, n - 1, 0, null);
     A.mark(range(0, n - 1), "sorted", {
       vars: { lo: null, mid: null, hi: null, depth: null },
       note: "The array is sorted.",
