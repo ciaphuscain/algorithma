@@ -90,6 +90,11 @@ import { shuntingYard } from "./stacks/shunting-yard";
 import { rpnEval } from "./stacks/rpn-eval";
 import { expressionTree } from "./stacks/expression-tree";
 import { hanoi } from "./stacks/hanoi";
+import { stackQueueAdapters } from "./queues/adapters";
+import { minStack } from "./queues/min-stack";
+import { circularQueue } from "./queues/circular-queue";
+import { deque } from "./queues/deque";
+import { binaryHeap } from "./queues/binary-heap";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -121,6 +126,11 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   rpnEval,
   expressionTree,
   hanoi,
+  stackQueueAdapters,
+  minStack,
+  circularQueue,
+  deque,
+  binaryHeap,
   mergeSort,
   quickSort,
   heapSort,

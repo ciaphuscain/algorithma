@@ -1,9 +1,12 @@
 import type { ArrayStructure, NodeStatus, TreeStructure } from "@/engine/protocol";
 import type { Focus } from "@/engine/state";
 
-/** How many leading elements form the heap: the longest prefix with no "sorted" mark. */
+/**
+ * How many leading elements form the heap: the longest prefix with no "sorted" mark
+ * and no empty (null) slot, so a heap can grow and shrink inside a fixed array.
+ */
 export const heapSize = (a: ArrayStructure) => {
-  const k = a.marks.indexOf("sorted");
+  const k = a.values.findIndex((v, i) => v === null || a.marks[i] === "sorted");
   return k === -1 ? a.values.length : k;
 };
 

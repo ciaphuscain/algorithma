@@ -42,6 +42,12 @@ import { expressionTree } from "@/algorithms/stacks/expression-tree";
 import { hanoi } from "@/algorithms/stacks/hanoi";
 import { balancedBrackets } from "@/algorithms/stacks/balanced-brackets";
 import { evalPostfix, postfixByDescent, type Op, type Token } from "@/algorithms/stacks/expr";
+import { stackQueueAdapters } from "@/algorithms/queues/adapters";
+import { minStack } from "@/algorithms/queues/min-stack";
+import { circularQueue } from "@/algorithms/queues/circular-queue";
+import { deque } from "@/algorithms/queues/deque";
+import { binaryHeap } from "@/algorithms/queues/binary-heap";
+import type { Op as ContainerOp } from "@/algorithms/queues/ops";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -1982,5 +1988,131 @@ describe("stack application properties", () => {
       }),
       { numRuns: 300 },
     );
+  });
+});
+
+describe("queue, deque and heap properties", () => {
+  // Random operation sequences: insertions carry a small value (repeats are common).
+  const ops = (insert: string[], other: string[], max = 16) =>
+    fc.array(
+      fc.oneof(
+        fc.record({ name: fc.constantFrom(...insert), value: fc.integer({ min: 0, max: 9 }) }),
+        fc.record({ name: fc.constantFrom(...other) }),
+      ),
+      { minLength: 1, maxLength: max },
+    ) as fc.Arbitrary<ContainerOp[]>;
+
+  it("every container matches its plain-array model on random operation sequences", () => {
+    fc.assert(
+      fc.property(
+        fc.constantFrom<"queue" | "stack">("queue", "stack"),
+        ops(["enqueue", "push"], ["dequeue", "front", "pop", "top"]),
+        (build, raw) => {
+          const names =
+            build === "queue"
+              ? {
+                  enqueue: "enqueue",
+                  push: "enqueue",
+                  dequeue: "dequeue",
+                  pop: "dequeue",
+                  front: "front",
+                  top: "front",
+                }
+              : {
+                  enqueue: "push",
+                  push: "push",
+                  dequeue: "pop",
+                  pop: "pop",
+                  front: "top",
+                  top: "top",
+                };
+          const value = {
+            build,
+            ops: raw.map((o) => ({ ...o, name: names[o.name as keyof typeof names] })),
+          };
+          const { output } = runAlgorithm(stackQueueAdapters, value, { mode: "count" });
+          expect(stackQueueAdapters.check(value, output)).toBeNull();
+        },
+      ),
+      { numRuns: 300 },
+    );
+    fc.assert(
+      fc.property(
+        fc.constantFrom<"min" | "max">("min", "max"),
+        ops(["push"], ["pop", "top", "extreme"]),
+        (track, raw) => {
+          const value = {
+            track,
+            ops: raw.map((o) => (o.name === "extreme" ? { name: track } : o)),
+          };
+          const { output } = runAlgorithm(minStack, value, { mode: "count" });
+          expect(minStack.check(value, output)).toBeNull();
+        },
+      ),
+      { numRuns: 300 },
+    );
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 2, max: 8 }),
+        fc.constantFrom<"reject" | "overwrite">("reject", "overwrite"),
+        ops(["enqueue"], ["dequeue", "front"]),
+        (capacity, whenFull, list) => {
+          const value = { capacity, whenFull, ops: list };
+          const { output } = runAlgorithm(circularQueue, value, { mode: "count" });
+          expect(circularQueue.check(value, output)).toBeNull();
+        },
+      ),
+      { numRuns: 300 },
+    );
+    fc.assert(
+      fc.property(
+        ops(["pushFront", "pushBack"], ["popFront", "popBack", "front", "back"]),
+        (list) => {
+          const { output } = runAlgorithm(deque, list, { mode: "count" });
+          expect(deque.check(list, output)).toBeNull();
+        },
+      ),
+      { numRuns: 300 },
+    );
+    fc.assert(
+      fc.property(
+        fc.constantFrom<"min" | "max">("min", "max"),
+        ops(["insert"], ["extract", "peek"]),
+        (kind, list) => {
+          const value = { kind, ops: list };
+          const { output } = runAlgorithm(binaryHeap, value, { mode: "count" });
+          expect(binaryHeap.check(value, output)).toBeNull();
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("a binary heap returns any multiset in sorted order (heap sort by inserts and extracts)", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 0, max: 99 }), { minLength: 1, maxLength: 8 }),
+        (xs) => {
+          const value = {
+            kind: "min" as const,
+            ops: [
+              ...xs.map((x) => ({ name: "insert", value: x })),
+              ...xs.map(() => ({ name: "extract" })),
+            ],
+          };
+          const { output } = runAlgorithm(binaryHeap, value, { mode: "count" });
+          expect(output.results.slice(xs.length)).toEqual([...xs].sort((a, b) => a - b));
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("a min stack's auxiliary stack stays at one value for strictly increasing pushes", () => {
+    const value = {
+      track: "min" as const,
+      ops: Array.from({ length: 10 }, (_, i) => ({ name: "push", value: i * 3 })),
+    };
+    expect(runAlgorithm(minStack, value, { mode: "count" }).output.auxPeak).toBe(1);
   });
 });

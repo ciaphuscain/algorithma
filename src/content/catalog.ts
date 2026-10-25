@@ -92,6 +92,11 @@ import { shuntingYardEntry } from "./entries/shunting-yard";
 import { postfixEvaluationEntry } from "./entries/postfix-evaluation";
 import { expressionTreeEntry } from "./entries/expression-tree";
 import { towerOfHanoiEntry } from "./entries/tower-of-hanoi";
+import { queueUsingStacksEntry } from "./entries/queue-using-stacks";
+import { minStackEntry } from "./entries/min-stack";
+import { circularQueueEntry } from "./entries/circular-queue";
+import { dequeEntry } from "./entries/deque";
+import { binaryHeapEntry } from "./entries/binary-heap";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -126,6 +131,11 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   postfixEvaluationEntry,
   expressionTreeEntry,
   towerOfHanoiEntry,
+  queueUsingStacksEntry,
+  minStackEntry,
+  circularQueueEntry,
+  dequeEntry,
+  binaryHeapEntry,
   mergeSortEntry,
   quickSortEntry,
   heapSortEntry,

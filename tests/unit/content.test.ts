@@ -167,10 +167,12 @@ describe("catalog search", () => {
       "aho-corasick",
       "balanced-brackets",
       "bfs",
+      "binary-heap",
       "binary-lifting",
       "binary-search",
       "bridges-articulation",
       "bst",
+      "circular-queue",
       "closest-pair",
       "consistent-hashing",
       "convex-hull-trick",
@@ -178,6 +180,7 @@ describe("catalog search", () => {
       "counting-sort",
       "crt",
       "cuckoo-hashing",
+      "deque",
       "dfs",
       "dijkstra",
       "euclid",
@@ -202,6 +205,7 @@ describe("catalog search", () => {
       "merge-sort",
       "merge-sorted-lists",
       "miller-rabin",
+      "min-stack",
       "monotonic-queue",
       "monotonic-stack",
       "ntt",
@@ -209,6 +213,7 @@ describe("catalog search", () => {
       "postfix-evaluation",
       "prefix-sums",
       "prim",
+      "queue-using-stacks",
       "radix-sort",
       "rendezvous-hashing",
       "reverse-linked-list",
@@ -230,7 +235,9 @@ describe("catalog search", () => {
       "zobrist-hashing",
     ]);
     expect(slugs({ maxWorst: "log n" }).sort()).toEqual([
+      "binary-heap",
       "binary-search",
+      "circular-queue",
       "consistent-hashing",
       "crt",
       "cuckoo-hashing",
@@ -238,6 +245,7 @@ describe("catalog search", () => {
       "fenwick-tree",
       "matrix-exponentiation",
       "miller-rabin",
+      "min-stack",
       "segment-tree",
       "union-find",
       "zobrist-hashing",
@@ -1656,6 +1664,133 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("queue and heap lessons (batch T): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const run = (id: string, fields: Record<string, string>) => {
+      const m = getModule(id)!;
+      const p = m.input.parse(fields);
+      if (!p.ok) throw new Error(p.errors.join());
+      return runAlgorithm(m, p.value).output as never;
+    };
+
+    type Ad = { results: unknown[]; contents: number[]; transfers: number };
+    const q: Ad = run("queue-using-stacks", {
+      build: "queue",
+      ops: "enqueue 1, enqueue 2, enqueue 3, dequeue, enqueue 4, dequeue, dequeue, front, dequeue, dequeue",
+    });
+    expect([q.results.filter((r) => r !== "ok"), q.transfers]).toEqual([
+      [1, 2, 3, 4, 4, "empty"],
+      4,
+    ]);
+    const q2: Ad = run("queue-using-stacks", {
+      build: "queue",
+      ops: "enqueue 1, enqueue 2, dequeue, enqueue 3, dequeue, dequeue",
+    });
+    expect(q2.transfers).toBe(3);
+    const s: Ad = run("queue-using-stacks", {
+      build: "stack",
+      ops: "push 1, push 2, push 3, pop, push 4, top, pop, pop",
+    });
+    expect([s.results.filter((r) => r !== "ok"), s.contents, s.transfers]).toEqual([
+      [3, 4, 4, 2],
+      [1],
+      5,
+    ]);
+    expect(
+      (run("queue-using-stacks", { build: "stack", ops: "push 1, push 2, push 3, push 4" }) as Ad)
+        .transfers,
+    ).toBe(6);
+
+    type Ms = { results: unknown[]; aux: number[]; auxPeak: number };
+    const ms: Ms = run("min-stack", {
+      track: "min",
+      ops: "push 5, push 3, push 7, push 3, min, pop, min, pop, pop, min",
+    });
+    expect([ms.results.filter((r) => r !== "ok"), ms.auxPeak]).toEqual([[3, 3, 3, 7, 3, 5], 3]);
+    expect(
+      (run("min-stack", { track: "min", ops: "push 4, push 6, push 2, push 2, push 8" }) as Ms).aux,
+    ).toEqual([4, 2, 2]);
+    expect(
+      (run("min-stack", { track: "max", ops: "push 2, push 9, push 4, max, pop, pop, max" }) as Ms)
+        .results,
+    ).toEqual(["ok", "ok", "ok", 9, 4, 9, 2]);
+
+    type Cq = { results: unknown[]; contents: number[]; head: number };
+    const cq: Cq = run("circular-queue", {
+      capacity: "4",
+      whenFull: "reject",
+      ops: "enqueue 1, enqueue 2, enqueue 3, dequeue, dequeue, enqueue 4, enqueue 5, enqueue 6, enqueue 7, dequeue, front",
+    });
+    expect([cq.results.filter((r) => r !== "ok"), cq.contents, cq.head]).toEqual([
+      [1, 2, "full", 3, 4],
+      [4, 5, 6],
+      3,
+    ]);
+    const ow: Cq = run("circular-queue", {
+      capacity: "3",
+      whenFull: "overwrite",
+      ops: "enqueue 10, enqueue 20, enqueue 30, enqueue 40, enqueue 50, dequeue, dequeue, dequeue, dequeue",
+    });
+    expect(ow.results.slice(3)).toEqual(["overwrote", "overwrote", 30, 40, 50, "empty"]);
+    // The practice question: capacity 5, head 3, count 4 -> next slot 2.
+    const p5: Cq = run("circular-queue", {
+      capacity: "5",
+      whenFull: "reject",
+      ops: "enqueue 1, enqueue 2, enqueue 3, dequeue, dequeue, dequeue, enqueue 4, enqueue 5, enqueue 6, enqueue 7",
+    });
+    expect([p5.head, p5.contents.length]).toEqual([3, 4]);
+
+    type Dq = {
+      results: unknown[];
+      contents: number[];
+      capacity: number;
+      head: number;
+      copies: number;
+    };
+    const dq: Dq = run("deque", {
+      ops: "pushBack 1, pushBack 2, pushFront 0, pushFront 9, pushBack 3, popFront, popBack, front, back",
+    });
+    expect([
+      dq.results.filter((r) => r !== "ok"),
+      dq.contents,
+      dq.capacity,
+      dq.head,
+      dq.copies,
+    ]).toEqual([[9, 3, 0, 2], [0, 1, 2], 8, 1, 6]);
+    const nine: Dq = run("deque", {
+      ops: Array.from({ length: 9 }, (_, i) => `pushBack ${i}`).join(", "),
+    });
+    expect([nine.copies, nine.capacity]).toEqual([14, 16]);
+    expect(
+      (
+        run("deque", {
+          ops: "pushBack 5, pushFront 4, popBack, pushFront 3, popBack, pushFront 2, back",
+        }) as Dq
+      ).contents,
+    ).toEqual([2, 3]);
+
+    type Hp = { results: unknown[]; heap: number[]; comparisons: number };
+    const h: Hp = run("binary-heap", {
+      kind: "min",
+      ops: "insert 5, insert 3, insert 8, insert 1, insert 9, insert 2, extract, extract, peek, extract",
+    });
+    expect([h.results.filter((r) => r !== "ok"), h.heap, h.comparisons]).toEqual([
+      [1, 2, 3, 3],
+      [5, 9, 8],
+      14,
+    ]);
+    const six: Hp = run("binary-heap", {
+      kind: "min",
+      ops: "insert 5, insert 3, insert 8, insert 1, insert 9, insert 2",
+    });
+    expect(six.heap).toEqual([1, 3, 2, 5, 9, 8]);
+    const hm: Hp = run("binary-heap", {
+      kind: "max",
+      ops: "insert 20, insert 50, insert 10, extract, insert 40, insert 30, extract, extract",
+    });
+    expect([hm.results.filter((r) => r !== "ok"), hm.comparisons]).toEqual([[50, 40, 30], 9]);
   });
 
   it("stack lessons (batch S): worked examples match the engine", async () => {
