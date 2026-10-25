@@ -63,6 +63,9 @@ import { convexHullTrickEntry } from "./entries/convex-hull-trick";
 import { grahamScanEntry } from "./entries/graham-scan";
 import { closestPairEntry } from "./entries/closest-pair";
 import { kdTreeEntry } from "./entries/kd-tree";
+import { quickselectEntry } from "./entries/quickselect";
+import { mctsEntry } from "./entries/mcts";
+import { gradientDescentEntry } from "./entries/gradient-descent";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -108,6 +111,9 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   grahamScanEntry,
   closestPairEntry,
   kdTreeEntry,
+  quickselectEntry,
+  mctsEntry,
+  gradientDescentEntry,
   kmpEntry,
   ahoCorasickEntry,
   manacherEntry,

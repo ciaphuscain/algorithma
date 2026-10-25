@@ -38,6 +38,8 @@ for (const path of [
   "/algorithms/digit-dp",
   "/algorithms/graham-scan",
   "/algorithms/kd-tree",
+  "/algorithms/mcts",
+  "/algorithms/gradient-descent",
   "/arena",
   "/studio",
 ]) {

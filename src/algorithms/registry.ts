@@ -61,6 +61,9 @@ import { convexHullTrick } from "./dp/convex-hull-trick";
 import { grahamScan } from "./geometry/graham-scan";
 import { closestPair } from "./geometry/closest-pair";
 import { kdTree } from "./geometry/kd-tree";
+import { quickselect } from "./randomized/quickselect";
+import { mcts } from "./ai/mcts";
+import { gradientDescent } from "./ml/gradient-descent";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -130,6 +133,9 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   grahamScan,
   closestPair,
   kdTree,
+  quickselect,
+  mcts,
+  gradientDescent,
 ];
 
 const byId = new Map(ALGORITHM_MODULES.map((m) => [m.id, m]));

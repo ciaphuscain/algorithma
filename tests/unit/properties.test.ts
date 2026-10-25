@@ -12,6 +12,9 @@ import { cross } from "@/algorithms/geometry/common";
 import { grahamScan } from "@/algorithms/geometry/graham-scan";
 import { closestPair } from "@/algorithms/geometry/closest-pair";
 import { kdTree } from "@/algorithms/geometry/kd-tree";
+import { quickselect } from "@/algorithms/randomized/quickselect";
+import { mcts } from "@/algorithms/ai/mcts";
+import { gradientDescent } from "@/algorithms/ml/gradient-descent";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -1331,5 +1334,104 @@ describe("geometry properties", () => {
     const { output } = runAlgorithm(kdTree, { points: grid, q: { x: 1, y: 2 } });
     expect(output.nearest).toBe(0);
     expect(output.visited).toBeLessThan(grid.length / 2);
+  });
+});
+
+describe("randomized, search and optimisation properties", () => {
+  it("quickselect: the k-th smallest for any seed, in at most n rounds", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: -9, max: 9 }), { minLength: 1, maxLength: 40 }),
+        fc.nat(),
+        fc.integer({ min: 0, max: 999_999 }),
+        (values, kRaw, seed) => {
+          const input = { values, k: 1 + (kRaw % values.length), seed };
+          const { output } = runAlgorithm(quickselect, input, { mode: "count" });
+          expect(quickselect.check(input, output)).toBeNull();
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("quickselect: about 2.85n comparisons on average for the median of 40 (below 2(1 + ln 2)n ≈ 3.39n)", () => {
+    const n = 40;
+    let total = 0;
+    for (let seed = 0; seed < 300; seed++) {
+      const rng = createRng(seed + 7);
+      const values = Array.from({ length: n }, (_, i) => i);
+      for (let i = n - 1; i > 0; i--) {
+        const j = rng.int(0, i);
+        [values[i], values[j]] = [values[j]!, values[i]!];
+      }
+      total += runAlgorithm(quickselect, { values, k: n / 2, seed }, { mode: "count" }).trace.meta
+        .counters.comparisons!;
+    }
+    expect(total / 300).toBeCloseTo(114, 0);
+    expect(total / 300).toBeLessThan(2 * (1 + Math.LN2) * n);
+  });
+
+  it("MCTS: statistics stay consistent for any position, budget and seed", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 1, max: 12 }),
+        fc.integer({ min: 1, max: 60 }),
+        fc.integer({ min: 0, max: 999_999 }),
+        (stones, iterations, seed) => {
+          const input = { stones, iterations, seed };
+          const { output } = runAlgorithm(mcts, input, { mode: "count" });
+          expect(mcts.check(input, output)).toBeNull();
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  it("MCTS: how often the most visited move wins (the lesson's measurements)", () => {
+    // Positions with 1–11 stones that are not multiples of 4 have one winning move: n mod 4.
+    const rate = (iterations: number, positions: number[]) => {
+      let ok = 0;
+      for (const stones of positions)
+        for (let seed = 0; seed < 50; seed++)
+          if (
+            runAlgorithm(mcts, { stones, iterations, seed }, { mode: "count" }).output.move ===
+            stones % 4
+          )
+            ok++;
+      return ok;
+    };
+    const winnable = [1, 2, 3, 5, 6, 7, 9, 10, 11];
+    expect(rate(40, winnable)).toBe(357);
+    expect(rate(150, winnable)).toBe(393);
+    expect(rate(40, [7])).toBe(44);
+    expect(rate(150, [7])).toBe(50);
+  });
+
+  it("gradient descent: f shrinks by at least the worse squared factor when both factors are below 1", () => {
+    const num = (min: number, max: number) =>
+      fc.integer({ min: min * 10, max: max * 10 }).map((v) => v / 10);
+    fc.assert(
+      fc.property(
+        fc.record({
+          a: num(0.1, 10),
+          b: num(0.1, 10),
+          p: num(-10, 10),
+          q: num(-10, 10),
+          x0: num(-10, 10),
+          y0: num(-10, 10),
+          eta: fc.integer({ min: 1, max: 200 }).map((v) => v / 100),
+          steps: fc.integer({ min: 1, max: 50 }),
+        }),
+        (input) => {
+          const { output } = runAlgorithm(gradientDescent, input, { mode: "count" });
+          expect(gradientDescent.check(input, output)).toBeNull();
+          const rho = Math.max(output.factors[0] ** 2, output.factors[1] ** 2);
+          if (rho < 1)
+            for (let t = 1; t < output.f.length; t++)
+              expect(output.f[t]!).toBeLessThanOrEqual(rho * output.f[t - 1]! * (1 + 1e-9) + 1e-12);
+        },
+      ),
+      { numRuns: 300 },
+    );
   });
 });

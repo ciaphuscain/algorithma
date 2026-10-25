@@ -247,6 +247,9 @@ describe("catalog search", () => {
     expect(entryForItem(406)?.slug).toBe("graham-scan");
     expect(entryForItem(410)?.slug).toBe("closest-pair");
     expect(entryForItem(418)?.slug).toBe("kd-tree"); // KD-tree search, duplicate of #177
+    expect(entryForItem(427)?.slug).toBe("quickselect");
+    expect(entryForItem(455)?.slug).toBe("mcts");
+    expect(entryForItem(496)?.slug).toBe("gradient-descent");
     expect(entryForItem(218)).toBeUndefined(); // Borůvka: planned
     expect(getEntry("nope")).toBeUndefined();
   });
@@ -1184,5 +1187,50 @@ describe("worked examples agree with the engine", () => {
     ].map(([x, y]) => ({ x: x! + 10, y: y! + 10 }));
     const ring = runAlgorithm(getModule("kd-tree")!, { points: circle, q: { x: 10, y: 10 } });
     expect(ring.output.visited).toBe(12);
+  });
+
+  it("randomized, search and optimisation lessons: worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const run = (id: string, presetId: string) => {
+      const m = getModule(id)!;
+      return runAlgorithm(m, m.input.presets.find((p) => p.id === presetId)!.value);
+    };
+
+    const qs = run("quickselect", "classic");
+    expect(qs.output).toEqual({ value: 5, rounds: 6 });
+    expect(qs.trace.meta.counters.comparisons).toBe(33);
+    const pivots = qs.trace.events.flatMap((e) =>
+      e.note?.startsWith("Round") ? [e.note.split("= ")[1]] : [],
+    );
+    expect(pivots).toEqual(["8.", "7.", "1.", "2.", "4.", "5."]);
+    expect(run("quickselect", "duplicates").output.rounds).toBe(1);
+
+    expect(run("mcts", "classic").output).toMatchObject({
+      move: 3,
+      visits: [11, 7, 22],
+      wins: [5, 2, 16],
+    });
+    expect(run("mcts", "unlucky").output).toMatchObject({
+      move: 1,
+      visits: [19, 5, 16],
+      wins: [15, 1, 12],
+    });
+    expect(run("mcts", "longer").output).toMatchObject({ move: 3, visits: [34, 9, 107] });
+    expect(run("mcts", "losing").output.move).toBeGreaterThan(0);
+
+    const gd = run("gradient-descent", "classic");
+    expect(gd.output.path.slice(0, 5)).toEqual([
+      [-6, 5],
+      [-2, 3],
+      [0, 2],
+      [1, 1.5],
+      [1.5, 1.25],
+    ]);
+    expect(gd.output.f.slice(0, 5)).toEqual([80, 20, 5, 1.25, 0.3125]);
+    expect(
+      run("gradient-descent", "zigzag").output.factors.map((f: number) => Number(f.toFixed(2))),
+    ).toEqual([-0.8, 0.82]);
+    expect(run("gradient-descent", "diverge").output.factors[0]).toBeCloseTo(-1.2, 12);
+    expect(run("gradient-descent", "slow").output.factors[0]).toBeCloseTo(0.96, 12);
   });
 });

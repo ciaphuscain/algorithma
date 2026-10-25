@@ -169,7 +169,7 @@ test("roadmap lists the curriculum honestly", async ({ page }) => {
   await expect(page.locator('[data-number="220"]')).toContainText("Same as #218");
   await page.getByLabel("Search the curriculum").fill("");
   await page.getByLabel("Status").selectOption("available");
-  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 82 of 600");
+  await expect(page.getByTestId("roadmap-count")).toContainText("Showing 85 of 600");
   await page.locator('[data-number="11"]').getByRole("link", { name: "Bubble Sort" }).click();
   await expect(page).toHaveURL(/\/algorithms\/bubble-sort/);
 });
@@ -385,6 +385,28 @@ test("geometry: a hull on the plane, and checks on point lists", async ({ page }
   await expect(page.locator(".alert--error")).toContainText("Every point needs both an x and a y");
 });
 
+test("randomized search and optimisation: seeds, budgets and learning rates", async ({ page }) => {
+  await page.goto("/algorithms/quickselect");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText("5 (after 6 partition rounds)");
+  await page.getByLabel("k (1 = smallest)").fill("12");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText("k must be a whole number from 1 to 9");
+
+  await page.goto("/algorithms/mcts");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.getByTestId("result")).toContainText("Take 3 (visits 11 / 7 / 22");
+  await expect(page.locator('[data-kind="tree"]')).toBeVisible();
+
+  await page.goto("/algorithms/gradient-descent");
+  await page.getByRole("button", { name: "Jump to end" }).click();
+  await expect(page.locator('[data-kind="plane"]')).toBeVisible();
+  await expect(page.getByTestId("result")).toContainText("after 10 steps; factors 0.5, 0.5");
+  await page.getByLabel("Learning rate η").fill("0");
+  await page.getByRole("button", { name: "Run", exact: true }).click();
+  await expect(page.locator(".alert--error")).toContainText("η must be a number greater than 0");
+});
+
 test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(String(e)));
@@ -452,6 +474,9 @@ test("every catalogue entry renders its visualizer without console errors", asyn
     "graham-scan",
     "closest-pair",
     "kd-tree",
+    "quickselect",
+    "mcts",
+    "gradient-descent",
   ]) {
     await page.goto(`/algorithms/${slug}`);
     await page.getByRole("button", { name: "Jump to end" }).click();
