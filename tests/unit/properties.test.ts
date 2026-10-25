@@ -28,6 +28,10 @@ import { openAddressing, probe } from "@/algorithms/hashing/open-addressing";
 import { robinHood } from "@/algorithms/hashing/robin-hood";
 import { cuckooHashing } from "@/algorithms/hashing/cuckoo";
 import type { HashOp } from "@/algorithms/hashing/common";
+import { rabinKarp } from "@/algorithms/strings/rabin-karp";
+import { consistentHashing } from "@/algorithms/hashing/consistent-hashing";
+import { rendezvousHashing } from "@/algorithms/hashing/rendezvous-hashing";
+import { zobrist } from "@/algorithms/hashing/zobrist";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -1734,5 +1738,83 @@ describe("hash table properties", () => {
         const seen = new Set(Array.from({ length: m }, (_, i) => probe("double", m, k, i)));
         expect(seen.size, `m = ${m}, k = ${k}`).toBe(m);
       }
+  });
+});
+
+describe("hash function properties", () => {
+  it("Rabin–Karp: n − m rolls, and characters are compared only in windows whose hash matched", () => {
+    fc.assert(
+      fc.property(
+        fc.stringMatching(/^[0-3]{1,24}$/),
+        fc.stringMatching(/^[0-3]{1,5}$/),
+        fc.constantFrom(2, 3, 5, 7, 13, 101),
+        (text, pat, q) => {
+          const input = { a: text, b: pat, d: 10 as const, q };
+          const { output, trace } = runAlgorithm(rabinKarp, input, { mode: "count" });
+          expect(rabinKarp.check(input, output)).toBeNull();
+          const windows = Math.max(0, text.length - pat.length + 1);
+          expect(trace.meta.counters.rolls ?? 0).toBe(Math.max(0, windows - 1));
+          expect(trace.meta.counters.comparisons).toBeLessThanOrEqual(
+            (output.matches.length + output.spurious.length) * pat.length,
+          );
+        },
+      ),
+    );
+  });
+
+  const placement = fc
+    .record({
+      n: fc.integer({ min: 1, max: 5 }),
+      keys: fc.uniqueArray(fc.stringMatching(/^[a-z][a-z0-9]{0,4}$/), {
+        minLength: 1,
+        maxLength: 12,
+      }),
+      add: fc.boolean(),
+      pick: fc.nat(),
+      vnodes: fc.integer({ min: 1, max: 3 }),
+    })
+    .map(({ n, keys, add, pick, vnodes }) => {
+      const servers = ["A", "B", "C", "D", "E", "F"].slice(0, n);
+      const change =
+        add || n === 1
+          ? { kind: "add" as const, server: ["A", "B", "C", "D", "E", "F"][n]! }
+          : { kind: "remove" as const, server: servers[pick % n]! };
+      return { servers, keys, change, vnodes };
+    });
+
+  it("consistent and rendezvous hashing move only the keys they must", () => {
+    fc.assert(
+      fc.property(placement, (input) => {
+        for (const mod of [consistentHashing, rendezvousHashing]) {
+          const { output } = runAlgorithm(mod, input, { mode: "count" });
+          expect(mod.check(input, output)).toBeNull();
+          if (input.change.kind === "remove")
+            for (const k of input.keys)
+              if (output.before[k] === input.change.server) expect(output.moved).toContain(k);
+        }
+      }),
+    );
+  });
+
+  it("Zobrist: reordering each player's moves gives the same final hash", () => {
+    fc.assert(
+      fc.property(
+        fc.shuffledSubarray([1, 2, 3, 4, 5, 6, 7, 8, 9], { minLength: 1 }),
+        fc.nat(999_999),
+        fc.nat(),
+        (game, seed, r) => {
+          const xs = game.filter((_, i) => i % 2 === 0);
+          const os = game.filter((_, i) => i % 2 === 1);
+          const rot = <T>(a: T[]) =>
+            a.length ? [...a.slice(r % a.length), ...a.slice(0, r % a.length)] : a;
+          const [x2, o2] = [rot(xs), rot([...os].reverse())];
+          const other = game.map((_, i) => (i % 2 === 0 ? x2[i / 2]! : o2[(i - 1) / 2]!));
+          const input = { games: [game, other], seed };
+          const { output } = runAlgorithm(zobrist, input, { mode: "count" });
+          expect(zobrist.check(input, output)).toBeNull();
+          expect(output.hashes[0]!.at(-1)).toBe(output.hashes[1]!.at(-1));
+        },
+      ),
+    );
   });
 });

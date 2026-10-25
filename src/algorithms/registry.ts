@@ -76,6 +76,10 @@ import { hashChaining } from "./hashing/chaining";
 import { openAddressing } from "./hashing/open-addressing";
 import { robinHood } from "./hashing/robin-hood";
 import { cuckooHashing } from "./hashing/cuckoo";
+import { rabinKarp } from "./strings/rabin-karp";
+import { consistentHashing } from "./hashing/consistent-hashing";
+import { rendezvousHashing } from "./hashing/rendezvous-hashing";
+import { zobrist } from "./hashing/zobrist";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -93,6 +97,10 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   openAddressing,
   robinHood,
   cuckooHashing,
+  consistentHashing,
+  rendezvousHashing,
+  zobrist,
+  rabinKarp,
   mergeSort,
   quickSort,
   heapSort,

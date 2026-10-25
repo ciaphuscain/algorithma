@@ -99,3 +99,14 @@ describe("heap view", () => {
     );
   });
 });
+
+describe("plane axis ticks", () => {
+  it("are exact multiples of the step, so zero is 0 rather than a rounding residue", async () => {
+    const { planeTicks } = await import("@/ui/renderers/PlaneView");
+    const t = planeTicks(-1.35, 1.35, 0.2);
+    expect(t).toContain(0);
+    expect(t.every((x) => !String(x).includes("e"))).toBe(true);
+    expect(t[0]).toBe(-1.2);
+    expect(t.at(-1)).toBe(1.2);
+  });
+});

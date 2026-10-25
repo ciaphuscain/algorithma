@@ -15,10 +15,12 @@ export function niceStep(span: number, target = 8): number {
   return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p;
 }
 
-const ticks = (lo: number, hi: number, step: number) => {
+// Each tick is an integer multiple of the step, so no rounding error accumulates and
+// zero is exactly 0 (adding the step repeatedly turned 0 into −2.8e-16 on some ranges).
+export const planeTicks = (lo: number, hi: number, step: number) => {
   const out: number[] = [];
-  for (let v = Math.ceil(lo / step) * step; v <= hi + step * 1e-9; v += step)
-    out.push(Number(v.toPrecision(12)));
+  for (let k = Math.ceil(lo / step - 1e-9); k * step <= hi + step * 1e-9; k++)
+    out.push(Number((k * step).toPrecision(12)));
   return out;
 };
 
@@ -68,7 +70,7 @@ export function PlaneView({
         </clipPath>
       </defs>
       <g className="p-grid" aria-hidden="true">
-        {ticks(minX, maxX, step).map((x) => (
+        {planeTicks(minX, maxX, step).map((x) => (
           <g key={`x${x}`}>
             <line x1={px(x)} x2={px(x)} y1={py(minY)} y2={py(maxY)} />
             <text className="p-tick" x={px(x)} y={py(minY) + 14} textAnchor="middle">
@@ -76,7 +78,7 @@ export function PlaneView({
             </text>
           </g>
         ))}
-        {ticks(minY, maxY, step).map((y) => (
+        {planeTicks(minY, maxY, step).map((y) => (
           <g key={`y${y}`}>
             <line x1={px(minX)} x2={px(maxX)} y1={py(y)} y2={py(y)} />
             <text className="p-tick" x={px(minX) - 5} y={py(y) + 4} textAnchor="end">

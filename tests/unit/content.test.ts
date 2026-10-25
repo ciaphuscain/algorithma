@@ -170,6 +170,7 @@ describe("catalog search", () => {
       "bridges-articulation",
       "bst",
       "closest-pair",
+      "consistent-hashing",
       "convex-hull-trick",
       "counting-sort",
       "crt",
@@ -201,6 +202,7 @@ describe("catalog search", () => {
       "prefix-sums",
       "prim",
       "radix-sort",
+      "rendezvous-hashing",
       "robin-hood-hashing",
       "segment-tree",
       "sliding-window",
@@ -215,9 +217,11 @@ describe("catalog search", () => {
       "trie",
       "two-pointers",
       "union-find",
+      "zobrist-hashing",
     ]);
     expect(slugs({ maxWorst: "log n" }).sort()).toEqual([
       "binary-search",
+      "consistent-hashing",
       "crt",
       "cuckoo-hashing",
       "euclid",
@@ -226,6 +230,7 @@ describe("catalog search", () => {
       "miller-rabin",
       "segment-tree",
       "union-find",
+      "zobrist-hashing",
     ]);
     expect(slugs({ domain: "searching-sorting" }).sort()).toEqual([
       "binary-search",
@@ -1490,6 +1495,79 @@ describe("worked examples agree with the engine", () => {
       ].map(([a, b]) => run("euclid", { a, b }).output.divisions),
     ).toEqual([9, 2, 2, 2]);
   });
+  it("hash-function lessons (batch Q): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { ringShares, ringPosition } = await import("@/algorithms/hashing/consistent-hashing");
+    const { hash32 } = await import("@/algorithms/hashing/placement");
+    const { score } = await import("@/algorithms/hashing/rendezvous-hashing");
+    const run = (id: string, presetId: string) => {
+      const m = getModule(id)!;
+      return runAlgorithm(m, m.input.presets.find((p) => p.id === presetId)!.value);
+    };
+
+    // Rabin–Karp
+    const rk = run("rabin-karp", "classic");
+    expect(rk.output.windowHashes).toEqual([8, 9, 3, 11, 0, 1, 7, 8, 4, 5, 10, 11, 7, 9, 11]);
+    expect([rk.output.patternHash, rk.output.matches, rk.output.spurious]).toEqual([7, [6], [12]]);
+    expect([rk.trace.meta.counters.comparisons, rk.trace.meta.counters.rolls]).toEqual([6, 14]);
+    const small = run("rabin-karp", "small-q").output;
+    expect([small.matches.length, small.spurious.length]).toEqual([0, 7]);
+    expect(run("rabin-karp", "letters").output.matches).toEqual([0, 7]);
+
+    // Consistent hashing
+    expect(["A", "B", "C", "D", "date"].map(ringPosition)).toEqual([316, 58, 270, 142, 133]);
+    const ch = run("consistent-hashing", "classic").output;
+    const count = (o: Record<string, string>, s: string) =>
+      Object.values(o).filter((x) => x === s).length;
+    expect(["A", "B", "C"].map((s) => count(ch.before, s))).toEqual([2, 1, 5]);
+    expect([ch.moved, count(ch.after!, "C")]).toEqual([["date"], 4]);
+    expect(run("consistent-hashing", "remove").output.moved).toEqual([
+      "apple",
+      "fig",
+      "kiwi",
+      "pear",
+    ]);
+    const pct = (x: Record<string, number>) =>
+      Object.values(x).map((d) => Math.round((d / 360) * 100));
+    expect(pct(ringShares(["A", "B", "C"], 1))).toEqual([13, 28, 59]);
+    expect(pct(ringShares(["A", "B", "C"], 3))[2]).toBe(3);
+    // Shares on a full 32-bit ring, by number of positions per server.
+    const shares32 = (v: number) => {
+      const all = ["A", "B", "C"]
+        .flatMap((s) =>
+          Array.from({ length: v }, (_, i) => ({ s, d: hash32(i === 0 ? s : `${s}#${i}`) })),
+        )
+        .sort((a, b) => a.d - b.d);
+      const sh: Record<string, number> = { A: 0, B: 0, C: 0 };
+      all.forEach((p, i) => {
+        const prev = all[(i - 1 + all.length) % all.length]!;
+        sh[p.s]! += (p.d - prev.d + 2 ** 32) % 2 ** 32;
+      });
+      return Object.values(sh).map((x) => Math.round((x / 2 ** 32) * 100));
+    };
+    expect([shares32(1), shares32(100), shares32(1000)]).toEqual([
+      [56, 26, 18],
+      [37, 31, 32],
+      [33, 34, 33],
+    ]);
+
+    // Rendezvous hashing
+    expect(["A", "B", "C", "D"].map((s) => score("kiwi", s))).toEqual([636, 266, 803, 302]);
+    expect(["A", "B", "C", "D"].map((s) => score("lime", s))).toEqual([14, 359, 545, 616]);
+    expect(run("rendezvous-hashing", "classic").output.moved).toEqual(["kiwi"]);
+    expect(run("rendezvous-hashing", "add").output.moved).toEqual(["lime"]);
+
+    // Zobrist hashing
+    const z = run("zobrist-hashing", "classic").output;
+    const hex = (h: number[]) => h.map((x) => x.toString(16).padStart(4, "0"));
+    expect(z.hashes.map(hex)).toEqual([
+      ["8da7", "827a", "c968"],
+      ["4b12", "44cf", "c968"],
+      ["8da7", "0542", "0642"],
+    ]);
+    expect(z.repeats.map((r: { sameBoard: boolean }) => r.sameBoard)).toEqual([true, true]);
+  });
+
   it("hashing lessons (batch P): worked examples match the engine", async () => {
     const { runAlgorithm } = await import("@/algorithms/run");
     const run = (id: string, value: unknown) => runAlgorithm(getModule(id)!, value);

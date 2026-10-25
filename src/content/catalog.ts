@@ -78,6 +78,10 @@ import { hashChainingEntry } from "./entries/hash-chaining";
 import { openAddressingEntry } from "./entries/open-addressing";
 import { robinHoodHashingEntry } from "./entries/robin-hood-hashing";
 import { cuckooHashingEntry } from "./entries/cuckoo-hashing";
+import { rabinKarpEntry } from "./entries/rabin-karp";
+import { consistentHashingEntry } from "./entries/consistent-hashing";
+import { rendezvousHashingEntry } from "./entries/rendezvous-hashing";
+import { zobristHashingEntry } from "./entries/zobrist-hashing";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -98,6 +102,10 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   openAddressingEntry,
   robinHoodHashingEntry,
   cuckooHashingEntry,
+  consistentHashingEntry,
+  rendezvousHashingEntry,
+  zobristHashingEntry,
+  rabinKarpEntry,
   mergeSortEntry,
   quickSortEntry,
   heapSortEntry,
