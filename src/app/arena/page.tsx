@@ -5,7 +5,7 @@ import { ArenaClient } from "@/ui/ArenaClient";
 export const metadata: Metadata = {
   title: "Arena",
   description:
-    "Compare sorting algorithms on identical, reproducible inputs by operation counts and time.",
+    "Compare sorting, searching and shortest-path algorithms on identical, reproducible inputs by operation counts and time.",
 };
 
 export default async function ArenaPage({
@@ -23,8 +23,9 @@ export default async function ArenaPage({
         <p className="eyebrow">Arena</p>
         <h1>Compare algorithms</h1>
         <p>
-          Run sorting algorithms on the same seeded inputs and watch how their work grows with n.
-          Operation counts are exact and reproducible; times are shown with their caveats.
+          Run algorithms that solve the same problem (sorting, searching a sorted array, or shortest
+          paths) on the same seeded inputs and watch how their work grows with n. Operation counts
+          are exact and reproducible; times are shown with their caveats.
         </p>
       </header>
       <ArenaClient initial={decodeConfig(flat)} />

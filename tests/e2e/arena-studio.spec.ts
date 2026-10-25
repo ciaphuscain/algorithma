@@ -36,6 +36,33 @@ test("arena: reproducible experiment from a URL, exact counts, chart, table", as
   }
 });
 
+test("arena: searching and shortest-path families run in a background worker", async ({ page }) => {
+  await page.goto(
+    "/arena?fam=searching&alg=linear-search,binary-search&dist=absent&max=1024&seed=1&reps=1",
+  );
+  await expect(page.getByLabel("Problem")).toHaveValue("searching");
+  await expect(page.getByLabel("Binary Search")).toBeChecked();
+  await page.getByRole("button", { name: "Run experiment" }).click();
+  const results = page.getByTestId("arena-results");
+  await expect(results).toContainText("All 16 outputs verified by independent checkers");
+  await expect(results).toContainText("run in a background worker");
+  // An absent target makes linear search compare with every element.
+  const linear1024 = page
+    .getByTestId("arena-table")
+    .getByRole("row")
+    .filter({ hasText: /^Linear Search1024/ });
+  await expect(linear1024).toContainText("1,024");
+
+  await page.getByLabel("Problem").selectOption("shortest-paths");
+  await expect(
+    page.getByText("Bellman–Ford receives each undirected edge as two directed edges"),
+  ).toBeVisible();
+  await page.getByLabel("Largest input size").selectOption("32");
+  await page.getByRole("button", { name: "Run experiment" }).click();
+  await expect(page.getByTestId("arena-results")).toContainText("All 6 outputs verified");
+  await expect(page.getByTestId("arena-table")).toContainText("Edge checks");
+});
+
 test("studio: example traces from unregistered algorithms render; broken ones are rejected", async ({
   page,
 }) => {

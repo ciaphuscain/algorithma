@@ -1,34 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-  DISTRIBUTIONS,
-  SIZE_OPTIONS,
-  SORTING_ALGORITHMS,
+  FAMILY_IDS,
+  defaultConfig,
   encodeConfig,
   experimentCells,
+  family,
   toCsv,
   type ExperimentConfig,
   type ExperimentRow,
-  type SortingAlgorithmId,
+  type FamilyId,
 } from "@/experiments/arena";
+import type { ArenaWorkerMessage } from "@/experiments/arena.worker";
 import { getEntry } from "@/content/catalog";
 import { LineChart, compact, type ChartSeries } from "./charts/LineChart";
 
-const METRICS = [
-  { id: "comparisons", label: "Comparisons", kind: "count" },
-  { id: "moves", label: "Element moves (writes + 2 × swaps)", kind: "count" },
-  { id: "medianMs", label: "Wall-clock time (ms, indicative)", kind: "time" },
-] as const;
-type MetricId = (typeof METRICS)[number]["id"];
-
-const SLOT: Record<SortingAlgorithmId, 1 | 2 | 3 | 4> = {
-  "bubble-sort": 1,
-  "insertion-sort": 2,
-  "merge-sort": 3,
-  "quick-sort": 4,
-};
+const TIME = { id: "medianMs", label: "Wall-clock time (ms, indicative)" };
 const name = (id: string) => getEntry(id)?.name ?? id;
 
 interface Run {
@@ -36,57 +25,122 @@ interface Run {
   rows: ExperimentRow[];
   environment: string;
   finishedAt: string;
+  /** Where the experiment ran: a Web Worker, or the page itself if workers are unavailable. */
+  thread: "worker" | "page";
 }
 
 export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
   const [config, setConfig] = useState(initial);
-  const [metric, setMetric] = useState<MetricId>("comparisons");
+  const fam = family(config.family);
+  const [metric, setMetric] = useState<string>(fam.charted[0]!);
   const [scale, setScale] = useState<"linear" | "log">("log");
   const [run, setRun] = useState<Run | null>(null);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
-  const cancelled = useRef(false);
+  const [error, setError] = useState<string | null>(null);
+  const cancel = useRef<() => void>(() => {});
 
   useEffect(() => {
     window.history.replaceState(null, "", `/arena?${encodeConfig(config)}`);
   }, [config]);
 
-  const start = async () => {
+  const finish = (rows: ExperimentRow[], thread: Run["thread"]) => {
+    setProgress(null);
+    setRun({
+      config,
+      rows,
+      thread,
+      environment: `${navigator.userAgent}; ${navigator.hardwareConcurrency ?? "?"} logical CPUs`,
+      finishedAt: new Date().toISOString(),
+    });
+  };
+
+  /** Fallback when Web Workers are unavailable: run on the page, yielding between cells. */
+  const startOnPage = async () => {
     const cells = experimentCells(config);
     const rows: ExperimentRow[] = [];
-    cancelled.current = false;
-    setProgress({ done: 0, total: cells.length });
+    let stopped = false;
+    cancel.current = () => {
+      stopped = true;
+      setProgress(null);
+    };
     for (const [i, cell] of cells.entries()) {
-      if (cancelled.current) break;
-      // Yield to the browser between cells so the page stays responsive.
+      if (stopped) return;
       await new Promise((r) => setTimeout(r, 0));
       rows.push(cell());
       setProgress({ done: i + 1, total: cells.length });
     }
-    setProgress(null);
-    if (!cancelled.current) {
-      setRun({
-        config,
-        rows,
-        environment: `${navigator.userAgent}; ${navigator.hardwareConcurrency ?? "?"} logical CPUs`,
-        finishedAt: new Date().toISOString(),
-      });
-    }
+    if (!stopped) finish(rows, "page");
   };
 
-  const series: ChartSeries[] = useMemo(() => {
-    if (!run) return [];
-    return run.config.algorithms.map((a) => ({
-      id: a,
-      label: name(a),
-      slot: SLOT[a],
-      points: run.rows.filter((r) => r.algorithm === a).map((r) => ({ x: r.n, y: r[metric] })),
-    }));
-  }, [run, metric]);
+  const start = () => {
+    setError(null);
+    setProgress({ done: 0, total: experimentCells(config).length });
+    let worker: Worker;
+    try {
+      worker = new Worker(new URL("../experiments/arena.worker.ts", import.meta.url), {
+        type: "module",
+      });
+    } catch {
+      void startOnPage();
+      return;
+    }
+    const rows: ExperimentRow[] = [];
+    cancel.current = () => {
+      worker.terminate();
+      setProgress(null);
+    };
+    worker.onmessage = (e: MessageEvent<ArenaWorkerMessage>) => {
+      const m = e.data;
+      if (m.type === "row") {
+        rows.push(m.row);
+        setProgress({ done: m.done, total: m.total });
+      } else if (m.type === "done") {
+        worker.terminate();
+        finish(rows, "worker");
+      } else {
+        worker.terminate();
+        setProgress(null);
+        setError(m.message);
+      }
+    };
+    worker.onerror = () => {
+      // The worker could not start (e.g. blocked): run on the page instead.
+      worker.terminate();
+      void startOnPage();
+    };
+    worker.postMessage({ config });
+  };
 
-  const toggleAlgorithm = (a: SortingAlgorithmId, on: boolean) =>
+  const runFam = run ? family(run.config.family) : fam;
+  const metrics = [...runFam.charted.map((id) => runFam.columns.find((c) => c.id === id)!), TIME];
+  const metricInfo = metrics.find((m) => m.id === metric) ?? metrics[0]!;
+
+  const series: ChartSeries[] = !run
+    ? []
+    : run.config.algorithms.map((a) => ({
+        id: a,
+        label: name(a),
+        slot: (runFam.algorithms.indexOf(a) + 1) as 1 | 2 | 3 | 4,
+        points: run.rows
+          .filter((r) => r.algorithm === a)
+          .map((r) => ({
+            x: r.n,
+            y: metricInfo.id === TIME.id ? r.medianMs : (r.counts[metricInfo.id] ?? 0),
+          })),
+      }));
+
+  const switchFamily = (id: FamilyId) => {
+    setConfig({ ...defaultConfig(id), seed: config.seed, repetitions: config.repetitions });
+    setMetric(family(id).charted[0]!);
+    setRun(null);
+  };
+
+  const toggleAlgorithm = (a: string, on: boolean) =>
     setConfig((c) => ({
       ...c,
-      algorithms: SORTING_ALGORITHMS.filter((x) => (x === a ? on : c.algorithms.includes(x))),
+      algorithms: family(c.family).algorithms.filter((x) =>
+        x === a ? on : c.algorithms.includes(x),
+      ),
     }));
 
   const download = (text: string, filename: string, type: string) => {
@@ -98,8 +152,8 @@ export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
     URL.revokeObjectURL(url);
   };
 
-  const metricInfo = METRICS.find((m) => m.id === metric)!;
   const allCorrect = run?.rows.every((r) => r.correct) ?? false;
+  const distribution = fam.distributions.find((d) => d.id === config.distribution);
 
   return (
     <>
@@ -112,12 +166,27 @@ export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
         }}
         aria-label="Experiment configuration"
       >
+        <div className="field" style={{ maxWidth: 360 }}>
+          <label htmlFor="family">Problem</label>
+          <select
+            id="family"
+            className="select"
+            value={config.family}
+            onChange={(e) => switchFamily(e.target.value as FamilyId)}
+          >
+            {FAMILY_IDS.map((id) => (
+              <option key={id} value={id}>
+                {family(id).label}
+              </option>
+            ))}
+          </select>
+        </div>
         <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
           <legend className="field__label" style={{ marginBottom: 6 }}>
             Algorithms
           </legend>
           <div className="chip-row">
-            {SORTING_ALGORITHMS.map((a) => (
+            {fam.algorithms.map((a) => (
               <label key={a} className="check">
                 <input
                   type="checkbox"
@@ -143,14 +212,9 @@ export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
               id="dist"
               className="select"
               value={config.distribution}
-              onChange={(e) =>
-                setConfig({
-                  ...config,
-                  distribution: e.target.value as ExperimentConfig["distribution"],
-                })
-              }
+              onChange={(e) => setConfig({ ...config, distribution: e.target.value })}
             >
-              {DISTRIBUTIONS.map((d) => (
+              {fam.distributions.map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.label}
                 </option>
@@ -165,11 +229,13 @@ export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
               value={config.maxSize}
               onChange={(e) => setConfig({ ...config, maxSize: Number(e.target.value) })}
             >
-              {SIZE_OPTIONS.filter((n) => n >= 32).map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
+              {fam.sizes
+                .filter((n) => n >= 32)
+                .map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
             </select>
           </div>
           <div className="field">
@@ -202,8 +268,10 @@ export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
           </div>
         </div>
         <p className="field__help" style={{ margin: 0 }}>
-          {DISTRIBUTIONS.find((d) => d.id === config.distribution)?.description} Sizes 8, 16, …{" "}
-          {config.maxSize}. Every algorithm sorts the same input for each size.
+          {distribution?.description} Sizes {fam.sizes[0]}, {fam.sizes[1]}, … {config.maxSize}.
+          Every algorithm {fam.task} the same input for each size.
+          {config.family === "shortest-paths" &&
+            " Bellman–Ford receives each undirected edge as two directed edges, so both algorithms solve the same problem."}
         </p>
         <div className="chip-row" style={{ alignItems: "center" }}>
           <button type="submit" className="btn btn--primary" disabled={progress !== null}>
@@ -219,17 +287,19 @@ export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
               <span className="field__help">
                 {progress.done} / {progress.total} runs
               </span>
-              <button
-                type="button"
-                className="btn btn--small"
-                onClick={() => (cancelled.current = true)}
-              >
+              <button type="button" className="btn btn--small" onClick={() => cancel.current()}>
                 Cancel
               </button>
             </>
           )}
         </div>
       </form>
+
+      {error && (
+        <p className="alert alert--error" role="alert">
+          The experiment failed: {error}
+        </p>
+      )}
 
       {!run && !progress && (
         <div className="card">
@@ -249,7 +319,9 @@ export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
               <button
                 type="button"
                 className="btn btn--small"
-                onClick={() => download(toCsv(run.rows), "arena-results.csv", "text/csv")}
+                onClick={() =>
+                  download(toCsv(run.rows, run.config.family), "arena-results.csv", "text/csv")
+                }
               >
                 Download CSV
               </button>
@@ -270,7 +342,7 @@ export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
           </div>
           {allCorrect ? (
             <p className="badge badge--ok" style={{ marginBottom: 12 }}>
-              ✓ All {run.rows.length} outputs verified as correctly sorted
+              ✓ All {run.rows.length} outputs verified by independent checkers
             </p>
           ) : (
             <p className="alert alert--error" role="alert">
@@ -284,9 +356,9 @@ export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
                 id="metric"
                 className="select"
                 value={metric}
-                onChange={(e) => setMetric(e.target.value as MetricId)}
+                onChange={(e) => setMetric(e.target.value)}
               >
-                {METRICS.map((m) => (
+                {metrics.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.label}
                   </option>
@@ -306,7 +378,7 @@ export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
               </select>
             </div>
           </div>
-          {metricInfo.kind === "time" && (
+          {metricInfo.id === TIME.id && (
             <div className="alert alert--warning" style={{ marginBottom: 12 }}>
               Wall-clock times are medians of {run.config.repetitions} instrumented runs in this
               browser tab, after one warm-up. They include counting overhead, vary between machines
@@ -321,11 +393,11 @@ export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
               yLabel={metricInfo.label.replace(/ \(.*\)$/, "")}
               yScale={scale}
               formatY={(v) =>
-                metricInfo.kind === "time" ? `${v.toFixed(3)} ms` : v.toLocaleString("en")
+                metricInfo.id === TIME.id ? `${v.toFixed(3)} ms` : v.toLocaleString("en")
               }
-              summary={`${metricInfo.label} against input size for ${series.map((s) => s.label).join(", ")} on ${DISTRIBUTIONS.find(
-                (d) => d.id === run.config.distribution,
-              )?.label.toLowerCase()} inputs`}
+              summary={`${metricInfo.label} against input size for ${series.map((s) => s.label).join(", ")} on ${runFam.distributions
+                .find((d) => d.id === run.config.distribution)
+                ?.label.toLowerCase()} inputs`}
             />
           </div>
           <details style={{ marginTop: 16 }} open>
@@ -336,9 +408,11 @@ export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
                   <tr>
                     <th scope="col">Algorithm</th>
                     <th scope="col">n</th>
-                    <th scope="col">Comparisons</th>
-                    <th scope="col">Swaps</th>
-                    <th scope="col">Writes</th>
+                    {runFam.columns.map((c) => (
+                      <th scope="col" key={c.id}>
+                        {c.label.replace(/ \(.*\)$/, "")}
+                      </th>
+                    ))}
                     <th scope="col">Median ms</th>
                     <th scope="col">Correct</th>
                   </tr>
@@ -348,9 +422,9 @@ export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
                     <tr key={`${r.algorithm}-${r.n}`}>
                       <td>{name(r.algorithm)}</td>
                       <td>{r.n}</td>
-                      <td>{r.comparisons.toLocaleString("en")}</td>
-                      <td>{r.swaps.toLocaleString("en")}</td>
-                      <td>{r.writes.toLocaleString("en")}</td>
+                      {runFam.columns.map((c) => (
+                        <td key={c.id}>{(r.counts[c.id] ?? 0).toLocaleString("en")}</td>
+                      ))}
                       <td>{r.medianMs < 0.1 ? "< 0.1" : r.medianMs.toFixed(2)}</td>
                       <td>{r.correct ? "✓" : "✗"}</td>
                     </tr>
@@ -360,9 +434,10 @@ export function ArenaClient({ initial }: { initial: ExperimentConfig }) {
             </div>
           </details>
           <p className="field__help">
-            Recorded {run.finishedAt} · {run.environment} · seed {run.config.seed}. The URL of this
-            page reproduces the configuration; operation counts are identical on every machine,
-            times are not.
+            Recorded {run.finishedAt} · {run.environment} · seed {run.config.seed} · run in{" "}
+            {run.thread === "worker" ? "a background worker" : "the page (workers unavailable)"}.
+            The URL of this page reproduces the configuration; operation counts are identical on
+            every machine, times are not.
           </p>
         </section>
       )}
