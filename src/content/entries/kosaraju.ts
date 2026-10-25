@@ -11,7 +11,7 @@ export const kosarajuEntry: AlgorithmEntry = {
   summary:
     "Finds the strongly connected components of a directed graph with two depth-first searches: one on the graph to get finishing times, one on the reversed graph in decreasing finishing time.",
   tags: ["scc", "strongly connected", "dfs", "directed graph", "condensation"],
-  prerequisites: ["Depth-First Search", "Topological Sort"],
+  prerequisites: ["Depth-First Search", "Topological Sort (DFS)"],
   related: ["tarjan-scc", "topological-sort-dfs", "dfs"],
   problem: {
     input: "A directed graph.",

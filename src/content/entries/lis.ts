@@ -11,7 +11,7 @@ export const lisEntry: AlgorithmEntry = {
   summary:
     "Finds the longest strictly increasing subsequence of an array. The O(n²) dynamic programme is the classic; keeping the smallest tail for each length and binary-searching it gives O(n log n).",
   tags: ["subsequence", "binary search", "patience sorting", "sequence dp"],
-  prerequisites: ["Dynamic Programming", "Binary Search"],
+  prerequisites: ["Memoization vs Tabulation (Top-Down and Bottom-Up DP)", "Binary Search"],
   related: ["lcs", "binary-search"],
   problem: {
     input: "An array of $n$ numbers.",

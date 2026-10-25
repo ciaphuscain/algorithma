@@ -1736,3 +1736,43 @@ pre.code {
   font-size: 0.82rem;
   color: var(--ink-3);
 }
+
+/* Learning path */
+.path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin-top: 8px;
+  font-size: 0.88rem;
+}
+.path__title {
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.path ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.path__step + .path__step::before {
+  content: "→";
+  content: "→" / "";
+  margin: 0 8px;
+  color: var(--ink-3);
+}
+.path__step--done a {
+  font-weight: 600;
+}
+.path__done {
+  color: var(--tone-path);
+}
+.path__step--current {
+  font-weight: 700;
+}
+.stack > * + * {
+  margin-top: 28px;
+}

@@ -11,7 +11,7 @@ export const segmentTreeEntry: AlgorithmEntry = {
   summary:
     "A binary tree over array ranges that answers range-sum queries and point updates in O(log n), each by touching a few nodes per level.",
   tags: ["tree", "range query", "range sum", "point update", "divide and conquer"],
-  prerequisites: ["Recursion", "Binary trees"],
+  prerequisites: ["Recursion", "Binary Tree Traversals"],
   related: ["fenwick-tree", "bst", "tree-traversals"],
   problem: {
     input:

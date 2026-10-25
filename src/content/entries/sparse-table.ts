@@ -11,7 +11,7 @@ export const sparseTableEntry: AlgorithmEntry = {
   summary:
     "Precomputes the minimum of every block whose length is a power of two. Any range is covered by two such blocks, so a minimum query takes O(1) after O(n log n) preprocessing.",
   tags: ["range minimum", "rmq", "doubling", "static array", "idempotent"],
-  prerequisites: ["Arrays", "Logarithms", "Dynamic Programming"],
+  prerequisites: ["Arrays", "Logarithms", "Memoization vs Tabulation (Top-Down and Bottom-Up DP)"],
   related: ["segment-tree", "prefix-sums", "fenwick-tree"],
   problem: {
     input: "An array $A$ that does not change, and queries “what is the minimum of $A[l..r]$?”.",

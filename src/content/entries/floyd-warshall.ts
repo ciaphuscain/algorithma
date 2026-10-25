@@ -17,7 +17,7 @@ export const floydWarshallEntry: AlgorithmEntry = {
   summary:
     "Computes shortest distances between every pair of vertices with three nested loops: in round k, each distance may improve by routing through vertex k.",
   tags: ["shortest path", "all pairs", "dynamic programming", "negative weights", "matrix"],
-  prerequisites: ["Graphs", "Dynamic Programming"],
+  prerequisites: ["Graphs", "Memoization vs Tabulation (Top-Down and Bottom-Up DP)"],
   related: ["bellman-ford", "dijkstra"],
   problem: {
     input: "A directed graph with integer edge weights (possibly negative).",

@@ -11,7 +11,7 @@ export const bstEntry: AlgorithmEntry = {
   summary:
     "A binary tree in which every key is larger than everything in its left subtree and smaller than everything in its right subtree; search, insert and delete follow one root-to-leaf path.",
   tags: ["tree", "binary tree", "search", "insert", "delete", "ordered set", "dictionary"],
-  prerequisites: ["Binary trees", "Binary Search", "Recursion"],
+  prerequisites: ["Binary Tree Traversals", "Binary Search", "Recursion"],
   related: ["tree-traversals", "binary-search", "heap-sort"],
   problem: {
     input: "A sequence of insert, search and delete operations on keys.",

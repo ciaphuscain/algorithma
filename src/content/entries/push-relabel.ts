@@ -11,7 +11,7 @@ export const pushRelabelEntry: AlgorithmEntry = {
   summary:
     "Computes a maximum flow by local moves instead of whole paths. Vertices may temporarily hold excess flow (a preflow); an overflowing vertex pushes excess to a neighbour exactly one unit lower, or is lifted (relabelled) when no edge goes downhill. FIFO selection runs in O(V³).",
   tags: ["max flow", "preflow", "push", "relabel", "heights", "network flow", "min cut"],
-  prerequisites: ["Dinic's Algorithm (Maximum Flow)", "Residual graphs"],
+  prerequisites: ["Dinic's Algorithm (Maximum Flow)"],
   related: ["dinic", "hopcroft-karp"],
   problem: {
     input: "A directed graph with edge capacities, a source s and a sink t.",

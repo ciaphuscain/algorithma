@@ -14,6 +14,8 @@ import { VisitRecorder } from "@/ui/algorithm/VisitRecorder";
 import { AlgorithmVisualizer } from "@/ui/visualizer/AlgorithmVisualizer";
 import { ReviewBadge, DifficultyBadge } from "@/ui/badges";
 import { reviewState } from "@/content/review";
+import { leadsTo, learningPath, prerequisitesOf } from "@/content/paths";
+import { LearningPath } from "@/ui/algorithm/LearningPath";
 
 export function generateStaticParams() {
   return ENTRIES.map((e) => ({ slug: e.slug }));
@@ -173,6 +175,13 @@ export default async function AlgorithmPage({ params }: { params: Promise<{ slug
   if (!entry) notFound();
   const domain = getDomain(entry.domain);
   const review = reviewState(entry);
+  const prerequisites = prerequisitesOf(entry);
+  const path = learningPath(entry).map((e) => ({
+    slug: e.slug,
+    name: e.name,
+    questionIds: e.practice.map((q) => q.id),
+  }));
+  const next = leadsTo(entry);
   const related = entry.related.map(getEntry).filter((e): e is AlgorithmEntry => Boolean(e));
 
   const tabs = [
@@ -265,7 +274,30 @@ export default async function AlgorithmPage({ params }: { params: Promise<{ slug
           )}
         </div>
         {entry.prerequisites.length > 0 && (
-          <p className="review-note">Before you start: {entry.prerequisites.join(" · ")}</p>
+          <p className="review-note" data-testid="prerequisites">
+            Before you start:{" "}
+            {[
+              ...prerequisites.entries.map((p) => (
+                <Link key={p.slug} href={`/algorithms/${p.slug}`}>
+                  {p.name}
+                </Link>
+              )),
+              ...prerequisites.background.map((b) => <span key={b}>{b}</span>),
+            ].flatMap((node, i) => (i === 0 ? [node] : [" · ", node]))}
+          </p>
+        )}
+        {path.length > 0 && <LearningPath steps={path} current={entry.name} />}
+        {next.length > 0 && (
+          <p className="review-note" data-testid="leads-to">
+            Leads to:{" "}
+            {next
+              .map((e) => (
+                <Link key={e.slug} href={`/algorithms/${e.slug}`}>
+                  {e.name}
+                </Link>
+              ))
+              .flatMap((node, i) => (i === 0 ? [node] : [" · ", node]))}
+          </p>
         )}
       </header>
       <Tabs label={`${entry.name} sections`} tabs={tabs} />

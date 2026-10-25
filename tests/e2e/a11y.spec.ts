@@ -6,6 +6,8 @@ for (const path of [
   "/",
   "/explore",
   "/roadmap",
+  "/progress",
+  "/algorithms/aho-corasick",
   "/algorithms/bubble-sort",
   "/algorithms/bfs",
   "/algorithms/bfs#exam",

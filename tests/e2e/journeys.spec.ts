@@ -444,6 +444,35 @@ test("sorting views: heap sort as a tree, recursion trees for merge and quick so
   await expect(page.getByText("Draft · unreviewed prose")).toBeVisible();
 });
 
+test("learning paths and progress: prerequisites link up, practice unlocks suggestions", async ({
+  page,
+}) => {
+  await page.goto("/algorithms/aho-corasick");
+  const path = page.getByRole("navigation", { name: "Learning path" });
+  await expect(path).toContainText("Knuth–Morris–Pratt (KMP)");
+  await expect(
+    page.getByTestId("prerequisites").getByRole("link", { name: "Trie (Prefix Tree)" }),
+  ).toBeVisible();
+
+  await page.goto("/progress");
+  await expect(page.getByTestId("ready-next")).toContainText("Binary Search");
+  await expect(page.getByTestId("topic-table")).toContainText("Searching and Sorting");
+  // Answer every binary search question correctly, as the practice tab would record it.
+  await page.evaluate(() => {
+    const ids = ["binary-max-comparisons", "binary-unsorted", "binary-next-range"];
+    const practice = Object.fromEntries(
+      ids.map((id) => [id, { correct: true, attempts: 1, at: 1 }]),
+    );
+    localStorage.setItem("algorithma.progress.v1", JSON.stringify({ recent: [], practice }));
+  });
+  await page.reload();
+  await expect(page.getByTestId("practised")).toContainText("Binary Search");
+  await expect(page.getByTestId("ready-next")).not.toContainText("Binary Search");
+  await page.getByRole("button", { name: "Reset progress" }).click();
+  await page.getByRole("button", { name: "Yes, delete" }).click();
+  await expect(page.getByTestId("practised")).toHaveCount(0);
+});
+
 test("every catalogue entry renders its visualizer without console errors", async ({ page }) => {
   // One navigation per entry (about 0.2–0.5 s each): the default 30 s is too short for 68.
   test.setTimeout(120_000);
