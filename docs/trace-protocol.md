@@ -43,18 +43,19 @@ Position _p_ means "after the first _p_ events"; position 0 is the initial state
 
 ## Structures
 
-| kind       | fields                                                                                                               | notes                                                                                                                                      |
-| ---------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `array`    | `values`, `marks[]`, `pointers{}`, optional `display: "bars" \| "cells"`                                             | marks: `sorted`, `pivot`, `found`, `discarded`, `active`, `min`                                                                            |
-| `graph`    | `directed`, `nodes[{id,x,y,label?}]`, `edges[{id,from,to,weight?}]`, `nodeStatus{}`, `edgeStatus{}`, `annotations{}` | x, y in the unit square, supplied by the producer so replay draws the same picture                                                         |
-| `sequence` | `discipline: queue \| stack \| priority \| deque`, `items[]`                                                         | priority pops name the index removed; deque pops name index 0 (front) or the last index (back)                                             |
-| `grid`     | `rows`, `cols`, `cells[][]`, `marks[][]`, optional `rowHeaders`, `colHeaders`                                        | DP tables, matrices                                                                                                                        |
-| `tree`     | `binary`, `root`, `nodes{id: {value, children[], edgeLabel?}}`, `nodeStatus{}`, `annotations{}`                      | binary trees keep two slots `[left, right]` (`null` = empty); general trees keep an ordered child list. Layout is computed by the renderer |
-| `plane`    | `bounds{minX,minY,maxX,maxY}`, `points[{id,x,y,label?}]`, `pointStatus{}`, `annotations{}`, `shapes[]`               | points in data coordinates (y grows upwards), drawn at one scale on both axes; shapes are drawn in order over them (see below)             |
+| kind       | fields                                                                                                               | notes                                                                                                                                                                                                                                                 |
+| ---------- | -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `array`    | `values`, `marks[]`, `pointers{}`, optional `display: "bars" \| "cells"`                                             | marks: `sorted`, `pivot`, `found`, `discarded`, `active`, `min`                                                                                                                                                                                       |
+| `graph`    | `directed`, `nodes[{id,x,y,label?}]`, `edges[{id,from,to,weight?}]`, `nodeStatus{}`, `edgeStatus{}`, `annotations{}` | x, y in the unit square, supplied by the producer so replay draws the same picture                                                                                                                                                                    |
+| `sequence` | `discipline: queue \| stack \| priority \| deque`, `items[]`                                                         | priority pops name the index removed; deque pops name index 0 (front) or the last index (back)                                                                                                                                                        |
+| `grid`     | `rows`, `cols`, `cells[][]`, `marks[][]`, optional `rowHeaders`, `colHeaders`                                        | DP tables, matrices                                                                                                                                                                                                                                   |
+| `tree`     | `binary`, `root`, `nodes{id: {value, children[], edgeLabel?}}`, `nodeStatus{}`, `annotations{}`                      | binary trees keep two slots `[left, right]` (`null` = empty); general trees keep an ordered child list. Layout is computed by the renderer                                                                                                            |
+| `plane`    | `bounds{minX,minY,maxX,maxY}`, `points[{id,x,y,label?}]`, `pointStatus{}`, `annotations{}`, `shapes[]`               | points in data coordinates (y grows upwards), drawn at one scale on both axes; shapes are drawn in order over them (see below)                                                                                                                        |
+| `timeline` | `lanes[{id,label?}]`, `laneStatus{}`, `annotations{}`, `now`, optional `horizon`, `messages[]`, `marks[]`            | processes as lanes, time left to right. A message is `{id, from, to, label?, sent, received, lost?, status}` (`received: null` while in flight); a mark is `{id, lane, time, label}`. `horizon` is a drawing hint: the axis covers at least that time |
 
-A plane shape is `{id, status, label?}` plus one geometry: `{kind: "segment", x1, y1, x2, y2}`, `{kind: "rect", x1, y1, x2, y2}` (an axis-aligned box with those corners) or `{kind: "circle", x, y, r}`. Shapes carry edge statuses; points carry node statuses. The renderer draws boxes first, then circles, then segments, and clips them to the bounds.
+A plane shape is `{id, status, label?}` plus one geometry: `{kind: "segment", x1, y1, x2, y2}`, `{kind: "rect", x1, y1, x2, y2}` (an axis-aligned box with those corners) or `{kind: "circle", x, y, r}`. Shapes and timeline messages carry edge statuses; points and lanes carry node statuses. The renderer draws boxes first, then circles, then segments, and clips them to the bounds.
 
-Node statuses (graphs, trees and plane points): `unvisited`, `frontier`, `current`, `visited`, `path`, `unreachable`, `highlight`. Edge statuses: `idle`, `examining`, `tree`, `relaxed`, `rejected`, `path`, `back`, `highlight`. Renderers draw `highlight` as a double ring on nodes and long dashes on edges, and the legend names every status in use.
+Node statuses (graphs, trees, plane points and timeline lanes): `unvisited`, `frontier`, `current`, `visited`, `path`, `unreachable`, `highlight`. Edge statuses: `idle`, `examining`, `tree`, `relaxed`, `rejected`, `path`, `back`, `highlight`. Renderers draw `highlight` as a double ring on nodes and long dashes on edges, and the legend names every status in use.
 
 ## Events
 
@@ -88,6 +89,13 @@ Every event may carry `line` (1-based pseudocode line; persists until changed), 
 | `plane.annotate {s,point,text}`                   | short label under a point (`null` clears)                                                                   |                |
 | `plane.draw {s,id,shape,status,label?}`           | add a shape, or replace the one with this id in place (keeping its drawing order)                           |                |
 | `plane.erase {s,id}`                              | remove a shape                                                                                              |                |
+| `timeline.tick {s,time}`                          | advance the clock; `time` must be greater than `now`                                                        |                |
+| `timeline.send {s,id,from,to,label?}`             | a message leaves `from` now, in flight (`examining`)                                                        |                |
+| `timeline.deliver {s,id,status}`                  | an in-flight message arrives now, with that status                                                          |                |
+| `timeline.lose {s,id}`                            | an in-flight message is lost now (`rejected`, `lost: true`)                                                 |                |
+| `timeline.lane {s,lane,status}`                   | lane status                                                                                                 |                |
+| `timeline.annotate {s,lane,text}`                 | short label under a lane name (`null` clears)                                                               |                |
+| `timeline.mark {s,id,lane,label}`                 | a local event on a lane at the current time                                                                 |                |
 | `structure.create {s,structure}`                  | add a structure mid-run                                                                                     |                |
 | `structure.remove {s}`                            | remove it                                                                                                   |                |
 | `step`                                            | narration / line change only                                                                                |                |
@@ -99,21 +107,24 @@ Every event may carry `line` (1-based pseudocode line; persists until changed), 
 
 `validateTrace(json)` never throws. It checks protocol and version, every field type, unknown event types and unknown fields (rejected, not ignored), duplicate node and edge ids, dangling edges, matrix shapes, `meta.eventCount`, and these limits:
 
-| limit               | value       |
-| ------------------- | ----------- |
-| events              | 200,000     |
-| array length        | 2,000       |
-| graph nodes / edges | 500 / 5,000 |
-| grid cells          | 40,000      |
-| tree nodes          | 500         |
-| plane points        | 500         |
-| plane shapes        | 1,000       |
-| structures          | 32          |
-| string length       | 500         |
+| limit                     | value       |
+| ------------------------- | ----------- |
+| events                    | 200,000     |
+| array length              | 2,000       |
+| graph nodes / edges       | 500 / 5,000 |
+| grid cells                | 40,000      |
+| tree nodes                | 500         |
+| plane points              | 500         |
+| plane shapes              | 1,000       |
+| timeline lanes            | 16          |
+| timeline messages + marks | 5,000       |
+| timeline time             | 1,000,000   |
+| structures                | 32          |
+| string length             | 500         |
 
 Plane geometry must have exactly the numeric fields its kind needs, all finite, with a non-negative radius, and bounds with `minX < maxX` and `minY < maxY`.
 
-It then **replays** the trace: an event that references a missing structure, an out-of-range index, an unknown node, point or shape, a pop from an empty sequence, or a draw that would exceed 1,000 shapes fails with the event's index. Initial trees must have one root, every node reachable exactly once (no cycles, no node with two parents) and binary nodes with exactly two slots. Tree events are applied by functions that refuse any edit that would break this: a second root, an occupied slot, removing a node that still has children, splicing out a node with two children, or moving a node into its own subtree.
+It then **replays** the trace: an event that references a missing structure, an out-of-range index, an unknown node, point, shape, lane or message, a pop from an empty sequence, a draw that would exceed 1,000 shapes, a clock that does not move forwards, or delivering or losing a message twice fails with the event's index. Initial trees must have one root, every node reachable exactly once (no cycles, no node with two parents) and binary nodes with exactly two slots. Tree events are applied by functions that refuse any edit that would break this: a second root, an occupied slot, removing a node that still has children, splicing out a node with two children, or moving a node into its own subtree.
 
 Tree operations are implemented once (`src/engine/tree.ts`) and shared by the tracer, the reducer and the validator, so a tree edit means the same thing when it is recorded, replayed and checked.
 
@@ -123,12 +134,12 @@ Producers have an event budget (default 50,000). When it is exhausted the tracer
 
 ## Versions
 
-| version | change                                                                                                                                                                                                                                                                                                                                                     |
-| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1       | arrays, graphs, sequences, grids                                                                                                                                                                                                                                                                                                                           |
-| 2       | adds the `tree` structure and the eight `tree.*` events, the `plane` structure and the four `plane.*` events, the `deque` sequence discipline and the `highlight` node and edge status. Every v1 trace is a valid v2 trace; migration only bumps the version. (Version 2 has not been released yet, so these were added to it rather than to a version 3.) |
+| version | change                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1       | arrays, graphs, sequences, grids                                                                                                                                                                                                                                                                                                                                                                                       |
+| 2       | adds the `tree` structure and the eight `tree.*` events, the `plane` structure and the four `plane.*` events, the `timeline` structure and the seven `timeline.*` events, the `deque` sequence discipline and the `highlight` node and edge status. Every v1 trace is a valid v2 trace; migration only bumps the version. (Version 2 has not been released yet, so these were added to it rather than to a version 3.) |
 
-`tree.move`, `tree.remove`, `tree.splice` and the `plane.*` events change no counter: they are structural. Geometry algorithms count their own primitives (orientation tests, distance computations) with `count`. When an algorithm both stores a pointer in an array and draws it as a tree edge (union-find), the array write is the counted operation.
+`tree.move`, `tree.remove`, `tree.splice` and the `plane.*` and `timeline.*` events change no counter: they are structural. Geometry and protocol algorithms count their own primitives (orientation tests, distance computations, messages) with `count`. When an algorithm both stores a pointer in an array and draws it as a tree edge (union-find), the array write is the counted operation.
 
 ## Evolution
 

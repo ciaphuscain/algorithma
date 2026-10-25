@@ -6,7 +6,17 @@ ALGORITHMA is an algorithm encyclopedia whose entries can be run. Pick an algori
 
 ## What is here
 
-- **47 interactive algorithms**, covering every Tier 1 and Tier 2 item of the curriculum: linear and binary search; bubble, selection, insertion, merge, quick and heap sort; prefix sums, sliding window, two pointers, monotonic stack and queue, sparse table; BFS, DFS, Dijkstra, A\*, Bellman–Ford, Floyd–Warshall, topological sort (Kahn and DFS), strongly connected components (Kosaraju, Tarjan), bridges and articulation points, union-find, Kruskal and Prim; memoization vs tabulation, edit distance, LCS, 0/1 knapsack and longest increasing subsequence; KMP, Aho–Corasick, Manacher, suffix array, suffix tree and suffix automaton; tree traversals, binary search trees, tries, segment trees, Fenwick trees, binary lifting (LCA) and heavy-light decomposition; matrix exponentiation.
+- **68 interactive algorithms**, covering every Tier 1, 2 and 3 item of the curriculum:
+  - searching and sorting: linear and binary search; bubble, selection, insertion, merge, quick and heap sort; randomized quickselect;
+  - arrays: prefix sums, sliding window, two pointers, monotonic stack and queue, sparse table;
+  - graphs: BFS, DFS, Dijkstra, A\*, Bellman–Ford, Floyd–Warshall, topological sort (Kahn and DFS), strongly connected components (Kosaraju, Tarjan), bridges and articulation points, union-find, Kruskal, Prim; maximum flow (Dinic, push–relabel) and bipartite matching (Hopcroft–Karp);
+  - dynamic programming: memoization vs tabulation, edit distance, LCS, 0/1 knapsack, longest increasing subsequence, Held–Karp, assignment by bitmask DP, digit DP, the convex hull trick;
+  - strings: KMP, Aho–Corasick, Manacher, suffix array, suffix tree, suffix automaton;
+  - trees: traversals, binary search trees, tries, segment trees, Fenwick trees, binary lifting (LCA), heavy-light decomposition, k-d trees;
+  - maths: matrix exponentiation, Miller–Rabin, Pollard's rho, the Chinese remainder theorem, NTT and FFT;
+  - geometry: Graham scan, closest pair of points;
+  - search and learning: Monte Carlo tree search, gradient descent;
+  - parallel and distributed: MapReduce, Paxos, Raft.
 - **Lessons at five depths** (intuition → mechanics → implementation → mathematics → advanced), tested Python and JavaScript code, practice questions with hints, and printable exam notes.
 - **A 600-algorithm roadmap** with priority tiers, showing honestly which entries exist and which are planned.
 - **Arena**: compare sorting algorithms on identical, seeded inputs by exact operation counts.
@@ -15,7 +25,7 @@ ALGORITHMA is an algorithm encyclopedia whose entries can be run. Pick an algori
 
 ## How it works
 
-Algorithms are written against a small tracer SDK. They mutate their data _through_ traced wrappers, so every recorded event is an operation the algorithm actually performed. A trace is a versioned list of semantic events over named structures (arrays, graphs, queues/stacks, tables, trees). One reducer defines what each event means, a keyframed player reconstructs any position in well under a millisecond, and five renderers draw any valid trace — without knowing which algorithm produced it.
+Algorithms are written against a small tracer SDK. They mutate their data _through_ traced wrappers, so every recorded event is an operation the algorithm actually performed. A trace is a versioned list of semantic events over named structures (arrays, graphs, queues/stacks, tables, trees, points in the plane, and process timelines). One reducer defines what each event means, a keyframed player reconstructs any position in well under a millisecond, and seven renderers draw any valid trace — without knowing which algorithm produced it.
 
 ```
 input ─▶ algorithm (tracer SDK) ─▶ trace ─▶ validate ─▶ player (√N keyframes) ─▶ renderers
