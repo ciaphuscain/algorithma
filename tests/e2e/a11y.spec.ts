@@ -31,6 +31,8 @@ for (const path of [
   "/algorithms/binary-heap",
   "/algorithms/avl-tree",
   "/algorithms/red-black-tree",
+  "/algorithms/aa-tree",
+  "/algorithms/scapegoat-tree",
   "/algorithms/heap-sort",
   "/algorithms/binary-search",
   "/algorithms/dfs",

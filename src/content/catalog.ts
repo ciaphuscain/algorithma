@@ -102,6 +102,8 @@ import { avlTreeEntry } from "./entries/avl-tree";
 import { redBlackTreeEntry } from "./entries/red-black-tree";
 import { splayTreeEntry } from "./entries/splay-tree";
 import { treapEntry } from "./entries/treap";
+import { aaTreeEntry } from "./entries/aa-tree";
+import { scapegoatTreeEntry } from "./entries/scapegoat-tree";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -146,6 +148,8 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   redBlackTreeEntry,
   splayTreeEntry,
   treapEntry,
+  scapegoatTreeEntry,
+  aaTreeEntry,
   mergeSortEntry,
   quickSortEntry,
   heapSortEntry,

@@ -164,6 +164,7 @@ describe("catalog search", () => {
   it("filters by complexity bound and domain", () => {
     expect(slugs({ maxWorst: "n log n" }).sort()).toEqual([
       "a-star",
+      "aa-tree",
       "aho-corasick",
       "avl-tree",
       "balanced-brackets",
@@ -221,6 +222,7 @@ describe("catalog search", () => {
       "rendezvous-hashing",
       "reverse-linked-list",
       "robin-hood-hashing",
+      "scapegoat-tree",
       "segment-tree",
       "shunting-yard",
       "sliding-window",
@@ -240,6 +242,7 @@ describe("catalog search", () => {
       "zobrist-hashing",
     ]);
     expect(slugs({ maxWorst: "log n" }).sort()).toEqual([
+      "aa-tree",
       "avl-tree",
       "binary-heap",
       "binary-search",
@@ -1671,6 +1674,41 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("AA and scapegoat lessons (batch V): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { ops } = await import("@/algorithms/trees/balanced/common");
+    const { depthLimit } = await import("@/algorithms/trees/balanced/scapegoat");
+    type S = { key: number; tag?: string; left: S | null; right: S | null } | null;
+    const show = (s: S): string =>
+      s ? `${s.key}${s.tag ? `[${s.tag}]` : ""}(${show(s.left)},${show(s.right)})` : "·";
+    const run = (id: string, text: string) => {
+      const r = runAlgorithm(getModule(id)!, ops(text));
+      return {
+        out: r.output as { tree: S; height: number; rebuilds?: number },
+        rotations: r.trace.meta.counters.rotations,
+      };
+    };
+    const aa = run("aa-tree", "i1 i2 i3 i4 i5 i6 i7");
+    expect([show(aa.out.tree), aa.rotations]).toEqual([
+      "4[L3](2[L2](1[L1](·,·),3[L1](·,·)),6[L2](5[L1](·,·),7[L1](·,·)))",
+      4,
+    ]);
+    expect(show(run("aa-tree", "i1 i2 i3 i4 i5 i6 i7 d1").out.tree)).toBe(
+      "4[L2](2[L1](·,3[L1](·,·)),6[L2](5[L1](·,·),7[L1](·,·)))",
+    );
+    const sg = run("scapegoat-tree", "i1 i2 i3 i4 i5 i6 i7 i8 i9 i10");
+    expect([sg.out.height, sg.out.rebuilds]).toEqual([6, 2]);
+    const sgDel = run("scapegoat-tree", "i50 i30 i70 i20 i40 i60 i80 d20 d30 d40 s70");
+    expect([show(sgDel.out.tree), sgDel.out.height, sgDel.out.rebuilds]).toEqual([
+      "70(60(50(·,·),·),80(·,·))",
+      3,
+      1,
+    ]);
+    expect([depthLimit(5), depthLimit(9), depthLimit(10), depthLimit(20), depthLimit(100)]).toEqual(
+      [3, 5, 5, 7, 11],
+    );
   });
 
   it("balanced tree lessons (batch U): worked examples match the engine", async () => {

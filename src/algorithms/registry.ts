@@ -100,6 +100,8 @@ import { redBlackTree } from "./trees/balanced/red-black";
 import { splayTree } from "./trees/balanced/splay";
 import { treap } from "./trees/balanced/treap";
 import { morrisTraversal } from "./trees/morris";
+import { aaTree } from "./trees/balanced/aa";
+import { scapegoatTree } from "./trees/balanced/scapegoat";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -141,6 +143,8 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   splayTree,
   treap,
   morrisTraversal,
+  aaTree,
+  scapegoatTree,
   mergeSort,
   quickSort,
   heapSort,

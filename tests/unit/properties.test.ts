@@ -52,6 +52,8 @@ import { avlTree } from "@/algorithms/trees/balanced/avl";
 import { redBlackTree } from "@/algorithms/trees/balanced/red-black";
 import { splayTree } from "@/algorithms/trees/balanced/splay";
 import { treap } from "@/algorithms/trees/balanced/treap";
+import { aaTree } from "@/algorithms/trees/balanced/aa";
+import { scapegoatTree } from "@/algorithms/trees/balanced/scapegoat";
 import { morrisTraversal } from "@/algorithms/trees/morris";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
@@ -2130,7 +2132,7 @@ describe("balanced search tree properties", () => {
     }),
     { minLength: 1, maxLength: 20 },
   ) as fc.Arbitrary<ContainerOp[]>;
-  const modules = [avlTree, redBlackTree, splayTree, treap] as const;
+  const modules = [avlTree, redBlackTree, splayTree, treap, aaTree, scapegoatTree] as const;
 
   it("every balanced tree keeps its invariant after every operation of a random sequence", () => {
     for (const m of modules) {
