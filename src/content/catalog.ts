@@ -97,6 +97,11 @@ import { minStackEntry } from "./entries/min-stack";
 import { circularQueueEntry } from "./entries/circular-queue";
 import { dequeEntry } from "./entries/deque";
 import { binaryHeapEntry } from "./entries/binary-heap";
+import { morrisTraversalEntry } from "./entries/morris-traversal";
+import { avlTreeEntry } from "./entries/avl-tree";
+import { redBlackTreeEntry } from "./entries/red-black-tree";
+import { splayTreeEntry } from "./entries/splay-tree";
+import { treapEntry } from "./entries/treap";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -136,6 +141,11 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   circularQueueEntry,
   dequeEntry,
   binaryHeapEntry,
+  morrisTraversalEntry,
+  avlTreeEntry,
+  redBlackTreeEntry,
+  splayTreeEntry,
+  treapEntry,
   mergeSortEntry,
   quickSortEntry,
   heapSortEntry,

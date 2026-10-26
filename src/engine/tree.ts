@@ -145,6 +145,30 @@ export function treeMove(t: TreeStructure, node: string, parent: string, slot?: 
 }
 
 /**
+ * Rotate a binary tree at `node`. Left: its right child y takes its place, `node`
+ * becomes y's left child, and y's old left subtree becomes `node`'s right subtree.
+ * Right is the mirror image. In-order is unchanged; this works at the root too.
+ * Returns the child that moved up.
+ */
+export function treeRotate(t: TreeStructure, node: string, dir: "left" | "right"): string {
+  if (!t.binary) throw new Error("rotations need a binary tree");
+  const x = requireNode(t, node);
+  const up = dir === "left" ? 1 : 0;
+  const yId = x.children[up];
+  if (yId == null)
+    throw new Error(
+      `cannot rotate "${node}" ${dir}: it has no ${up === 1 ? "right" : "left"} child`,
+    );
+  const y = t.nodes[yId]!;
+  const at = findParent(t, node);
+  x.children[up] = y.children[1 - up] ?? null;
+  y.children[1 - up] = node;
+  if (at === null) t.root = yId;
+  else t.nodes[at.parent]!.children[at.slot] = yId;
+  return yId;
+}
+
+/**
  * Check the shape invariants: one root, every node reachable from it exactly once,
  * no cycles, children reference existing nodes, binary nodes have two slots.
  */

@@ -95,6 +95,11 @@ import { minStack } from "./queues/min-stack";
 import { circularQueue } from "./queues/circular-queue";
 import { deque } from "./queues/deque";
 import { binaryHeap } from "./queues/binary-heap";
+import { avlTree } from "./trees/balanced/avl";
+import { redBlackTree } from "./trees/balanced/red-black";
+import { splayTree } from "./trees/balanced/splay";
+import { treap } from "./trees/balanced/treap";
+import { morrisTraversal } from "./trees/morris";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -131,6 +136,11 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   circularQueue,
   deque,
   binaryHeap,
+  avlTree,
+  redBlackTree,
+  splayTree,
+  treap,
+  morrisTraversal,
   mergeSort,
   quickSort,
   heapSort,

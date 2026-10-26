@@ -304,6 +304,8 @@ export type TraceEvent = EventMeta &
     | { type: "tree.splice"; s: string; node: string }
     /** Re-attach a non-root node, with its subtree, under another node (not inside the subtree). */
     | { type: "tree.move"; s: string; node: string; parent: string; slot?: number }
+    /** Binary trees: rotate at a node (left: its right child moves up into its place; right: its left child). */
+    | { type: "tree.rotate"; s: string; node: string; dir: "left" | "right" }
     | { type: "plane.point"; s: string; point: string; status: NodeStatus }
     | { type: "plane.annotate"; s: string; point: string; text: string | null }
     /** Add a shape, or replace the one with the same id (keeping its place in the drawing order). */

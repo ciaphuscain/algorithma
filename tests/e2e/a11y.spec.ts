@@ -29,6 +29,8 @@ for (const path of [
   "/algorithms/tower-of-hanoi",
   "/algorithms/deque",
   "/algorithms/binary-heap",
+  "/algorithms/avl-tree",
+  "/algorithms/red-black-tree",
   "/algorithms/heap-sort",
   "/algorithms/binary-search",
   "/algorithms/dfs",

@@ -8,7 +8,7 @@ import {
   type Op,
   type OpResult,
   type OpSpec,
-} from "./ops";
+} from "../ops";
 
 export type Track = "min" | "max";
 

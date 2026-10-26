@@ -72,7 +72,11 @@ export function randomOps(
 }
 
 /** Compare reported results with expected ones, naming the first difference. */
-export function compareResults(ops: Op[], got: OpResult[], want: OpResult[]): string | null {
+export function compareResults<R extends number | string>(
+  ops: Op[],
+  got: readonly R[],
+  want: readonly R[],
+): string | null {
   if (got.length !== want.length) return `${got.length} results for ${want.length} operations`;
   for (let i = 0; i < want.length; i++)
     if (got[i] !== want[i])

@@ -9,6 +9,7 @@ import {
   treeAdd,
   treeMove,
   treeRemove,
+  treeRotate,
   treeSplice,
 } from "./tree";
 import { validateTrace } from "./validate";
@@ -100,6 +101,33 @@ describe("tree operations", () => {
     expect(checkTreeShape(bin)).toBeNull();
   });
 
+  it("rotates at the root and below it, keeping the in-order sequence", () => {
+    // 8(3(1, 6(4, 7)), 10(·, 14))
+    const t = bst([8, 3, 10, 1, 6, 14, 4, 7]);
+    const before = inorder(t);
+    expect(treeRotate(t, "n0", "right")).toBe("n1"); // 3 becomes the root
+    expect(t.root).toBe("n1");
+    expect(t.nodes.n1!.children).toEqual(["n3", "n0"]);
+    expect(t.nodes.n0!.children).toEqual(["n4", "n2"]); // 6's subtree crossed over
+    expect(inorder(t)).toEqual(before);
+    expect(treeRotate(t, "n0", "right")).toBe("n4"); // below the root: 6 replaces 8
+    expect(t.nodes.n1!.children).toEqual(["n3", "n4"]);
+    expect(t.nodes.n4!.children).toEqual(["n6", "n0"]);
+    expect(t.nodes.n0!.children).toEqual(["n7", "n2"]);
+    expect(inorder(t)).toEqual(before);
+    expect(treeRotate(t, "n4", "left")).toBe("n0"); // and back
+    expect(treeRotate(t, "n1", "left")).toBe("n0");
+    expect(t.root).toBe("n0");
+    expect(inorder(t)).toEqual(before);
+    expect(checkTreeShape(t)).toBeNull();
+    expect(() => treeRotate(t, "n3", "left")).toThrow(/no right child/);
+    expect(() => treeRotate(t, "n2", "right")).toThrow(/no left child/);
+    expect(() => treeRotate(t, "zz", "left")).toThrow(/unknown tree node/);
+    const g = emptyTree(false);
+    treeAdd(g, "r", 1, null);
+    expect(() => treeRotate(g, "r", "left")).toThrow(/binary tree/);
+  });
+
   it("detects broken shapes", () => {
     const t = bst([2, 1, 3]);
     expect(
@@ -130,6 +158,7 @@ function treeTrace(): Trace {
   T.remove(l);
   const x = T.add(1, "n0", 0);
   T.move(x, "n3", 1);
+  T.rotate("n0", "left", { note: "rotate" });
   return t.finish(null, null);
 }
 
@@ -141,6 +170,7 @@ describe("tree traces", () => {
     for (let p = player.length; p >= 0; p--) expect(player.stateAt(p)).toEqual(ref.stateAt(p));
     const final = player.finalState().structures.T as TreeStructure;
     expect(inorder(final)).toEqual([5, 7, 1]);
+    expect(final.root).toBe("n3"); // the rotation lifted 7 above 5
     expect(final.annotations).toEqual({ n0: "root" });
     expect(player.finalState().counters).toMatchObject({ comparisons: 1, writes: 6 });
   });
@@ -160,6 +190,21 @@ describe("tree traces", () => {
     const moved = validateTrace(cyclic);
     expect(moved.ok).toBe(false);
     if (!moved.ok) expect(moved.errors[0]).toMatch(/cannot move the root/);
+  });
+
+  it("rejects impossible rotations and malformed rotate events", () => {
+    const bad = JSON.parse(JSON.stringify(treeTrace()));
+    const at = bad.events.findIndex((e: { type: string }) => e.type === "tree.rotate");
+    bad.events.splice(at + 1, 0, { type: "tree.rotate", s: "T", node: "n0", dir: "left" });
+    bad.meta.eventCount += 1;
+    const r = validateTrace(bad);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.errors[0]).toMatch(/no right child/);
+    const odd = JSON.parse(JSON.stringify(treeTrace()));
+    odd.events.find((e: { type: string }) => e.type === "tree.rotate").dir = "up";
+    const r2 = validateTrace(odd);
+    expect(r2.ok).toBe(false);
+    if (!r2.ok) expect(r2.errors.join()).toMatch(/dir: missing or invalid/);
   });
 
   it("rejects malformed initial trees and unknown tree fields", () => {

@@ -14,7 +14,7 @@ import {
   type TreeStructure,
 } from "./protocol";
 import type { TraceState } from "./state";
-import { treeAdd, treeMove, treeRemove, treeSplice } from "./tree";
+import { treeAdd, treeMove, treeRemove, treeRotate, treeSplice } from "./tree";
 
 /** Raised when an event cannot be applied to the current state (e.g. index out of range). */
 export class TraceReplayError extends Error {
@@ -39,9 +39,9 @@ type KindMap = {
 };
 
 /** Run a shared tree operation, converting its errors into replay errors. */
-function treeOp(fn: () => void): void {
+function treeOp<T>(fn: () => T): T {
   try {
-    fn();
+    return fn();
   } catch (err) {
     throw new TraceReplayError((err as Error).message);
   }
@@ -363,6 +363,13 @@ function applyUnchecked(state: TraceState, e: TraceEvent): void {
       // Structural, like remove and splice: no counter, so drawing a pointer change
       // that the algorithm also writes to an array is not counted twice.
       state.focus.push({ s: e.s, tone: "write", nodes: [e.node] });
+      break;
+    }
+    case "tree.rotate": {
+      const t = get(state, e.s, "tree");
+      // Structural like tree.move: algorithms count rotations themselves.
+      const up = treeOp(() => treeRotate(t, e.node, e.dir));
+      state.focus.push({ s: e.s, tone: "write", nodes: [e.node, up] });
       break;
     }
     case "plane.point": {

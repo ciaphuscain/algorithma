@@ -21,7 +21,7 @@ import {
   type TreeStructure,
   type VarValue,
 } from "./protocol";
-import { emptyTree, treeAdd, treeMove, treeRemove, treeSplice } from "./tree";
+import { emptyTree, treeAdd, treeMove, treeRemove, treeRotate, treeSplice } from "./tree";
 
 /**
  * Metadata for an operation. A function is evaluated only when the tracer records,
@@ -685,6 +685,13 @@ export class TracedTree {
       },
       meta,
     );
+  }
+
+  /** Binary trees: rotate at `id`; returns the child that moved up into its place. */
+  rotate(id: string, dir: "left" | "right", meta?: MetaArg): string {
+    const up = treeRotate(this.t, id, dir);
+    this.tracer.emit({ type: "tree.rotate", s: this.name, node: id, dir }, meta);
+    return up;
   }
 
   private node(id: string) {

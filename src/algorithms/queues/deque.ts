@@ -9,7 +9,7 @@ import {
   type Op,
   type OpResult,
   type OpSpec,
-} from "./ops";
+} from "../ops";
 
 export interface DequeOutput {
   results: OpResult[];

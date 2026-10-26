@@ -47,7 +47,7 @@ export function parseLevelOrder(text: string): ParseResult<LevelOrder> {
   return errors.length ? { ok: false, errors: errors.slice(0, 5) } : { ok: true, value: values };
 }
 
-const traversalInput: InputSpec<LevelOrder> = {
+export const traversalInput: InputSpec<LevelOrder> = {
   fields: [
     {
       name: "tree",

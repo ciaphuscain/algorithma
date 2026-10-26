@@ -47,7 +47,12 @@ import { minStack } from "@/algorithms/queues/min-stack";
 import { circularQueue } from "@/algorithms/queues/circular-queue";
 import { deque } from "@/algorithms/queues/deque";
 import { binaryHeap } from "@/algorithms/queues/binary-heap";
-import type { Op as ContainerOp } from "@/algorithms/queues/ops";
+import type { Op as ContainerOp } from "@/algorithms/ops";
+import { avlTree } from "@/algorithms/trees/balanced/avl";
+import { redBlackTree } from "@/algorithms/trees/balanced/red-black";
+import { splayTree } from "@/algorithms/trees/balanced/splay";
+import { treap } from "@/algorithms/trees/balanced/treap";
+import { morrisTraversal } from "@/algorithms/trees/morris";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -2114,5 +2119,81 @@ describe("queue, deque and heap properties", () => {
       ops: Array.from({ length: 10 }, (_, i) => ({ name: "push", value: i * 3 })),
     };
     expect(runAlgorithm(minStack, value, { mode: "count" }).output.auxPeak).toBe(1);
+  });
+});
+
+describe("balanced search tree properties", () => {
+  const setOps = fc.array(
+    fc.record({
+      name: fc.constantFrom("insert", "insert", "delete", "search"),
+      value: fc.integer({ min: 0, max: 24 }),
+    }),
+    { minLength: 1, maxLength: 20 },
+  ) as fc.Arbitrary<ContainerOp[]>;
+  const modules = [avlTree, redBlackTree, splayTree, treap] as const;
+
+  it("every balanced tree keeps its invariant after every operation of a random sequence", () => {
+    for (const m of modules) {
+      fc.assert(
+        fc.property(setOps, (list) => {
+          // Checking each prefix checks the invariant after every single operation.
+          for (let i = 1; i <= list.length; i++) {
+            const prefix = list.slice(0, i);
+            const { output } = runAlgorithm(m as never, prefix, { mode: "count" });
+            expect(
+              (m.check as (a: unknown, b: unknown) => string | null)(prefix, output),
+              `${m.id} after ${i}`,
+            ).toBeNull();
+          }
+        }),
+        { numRuns: 60 },
+      );
+    }
+  });
+
+  it("every balanced tree survives deleting all its keys in random order", () => {
+    // Random sequences rarely delete a node with two children; this always does.
+    const keysThenOrder = fc
+      .uniqueArray(fc.integer({ min: 0, max: 40 }), { minLength: 2, maxLength: 12 })
+      .chain((keys) =>
+        fc.tuple(fc.constant(keys), fc.shuffledSubarray(keys, { minLength: keys.length })),
+      );
+    for (const m of modules) {
+      fc.assert(
+        fc.property(keysThenOrder, ([keys, order]) => {
+          const list: ContainerOp[] = keys.map((value) => ({ name: "insert", value }));
+          for (const value of order) {
+            list.push({ name: "delete", value });
+            const { output } = runAlgorithm(m as never, list, { mode: "count" });
+            expect(
+              (m.check as (a: unknown, b: unknown) => string | null)(list, output),
+              `${m.id}`,
+            ).toBeNull();
+          }
+        }),
+        { numRuns: 80 },
+      );
+    }
+  });
+
+  it("AVL and red-black trees stay logarithmic on sorted inserts, where a plain BST degenerates", () => {
+    const sorted = Array.from({ length: 20 }, (_, i) => ({ name: "insert", value: i }));
+    const avl = runAlgorithm(avlTree, sorted, { mode: "count" }).output;
+    const rb = runAlgorithm(redBlackTree, sorted, { mode: "count" }).output;
+    // AVL: height < 1.4405 log2(n + 2) − 0.3277; red-black: height ≤ 2 log2(n + 1).
+    expect(avl.height).toBeLessThanOrEqual(Math.floor(1.4405 * Math.log2(22) - 0.3277));
+    expect(rb.height).toBeLessThanOrEqual(Math.floor(2 * Math.log2(21)));
+  });
+
+  it("Morris traversal gives the same in-order as the recursive traversal and restores the tree", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 10_000 }), (seed) => {
+        const tree = morrisTraversal.input.random(createRng(seed), 12);
+        const morris = runAlgorithm(morrisTraversal, tree, { mode: "count" }).output;
+        const rec = runAlgorithm(binaryTreeTraversals, tree, { mode: "count" }).output;
+        expect(morris.inorder).toEqual(rec.inorder);
+      }),
+      { numRuns: 200 },
+    );
   });
 });

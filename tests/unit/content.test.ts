@@ -165,6 +165,7 @@ describe("catalog search", () => {
     expect(slugs({ maxWorst: "n log n" }).sort()).toEqual([
       "a-star",
       "aho-corasick",
+      "avl-tree",
       "balanced-brackets",
       "bfs",
       "binary-heap",
@@ -208,6 +209,7 @@ describe("catalog search", () => {
       "min-stack",
       "monotonic-queue",
       "monotonic-stack",
+      "morris-traversal",
       "ntt",
       "open-addressing",
       "postfix-evaluation",
@@ -215,6 +217,7 @@ describe("catalog search", () => {
       "prim",
       "queue-using-stacks",
       "radix-sort",
+      "red-black-tree",
       "rendezvous-hashing",
       "reverse-linked-list",
       "robin-hood-hashing",
@@ -222,12 +225,14 @@ describe("catalog search", () => {
       "shunting-yard",
       "sliding-window",
       "sparse-table",
+      "splay-tree",
       "suffix-array",
       "suffix-automaton",
       "suffix-tree",
       "tarjan-scc",
       "topological-sort",
       "topological-sort-dfs",
+      "treap",
       "tree-traversals",
       "trie",
       "two-pointers",
@@ -235,6 +240,7 @@ describe("catalog search", () => {
       "zobrist-hashing",
     ]);
     expect(slugs({ maxWorst: "log n" }).sort()).toEqual([
+      "avl-tree",
       "binary-heap",
       "binary-search",
       "circular-queue",
@@ -246,6 +252,7 @@ describe("catalog search", () => {
       "matrix-exponentiation",
       "miller-rabin",
       "min-stack",
+      "red-black-tree",
       "segment-tree",
       "union-find",
       "zobrist-hashing",
@@ -1664,6 +1671,69 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("balanced tree lessons (batch U): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { ops } = await import("@/algorithms/trees/balanced/common");
+    type S = { key: number; tag?: string; left: S | null; right: S | null } | null;
+    const show = (s: S): string =>
+      s ? `${s.key}${s.tag ? `[${s.tag}]` : ""}(${show(s.left)},${show(s.right)})` : "·";
+    const run = (id: string, text: string) => {
+      const r = runAlgorithm(getModule(id)!, ops(text));
+      const o = r.output as { tree: S; height: number; results: string[] };
+      return {
+        tree: show(o.tree),
+        height: o.height,
+        results: o.results,
+        rotations: r.trace.meta.counters.rotations,
+      };
+    };
+
+    const avl = run("avl-tree", "i10 i20 i30 i40 i50 i60 i70");
+    expect([avl.tree, avl.height, avl.rotations]).toEqual([
+      "40[h=3](20[h=2](10[h=1](·,·),30[h=1](·,·)),60[h=2](50[h=1](·,·),70[h=1](·,·)))",
+      3,
+      4,
+    ]);
+    expect(run("avl-tree", "i30 i10 i20").tree).toBe("20[h=2](10[h=1](·,·),30[h=1](·,·))");
+    const avlDel = run("avl-tree", "i50 i30 i70 i20 i40 i60 i80 i10 d60 d70 d80 s20");
+    expect([avlDel.tree.startsWith("30["), avlDel.height]).toEqual([true, 3]);
+
+    const rb = run("red-black-tree", "i10 i20 i30 i40 i50 i60 i70 i80");
+    expect([rb.tree, rb.height, rb.rotations]).toEqual([
+      "40[black](20[red](10[black](·,·),30[black](·,·)),60[red](50[black](·,·),70[black](·,80[red](·,·))))",
+      4,
+      4,
+    ]);
+    expect(run("red-black-tree", "i41 i38 i31 i12 i19 i8 d8 d12 d19 d31 s38").tree).toBe(
+      "38[black](·,41[red](·,·))",
+    );
+
+    expect(run("splay-tree", "i10 i20 i30 i40 i50 i60 i70").height).toBe(7);
+    expect(run("splay-tree", "i10 i20 i30 i40 i50 i60 i70 s10")).toMatchObject({ height: 5 });
+    expect(run("splay-tree", "i10 i20 i30 i40 i50 i60 i70 s10 s40")).toMatchObject({
+      height: 4,
+      tree: "40(10(·,20(·,30(·,·))),60(50(·,·),70(·,·)))",
+    });
+    expect(run("splay-tree", "i5 i3 i8 i1 i4 i7 i9 d5").tree).toBe(
+      "4(1(·,3(·,·)),8(7(·,·),9(·,·)))",
+    );
+
+    const tr = run("treap", "i1 i2 i3 i4 i5 i6 i7 i8 i9 i10");
+    expect([tr.height, tr.rotations]).toEqual([4, 6]);
+    expect(tr.tree.startsWith("5[p=6](3[p=33]")).toBe(true);
+
+    const morris = (levels: (number | null)[]) => {
+      const r = runAlgorithm(getModule("morris-traversal")!, levels);
+      return [
+        (r.output as { inorder: number[] }).inorder,
+        (r.output as { threads: number }).threads,
+        (r.output as { moves: number }).moves,
+      ];
+    };
+    expect(morris([1, 2, 3, 4, 5, null, 6])).toEqual([[4, 2, 5, 1, 3, 6], 2, 14]);
+    expect(morris([5, 4, null, 3, null, 2])[0]).toEqual([2, 3, 4, 5]);
   });
 
   it("queue and heap lessons (batch T): worked examples match the engine", async () => {
