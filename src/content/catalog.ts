@@ -106,6 +106,7 @@ import { aaTreeEntry } from "./entries/aa-tree";
 import { scapegoatTreeEntry } from "./entries/scapegoat-tree";
 import { bTreeEntry } from "./entries/b-tree";
 import { bPlusTreeEntry } from "./entries/b-plus-tree";
+import { bStarTreeEntry } from "./entries/b-star-tree";
 
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
@@ -154,6 +155,7 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   aaTreeEntry,
   bTreeEntry,
   bPlusTreeEntry,
+  bStarTreeEntry,
   mergeSortEntry,
   quickSortEntry,
   heapSortEntry,

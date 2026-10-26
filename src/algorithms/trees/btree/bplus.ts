@@ -21,10 +21,11 @@ export interface BPlusOutput {
   leaves: number[];
   height: number;
   splits: number;
+  merges: number;
 }
 
 const ops = (text: string): Op[] => {
-  const names: Record<string, string> = { i: "insert", s: "search", r: "scan" };
+  const names: Record<string, string> = { i: "insert", d: "delete", s: "search", r: "scan" };
   return text
     .split(/\s+/)
     .filter(Boolean)
@@ -40,6 +41,7 @@ const input = bInput({
   },
   spec: {
     insert: { value: true, aliases: ["add", "i"] },
+    delete: { value: true, aliases: ["remove", "del", "d"] },
     search: { value: true, aliases: ["find", "s"] },
     scan: { value: true, aliases: ["range", "from", "r"] },
   },
@@ -59,10 +61,15 @@ const input = bInput({
       label: "Range scans along the leaf chain",
       value: { size: 3, ops: ops("i5 i15 i25 i35 i45 i55 r0 r30 s45 s50") },
     },
+    {
+      id: "delete",
+      label: "Deletes: borrow from a sibling, merge leaves, shrink",
+      value: { size: 3, ops: ops("i10 i20 i30 i40 i50 i60 i70 i80 d30 d40 d10 d80 d70 r0") },
+    },
   ],
 });
 
-/** Independent model: bottom-up B+ insertion on nested lists. */
+/** Independent model: bottom-up B+ insertion and deletion on nested lists. */
 export function bPlusModel(m: number, list: Op[]): { tree: BShape | null; results: string[] } {
   type M = { keys: number[]; kids: M[] };
   let root: M | null = null;
@@ -105,9 +112,66 @@ export function bPlusModel(m: number, list: Op[]): { tree: BShape | null; result
     x.keys.pop();
     return [sep, right];
   };
+  const minLeaf = Math.floor((m + 1) / 2);
+  const minInner = Math.floor(m / 2);
+  // Delete from subtree x (child of nothing if x is the root); returns true if x underflowed.
+  const del = (x: M, k: number): boolean => {
+    if (!x.kids.length) {
+      x.keys.splice(x.keys.indexOf(k), 1);
+      return x.keys.length < minLeaf;
+    }
+    let i = 0;
+    while (i < x.keys.length && k >= x.keys[i]!) i++;
+    const c = x.kids[i]!;
+    if (!del(c, k)) return false;
+    const leaf = !c.kids.length;
+    const min = leaf ? minLeaf : minInner;
+    const left = x.kids[i - 1];
+    const right = x.kids[i + 1];
+    if (left && left.keys.length > min) {
+      if (leaf) {
+        c.keys.unshift(left.keys.pop()!);
+        x.keys[i - 1] = c.keys[0]!;
+      } else {
+        c.keys.unshift(x.keys[i - 1]!);
+        x.keys[i - 1] = left.keys.pop()!;
+        c.kids.unshift(left.kids.pop()!);
+      }
+      return false;
+    }
+    if (right && right.keys.length > min) {
+      if (leaf) {
+        c.keys.push(right.keys.shift()!);
+        x.keys[i] = right.keys[0]!;
+      } else {
+        c.keys.push(x.keys[i]!);
+        x.keys[i] = right.keys.shift()!;
+        c.kids.push(right.kids.shift()!);
+      }
+      return false;
+    }
+    const s = left ? i - 1 : i;
+    const a = x.kids[s]!;
+    const b = x.kids[s + 1]!;
+    if (leaf) a.keys.push(...b.keys);
+    else {
+      a.keys.push(x.keys[s]!, ...b.keys);
+      a.kids.push(...b.kids);
+    }
+    x.keys.splice(s, 1);
+    x.kids.splice(s + 1, 1);
+    return x.keys.length < minInner;
+  };
   const results = list.map((op): string => {
     const k = op.value!;
     const present = root !== null && leafOf(k).keys.includes(k);
+    if (op.name === "delete") {
+      if (!present) return "missing";
+      del(root!, k);
+      if (!root!.kids.length && !root!.keys.length) root = null;
+      else if (root!.kids.length && !root!.keys.length) root = root!.kids[0]!;
+      return "deleted";
+    }
     if (op.name === "search") return present ? "found" : "missing";
     if (op.name === "scan")
       return (
@@ -149,6 +213,9 @@ export const bPlusTree: AlgorithmModule<BInput, BPlusOutput> = {
     "  root split: the tree grows a level",
     "search k: find leaf(k); look for k there",
     "scan from k: find leaf(k); read keys ≥ k, following next-leaf links to the end",
+    "delete k: remove it from its leaf; while a node has too few keys:",
+    "  borrow from a sibling with spare keys (a leaf borrows a key and updates the separator; an internal node rotates one through the parent)",
+    "  or merge with a sibling (internal nodes pull the parent's separator down); an empty root gives way to its only child",
   ],
   input,
 
@@ -223,6 +290,93 @@ export const bPlusTree: AlgorithmModule<BInput, BPlusOutput> = {
       B.show(parent, { line: leaf ? 3 : 4, note: how });
     };
 
+    const minLeaf = Math.floor((m + 1) / 2);
+    const minInner = Math.floor(m / 2);
+    let merges = 0;
+    /** Repair an underflowing node x, whose ancestors are `path`, bottom-up. */
+    const fixUnderflow = (start: BNode, path: BNode[]) => {
+      let x = start;
+      for (let d = path.length; ; d--) {
+        const leaf = !x.kids.length;
+        if (d === 0) {
+          if (x.keys.length) return;
+          if (leaf)
+            B.removeLeaf(null, x, { line: 10, note: "The last key is gone: the tree is empty." });
+          else
+            B.shrinkRoot({
+              line: 10,
+              note: "The root has no separators left: its only child becomes the root.",
+            });
+          return;
+        }
+        const min = leaf ? minLeaf : minInner;
+        if (x.keys.length >= min) return;
+        const p = path[d - 1]!;
+        const i = p.kids.indexOf(x);
+        const left = p.kids[i - 1];
+        const right = p.kids[i + 1];
+        const what = leaf ? "leaf" : "node";
+        if (left && left.keys.length > min) {
+          if (leaf) {
+            x.keys.unshift(left.keys.pop()!);
+            p.keys[i - 1] = x.keys[0]!;
+          } else {
+            x.keys.unshift(p.keys[i - 1]!);
+            p.keys[i - 1] = left.keys.pop()!;
+            B.moveKids(left, left.kids.length - 1, 1, x, 0, { line: 9 });
+          }
+          B.show(left, { line: 9 });
+          B.show(x, { line: 9 });
+          B.show(p, {
+            line: 9,
+            note: `The ${what} has too few keys: borrow one from its left sibling and update the separator.`,
+          });
+          return;
+        }
+        if (right && right.keys.length > min) {
+          if (leaf) {
+            x.keys.push(right.keys.shift()!);
+            p.keys[i] = right.keys[0]!;
+          } else {
+            x.keys.push(p.keys[i]!);
+            p.keys[i] = right.keys.shift()!;
+            B.moveKids(right, 0, 1, x, x.kids.length, { line: 9 });
+          }
+          B.show(right, { line: 9 });
+          B.show(x, { line: 9 });
+          B.show(p, {
+            line: 9,
+            note: `The ${what} has too few keys: borrow one from its right sibling and update the separator.`,
+          });
+          return;
+        }
+        const s = left ? i - 1 : i;
+        const a = p.kids[s]!;
+        const b = p.kids[s + 1]!;
+        const sep = p.keys[s]!;
+        if (leaf) {
+          a.keys.push(...b.keys);
+          (a as PNode).next = (b as PNode).next;
+          link(a as PNode, 10);
+        } else {
+          a.keys.push(sep, ...b.keys);
+          B.moveKids(b, 0, b.kids.length, a, a.kids.length, { line: 10 });
+        }
+        p.keys.splice(s, 1);
+        B.removeLeaf(p, b, { line: 10 });
+        B.show(a, { line: 10 });
+        B.show(p, {
+          line: 10,
+          note: leaf
+            ? `No sibling can spare a key: merge the two leaves and drop the separator ${sep}.`
+            : `No sibling can spare a key: merge the two nodes, pulling the separator ${sep} down.`,
+        });
+        merges++;
+        tr.tally("merges");
+        x = p;
+      }
+    };
+
     const results: string[] = [];
     for (const op of input.ops) {
       const k = op.value!;
@@ -236,12 +390,18 @@ export const bPlusTree: AlgorithmModule<BInput, BPlusOutput> = {
           r.next = null;
           results.push("inserted");
         } else {
-          tr.step({ line: op.name === "search" ? 6 : 7, note: "The tree is empty." });
-          results.push(op.name === "search" ? "missing" : "none");
+          tr.step({
+            line: op.name === "scan" ? 7 : op.name === "delete" ? 8 : 6,
+            note: "The tree is empty.",
+          });
+          results.push(op.name === "scan" ? "none" : "missing");
         }
         continue;
       }
-      const { leaf, path } = findLeaf(k, op.name === "insert" ? 1 : op.name === "search" ? 6 : 7);
+      const { leaf, path } = findLeaf(
+        k,
+        op.name === "insert" ? 1 : op.name === "search" ? 6 : op.name === "delete" ? 8 : 7,
+      );
       if (op.name === "search") {
         let found = false;
         for (const v of leaf.keys) {
@@ -256,6 +416,19 @@ export const bPlusTree: AlgorithmModule<BInput, BPlusOutput> = {
           note: found ? `Found ${k} in its leaf.` : `${k} is not in its leaf, so not in the tree.`,
         });
         results.push(found ? "found" : "missing");
+        continue;
+      }
+      if (op.name === "delete") {
+        const at = leaf.keys.indexOf(k);
+        if (at === -1) {
+          tr.step({ line: 8, note: `${k} is not in its leaf, so not in the tree.` });
+          results.push("missing");
+          continue;
+        }
+        leaf.keys.splice(at, 1);
+        B.show(leaf, { line: 8, note: `Remove ${k} from its leaf.` });
+        fixUnderflow(leaf, path);
+        results.push("deleted");
         continue;
       }
       if (op.name === "scan") {
@@ -298,7 +471,7 @@ export const bPlusTree: AlgorithmModule<BInput, BPlusOutput> = {
     let first: BNode | null = B.root;
     while (first && first.kids.length) first = first.kids[0]!;
     for (let l = first as PNode | null; l; l = l.next) leaves.push(...l.keys);
-    const output: BPlusOutput = { results, tree, leaves, height: bHeight(tree), splits };
+    const output: BPlusOutput = { results, tree, leaves, height: bHeight(tree), splits, merges };
     tr.finish(input, output, {
       line: 7,
       note: `${leaves.length} keys in the leaves, tree height ${output.height}, ${splits} split${splits === 1 ? "" : "s"}.`,

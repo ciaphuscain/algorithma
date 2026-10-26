@@ -15,7 +15,7 @@ export const bPlusTreeEntry: AlgorithmEntry = {
   related: ["b-tree", "bst", "binary-search"],
   problem: {
     input:
-      "An order m (the most keys per node) and a sequence of insert, search and scan operations.",
+      "An order m (the most keys per node) and a sequence of insert, delete, search and scan operations.",
     output:
       "The result of each operation; a scan from k returns every key ≥ k in order, read along the linked leaves.",
   },
@@ -36,6 +36,7 @@ export const bPlusTreeEntry: AlgorithmEntry = {
           "If an internal node now has m + 1 separators, split it and **move** its middle separator up (it is not needed in either half). A split root gives the tree a new level.",
           "**Search:** find the leaf; the key is in the tree exactly when it is in that leaf.",
           "**Scan from k:** find k's leaf, then read keys ≥ k leaf after leaf by following the links.",
+          "**Delete:** remove k from its leaf. A leaf left with fewer than ⌊(m + 1)/2⌋ keys borrows a key from a sibling (and the parent's separator is updated to the new boundary) or merges with it (and the separator between them is dropped). An internal node left too small borrows by rotating a separator through its parent, or merges, pulling the parent's separator down. A root with no separators left gives way to its only child.",
         ],
       },
       {
@@ -66,7 +67,7 @@ export const bPlusTreeEntry: AlgorithmEntry = {
       },
       {
         kind: "p",
-        text: "Note that 30, 50 and 70 appear twice — once as a separator and once in a leaf — which is how a B+ tree differs from a B-tree. The scan from 35 descends to the leaf [30 40], reads 40, and follows the links to read 50, 60, 70, 80 without returning to the root.",
+        text: "Note that 30, 50 and 70 appear twice — once as a separator and once in a leaf — which is how a B+ tree differs from a B-tree. The scan from 35 descends to the leaf [30 40], reads 40, and follows the links to read 50, 60, 70, 80 without returning to the root. The fourth preset deletes 30, 40, 10, 80 and 70: three leaf merges and one borrow later, the root has no separators left and the tree shrinks back to the single leaf [20 50 60].",
       },
     ],
     implementation: [
@@ -75,7 +76,7 @@ export const bPlusTreeEntry: AlgorithmEntry = {
         items: [
           "Internal nodes carry only keys and child pointers, so more of them fit in a page: higher fan-out and a shallower tree than a B-tree storing records everywhere.",
           "Leaves often keep both next and previous links, for scans in either direction (e.g. `ORDER BY … DESC`).",
-          "**Deletion** (not shown in this visualizer) removes the key from its leaf, then borrows from or merges with a sibling leaf if the leaf falls below half full, updating or removing a separator in the parent; separators may lag behind deleted keys without harming correctness.",
+          "After a deletion a separator may no longer appear in any leaf (deleting 30 leaves the separator 30 in place if no merge happens); that is harmless, because separators only have to divide the key ranges correctly.",
           "**Bulk loading** sorted data builds the leaves left to right and the index on top, much faster than repeated inserts.",
           "Used by InnoDB (MySQL), PostgreSQL's B-tree indexes (a B+ variant with Lehman–Yao links), SQLite tables, and file systems such as NTFS and XFS.",
         ],

@@ -160,6 +160,22 @@ export class TracedMultiTree {
     to.kids.splice(at, 0, ...moving);
   }
 
+  /**
+   * Re-hang children so that nodes[i].kids becomes groups[i] (same left-to-right order
+   * overall), moving only the children whose parent or position changes.
+   */
+  rehang(nodes: BNode[], groups: BNode[][], meta?: MetaArg): void {
+    nodes.forEach((t, i) => {
+      groups[i]!.forEach((child, p) => {
+        if (t.kids[p] === child) return;
+        const from = nodes.find((n) => n.kids.includes(child))!;
+        from.kids.splice(from.kids.indexOf(child), 1);
+        t.kids.splice(p, 0, child);
+        this.T.move(child.id, t.id, p, meta);
+      });
+    });
+  }
+
   /** Remove a node that has no children (after a merge, or an emptied root). */
   removeLeaf(parent: BNode | null, n: BNode, meta?: MetaArg): void {
     if (parent) parent.kids.splice(parent.kids.indexOf(n), 1);
@@ -202,6 +218,7 @@ export function checkMultiway(
   minKeys: number,
   maxKeys: number,
   separatorsCopied = false,
+  rootMax = maxKeys,
 ): string | null {
   if (!s) return null;
   let leafDepth = -1;
@@ -220,7 +237,8 @@ export function checkMultiway(
       if (!(separatorsCopied ? k >= lo : k > lo) || !(k < hi))
         return `key ${k} is outside its range`;
     }
-    if (n.keys.length > maxKeys) return `[${n.keys}] holds more than ${maxKeys} keys`;
+    const most = isRoot ? rootMax : maxKeys;
+    if (n.keys.length > most) return `[${n.keys}] holds more than ${most} keys`;
     if (!isRoot && n.keys.length < minKeys) return `[${n.keys}] holds fewer than ${minKeys} keys`;
     if (isRoot && n.keys.length === 0) return "the root is empty";
     if (!n.children.length) {

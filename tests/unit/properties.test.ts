@@ -56,6 +56,7 @@ import { aaTree } from "@/algorithms/trees/balanced/aa";
 import { scapegoatTree } from "@/algorithms/trees/balanced/scapegoat";
 import { bTree } from "@/algorithms/trees/btree/btree";
 import { bPlusTree } from "@/algorithms/trees/btree/bplus";
+import { bStarTree, bStarLimits } from "@/algorithms/trees/btree/bstar";
 import { morrisTraversal } from "@/algorithms/trees/morris";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
@@ -2268,11 +2269,53 @@ describe("B-tree properties", () => {
           }
   });
 
+  it("B* trees keep non-root nodes at least two-thirds full under random inserts", () => {
+    fc.assert(
+      fc.property(
+        fc.constantFrom(3, 4, 5),
+        fc.uniqueArray(fc.integer({ min: 0, max: 99 }), { minLength: 1, maxLength: 24 }),
+        (size, keys) => {
+          const value = { size, ops: keys.map((v) => ({ name: "insert", value: v })) };
+          const { output } = runAlgorithm(bStarTree, value, { mode: "count" });
+          expect(bStarTree.check(value, output)).toBeNull();
+          const { min } = bStarLimits(size);
+          const walk = (n: typeof output.tree, root: boolean): void => {
+            if (!n) return;
+            if (!root) expect(n.keys.length).toBeGreaterThanOrEqual(min);
+            n.children.forEach((c) => walk(c, false));
+          };
+          walk(output.tree, true);
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("B+ trees survive deleting every key in random order, keeping the leaf chain", () => {
+    const plan = fc
+      .uniqueArray(fc.integer({ min: 0, max: 60 }), { minLength: 4, maxLength: 16 })
+      .chain((keys) =>
+        fc.tuple(fc.constant(keys), fc.shuffledSubarray(keys, { minLength: keys.length })),
+      );
+    fc.assert(
+      fc.property(fc.constantFrom(3, 4), plan, (size, [keys, order]) => {
+        const ops: ContainerOp[] = keys.map((value) => ({ name: "insert", value }));
+        for (const value of order) {
+          ops.push({ name: "delete", value });
+          const v = { size, ops: [...ops] };
+          const { output } = runAlgorithm(bPlusTree, v, { mode: "count" });
+          expect(bPlusTree.check(v, output)).toBeNull();
+        }
+      }),
+      { numRuns: 120 },
+    );
+  });
+
   it("B+ trees agree with bottom-up insertion and keep a sorted leaf chain", () => {
     const list = fc.array(
       fc.record({
-        name: fc.constantFrom("insert", "insert", "insert", "search", "scan"),
-        value: fc.integer({ min: 0, max: 50 }),
+        name: fc.constantFrom("insert", "insert", "insert", "delete", "search", "scan"),
+        value: fc.integer({ min: 0, max: 40 }),
       }),
       { minLength: 1, maxLength: 24 },
     ) as fc.Arbitrary<ContainerOp[]>;

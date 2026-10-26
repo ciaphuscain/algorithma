@@ -168,6 +168,7 @@ describe("catalog search", () => {
       "aho-corasick",
       "avl-tree",
       "b-plus-tree",
+      "b-star-tree",
       "b-tree",
       "balanced-brackets",
       "bfs",
@@ -247,6 +248,7 @@ describe("catalog search", () => {
       "aa-tree",
       "avl-tree",
       "b-plus-tree",
+      "b-star-tree",
       "b-tree",
       "binary-heap",
       "binary-search",
@@ -1729,6 +1731,28 @@ describe("worked examples agree with the engine", () => {
     expect(run("b-plus-tree", 3, "", scanOps("i10 i20 i30 i40 i50 i60")).shape).toBe(
       "[30 50]([10 20],[30 40],[50 60])",
     );
+    const bpDel = run("b-plus-tree", 3, "", [
+      ...scanOps("i10 i20 i30 i40 i50 i60 i70 i80"),
+      ...[30, 40, 10, 80, 70].map((value) => ({ name: "delete", value })),
+    ]);
+    expect([bpDel.shape, (bpDel as unknown as { merges: number }).merges]).toEqual([
+      "[20 50 60]",
+      3,
+    ]);
+
+    const star = (size: number, text: string) =>
+      run("b-star-tree", size, text) as unknown as {
+        shape: string;
+        shifts: number;
+        splits: number;
+      };
+    expect(star(3, "i10 i20 i30 i40").shape).toBe("[10 20 30 40]");
+    expect(star(3, "i10 i20 i30 i40 i50").shape).toBe("[30]([10 20],[40 50])");
+    expect(star(3, "i10 i20 i30 i40 i50 i60 i70").shape).toBe("[40]([10 20 30],[50 60 70])");
+    const s80 = star(3, "i10 i20 i30 i40 i50 i60 i70 i80");
+    expect([s80.shape, s80.shifts, s80.splits]).toEqual(["[30 60]([10 20],[40 50],[70 80])", 1, 2]);
+    const m5 = star(5, "i5 i10 i15 i20 i25 i30 i35 i40 i45 i50 i55 i60 i65 i70 i75 i80");
+    expect([m5.shifts, m5.splits]).toEqual([4, 3]);
   });
 
   it("AA and scapegoat lessons (batch V): worked examples match the engine", async () => {

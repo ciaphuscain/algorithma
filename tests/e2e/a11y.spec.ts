@@ -35,6 +35,7 @@ for (const path of [
   "/algorithms/scapegoat-tree",
   "/algorithms/b-tree",
   "/algorithms/b-plus-tree",
+  "/algorithms/b-star-tree",
   "/algorithms/heap-sort",
   "/algorithms/binary-search",
   "/algorithms/dfs",
