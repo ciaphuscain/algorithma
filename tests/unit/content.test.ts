@@ -167,6 +167,8 @@ describe("catalog search", () => {
       "aa-tree",
       "aho-corasick",
       "avl-tree",
+      "b-plus-tree",
+      "b-tree",
       "balanced-brackets",
       "bfs",
       "binary-heap",
@@ -244,6 +246,8 @@ describe("catalog search", () => {
     expect(slugs({ maxWorst: "log n" }).sort()).toEqual([
       "aa-tree",
       "avl-tree",
+      "b-plus-tree",
+      "b-tree",
       "binary-heap",
       "binary-search",
       "circular-queue",
@@ -1674,6 +1678,57 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("B-tree lessons (batch W): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { bOps, showShape } = await import("@/algorithms/trees/btree/common");
+    const run = (id: string, size: number, text: string, ops?: unknown) => {
+      const r = runAlgorithm(getModule(id)!, { size, ops: ops ?? bOps(text) });
+      const o = r.output as {
+        tree: never;
+        height: number;
+        results: string[];
+        splits: number;
+        merges?: number;
+      };
+      return { ...o, shape: showShape(o.tree) };
+    };
+    const grow = run("b-tree", 2, "i10 i20 i30 i40 i50 i60 i70 i80 i90");
+    expect([grow.shape, grow.height, grow.splits]).toEqual([
+      "[40]([20]([10],[30]),[60]([50],[70 80 90]))",
+      3,
+      4,
+    ]);
+    expect(run("b-tree", 2, "i10 i20 i30 i40").shape).toBe("[20]([10],[30 40])");
+    expect(run("b-tree", 2, "i10 i20 i30 i40 i50 i60").shape).toBe("[20 40]([10],[30],[50 60])");
+    expect(run("b-tree", 2, "i10 i20 i30 i40 i50 i60 i70 i80").shape).toBe(
+      "[20 40 60]([10],[30],[50],[70 80])",
+    );
+    const t3 = run("b-tree", 3, "i5 i15 i25 i35 i45 i55 i65 i75 i85 i95 i3 i8");
+    expect([t3.height, t3.splits]).toEqual([2, 2]);
+    const del = run("b-tree", 2, "i10 i20 i30 i40 i50 i60 i70 i80 i90 d60 d70 d10 d50 d20");
+    expect([del.shape, del.merges]).toEqual(["[80]([30 40],[90])", 3]);
+    expect(run("b-tree", 2, "i10 i20 i30 i40 i5").shape).toBe("[20]([5 10],[30 40])");
+    expect(run("b-tree", 2, "i10 i20 i30 i40 i5 d20").shape).toBe("[10]([5],[30 40])");
+
+    const scanOps = (text: string) =>
+      text.split(" ").map((w) => ({
+        name: { i: "insert", s: "search", r: "scan" }[w[0] as "i"],
+        value: Number(w.slice(1)),
+      }));
+    const bp = run("b-plus-tree", 3, "", scanOps("i10 i20 i30 i40 i50 i60 i70 i80 r35"));
+    expect([bp.shape, bp.splits, bp.results.at(-1)]).toEqual([
+      "[30 50 70]([10 20],[30 40],[50 60],[70 80])",
+      3,
+      "40 50 60 70 80",
+    ]);
+    expect(run("b-plus-tree", 3, "", scanOps("i10 i20 i30 i40")).shape).toBe(
+      "[30]([10 20],[30 40])",
+    );
+    expect(run("b-plus-tree", 3, "", scanOps("i10 i20 i30 i40 i50 i60")).shape).toBe(
+      "[30 50]([10 20],[30 40],[50 60])",
+    );
   });
 
   it("AA and scapegoat lessons (batch V): worked examples match the engine", async () => {

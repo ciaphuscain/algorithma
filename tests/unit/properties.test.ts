@@ -54,6 +54,8 @@ import { splayTree } from "@/algorithms/trees/balanced/splay";
 import { treap } from "@/algorithms/trees/balanced/treap";
 import { aaTree } from "@/algorithms/trees/balanced/aa";
 import { scapegoatTree } from "@/algorithms/trees/balanced/scapegoat";
+import { bTree } from "@/algorithms/trees/btree/btree";
+import { bPlusTree } from "@/algorithms/trees/btree/bplus";
 import { morrisTraversal } from "@/algorithms/trees/morris";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
@@ -2196,6 +2198,92 @@ describe("balanced search tree properties", () => {
         expect(morris.inorder).toEqual(rec.inorder);
       }),
       { numRuns: 200 },
+    );
+  });
+});
+
+describe("B-tree properties", () => {
+  it("B-trees keep their invariants under random inserts, deletes and searches, for t = 2 and 3", () => {
+    const list = fc.array(
+      fc.record({
+        name: fc.constantFrom("insert", "insert", "insert", "delete", "search"),
+        value: fc.integer({ min: 0, max: 30 }),
+      }),
+      { minLength: 1, maxLength: 24 },
+    ) as fc.Arbitrary<ContainerOp[]>;
+    fc.assert(
+      fc.property(fc.constantFrom(2, 3), list, (size, ops) => {
+        const value = { size, ops };
+        const { output } = runAlgorithm(bTree, value, { mode: "count" });
+        expect(bTree.check(value, output)).toBeNull();
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("B-trees survive deleting every key in random order", () => {
+    const plan = fc
+      .uniqueArray(fc.integer({ min: 0, max: 60 }), { minLength: 4, maxLength: 14 })
+      .chain((keys) =>
+        fc.tuple(fc.constant(keys), fc.shuffledSubarray(keys, { minLength: keys.length })),
+      );
+    fc.assert(
+      fc.property(fc.constantFrom(2, 3), plan, (size, [keys, order]) => {
+        const ops: ContainerOp[] = [
+          ...keys.map((value) => ({ name: "insert", value })),
+          ...order.map((value) => ({ name: "delete", value })),
+        ];
+        const value = { size, ops };
+        const { output } = runAlgorithm(bTree, value, { mode: "count" });
+        expect(bTree.check(value, output)).toBeNull();
+        expect(output.tree).toBeNull();
+      }),
+      { numRuns: 200 },
+    );
+  });
+
+  it("B-trees delete every key correctly from trees built in several insertion orders", () => {
+    // Exhaustive and deterministic: reaches the case where both children around an
+    // internal key are rich enough to give a predecessor or successor.
+    const orders = (n: number) => {
+      const up = Array.from({ length: n }, (_, i) => i + 1);
+      const outside = up.flatMap((_, i) => (i % 2 ? [] : [up[i >> 1]!, up[n - 1 - (i >> 1)]!]));
+      return [
+        up,
+        [...up].reverse(),
+        [...new Set(outside)].concat(up).filter((v, i, a) => a.indexOf(v) === i),
+      ];
+    };
+    for (const size of [2, 3])
+      for (let n = 1; n <= 16; n++)
+        for (const order of orders(n))
+          for (let k = 1; k <= n; k++) {
+            const ops: ContainerOp[] = [
+              ...order.map((value) => ({ name: "insert", value })),
+              { name: "delete", value: k },
+            ];
+            const value = { size, ops };
+            const { output } = runAlgorithm(bTree, value, { mode: "count" });
+            expect(bTree.check(value, output), `t=${size} n=${n} delete ${k}`).toBeNull();
+          }
+  });
+
+  it("B+ trees agree with bottom-up insertion and keep a sorted leaf chain", () => {
+    const list = fc.array(
+      fc.record({
+        name: fc.constantFrom("insert", "insert", "insert", "search", "scan"),
+        value: fc.integer({ min: 0, max: 50 }),
+      }),
+      { minLength: 1, maxLength: 24 },
+    ) as fc.Arbitrary<ContainerOp[]>;
+    fc.assert(
+      fc.property(fc.constantFrom(3, 4), list, (size, ops) => {
+        const value = { size, ops };
+        const { output } = runAlgorithm(bPlusTree, value, { mode: "count" });
+        expect(bPlusTree.check(value, output)).toBeNull();
+        expect(output.leaves).toEqual([...output.leaves].sort((a, b) => a - b));
+      }),
+      { numRuns: 300 },
     );
   });
 });

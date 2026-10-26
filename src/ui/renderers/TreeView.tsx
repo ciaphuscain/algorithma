@@ -6,7 +6,8 @@ const SLOT = 52;
 const LEVEL = 74;
 const R = 18;
 
-const MAX_LABEL = 10;
+/** Long enough for a B-tree node of five two-digit keys ("35·45·55·65·75"). */
+const MAX_LABEL = 16;
 /** Values of up to 3 characters sit in a circle; longer ones get a pill that fits them. */
 const label = (v: unknown) => {
   const s = v === null ? "" : String(v);

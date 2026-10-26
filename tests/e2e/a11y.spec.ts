@@ -33,6 +33,8 @@ for (const path of [
   "/algorithms/red-black-tree",
   "/algorithms/aa-tree",
   "/algorithms/scapegoat-tree",
+  "/algorithms/b-tree",
+  "/algorithms/b-plus-tree",
   "/algorithms/heap-sort",
   "/algorithms/binary-search",
   "/algorithms/dfs",
