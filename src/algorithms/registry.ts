@@ -106,6 +106,9 @@ import { bTree } from "./trees/btree/btree";
 import { bPlusTree } from "./trees/btree/bplus";
 import { bStarTree } from "./trees/btree/bstar";
 import { leftistHeap, skewHeap } from "./heaps/meldable";
+import { binomialHeap } from "./heaps/binomial";
+import { fibonacciHeap } from "./heaps/fibonacci";
+import { pairingHeap } from "./heaps/pairing";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -154,6 +157,9 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   bStarTree,
   leftistHeap,
   skewHeap,
+  binomialHeap,
+  fibonacciHeap,
+  pairingHeap,
   mergeSort,
   quickSort,
   heapSort,

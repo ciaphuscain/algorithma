@@ -97,6 +97,9 @@ import { minStackEntry } from "./entries/min-stack";
 import { circularQueueEntry } from "./entries/circular-queue";
 import { dequeEntry } from "./entries/deque";
 import { binaryHeapEntry } from "./entries/binary-heap";
+import { binomialHeapEntry } from "./entries/binomial-heap";
+import { fibonacciHeapEntry } from "./entries/fibonacci-heap";
+import { pairingHeapEntry } from "./entries/pairing-heap";
 import { leftistHeapEntry } from "./entries/leftist-heap";
 import { skewHeapEntry } from "./entries/skew-heap";
 import { morrisTraversalEntry } from "./entries/morris-traversal";
@@ -148,6 +151,9 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   circularQueueEntry,
   dequeEntry,
   binaryHeapEntry,
+  binomialHeapEntry,
+  fibonacciHeapEntry,
+  pairingHeapEntry,
   leftistHeapEntry,
   skewHeapEntry,
   morrisTraversalEntry,

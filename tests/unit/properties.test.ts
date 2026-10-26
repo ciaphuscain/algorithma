@@ -58,6 +58,10 @@ import { bTree } from "@/algorithms/trees/btree/btree";
 import { bPlusTree } from "@/algorithms/trees/btree/bplus";
 import { bStarTree, bStarLimits } from "@/algorithms/trees/btree/bstar";
 import { leftistHeap, skewHeap } from "@/algorithms/heaps/meldable";
+import { binomialHeap } from "@/algorithms/heaps/binomial";
+import { fibonacciHeap } from "@/algorithms/heaps/fibonacci";
+import { pairingHeap } from "@/algorithms/heaps/pairing";
+import type { HeapOp } from "@/algorithms/heaps/forest";
 import { morrisTraversal } from "@/algorithms/trees/morris";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
@@ -2384,5 +2388,66 @@ describe("meldable heap properties", () => {
       ),
       { numRuns: 200 },
     );
+  });
+});
+
+describe("forest heap properties", () => {
+  // Commands become operations against the keys present at the time, so most
+  // decrease-keys are valid and land deep inside the trees.
+  const plan = fc.array(
+    fc.tuple(fc.constantFrom("i", "i", "i", "x", "d", "d", "p"), fc.nat(1000), fc.nat(1000)),
+    { minLength: 1, maxLength: 20 },
+  );
+  const toOps = (cmds: [string, number, number][]): HeapOp[] => {
+    const keys = new Set<number>();
+    const ops: HeapOp[] = [];
+    for (const [c, a, b] of cmds) {
+      if (c === "i") {
+        const v = 10 + (a % 90);
+        ops.push({ name: "insert", value: v });
+        keys.add(v);
+      } else if (c === "x") {
+        ops.push({ name: "extract" });
+        if (keys.size) keys.delete(Math.min(...keys));
+      } else if (c === "p") ops.push({ name: "peek" });
+      else if (keys.size) {
+        const list = [...keys];
+        const k = list[a % list.length]!;
+        if (k === 0) continue;
+        const v = b % k;
+        ops.push({ name: "decrease", value: k, to: v });
+        if (!keys.has(v)) {
+          keys.delete(k);
+          keys.add(v);
+        }
+      }
+    }
+    return ops;
+  };
+
+  it("binomial, Fibonacci and pairing heaps match their models and invariants", () => {
+    for (const m of [binomialHeap, fibonacciHeap, pairingHeap])
+      fc.assert(
+        fc.property(plan, (cmds) => {
+          const ops = toOps(cmds as [string, number, number][]);
+          const { output } = runAlgorithm(m as never, ops, { mode: "count" });
+          expect(
+            (m.check as (a: unknown, b: unknown) => string | null)(ops, output),
+            m.id,
+          ).toBeNull();
+        }),
+        { numRuns: 300 },
+      );
+  });
+
+  it("a binomial heap of n keys has one tree per 1 bit of n", () => {
+    for (let n = 1; n <= 20; n++) {
+      const ops: HeapOp[] = Array.from({ length: n }, (_, i) => ({
+        name: "insert",
+        value: (i * 37) % 97,
+      }));
+      const { output } = runAlgorithm(binomialHeap, ops, { mode: "count" });
+      expect(output.forest.length).toBe(n.toString(2).replaceAll("0", "").length);
+    }
   });
 });

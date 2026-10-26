@@ -175,6 +175,7 @@ describe("catalog search", () => {
       "binary-heap",
       "binary-lifting",
       "binary-search",
+      "binomial-heap",
       "bridges-articulation",
       "bst",
       "circular-queue",
@@ -192,6 +193,7 @@ describe("catalog search", () => {
       "expression-tree",
       "fenwick-tree",
       "fft",
+      "fibonacci-heap",
       "floyd-cycle",
       "graham-scan",
       "hash-chaining",
@@ -217,6 +219,7 @@ describe("catalog search", () => {
       "morris-traversal",
       "ntt",
       "open-addressing",
+      "pairing-heap",
       "postfix-evaluation",
       "prefix-sums",
       "prim",
@@ -254,6 +257,7 @@ describe("catalog search", () => {
       "b-tree",
       "binary-heap",
       "binary-search",
+      "binomial-heap",
       "circular-queue",
       "consistent-hashing",
       "crt",
@@ -1683,6 +1687,54 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("forest heap lessons (batch Z): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { heapOps, showForest } = await import("@/algorithms/heaps/forest");
+    const run = (id: string, text: string) => {
+      const r = runAlgorithm(getModule(id)!, heapOps(text));
+      const o = r.output as {
+        forest: never;
+        results: unknown[];
+        links?: number;
+        cuts?: number;
+        melds?: number;
+      };
+      return { ...o, shape: showForest(o.forest) };
+    };
+    const ins = "i8 i3 i12 i5 i9 i1 i7 i4".split(" ");
+    const after = (n: number) => run("binomial-heap", ins.slice(0, n).join(" "));
+    expect([1, 2, 3, 4, 6, 7, 8].map((n) => after(n).shape)).toEqual([
+      "8",
+      "3(8)",
+      "12 3(8)",
+      "3(5(12) 8)",
+      "1(9) 3(5(12) 8)",
+      "7 1(9) 3(5(12) 8)",
+      "1(3(5(12) 8) 4(7) 9)",
+    ]);
+    expect(after(8).links).toBe(7);
+    expect(run("binomial-heap", "i8 i3 i12 i5 i9 i1 i7 i4 x").links).toBe(7);
+    expect(run("binomial-heap", "i8 i3 i12 i5 i9 i1 i7 i4 x x").links).toBe(9);
+
+    const lazy = run("fibonacci-heap", "i7 i3 i9 i5 i1 i8 i6 i4 x");
+    expect([lazy.shape, lazy.links]).toEqual(["4 6(8) 3[min](7 5(9))", 4]);
+    const base = "i70 i30 i90 i50 i10 i80 i60 i40 i20 x";
+    expect(run("fibonacci-heap", base)).toMatchObject({
+      shape: "20[min](40 60(80) 30(70 50(90)))",
+      links: 7,
+    });
+    expect(run("fibonacci-heap", `${base} d70:5`).shape).toBe(
+      "20(40 60(80) 30[marked](50(90))) 5[min]",
+    );
+    const cascade = run("fibonacci-heap", `${base} d70:5 d90:3 d50:1`);
+    expect([cascade.shape, cascade.cuts]).toEqual(["20(40 60(80)) 5 3 1[min] 30", 4]);
+
+    expect(run("pairing-heap", "i5 i8 i3 i9 i7 i6 i4 i2").shape).toBe("2(3(4 6 7 9 5(8)))");
+    expect(run("pairing-heap", "i5 i8 i3 i9 i7 i6 i4 i2 x").shape).toBe("3(4 6 7 9 5(8))");
+    const two = run("pairing-heap", "i5 i8 i3 i9 i7 i6 i4 i2 x x");
+    expect([two.shape, two.melds]).toEqual(["4(5(7(9) 8) 6)", 11]);
   });
 
   it("meldable heap lessons (batch Y): worked examples match the engine", async () => {
