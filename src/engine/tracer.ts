@@ -21,7 +21,7 @@ import {
   type TreeStructure,
   type VarValue,
 } from "./protocol";
-import { emptyTree, treeAdd, treeMove, treeRemove, treeRotate, treeSplice } from "./tree";
+import { emptyTree, treeAdd, treeMove, treeRemove, treeRotate, treeSplice, treeSwap } from "./tree";
 
 /**
  * Metadata for an operation. A function is evaluated only when the tracer records,
@@ -685,6 +685,12 @@ export class TracedTree {
       },
       meta,
     );
+  }
+
+  /** Exchange two nodes, each with its subtree. */
+  swap(a: string, b: string, meta?: MetaArg): void {
+    treeSwap(this.t, a, b);
+    this.tracer.emit({ type: "tree.swap", s: this.name, a, b }, meta);
   }
 
   /** Binary trees: rotate at `id`; returns the child that moved up into its place. */

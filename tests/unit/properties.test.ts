@@ -57,6 +57,7 @@ import { scapegoatTree } from "@/algorithms/trees/balanced/scapegoat";
 import { bTree } from "@/algorithms/trees/btree/btree";
 import { bPlusTree } from "@/algorithms/trees/btree/bplus";
 import { bStarTree, bStarLimits } from "@/algorithms/trees/btree/bstar";
+import { leftistHeap, skewHeap } from "@/algorithms/heaps/meldable";
 import { morrisTraversal } from "@/algorithms/trees/morris";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
@@ -2327,6 +2328,61 @@ describe("B-tree properties", () => {
         expect(output.leaves).toEqual([...output.leaves].sort((a, b) => a - b));
       }),
       { numRuns: 300 },
+    );
+  });
+});
+
+describe("meldable heap properties", () => {
+  const list = fc.array(
+    fc.oneof(
+      fc.record({ name: fc.constant("insert"), value: fc.integer({ min: 0, max: 30 }) }),
+      fc.record({ name: fc.constantFrom("extract", "peek") }),
+    ),
+    { minLength: 1, maxLength: 18 },
+  ) as fc.Arbitrary<ContainerOp[]>;
+
+  it("leftist and skew heaps match their recursive models on random operation sequences", () => {
+    for (const m of [leftistHeap, skewHeap])
+      fc.assert(
+        fc.property(list, (ops) => {
+          const { output } = runAlgorithm(m, ops, { mode: "count" });
+          expect(m.check(ops, output)).toBeNull();
+        }),
+        { numRuns: 300 },
+      );
+  });
+
+  it("draining a leftist or skew heap returns the keys in sorted order", () => {
+    for (const m of [leftistHeap, skewHeap])
+      fc.assert(
+        fc.property(
+          fc.array(fc.integer({ min: 0, max: 99 }), { minLength: 1, maxLength: 9 }),
+          (xs) => {
+            const ops: ContainerOp[] = [
+              ...xs.map((value) => ({ name: "insert", value })),
+              ...xs.map(() => ({ name: "extract" })),
+            ];
+            const { output } = runAlgorithm(m, ops, { mode: "count" });
+            expect(output.results.slice(xs.length)).toEqual([...xs].sort((a, b) => a - b));
+          },
+        ),
+        { numRuns: 200 },
+      );
+  });
+
+  it("a leftist heap's right spine has at most ⌊log2(n + 1)⌋ nodes", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 0, max: 99 }), { minLength: 1, maxLength: 18 }),
+        (xs) => {
+          const ops: ContainerOp[] = xs.map((value) => ({ name: "insert", value }));
+          const { output } = runAlgorithm(leftistHeap, ops, { mode: "count" });
+          let spine = 0;
+          for (let s = output.tree; s; s = s.right) spine++;
+          expect(spine).toBeLessThanOrEqual(Math.floor(Math.log2(xs.length + 1)));
+        },
+      ),
+      { numRuns: 200 },
     );
   });
 });

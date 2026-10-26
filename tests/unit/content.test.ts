@@ -201,6 +201,7 @@ describe("catalog search", () => {
       "kmp",
       "kosaraju",
       "kruskal",
+      "leftist-heap",
       "linear-search",
       "lis",
       "list-two-pointers",
@@ -228,6 +229,7 @@ describe("catalog search", () => {
       "scapegoat-tree",
       "segment-tree",
       "shunting-yard",
+      "skew-heap",
       "sliding-window",
       "sparse-table",
       "splay-tree",
@@ -258,6 +260,7 @@ describe("catalog search", () => {
       "cuckoo-hashing",
       "euclid",
       "fenwick-tree",
+      "leftist-heap",
       "matrix-exponentiation",
       "miller-rabin",
       "min-stack",
@@ -1680,6 +1683,52 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("meldable heap lessons (batch Y): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    type S = { key: number; left: S | null; right: S | null } | null;
+    const show = (s: S): string =>
+      s ? (s.left || s.right ? `${s.key}(${show(s.left)}, ${show(s.right)})` : `${s.key}`) : "·";
+    const all = "i5 i9 i2 i7 i1 i8 i3 x x p"
+      .split(" ")
+      .map((w) =>
+        w === "x"
+          ? { name: "extract" }
+          : w === "p"
+            ? { name: "peek" }
+            : { name: "insert", value: Number(w.slice(1)) },
+      );
+    const at = (id: string, n: number) =>
+      show((runAlgorithm(getModule(id)!, all.slice(0, n)).output as { tree: S }).tree);
+    expect([2, 3, 4, 6, 7, 8, 9].map((n) => at("leftist-heap", n))).toEqual([
+      "5(9, ·)",
+      "2(5(9, ·), ·)",
+      "2(5(9, ·), 7)",
+      "1(2(5(9, ·), 7), 8)",
+      "1(2(5(9, ·), 7), 3(8, ·))",
+      "2(3(8, 7), 5(9, ·))",
+      "3(5(9, 7), 8)",
+    ]);
+    expect([2, 3, 4, 5, 6, 7, 8, 9].map((n) => at("skew-heap", n))).toEqual([
+      "5(9, ·)",
+      "2(5(9, ·), ·)",
+      "2(7, 5(9, ·))",
+      "1(2(7, 5(9, ·)), ·)",
+      "1(8, 2(7, 5(9, ·)))",
+      "1(2(3(5(9, ·), ·), 7), 8)",
+      "2(7(8, ·), 3(5(9, ·), ·))",
+      "3(7(8, ·), 5(9, ·))",
+    ]);
+    for (const id of ["leftist-heap", "skew-heap"]) {
+      const r = runAlgorithm(getModule(id)!, all);
+      const o = r.output as { results: unknown[]; pathNodes: number };
+      expect([o.results.slice(7), o.pathNodes, r.trace.meta.counters.comparisons]).toEqual([
+        [1, 2, 3],
+        11,
+        11,
+      ]);
+    }
   });
 
   it("B-tree lessons (batch W): worked examples match the engine", async () => {

@@ -11,6 +11,7 @@ import {
   treeRemove,
   treeRotate,
   treeSplice,
+  treeSwap,
 } from "./tree";
 import { validateTrace } from "./validate";
 
@@ -128,6 +129,26 @@ describe("tree operations", () => {
     expect(() => treeRotate(g, "r", "left")).toThrow(/binary tree/);
   });
 
+  it("swaps two subtrees, including siblings and the root's children, but never nested ones", () => {
+    const t = bst([8, 3, 10, 1, 6, 14]);
+    treeSwap(t, "n1", "n2"); // the root's two children trade places
+    expect(t.nodes.n0!.children).toEqual(["n2", "n1"]);
+    expect(t.nodes.n1!.children).toEqual(["n3", "n4"]);
+    treeSwap(t, "n3", "n5"); // cousins: 1 (under 3) and 14 (under 10)
+    expect(t.nodes.n1!.children).toEqual(["n5", "n4"]);
+    expect(t.nodes.n2!.children).toEqual([null, "n3"]);
+    expect(checkTreeShape(t)).toBeNull();
+    expect(() => treeSwap(t, "n0", "n4")).toThrow(/inside the other's subtree/);
+    expect(() => treeSwap(t, "n4", "n1")).toThrow(/inside the other's subtree/);
+    expect(() => treeSwap(t, "n4", "zz")).toThrow(/unknown tree node/);
+    treeSwap(t, "n4", "n4");
+    const g = emptyTree(false);
+    treeAdd(g, "r", 0, null);
+    for (const id of ["a", "b", "c"]) treeAdd(g, id, id, "r");
+    treeSwap(g, "a", "c");
+    expect(g.nodes.r!.children).toEqual(["c", "b", "a"]);
+  });
+
   it("detects broken shapes", () => {
     const t = bst([2, 1, 3]);
     expect(
@@ -159,6 +180,8 @@ function treeTrace(): Trace {
   const x = T.add(1, "n0", 0);
   T.move(x, "n3", 1);
   T.rotate("n0", "left", { note: "rotate" });
+  T.add(2, "n0", 0);
+  T.swap("n5", "n4", { note: "swap" });
   return t.finish(null, null);
 }
 
@@ -169,10 +192,10 @@ describe("tree traces", () => {
     const player = new TracePlayer(trace, { keyframeInterval: 3 });
     for (let p = player.length; p >= 0; p--) expect(player.stateAt(p)).toEqual(ref.stateAt(p));
     const final = player.finalState().structures.T as TreeStructure;
-    expect(inorder(final)).toEqual([5, 7, 1]);
+    expect(inorder(final)).toEqual([1, 5, 7, 2]); // after the swap of 2 and 1
     expect(final.root).toBe("n3"); // the rotation lifted 7 above 5
     expect(final.annotations).toEqual({ n0: "root" });
-    expect(player.finalState().counters).toMatchObject({ comparisons: 1, writes: 6 });
+    expect(player.finalState().counters).toMatchObject({ comparisons: 1, writes: 7 });
   });
 
   it("validates through JSON and rejects impossible tree edits", () => {
@@ -205,6 +228,17 @@ describe("tree traces", () => {
     const r2 = validateTrace(odd);
     expect(r2.ok).toBe(false);
     if (!r2.ok) expect(r2.errors.join()).toMatch(/dir: missing or invalid/);
+    const nested = JSON.parse(JSON.stringify(treeTrace()));
+    nested.events.splice(nested.events.length - 1, 0, {
+      type: "tree.swap",
+      s: "T",
+      a: "n3",
+      b: "n0",
+    });
+    nested.meta.eventCount += 1;
+    const r3 = validateTrace(nested);
+    expect(r3.ok).toBe(false);
+    if (!r3.ok) expect(r3.errors[0]).toMatch(/inside the other's subtree/);
   });
 
   it("rejects malformed initial trees and unknown tree fields", () => {

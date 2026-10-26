@@ -145,6 +145,26 @@ export function treeMove(t: TreeStructure, node: string, parent: string, slot?: 
 }
 
 /**
+ * Exchange two nodes, each with its whole subtree: each takes the other's place (slot or
+ * root). Neither may lie inside the other's subtree.
+ */
+export function treeSwap(t: TreeStructure, a: string, b: string): void {
+  requireNode(t, a);
+  requireNode(t, b);
+  if (a === b) return;
+  if (inSubtree(t, a, b) || inSubtree(t, b, a))
+    throw new Error(`cannot swap "${a}" and "${b}": one is inside the other's subtree`);
+  const pa = findParent(t, a);
+  const pb = findParent(t, b);
+  if (pa === null && t.root !== a) throw new Error(`tree node "${a}" is not attached`);
+  if (pb === null && t.root !== b) throw new Error(`tree node "${b}" is not attached`);
+  if (pa) t.nodes[pa.parent]!.children[pa.slot] = b;
+  else t.root = b;
+  if (pb) t.nodes[pb.parent]!.children[pb.slot] = a;
+  else t.root = a;
+}
+
+/**
  * Rotate a binary tree at `node`. Left: its right child y takes its place, `node`
  * becomes y's left child, and y's old left subtree becomes `node`'s right subtree.
  * Right is the mirror image. In-order is unchanged; this works at the root too.

@@ -362,6 +362,7 @@ const EVENT_FIELDS: Record<TraceEvent["type"], Record<string, (v: unknown) => bo
   "tree.remove": { s: isStr, node: isStr },
   "tree.splice": { s: isStr, node: isStr },
   "tree.move": { s: isStr, node: isStr, parent: isStr },
+  "tree.swap": { s: isStr, a: isStr, b: isStr },
   "tree.rotate": { s: isStr, node: isStr, dir: oneOf(["left", "right"] as const) },
   "plane.point": { s: isStr, point: isStr, status: oneOf(NODE_STATUSES) },
   "plane.annotate": { s: isStr, point: isStr, text: (v) => v === null || isStr(v) },

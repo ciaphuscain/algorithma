@@ -6,11 +6,11 @@ ALGORITHMA is an algorithm encyclopedia whose entries can be run. Pick an algori
 
 ## What is here
 
-- **106 interactive algorithms**, covering every Tier 1, 2 and 3 item of the curriculum and more:
+- **108 interactive algorithms**, covering every Tier 1, 2 and 3 item of the curriculum and more:
   - searching and sorting: linear and binary search; bubble, selection, insertion, Shell, merge, quick and heap sort; counting and radix sort; randomized quickselect;
   - linked lists: reversal (whole and in groups of k), Floyd's cycle detection, merging sorted lists, two-pointer techniques (palindrome, rotate, remove n-th from end), copying a list with random pointers;
   - stacks: balanced brackets, infix to postfix (shunting-yard), postfix and prefix evaluation, expression trees, Tower of Hanoi;
-  - queues and heaps: queue from two stacks and stack from a queue, min/max stack, circular queue (ring buffer), deque, binary heap (priority queue);
+  - queues and heaps: queue from two stacks and stack from a queue, min/max stack, circular queue (ring buffer), deque, binary heap (priority queue), leftist and skew heaps;
   - balanced search trees: AVL, red-black, splay, treap, scapegoat and AA; B-trees, B+ trees and B\* trees; Morris (stackless) traversal;
   - hashing: separate chaining, open addressing (linear probing, double hashing), Robin Hood and cuckoo hashing; consistent and rendezvous hashing; Zobrist hashing;
   - arrays: prefix sums, sliding window, two pointers, monotonic stack and queue, sparse table;

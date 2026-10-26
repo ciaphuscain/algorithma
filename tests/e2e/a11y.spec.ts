@@ -36,6 +36,7 @@ for (const path of [
   "/algorithms/b-tree",
   "/algorithms/b-plus-tree",
   "/algorithms/b-star-tree",
+  "/algorithms/leftist-heap",
   "/algorithms/heap-sort",
   "/algorithms/binary-search",
   "/algorithms/dfs",
