@@ -109,6 +109,10 @@ import { leftistHeap, skewHeap } from "./heaps/meldable";
 import { binomialHeap } from "./heaps/binomial";
 import { fibonacciHeap } from "./heaps/fibonacci";
 import { pairingHeap } from "./heaps/pairing";
+import { radixTree } from "./trees/tries/radix";
+import { patriciaTrie } from "./trees/tries/patricia";
+import { ternarySearchTree } from "./trees/tries/tst";
+import { suffixTrie } from "./trees/tries/suffix-trie";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -160,6 +164,10 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   binomialHeap,
   fibonacciHeap,
   pairingHeap,
+  radixTree,
+  patriciaTrie,
+  ternarySearchTree,
+  suffixTrie,
   mergeSort,
   quickSort,
   heapSort,

@@ -63,6 +63,11 @@ import { fibonacciHeap } from "@/algorithms/heaps/fibonacci";
 import { pairingHeap } from "@/algorithms/heaps/pairing";
 import type { HeapOp } from "@/algorithms/heaps/forest";
 import { morrisTraversal } from "@/algorithms/trees/morris";
+import { radixTree, showRadix, type RShape } from "@/algorithms/trees/tries/radix";
+import { patriciaTrie, type PShape } from "@/algorithms/trees/tries/patricia";
+import { ternarySearchTree, type TShape } from "@/algorithms/trees/tries/tst";
+import { suffixTrie } from "@/algorithms/trees/tries/suffix-trie";
+import type { WordOp } from "@/algorithms/trees/tries/words";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -2449,5 +2454,116 @@ describe("forest heap properties", () => {
       const { output } = runAlgorithm(binomialHeap, ops, { mode: "count" });
       expect(output.forest.length).toBe(n.toString(2).replaceAll("0", "").length);
     }
+  });
+});
+
+describe("trie variant properties", () => {
+  const word = fc
+    .array(fc.constantFrom("a", "b", "c"), { minLength: 1, maxLength: 5 })
+    .map((l) => l.join(""));
+  const wordOpsArb = (names: WordOp["name"][]) =>
+    fc.array(fc.record({ name: fc.constantFrom(...names), word }), { minLength: 1, maxLength: 16 });
+  const ok = (m: { check: unknown; id: string }, input: unknown, output: unknown) =>
+    expect((m.check as (a: unknown, b: unknown) => string | null)(input, output), m.id).toBeNull();
+
+  it("the radix tree and ternary search tree match their models", () => {
+    fc.assert(
+      fc.property(wordOpsArb(["insert", "insert", "delete", "search", "prefix"]), (ops) => {
+        ok(radixTree, ops, runAlgorithm(radixTree, ops, { mode: "count" }).output);
+      }),
+      { numRuns: 300 },
+    );
+    fc.assert(
+      fc.property(wordOpsArb(["insert", "insert", "search", "prefix"]), (ops) => {
+        ok(ternarySearchTree, ops, runAlgorithm(ternarySearchTree, ops, { mode: "count" }).output);
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("a radix tree depends only on the set of words, and has at most 2n − 1 nodes", () => {
+    fc.assert(
+      fc.property(fc.uniqueArray(word, { minLength: 1, maxLength: 10 }), (words) => {
+        const insert = (ws: string[]) =>
+          runAlgorithm(
+            radixTree,
+            ws.map((w): WordOp => ({ name: "insert", word: w })),
+            {
+              mode: "count",
+            },
+          ).output.tree;
+        const a = insert(words);
+        expect(showRadix(insert([...words].reverse()))).toBe(showRadix(a));
+        const count = (s: RShape): number => s.children.reduce((n, c) => n + 1 + count(c), 0);
+        expect(count(a)).toBeLessThanOrEqual(2 * words.length - 1);
+        // Deleting every word leaves only the root.
+        const ops: WordOp[] = [
+          ...words.map((w): WordOp => ({ name: "insert", word: w })),
+          ...words.map((w): WordOp => ({ name: "delete", word: w })),
+        ];
+        expect(runAlgorithm(radixTree, ops, { mode: "count" }).output.tree.children).toEqual([]);
+      }),
+    );
+  });
+
+  it("a Patricia trie matches its model, has n − 1 tests, and increasing bits on every path", () => {
+    const plan = fc.array(
+      fc.record({
+        name: fc.constantFrom("insert", "insert", "delete", "search"),
+        value: fc.integer({ min: 0, max: 99 }),
+      }),
+      { minLength: 1, maxLength: 20 },
+    );
+    fc.assert(
+      fc.property(plan, (ops) => {
+        const { output } = runAlgorithm(patriciaTrie, ops, { mode: "count" });
+        ok(patriciaTrie, ops, output);
+        const leaves: number[] = [];
+        let internal = 0;
+        const walk = (s: PShape, above: number) => {
+          if ("key" in s) return void leaves.push(s.key);
+          expect(s.bit).toBeGreaterThan(above);
+          internal++;
+          walk(s.zero, s.bit);
+          walk(s.one, s.bit);
+        };
+        if (output.tree) walk(output.tree, -1);
+        expect(internal).toBe(Math.max(0, leaves.length - 1));
+        expect(leaves).toEqual([...leaves].sort((a, b) => a - b));
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("an in-order walk of a ternary search tree lists its words alphabetically", () => {
+    fc.assert(
+      fc.property(fc.array(word, { minLength: 1, maxLength: 12 }), (words) => {
+        const ops = words.map((w): WordOp => ({ name: "insert", word: w }));
+        const { tree } = runAlgorithm(ternarySearchTree, ops, { mode: "count" }).output;
+        const out: string[] = [];
+        const walk = (s: TShape | null, prefix: string) => {
+          if (!s) return;
+          walk(s.lo, prefix);
+          if (s.end) out.push(prefix + s.ch);
+          walk(s.eq, prefix + s.ch);
+          walk(s.hi, prefix);
+        };
+        walk(tree, "");
+        expect(out).toEqual([...new Set(words)].sort());
+      }),
+    );
+  });
+
+  it("a suffix trie finds exactly the occurrences of each pattern", () => {
+    const text = fc
+      .array(fc.constantFrom("a", "b"), { minLength: 1, maxLength: 8 })
+      .map((l) => l.join(""));
+    fc.assert(
+      fc.property(text, fc.array(word, { maxLength: 4 }), (t, patterns) => {
+        const input = { text: t, patterns };
+        ok(suffixTrie, input, runAlgorithm(suffixTrie, input, { mode: "count" }).output);
+      }),
+      { numRuns: 300 },
+    );
   });
 });

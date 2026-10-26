@@ -100,6 +100,10 @@ import { binaryHeapEntry } from "./entries/binary-heap";
 import { binomialHeapEntry } from "./entries/binomial-heap";
 import { fibonacciHeapEntry } from "./entries/fibonacci-heap";
 import { pairingHeapEntry } from "./entries/pairing-heap";
+import { radixTreeEntry } from "./entries/radix-tree";
+import { patriciaTrieEntry } from "./entries/patricia-trie";
+import { ternarySearchTreeEntry } from "./entries/ternary-search-tree";
+import { suffixTrieEntry } from "./entries/suffix-trie";
 import { leftistHeapEntry } from "./entries/leftist-heap";
 import { skewHeapEntry } from "./entries/skew-heap";
 import { morrisTraversalEntry } from "./entries/morris-traversal";
@@ -154,6 +158,10 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   binomialHeapEntry,
   fibonacciHeapEntry,
   pairingHeapEntry,
+  radixTreeEntry,
+  patriciaTrieEntry,
+  ternarySearchTreeEntry,
+  suffixTrieEntry,
   leftistHeapEntry,
   skewHeapEntry,
   morrisTraversalEntry,

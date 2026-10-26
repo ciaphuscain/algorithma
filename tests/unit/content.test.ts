@@ -220,11 +220,13 @@ describe("catalog search", () => {
       "ntt",
       "open-addressing",
       "pairing-heap",
+      "patricia-trie",
       "postfix-evaluation",
       "prefix-sums",
       "prim",
       "queue-using-stacks",
       "radix-sort",
+      "radix-tree",
       "red-black-tree",
       "rendezvous-hashing",
       "reverse-linked-list",
@@ -240,6 +242,7 @@ describe("catalog search", () => {
       "suffix-automaton",
       "suffix-tree",
       "tarjan-scc",
+      "ternary-search-tree",
       "topological-sort",
       "topological-sort-dfs",
       "treap",
@@ -1687,6 +1690,107 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("trie lessons (batch AA): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { wordOps } = await import("@/algorithms/trees/tries/words");
+    const { showRadix } = await import("@/algorithms/trees/tries/radix");
+    const { showPatricia } = await import("@/algorithms/trees/tries/patricia");
+    const { showTst } = await import("@/algorithms/trees/tries/tst");
+    const { ops } = await import("@/algorithms/trees/balanced/common");
+    const radix = (text: string) => {
+      const o = runAlgorithm(getModule("radix-tree")!, wordOps(text)).output as never as {
+        tree: never;
+        results: string[];
+        splits: number;
+        merges: number;
+      };
+      return { ...o, shape: showRadix(o.tree) };
+    };
+    const words = ["romane", "romanus", "romulus", "rubens", "ruber", "rubicon"];
+    const grow = (n: number) =>
+      radix(
+        words
+          .slice(0, n)
+          .map((w) => `+${w}`)
+          .join(" "),
+      );
+    expect([1, 2, 3, 4, 5, 6].map((n) => grow(n).shape)).toEqual([
+      "·(romane*)",
+      "·(roman(e* us*))",
+      "·(rom(an(e* us*) ulus*))",
+      "·(r(om(an(e* us*) ulus*) ubens*))",
+      "·(r(om(an(e* us*) ulus*) ube(ns* r*)))",
+      "·(r(om(an(e* us*) ulus*) ub(e(ns* r*) icon*)))",
+    ]);
+    expect(grow(6).splits).toBe(5);
+    // 11 nodes besides the root; a plain trie of the same words has 22.
+    expect(grow(6).shape.match(/[a-z]+/g)!.length).toBe(11);
+    const plain = runAlgorithm(getModule("trie")!, { words, search: [], prefixes: [] });
+    expect((plain.output as { nodes: number }).nodes - 1).toBe(22);
+    expect(radix(`${words.map((w) => `+${w}`).join(" ")} ?rom ^rom`).results.slice(6)).toEqual([
+      "missing",
+      "found",
+    ]);
+    expect(radix("+car +cart +care +cat +dog -cart").shape).toBe("·(ca(r*(e*) t*) dog*)");
+    const merged = radix("+car +cart +care +cat +dog -cart -car");
+    expect([merged.shape, merged.merges]).toEqual(["·(ca(re* t*) dog*)", 1]);
+
+    const pat = (text: string) => {
+      const r = runAlgorithm(getModule("patricia-trie")!, ops(text));
+      const o = r.output as { tree: never; results: string[] };
+      return { ...o, shape: showPatricia(o.tree), bits: r.trace.meta.counters["bit tests"] ?? 0 };
+    };
+    const keys = "i19 i23 i82 i81 i40 i63".split(" ");
+    expect([1, 2, 3, 4, 5, 6].map((n) => pat(keys.slice(0, n).join(" ")).shape)).toEqual([
+      "19",
+      "[4](19 23)",
+      "[0]([4](19 23) 82)",
+      "[0]([4](19 23) [5](81 82))",
+      "[0]([1]([4](19 23) 40) [5](81 82))",
+      "[0]([1]([4](19 23) [2](40 63)) [5](81 82))",
+    ]);
+    const built = pat(keys.join(" "));
+    const s60 = pat(`${keys.join(" ")} s60`);
+    expect([s60.results.at(-1), s60.bits - built.bits]).toEqual(["missing", 3]);
+
+    const tst = (text: string) => {
+      const r = runAlgorithm(getModule("ternary-search-tree")!, wordOps(text));
+      const o = r.output as { tree: never; results: string[]; nodes: number };
+      return { ...o, shape: showTst(o.tree), cmp: r.trace.meta.counters.comparisons ?? 0 };
+    };
+    const tw = "+cat +cup +at +as +he +us +i".split(" ");
+    expect([1, 2, 3, 4, 5, 6, 7].map((n) => tst(tw.slice(0, n).join(" ")).nodes)).toEqual([
+      3, 5, 7, 8, 10, 12, 13,
+    ]);
+    const all = tst(tw.join(" "));
+    const cup = tst(`${tw.join(" ")} ?cup`);
+    expect(cup.cmp - all.cmp).toBe(4);
+    expect(tst(`${tw.join(" ")} ?cup ?cu ^cu ?it`).results.slice(7)).toEqual([
+      "found",
+      "missing",
+      "found",
+      "missing",
+    ]);
+    expect(tst("+a +b +c +d +e").shape).toBe("a*(>b*(>c*(>d*(>e*))))");
+
+    const st = (text: string, patterns: string[]) =>
+      runAlgorithm(getModule("suffix-trie")!, { text, patterns }).output as {
+        nodes: number;
+        occurrences: number[][];
+      };
+    const banana = st("banana", ["ana", "nab", "a"]);
+    expect(banana).toEqual({ nodes: 23, occurrences: [[1, 3], [], [1, 3, 5]] });
+    // New nodes per suffix of banana$, counted from the trace.
+    const perSuffix: number[] = [];
+    for (const e of runAlgorithm(getModule("suffix-trie")!, { text: "banana", patterns: [] }).trace
+      .events) {
+      if (e.type === "step" && e.note?.startsWith("Insert suffix")) perSuffix.push(0);
+      else if (e.type === "tree.add" && perSuffix.length) perSuffix[perSuffix.length - 1]!++;
+    }
+    expect(perSuffix).toEqual([7, 6, 5, 1, 1, 1, 1]);
+    expect(st("abc", []).nodes).toBe(11);
   });
 
   it("forest heap lessons (batch Z): worked examples match the engine", async () => {
