@@ -204,9 +204,11 @@ describe("catalog search", () => {
       "kosaraju",
       "kruskal",
       "leftist-heap",
+      "lfu-cache",
       "linear-search",
       "lis",
       "list-two-pointers",
+      "lru-cache",
       "manacher",
       "mapreduce",
       "matrix-exponentiation",
@@ -235,6 +237,7 @@ describe("catalog search", () => {
       "segment-tree",
       "shunting-yard",
       "skew-heap",
+      "skip-list",
       "sliding-window",
       "sparse-table",
       "splay-tree",
@@ -268,6 +271,8 @@ describe("catalog search", () => {
       "euclid",
       "fenwick-tree",
       "leftist-heap",
+      "lfu-cache",
+      "lru-cache",
       "matrix-exponentiation",
       "miller-rabin",
       "min-stack",
@@ -1690,6 +1695,94 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("skip list and cache lessons (batch AB): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const { ops } = await import("@/algorithms/trees/balanced/common");
+    const { cacheOps } = await import("@/algorithms/caches/common");
+    const skip = (text: string) => {
+      const r = runAlgorithm(getModule("skip-list")!, ops(text));
+      const o = r.output as { results: string[]; towers: { key: number; height: number }[] };
+      return { ...o, cmp: r.trace.meta.counters.comparisons ?? 0 };
+    };
+    const built = skip("i30 i10 i50 i70 i20 i60 i40 i80");
+    expect(built.towers.map((x) => x.height)).toEqual([2, 3, 2, 4, 2, 3, 2, 4]);
+    const s60 = skip("i30 i10 i50 i70 i20 i60 i40 i80 s60");
+    const s45 = skip("i30 i10 i50 i70 i20 i60 i40 i80 s45");
+    expect([s60.results.at(-1), s60.cmp - built.cmp]).toEqual(["found", 6]);
+    expect([s45.results.at(-1), s45.cmp - built.cmp]).toEqual(["missing", 5]);
+
+    const lruOps = "p1:10 p2:20 g1 p3:30 g2 p4:40 g1 g3 g4";
+    const lru = (n: number) =>
+      runAlgorithm(getModule("lru-cache")!, {
+        capacity: 2,
+        ops: cacheOps(lruOps).slice(0, n),
+      }).output as { results: unknown[]; order: string[] };
+    expect(lru(9).results).toEqual([
+      "stored",
+      "stored",
+      10,
+      "evict 2",
+      "miss",
+      "evict 1",
+      "miss",
+      30,
+      40,
+    ]);
+    expect([1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => lru(n).order.join(" "))).toEqual([
+      "1:10",
+      "1:10 2:20",
+      "2:20 1:10",
+      "1:10 3:30",
+      "1:10 3:30",
+      "3:30 4:40",
+      "3:30 4:40",
+      "4:40 3:30",
+      "3:30 4:40",
+    ]);
+    const scan = runAlgorithm(getModule("lru-cache")!, {
+      capacity: 3,
+      ops: cacheOps("g1 p1:1 g2 p2:2 g3 p3:3 g4 p4:4 g1 p1:1 g2 p2:2 g3 p3:3 g4 p4:4"),
+    }).output as { misses: number };
+    expect(scan.misses).toBe(8);
+
+    type B = { freq: number; entries: string[] }[];
+    const show = (b: B) => b.map((x) => `${x.freq}×: ${x.entries.join(" ")}`).join("; ");
+    const lfuOps = cacheOps("p1:10 p2:20 g1 p3:30 g2 g3 p4:40 g1 g3 g4");
+    const lfu = (n: number) =>
+      runAlgorithm(getModule("lfu-cache")!, { capacity: 2, ops: lfuOps.slice(0, n) }).output as {
+        results: unknown[];
+        buckets: B;
+      };
+    expect([2, 3, 4, 6, 7, 10].map((n) => show(lfu(n).buckets))).toEqual([
+      "1×: 1:10 2:20",
+      "1×: 2:20; 2×: 1:10",
+      "1×: 3:30; 2×: 1:10",
+      "2×: 1:10 3:30",
+      "1×: 4:40; 2×: 3:30",
+      "2×: 4:40; 3×: 3:30",
+    ]);
+    expect(lfu(10).results).toEqual([
+      "stored",
+      "stored",
+      10,
+      "evict 2",
+      "miss",
+      30,
+      "evict 1",
+      "miss",
+      30,
+      40,
+    ]);
+    const contrast = cacheOps("p1:1 g1 g1 g1 p2:2 g2 p3:3");
+    const evicted = (id: string) =>
+      (
+        runAlgorithm(getModule(id)!, { capacity: 2, ops: contrast }).output as {
+          results: unknown[];
+        }
+      ).results.at(-1);
+    expect([evicted("lfu-cache"), evicted("lru-cache")]).toEqual(["evict 2", "evict 1"]);
   });
 
   it("trie lessons (batch AA): worked examples match the engine", async () => {

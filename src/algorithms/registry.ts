@@ -113,6 +113,9 @@ import { radixTree } from "./trees/tries/radix";
 import { patriciaTrie } from "./trees/tries/patricia";
 import { ternarySearchTree } from "./trees/tries/tst";
 import { suffixTrie } from "./trees/tries/suffix-trie";
+import { skipList } from "./lists/skip-list";
+import { lruCache } from "./caches/lru";
+import { lfuCache } from "./caches/lfu";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -168,6 +171,9 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   patriciaTrie,
   ternarySearchTree,
   suffixTrie,
+  skipList,
+  lruCache,
+  lfuCache,
   mergeSort,
   quickSort,
   heapSort,

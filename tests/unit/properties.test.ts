@@ -68,6 +68,10 @@ import { patriciaTrie, type PShape } from "@/algorithms/trees/tries/patricia";
 import { ternarySearchTree, type TShape } from "@/algorithms/trees/tries/tst";
 import { suffixTrie } from "@/algorithms/trees/tries/suffix-trie";
 import type { WordOp } from "@/algorithms/trees/tries/words";
+import { skipList, MAX_LEVEL } from "@/algorithms/lists/skip-list";
+import { lruCache } from "@/algorithms/caches/lru";
+import { lfuCache } from "@/algorithms/caches/lfu";
+import type { CacheInput, CacheOp } from "@/algorithms/caches/common";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -2564,6 +2568,78 @@ describe("trie variant properties", () => {
         ok(suffixTrie, input, runAlgorithm(suffixTrie, input, { mode: "count" }).output);
       }),
       { numRuns: 300 },
+    );
+  });
+});
+
+describe("skip list and cache properties", () => {
+  const ok = (m: { check: unknown; id: string }, input: unknown, output: unknown) =>
+    expect((m.check as (a: unknown, b: unknown) => string | null)(input, output), m.id).toBeNull();
+
+  it("a skip list matches a set, and a search never makes more comparisons than n + levels", () => {
+    const plan = fc.array(
+      fc.record({
+        name: fc.constantFrom("insert", "insert", "delete", "search"),
+        value: fc.integer({ min: 0, max: 40 }),
+      }),
+      { minLength: 1, maxLength: 20 },
+    );
+    fc.assert(
+      fc.property(plan, (ops) => {
+        const { output } = runAlgorithm(skipList, ops, { mode: "count" });
+        ok(skipList, ops, output);
+        const n = output.towers.length;
+        const probe = [...ops, { name: "search", value: 41 }];
+        const before = runAlgorithm(skipList, ops, { mode: "count" }).trace.meta.counters;
+        const after = runAlgorithm(skipList, probe, { mode: "count" }).trace.meta.counters;
+        expect(after.comparisons! - before.comparisons!).toBeLessThanOrEqual(n + MAX_LEVEL);
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  const cacheArb: fc.Arbitrary<CacheInput> = fc.record({
+    capacity: fc.integer({ min: 1, max: 4 }),
+    ops: fc.array(
+      fc.oneof(
+        fc.record({
+          name: fc.constant("put" as const),
+          key: fc.integer({ min: 0, max: 6 }),
+          value: fc.integer({ min: 0, max: 99 }),
+        }),
+        fc.record({ name: fc.constant("get" as const), key: fc.integer({ min: 0, max: 6 }) }),
+      ) as fc.Arbitrary<CacheOp>,
+      { minLength: 1, maxLength: 16 },
+    ),
+  });
+
+  it("LRU and LFU caches match their models and never exceed their capacity", () => {
+    fc.assert(
+      fc.property(cacheArb, (input) => {
+        const lru = runAlgorithm(lruCache, input, { mode: "count" }).output;
+        ok(lruCache, input, lru);
+        expect(lru.order.length).toBeLessThanOrEqual(input.capacity);
+        expect(lru.hits + lru.misses).toBe(input.ops.filter((o) => o.name === "get").length);
+        const lfu = runAlgorithm(lfuCache, input, { mode: "count" }).output;
+        ok(lfuCache, input, lfu);
+        const size = lfu.buckets.reduce((a, b) => a + b.entries.length, 0);
+        expect(size).toBeLessThanOrEqual(input.capacity);
+        expect(lfu.buckets.map((b) => b.freq)).toEqual(
+          [...lfu.buckets.map((b) => b.freq)].sort((a, b) => a - b),
+        );
+      }),
+      { numRuns: 400 },
+    );
+  });
+
+  it("with capacity 1, LRU and LFU behave identically", () => {
+    fc.assert(
+      fc.property(cacheArb, (input) => {
+        const one = { ...input, capacity: 1 };
+        expect(runAlgorithm(lfuCache, one, { mode: "count" }).output.results).toEqual(
+          runAlgorithm(lruCache, one, { mode: "count" }).output.results,
+        );
+      }),
     );
   });
 });

@@ -39,6 +39,7 @@ for (const path of [
   "/algorithms/leftist-heap",
   "/algorithms/fibonacci-heap",
   "/algorithms/radix-tree",
+  "/algorithms/skip-list",
   "/algorithms/heap-sort",
   "/algorithms/binary-search",
   "/algorithms/dfs",

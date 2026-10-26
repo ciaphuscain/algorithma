@@ -104,6 +104,9 @@ import { radixTreeEntry } from "./entries/radix-tree";
 import { patriciaTrieEntry } from "./entries/patricia-trie";
 import { ternarySearchTreeEntry } from "./entries/ternary-search-tree";
 import { suffixTrieEntry } from "./entries/suffix-trie";
+import { skipListEntry } from "./entries/skip-list";
+import { lruCacheEntry } from "./entries/lru-cache";
+import { lfuCacheEntry } from "./entries/lfu-cache";
 import { leftistHeapEntry } from "./entries/leftist-heap";
 import { skewHeapEntry } from "./entries/skew-heap";
 import { morrisTraversalEntry } from "./entries/morris-traversal";
@@ -162,6 +165,9 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   patriciaTrieEntry,
   ternarySearchTreeEntry,
   suffixTrieEntry,
+  skipListEntry,
+  lruCacheEntry,
+  lfuCacheEntry,
   leftistHeapEntry,
   skewHeapEntry,
   morrisTraversalEntry,
