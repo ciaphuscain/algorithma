@@ -107,6 +107,7 @@ import {
   strandSort,
   americanFlagSort,
 } from "@/algorithms/sorting/specialized";
+import { blockSort, beadSort, sleepSort, bogoSort } from "@/algorithms/sorting/novelty";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -3028,6 +3029,56 @@ describe("specialized sorting properties", () => {
         },
       ),
       { numRuns: 300 },
+    );
+  });
+});
+
+describe("block, bead, sleep and bogo sort properties", () => {
+  const ok = (m: { check: unknown; id: string }, a: unknown, out: unknown) =>
+    expect((m.check as (x: unknown, y: unknown) => string | null)(a, out), m.id).toBeNull();
+
+  it("block sort sorts with no extra array; bead and sleep sort sort their domains", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: -30, max: 30 }), { minLength: 1, maxLength: 24 }),
+        (a) => {
+          const r = runAlgorithm(blockSort, a, { mode: "count" });
+          ok(blockSort, a, r.output);
+        },
+      ),
+      { numRuns: 300 },
+    );
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 1, max: 12 }), { minLength: 1, maxLength: 12 }),
+        (a) => {
+          ok(beadSort, a, runAlgorithm(beadSort, a, { mode: "count" }).output);
+        },
+      ),
+      { numRuns: 200 },
+    );
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 0, max: 30 }), { minLength: 1, maxLength: 10 }),
+        (a) => {
+          ok(sleepSort, a, runAlgorithm(sleepSort, a, { mode: "count" }).output);
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  it("bogosort's result and give-up agree with an independent replay of its shuffles", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 0, max: 9 }), { minLength: 1, maxLength: 5 }),
+        fc.integer({ min: 0, max: 9999 }),
+        (values, seed) => {
+          const input = { values, seed };
+          ok(bogoSort, input, runAlgorithm(bogoSort, input, { mode: "count" }).output);
+        },
+      ),
+      { numRuns: 100 },
     );
   });
 });

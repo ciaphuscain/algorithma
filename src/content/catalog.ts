@@ -142,6 +142,10 @@ import { treeSortEntry } from "./entries/tree-sort";
 import { pancakeSortEntry } from "./entries/pancake-sort";
 import { strandSortEntry } from "./entries/strand-sort";
 import { americanFlagSortEntry } from "./entries/american-flag-sort";
+import { blockSortEntry } from "./entries/block-sort";
+import { beadSortEntry } from "./entries/bead-sort";
+import { sleepSortEntry } from "./entries/sleep-sort";
+import { bogoSortEntry } from "./entries/bogo-sort";
 import { leftistHeapEntry } from "./entries/leftist-heap";
 import { skewHeapEntry } from "./entries/skew-heap";
 import { morrisTraversalEntry } from "./entries/morris-traversal";
@@ -238,6 +242,10 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   pancakeSortEntry,
   strandSortEntry,
   americanFlagSortEntry,
+  blockSortEntry,
+  beadSortEntry,
+  sleepSortEntry,
+  bogoSortEntry,
   leftistHeapEntry,
   skewHeapEntry,
   morrisTraversalEntry,

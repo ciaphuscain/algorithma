@@ -157,6 +157,7 @@ describe("catalog search", () => {
     expect(slugs({ query: "shortest path" })).toEqual(expect.arrayContaining(["bfs", "dijkstra"]));
     expect(slugs({ query: "stable sort" }).sort()).toEqual([
       "binary-insertion-sort",
+      "block-sort",
       "bottom-up-merge-sort",
       "bubble-sort",
       "cocktail-shaker-sort",
@@ -323,9 +324,12 @@ describe("catalog search", () => {
     ]);
     expect(slugs({ domain: "searching-sorting" }).sort()).toEqual([
       "american-flag-sort",
+      "bead-sort",
       "binary-insertion-sort",
       "binary-search",
       "bingo-sort",
+      "block-sort",
+      "bogo-sort",
       "bottom-up-merge-sort",
       "bubble-sort",
       "bucket-sort",
@@ -359,6 +363,7 @@ describe("catalog search", () => {
       "selection-sort",
       "sentinel-search",
       "shell-sort",
+      "sleep-sort",
       "smooth-sort",
       "strand-sort",
       "ternary-search",
@@ -1770,6 +1775,22 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("block, bead, sleep and bogo sort lessons (batch AH): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const run = (id: string, value: unknown) => runAlgorithm(getModule(id)!, value);
+    const block = run("block-sort", [2, 5, 7, 11, 13, 1, 3, 6, 8, 12]);
+    expect(block.trace.meta.counters).toMatchObject({ rotations: 5, comparisons: 29 });
+    expect(run("bead-sort", [3, 1, 4, 1, 5]).output).toEqual([1, 1, 3, 4, 5]);
+    const sleep = run("sleep-sort", [20, 5, 12, 0, 8]);
+    expect([sleep.output, sleep.trace.events.at(-1)?.vars?.time]).toEqual([[0, 5, 8, 12, 20], 20]);
+    expect(
+      run("bogo-sort", { values: [3, 1, 4, 2], seed: 7 }).trace.events.at(-1)?.vars?.shuffles,
+    ).toBe(3);
+    expect(
+      run("bogo-sort", { values: [1, 2, 3], seed: 1 }).trace.events.at(-1)?.vars?.shuffles,
+    ).toBe(0);
   });
 
   it("specialized sorting lessons (batch AG): worked examples match the engine", async () => {

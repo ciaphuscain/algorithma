@@ -147,6 +147,7 @@ import {
   strandSort,
   americanFlagSort,
 } from "./sorting/specialized";
+import { blockSort, beadSort, sleepSort, bogoSort } from "./sorting/novelty";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -240,6 +241,10 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   pancakeSort,
   strandSort,
   americanFlagSort,
+  blockSort,
+  beadSort,
+  sleepSort,
+  bogoSort,
   mergeSort,
   quickSort,
   heapSort,
