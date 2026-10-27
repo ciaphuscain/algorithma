@@ -139,7 +139,15 @@ describe("catalog search", () => {
   const slugs = (f: Parameters<typeof searchCatalog>[0]) => searchCatalog(f).map((e) => e.slug);
 
   it("finds entries by name, alias and tag", () => {
-    expect(slugs({ query: "bubble" })).toEqual(["bubble-sort"]);
+    // The bubble-sort variants match too, but the entry named Bubble Sort ranks first.
+    expect(slugs({ query: "bubble" })[0]).toBe("bubble-sort");
+    expect(slugs({ query: "bubble" }).sort()).toEqual([
+      "bubble-sort",
+      "cocktail-shaker-sort",
+      "comb-sort",
+      "odd-even-sort",
+      "optimized-bubble-sort",
+    ]);
     // Level-order traversal, Dinic and Hopcroft–Karp are tagged "bfs" too, but the
     // algorithm named BFS ranks first.
     const bfsHits = slugs({ query: "BFS" });
@@ -149,10 +157,14 @@ describe("catalog search", () => {
     expect(slugs({ query: "shortest path" })).toEqual(expect.arrayContaining(["bfs", "dijkstra"]));
     expect(slugs({ query: "stable sort" }).sort()).toEqual([
       "bubble-sort",
+      "cocktail-shaker-sort",
       "counting-sort",
+      "gnome-sort",
       "insertion-sort",
       "merge-sort",
       "merge-sorted-lists",
+      "odd-even-sort",
+      "optimized-bubble-sort",
       "radix-sort",
     ]);
   });
@@ -296,16 +308,24 @@ describe("catalog search", () => {
     ]);
     expect(slugs({ domain: "searching-sorting" }).sort()).toEqual([
       "binary-search",
+      "bingo-sort",
       "bubble-sort",
+      "cocktail-shaker-sort",
+      "comb-sort",
       "counting-sort",
+      "cycle-sort",
+      "double-selection-sort",
       "exponential-search",
       "fibonacci-search",
+      "gnome-sort",
       "heap-sort",
       "insertion-sort",
       "interpolation-search",
       "jump-search",
       "linear-search",
       "merge-sort",
+      "odd-even-sort",
+      "optimized-bubble-sort",
       "quick-sort",
       "radix-sort",
       "recursive-binary-search",
@@ -1716,6 +1736,39 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("elementary sorting lessons (batch AD): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const c = (id: string, value: number[]) => {
+      const r = runAlgorithm(getModule(id)!, value);
+      return { ...r.trace.meta.counters, ...(r.trace.events.at(-1)?.vars ?? {}) } as Record<
+        string,
+        number
+      >;
+    };
+    expect(c("optimized-bubble-sort", [1, 2, 3, 4, 5, 6, 7, 8]).comparisons).toBe(7);
+    expect(c("optimized-bubble-sort", [1, 2, 3, 5, 4, 6, 7, 8]).comparisons).toBe(10);
+    expect(c("optimized-bubble-sort", [5, 1, 4, 2, 8])).toMatchObject({
+      comparisons: 7,
+      passes: 3,
+    });
+    expect(c("bubble-sort", [5, 1, 4, 2, 8]).comparisons).toBe(10);
+    expect(c("cocktail-shaker-sort", [2, 3, 4, 5, 6, 7, 8, 1])).toMatchObject({
+      rounds: 2,
+      comparisons: 18,
+      swaps: 7,
+    });
+    const turtles = [5, 6, 7, 8, 9, 10, 4, 3, 2, 1];
+    expect(c("comb-sort", turtles)).toMatchObject({ passes: 6, comparisons: 41, swaps: 12 });
+    const { inversions } = await import("@/algorithms/sorting/common");
+    expect(inversions(turtles)).toBe(30);
+    expect(c("odd-even-sort", [5, 1, 4, 2, 8])).toMatchObject({ phases: 6, swaps: 4 });
+    expect(c("odd-even-sort", [9, 8, 7, 6, 5, 4, 3, 2])).toMatchObject({ phases: 10, swaps: 28 });
+    expect(c("gnome-sort", [34, 2, 10, -9])).toMatchObject({ comparisons: 11, swaps: 5 });
+    expect(c("double-selection-sort", [9, 3, 7, 1, 5]).swaps).toBe(3);
+    expect(c("bingo-sort", [3, 1, 3, 2, 1, 3, 2, 1, 2, 3])).toMatchObject({ passes: 2, swaps: 5 });
+    expect(c("cycle-sort", [5, 1, 4, 2, 8]).writes).toBe(3);
   });
 
   it("searching lessons (batch AC): worked examples match the engine", async () => {

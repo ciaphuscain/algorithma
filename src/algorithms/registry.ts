@@ -124,6 +124,14 @@ import { exponentialSearch } from "./searching/exponential-search";
 import { jumpSearch } from "./searching/jump-search";
 import { fibonacciSearch } from "./searching/fibonacci-search";
 import { uniformBinarySearch } from "./searching/uniform-binary-search";
+import { optimizedBubbleSort } from "./sorting/optimized-bubble-sort";
+import { cocktailShakerSort } from "./sorting/cocktail-shaker-sort";
+import { combSort } from "./sorting/comb-sort";
+import { oddEvenSort } from "./sorting/odd-even-sort";
+import { gnomeSort } from "./sorting/gnome-sort";
+import { doubleSelectionSort } from "./sorting/double-selection-sort";
+import { bingoSort } from "./sorting/bingo-sort";
+import { cycleSort } from "./sorting/cycle-sort";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -190,6 +198,14 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   jumpSearch,
   fibonacciSearch,
   uniformBinarySearch,
+  optimizedBubbleSort,
+  cocktailShakerSort,
+  combSort,
+  oddEvenSort,
+  gnomeSort,
+  doubleSelectionSort,
+  bingoSort,
+  cycleSort,
   mergeSort,
   quickSort,
   heapSort,

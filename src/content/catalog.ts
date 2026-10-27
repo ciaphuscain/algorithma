@@ -115,6 +115,14 @@ import { exponentialSearchEntry } from "./entries/exponential-search";
 import { jumpSearchEntry } from "./entries/jump-search";
 import { fibonacciSearchEntry } from "./entries/fibonacci-search";
 import { uniformBinarySearchEntry } from "./entries/uniform-binary-search";
+import { optimizedBubbleSortEntry } from "./entries/optimized-bubble-sort";
+import { cocktailShakerSortEntry } from "./entries/cocktail-shaker-sort";
+import { combSortEntry } from "./entries/comb-sort";
+import { oddEvenSortEntry } from "./entries/odd-even-sort";
+import { gnomeSortEntry } from "./entries/gnome-sort";
+import { doubleSelectionSortEntry } from "./entries/double-selection-sort";
+import { bingoSortEntry } from "./entries/bingo-sort";
+import { cycleSortEntry } from "./entries/cycle-sort";
 import { leftistHeapEntry } from "./entries/leftist-heap";
 import { skewHeapEntry } from "./entries/skew-heap";
 import { morrisTraversalEntry } from "./entries/morris-traversal";
@@ -184,6 +192,14 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   jumpSearchEntry,
   fibonacciSearchEntry,
   uniformBinarySearchEntry,
+  optimizedBubbleSortEntry,
+  cocktailShakerSortEntry,
+  combSortEntry,
+  oddEvenSortEntry,
+  gnomeSortEntry,
+  doubleSelectionSortEntry,
+  bingoSortEntry,
+  cycleSortEntry,
   leftistHeapEntry,
   skewHeapEntry,
   morrisTraversalEntry,

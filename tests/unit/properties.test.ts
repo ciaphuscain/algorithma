@@ -80,6 +80,14 @@ import { exponentialSearch } from "@/algorithms/searching/exponential-search";
 import { jumpSearch } from "@/algorithms/searching/jump-search";
 import { fibonacciSearch } from "@/algorithms/searching/fibonacci-search";
 import { uniformBinarySearch } from "@/algorithms/searching/uniform-binary-search";
+import { optimizedBubbleSort } from "@/algorithms/sorting/optimized-bubble-sort";
+import { cocktailShakerSort } from "@/algorithms/sorting/cocktail-shaker-sort";
+import { combSort } from "@/algorithms/sorting/comb-sort";
+import { oddEvenSort } from "@/algorithms/sorting/odd-even-sort";
+import { gnomeSort } from "@/algorithms/sorting/gnome-sort";
+import { doubleSelectionSort } from "@/algorithms/sorting/double-selection-sort";
+import { bingoSort } from "@/algorithms/sorting/bingo-sort";
+import { cycleSort } from "@/algorithms/sorting/cycle-sort";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -2716,6 +2724,88 @@ describe("searching variant properties", () => {
     fc.assert(
       fc.property(uni, (input) => {
         ok(ternarySearch, input, runAlgorithm(ternarySearch, input, { mode: "count" }).output);
+      }),
+      { numRuns: 300 },
+    );
+  });
+});
+
+describe("elementary sorting properties", () => {
+  const arr = fc.array(fc.integer({ min: -20, max: 20 }), { minLength: 1, maxLength: 30 });
+  const run = (m: unknown, a: number[]) => runAlgorithm(m as never, a, { mode: "count" });
+  const all = [
+    optimizedBubbleSort,
+    cocktailShakerSort,
+    combSort,
+    oddEvenSort,
+    gnomeSort,
+    doubleSelectionSort,
+    bingoSort,
+    cycleSort,
+  ];
+
+  it("every variant sorts, with duplicates", () => {
+    fc.assert(
+      fc.property(arr, (a) => {
+        for (const m of all)
+          expect(
+            (m.check as (x: unknown, y: unknown) => string | null)(a, run(m, a).output),
+            m.id,
+          ).toBeNull();
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("adjacent-swap sorts make exactly one swap per inversion", () => {
+    fc.assert(
+      fc.property(arr, (a) => {
+        const inv = inversions(a);
+        for (const m of [optimizedBubbleSort, cocktailShakerSort, oddEvenSort, gnomeSort])
+          expect(run(m, a).trace.meta.counters.swaps, m.id).toBe(inv);
+        // Gnome sort compares once per step: forward steps exceed backward ones by n − 1.
+        expect(run(gnomeSort, a).trace.meta.counters.comparisons ?? 0).toBeLessThanOrEqual(
+          2 * inv + a.length - 1,
+        );
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("optimized bubble sort makes n − 1 comparisons on sorted input; odd-even needs at most 2⌈n/2⌉ + 2 phases", () => {
+    fc.assert(
+      fc.property(arr, (a) => {
+        const sorted = [...a].sort((x, y) => x - y);
+        expect(run(optimizedBubbleSort, sorted).trace.meta.counters.comparisons ?? 0).toBe(
+          a.length - 1,
+        );
+        // Variables are only recorded in record mode.
+        const phases = runAlgorithm(oddEvenSort, a).trace.events.at(-1)?.vars?.phases as number;
+        // n phases sort; phases run in pairs, and one more pair confirms the order.
+        expect(phases).toBeLessThanOrEqual(2 * Math.ceil(a.length / 2) + 2);
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("cycle sort writes each misplaced element exactly once; bingo sort passes ≤ distinct values", () => {
+    fc.assert(
+      fc.property(
+        fc.uniqueArray(fc.integer({ min: -50, max: 50 }), { minLength: 1, maxLength: 25 }),
+        (a) => {
+          const sorted = [...a].sort((x, y) => x - y);
+          const misplaced = a.filter((x, i) => x !== sorted[i]).length;
+          expect(run(cycleSort, a).trace.meta.counters.writes).toBe(misplaced);
+        },
+      ),
+      { numRuns: 300 },
+    );
+    fc.assert(
+      fc.property(arr, (a) => {
+        const passes = runAlgorithm(bingoSort, a).trace.events.at(-1)?.vars?.passes as number;
+        expect(typeof passes).toBe("number");
+        expect(passes).toBeLessThanOrEqual(new Set(a).size);
+        expect(run(cycleSort, a).trace.meta.counters.writes).toBeLessThanOrEqual(a.length);
       }),
       { numRuns: 300 },
     );
