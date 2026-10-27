@@ -12,7 +12,7 @@ export const bogoSortEntry: AlgorithmEntry = {
     "Shuffle the array at random until it happens to be sorted. With n distinct values each shuffle succeeds with probability 1/n!, so about n! shuffles are expected — the standard example of a hopeless algorithm. This version uses a seeded generator and gives up after 5,000 shuffles.",
   tags: ["sorting", "randomized", "joke algorithm", "permutations", "expected time"],
   prerequisites: ["Fisher–Yates shuffle", "Permutations"],
-  related: ["quickselect", "bubble-sort"],
+  related: ["fisher-yates", "quickselect", "bubble-sort"],
   problem: {
     input: "Up to 6 numbers and a random seed.",
     output: "The numbers in order, or a report that it gave up.",

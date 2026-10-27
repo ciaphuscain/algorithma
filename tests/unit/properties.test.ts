@@ -108,6 +108,13 @@ import {
   americanFlagSort,
 } from "@/algorithms/sorting/specialized";
 import { blockSort, beadSort, sleepSort, bogoSort } from "@/algorithms/sorting/novelty";
+import { differenceArray } from "@/algorithms/arrays/difference-array";
+import { kadane } from "@/algorithms/arrays/kadane";
+import { dutchFlag } from "@/algorithms/arrays/dutch-flag";
+import { majorityVote } from "@/algorithms/arrays/majority-vote";
+import { fisherYates, reservoirSampling } from "@/algorithms/arrays/random-sampling";
+import { findDuplicate } from "@/algorithms/arrays/find-duplicate";
+import { prefixXor } from "@/algorithms/arrays/prefix-xor";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -3079,6 +3086,118 @@ describe("block, bead, sleep and bogo sort properties", () => {
         },
       ),
       { numRuns: 100 },
+    );
+  });
+});
+
+describe("array technique properties (batch AI)", () => {
+  const counters = (m: Parameters<typeof runAlgorithm>[0], input: unknown) =>
+    runAlgorithm(m, input, { mode: "count" }).trace.meta.counters;
+
+  it("difference array: two writes per update; one-pass scans read each element once", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: -30, max: 30 }), { minLength: 1, maxLength: 16 }),
+        fc.array(fc.tuple(fc.nat(), fc.nat(), fc.integer({ min: -9, max: 9 })), {
+          maxLength: 6,
+        }),
+        (values, raw) => {
+          const n = values.length;
+          const updates = raw.map(([a, b, d]): [number, number, number] => {
+            const [l, r] = [a % n, b % n].sort((x, y) => x - y) as [number, number];
+            return [l, r, d];
+          });
+          expect(counters(differenceArray, { values, updates }).writes).toBe(
+            2 * n + 1 + 2 * updates.length,
+          );
+          expect(counters(kadane, values).reads).toBe(n);
+          const m = counters(majorityVote, values);
+          expect([m.reads, m.comparisons]).toEqual([n, n]);
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("Dutch flag makes exactly n steps and at most n swaps", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 0, max: 2 }), { minLength: 1, maxLength: 24 }),
+        (a) => {
+          const k = counters(dutchFlag, a);
+          expect(k.steps).toBe(a.length);
+          expect(k.swaps).toBeLessThanOrEqual(a.length);
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("a majority value always survives the first pass as the candidate", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 1, max: 4 }), { minLength: 1, maxLength: 20 }),
+        fc.integer({ min: 1, max: 4 }),
+        fc.nat(),
+        (others, m, seed) => {
+          // Plant n/2 + 1 copies of m among the others, in a random order.
+          const a = [...others, ...Array(others.length + 1).fill(m)];
+          const rng = createRng(seed);
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = rng.int(0, i);
+            [a[i], a[j]] = [a[j], a[i]];
+          }
+          const r = runAlgorithm(majorityVote, a);
+          expect(r.trace.events.at(-1)?.vars?.candidate).toBe(m);
+          expect(r.output).toBe(m);
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  it("Fisher–Yates is uniform over the 6 orders of 3 values (6,000 seeds)", () => {
+    const freq = new Map<string, number>();
+    for (let seed = 0; seed < 6000; seed++) {
+      const out = runAlgorithm(fisherYates, { values: [1, 2, 3], seed }, { mode: "count" }).output;
+      freq.set(out.join(), (freq.get(out.join()) ?? 0) + 1);
+    }
+    expect(freq.size).toBe(6);
+    for (const c of freq.values()) expect(Math.abs(c / 6000 - 1 / 6)).toBeLessThan(0.025);
+  });
+
+  it("reservoir sampling keeps each of 6 items with probability k/n (4,000 seeds)", () => {
+    const kept = new Array(6).fill(0);
+    for (let seed = 0; seed < 4000; seed++) {
+      const out = runAlgorithm(
+        reservoirSampling,
+        { values: [1, 2, 3, 4, 5, 6], k: 2, seed },
+        { mode: "count" },
+      ).output;
+      for (const p of out.positions) kept[p]++;
+    }
+    for (const c of kept) expect(Math.abs(c / 4000 - 2 / 6)).toBeLessThan(0.04);
+  });
+
+  it("Floyd finds a duplicate in at most 3(mu + lambda) + 2 mu reads; prefix XOR reads n + 2q", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 2, max: 14 }), fc.nat(), (m, seed) => {
+        const a = findDuplicate.input.random(createRng(seed), m);
+        const first = new Map<number, number>();
+        let i = 0;
+        while (!first.has(i)) {
+          first.set(i, first.size);
+          i = a[i]!;
+        }
+        const mu = first.get(i)!;
+        const lambda = first.size - mu;
+        const r = runAlgorithm(findDuplicate, a, { mode: "count" });
+        expect(r.output).toBe(i);
+        expect(r.trace.meta.counters.reads).toBeLessThanOrEqual(3 * (mu + lambda) + 2 * mu);
+        const q = prefixXor.input.random(createRng(seed), m);
+        expect(counters(prefixXor, q).reads).toBe(q.values.length + 2 * q.queries.length);
+      }),
+      { numRuns: 300 },
     );
   });
 });

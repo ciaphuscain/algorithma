@@ -148,6 +148,13 @@ import {
   americanFlagSort,
 } from "./sorting/specialized";
 import { blockSort, beadSort, sleepSort, bogoSort } from "./sorting/novelty";
+import { differenceArray } from "./arrays/difference-array";
+import { kadane } from "./arrays/kadane";
+import { dutchFlag } from "./arrays/dutch-flag";
+import { majorityVote } from "./arrays/majority-vote";
+import { fisherYates, reservoirSampling } from "./arrays/random-sampling";
+import { findDuplicate } from "./arrays/find-duplicate";
+import { prefixXor } from "./arrays/prefix-xor";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -271,6 +278,14 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   lis,
   fenwickTree,
   prefixSums,
+  differenceArray,
+  kadane,
+  dutchFlag,
+  majorityVote,
+  reservoirSampling,
+  fisherYates,
+  findDuplicate,
+  prefixXor,
   slidingWindow,
   twoPointers,
   monotonicStack,

@@ -196,6 +196,7 @@ describe("catalog search", () => {
       "binary-search",
       "binomial-heap",
       "bottom-up-merge-sort",
+      "boyer-moore-majority",
       "bridges-articulation",
       "bst",
       "circular-queue",
@@ -208,7 +209,9 @@ describe("catalog search", () => {
       "cuckoo-hashing",
       "deque",
       "dfs",
+      "difference-array",
       "dijkstra",
+      "dutch-national-flag",
       "euclid",
       "exponential-search",
       "expression-tree",
@@ -216,7 +219,9 @@ describe("catalog search", () => {
       "fft",
       "fibonacci-heap",
       "fibonacci-search",
+      "fisher-yates",
       "floyd-cycle",
+      "floyd-find-duplicate",
       "graham-scan",
       "hash-chaining",
       "heap-sort",
@@ -224,6 +229,7 @@ describe("catalog search", () => {
       "interpolation-search",
       "intro-sort",
       "jump-search",
+      "kadane",
       "kd-tree",
       "kmp",
       "kosaraju",
@@ -253,6 +259,7 @@ describe("catalog search", () => {
       "patricia-trie",
       "postfix-evaluation",
       "prefix-sums",
+      "prefix-xor",
       "prim",
       "queue-using-stacks",
       "radix-sort",
@@ -260,6 +267,7 @@ describe("catalog search", () => {
       "recursive-binary-search",
       "red-black-tree",
       "rendezvous-hashing",
+      "reservoir-sampling",
       "reverse-linked-list",
       "robin-hood-hashing",
       "scapegoat-tree",
@@ -1775,6 +1783,62 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("array technique lessons (batch AI): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const run = (id: string, value: unknown) => runAlgorithm(getModule(id)!, value);
+    const diff = run("difference-array", {
+      values: [3, 1, 4, 1, 5, 9, 2, 6],
+      updates: [
+        [1, 4, 5],
+        [3, 7, -2],
+        [0, 2, 10],
+      ],
+    });
+    expect(diff.output).toEqual([13, 16, 19, 4, 8, 7, 0, 4]);
+    expect(
+      run("difference-array", {
+        values: [0, 0, 0, 0, 0, 0],
+        updates: [
+          [0, 3, 1],
+          [2, 5, 1],
+          [1, 2, 1],
+        ],
+      }).output,
+    ).toEqual([1, 2, 3, 2, 1, 1]);
+    expect(run("kadane", [-2, 1, -3, 4, -1, 2, 1, -5, 4]).output).toEqual({
+      sum: 6,
+      start: 3,
+      end: 6,
+    });
+    expect(run("kadane", [-8, -3, -6, -2, -5, -4]).output).toMatchObject({ sum: -2 });
+    const flag = run("dutch-national-flag", [2, 0, 2, 1, 1, 0, 1, 2, 0]);
+    expect(flag.trace.meta.counters).toMatchObject({ steps: 9, swaps: 4 });
+    expect(flag.trace.events.at(-1)?.vars).toMatchObject({ lo: 3, mid: 6, hi: 5 });
+    expect(run("boyer-moore-majority", [2, 2, 1, 1, 1, 2, 2]).output).toBe(2);
+    const none = run("boyer-moore-majority", [3, 1, 3, 2, 1, 2]);
+    expect([none.output, none.trace.events.at(-1)?.vars?.candidate]).toEqual([null, 1]);
+    const fy = run("fisher-yates", { values: [1, 2, 3, 4, 5, 6], seed: 7 });
+    expect([fy.output, fy.trace.meta.counters.swaps]).toEqual([[5, 2, 3, 4, 6, 1], 2]);
+    const rs = run("reservoir-sampling", {
+      values: [11, 22, 33, 44, 55, 66, 77, 88, 99, 9],
+      k: 3,
+      seed: 7,
+    });
+    expect(rs.output).toEqual({ sample: [55, 22, 33], positions: [4, 1, 2] });
+    expect(rs.trace.meta.counters.replacements).toBe(2);
+    const dup = run("floyd-find-duplicate", [1, 3, 4, 2, 2]);
+    expect([dup.output, dup.trace.meta.counters.moves]).toEqual([2, 18]);
+    const px = run("prefix-xor", {
+      values: [5, 3, 12, 9, 6, 7, 1, 14],
+      queries: [
+        [1, 4],
+        [0, 7],
+        [2, 3],
+      ],
+    });
+    expect(px.output).toEqual({ prefix: [0, 5, 6, 10, 3, 5, 2, 3, 13], xors: [0, 13, 5] });
   });
 
   it("block, bead, sleep and bogo sort lessons (batch AH): worked examples match the engine", async () => {

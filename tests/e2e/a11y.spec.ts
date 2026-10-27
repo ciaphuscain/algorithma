@@ -46,6 +46,7 @@ for (const path of [
   "/algorithms/tournament-sort",
   "/algorithms/tim-sort",
   "/algorithms/sleep-sort",
+  "/algorithms/floyd-find-duplicate",
   "/algorithms/heap-sort",
   "/algorithms/binary-search",
   "/algorithms/dfs",

@@ -146,6 +146,14 @@ import { blockSortEntry } from "./entries/block-sort";
 import { beadSortEntry } from "./entries/bead-sort";
 import { sleepSortEntry } from "./entries/sleep-sort";
 import { bogoSortEntry } from "./entries/bogo-sort";
+import { differenceArrayEntry } from "./entries/difference-array";
+import { kadaneEntry } from "./entries/kadane";
+import { dutchNationalFlagEntry } from "./entries/dutch-national-flag";
+import { boyerMooreMajorityEntry } from "./entries/boyer-moore-majority";
+import { fisherYatesEntry } from "./entries/fisher-yates";
+import { reservoirSamplingEntry } from "./entries/reservoir-sampling";
+import { floydFindDuplicateEntry } from "./entries/floyd-find-duplicate";
+import { prefixXorEntry } from "./entries/prefix-xor";
 import { leftistHeapEntry } from "./entries/leftist-heap";
 import { skewHeapEntry } from "./entries/skew-heap";
 import { morrisTraversalEntry } from "./entries/morris-traversal";
@@ -246,6 +254,14 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   beadSortEntry,
   sleepSortEntry,
   bogoSortEntry,
+  differenceArrayEntry,
+  kadaneEntry,
+  dutchNationalFlagEntry,
+  boyerMooreMajorityEntry,
+  fisherYatesEntry,
+  reservoirSamplingEntry,
+  floydFindDuplicateEntry,
+  prefixXorEntry,
   leftistHeapEntry,
   skewHeapEntry,
   morrisTraversalEntry,
