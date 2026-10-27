@@ -88,6 +88,15 @@ import { gnomeSort } from "@/algorithms/sorting/gnome-sort";
 import { doubleSelectionSort } from "@/algorithms/sorting/double-selection-sort";
 import { bingoSort } from "@/algorithms/sorting/bingo-sort";
 import { cycleSort } from "@/algorithms/sorting/cycle-sort";
+import { binaryInsertionSort } from "@/algorithms/sorting/binary-insertion-sort";
+import { librarySort } from "@/algorithms/sorting/library-sort";
+import { patienceSort } from "@/algorithms/sorting/patience-sort";
+import {
+  naturalMergeSort,
+  bottomUpMergeSort,
+  naturalRuns,
+} from "@/algorithms/sorting/merge-variants";
+import { dualPivotQuickSort, threeWayQuickSort } from "@/algorithms/sorting/quick-variants";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -2806,6 +2815,80 @@ describe("elementary sorting properties", () => {
         expect(typeof passes).toBe("number");
         expect(passes).toBeLessThanOrEqual(new Set(a).size);
         expect(run(cycleSort, a).trace.meta.counters.writes).toBeLessThanOrEqual(a.length);
+      }),
+      { numRuns: 300 },
+    );
+  });
+});
+
+describe("insertion and divide-and-conquer sorting properties", () => {
+  const arr = (max: number) =>
+    fc.array(fc.integer({ min: -20, max: 20 }), { minLength: 1, maxLength: max });
+  const record = (m: unknown, a: number[]) => runAlgorithm(m as never, a);
+  const ok = (m: { check: unknown; id: string }, a: number[], out: unknown) =>
+    expect((m.check as (x: unknown, y: unknown) => string | null)(a, out), m.id).toBeNull();
+  const lisLength = (a: number[]) => {
+    const best: number[] = [];
+    a.forEach((x, i) => {
+      best[i] = 1;
+      for (let j = 0; j < i; j++) if (a[j]! < x) best[i] = Math.max(best[i]!, best[j]! + 1);
+    });
+    return Math.max(0, ...best);
+  };
+
+  it("every variant sorts, with duplicates", () => {
+    fc.assert(
+      fc.property(arr(16), (a) => {
+        for (const m of [
+          binaryInsertionSort,
+          librarySort,
+          patienceSort,
+          naturalMergeSort,
+          bottomUpMergeSort,
+          dualPivotQuickSort,
+          threeWayQuickSort,
+        ])
+          ok(m, a, runAlgorithm(m as never, a, { mode: "count" }).output);
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("binary insertion: shifts = inversions, comparisons ≤ Σ⌈log₂(i+1)⌉", () => {
+    fc.assert(
+      fc.property(arr(30), (a) => {
+        const k = runAlgorithm(binaryInsertionSort, a, { mode: "count" }).trace.meta.counters;
+        expect(k.shifts ?? 0).toBe(inversions(a));
+        let bound = 0;
+        for (let i = 1; i < a.length; i++) bound += Math.ceil(Math.log2(i + 1));
+        expect(k.comparisons ?? 0).toBeLessThanOrEqual(bound);
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("patience piles = longest strictly increasing subsequence; natural merge passes = ⌈log₂ runs⌉", () => {
+    fc.assert(
+      fc.property(arr(16), (a) => {
+        expect(record(patienceSort, a).trace.events.at(-1)?.vars?.piles).toBe(lisLength(a));
+        const runs = naturalRuns(a).length;
+        expect(record(naturalMergeSort, a).trace.events.at(-1)?.vars?.passes).toBe(
+          Math.ceil(Math.log2(runs)),
+        );
+        expect(record(bottomUpMergeSort, a).trace.events.at(-1)?.vars?.passes).toBe(
+          Math.ceil(Math.log2(a.length)),
+        );
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("three-way quicksort partitions at most once per distinct value", () => {
+    fc.assert(
+      fc.property(arr(30), (a) => {
+        const parts =
+          runAlgorithm(threeWayQuickSort, a, { mode: "count" }).trace.meta.counters.partitions ?? 0;
+        expect(parts).toBeLessThanOrEqual(new Set(a).size);
       }),
       { numRuns: 300 },
     );

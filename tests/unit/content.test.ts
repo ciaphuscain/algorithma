@@ -156,6 +156,8 @@ describe("catalog search", () => {
     expect(slugs({ query: "levenshtein" })).toEqual(["edit-distance"]);
     expect(slugs({ query: "shortest path" })).toEqual(expect.arrayContaining(["bfs", "dijkstra"]));
     expect(slugs({ query: "stable sort" }).sort()).toEqual([
+      "binary-insertion-sort",
+      "bottom-up-merge-sort",
       "bubble-sort",
       "cocktail-shaker-sort",
       "counting-sort",
@@ -163,6 +165,7 @@ describe("catalog search", () => {
       "insertion-sort",
       "merge-sort",
       "merge-sorted-lists",
+      "natural-merge-sort",
       "odd-even-sort",
       "optimized-bubble-sort",
       "radix-sort",
@@ -188,6 +191,7 @@ describe("catalog search", () => {
       "binary-lifting",
       "binary-search",
       "binomial-heap",
+      "bottom-up-merge-sort",
       "bridges-articulation",
       "bst",
       "circular-queue",
@@ -235,9 +239,11 @@ describe("catalog search", () => {
       "monotonic-queue",
       "monotonic-stack",
       "morris-traversal",
+      "natural-merge-sort",
       "ntt",
       "open-addressing",
       "pairing-heap",
+      "patience-sort",
       "patricia-trie",
       "postfix-evaluation",
       "prefix-sums",
@@ -307,14 +313,17 @@ describe("catalog search", () => {
       "zobrist-hashing",
     ]);
     expect(slugs({ domain: "searching-sorting" }).sort()).toEqual([
+      "binary-insertion-sort",
       "binary-search",
       "bingo-sort",
+      "bottom-up-merge-sort",
       "bubble-sort",
       "cocktail-shaker-sort",
       "comb-sort",
       "counting-sort",
       "cycle-sort",
       "double-selection-sort",
+      "dual-pivot-quick-sort",
       "exponential-search",
       "fibonacci-search",
       "gnome-sort",
@@ -322,10 +331,13 @@ describe("catalog search", () => {
       "insertion-sort",
       "interpolation-search",
       "jump-search",
+      "library-sort",
       "linear-search",
       "merge-sort",
+      "natural-merge-sort",
       "odd-even-sort",
       "optimized-bubble-sort",
+      "patience-sort",
       "quick-sort",
       "radix-sort",
       "recursive-binary-search",
@@ -333,6 +345,7 @@ describe("catalog search", () => {
       "sentinel-search",
       "shell-sort",
       "ternary-search",
+      "three-way-quick-sort",
       "uniform-binary-search",
     ]);
   });
@@ -1736,6 +1749,50 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("insertion and divide-and-conquer sorting lessons (batch AE): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const c = (id: string, value: number[]) => {
+      const r = runAlgorithm(getModule(id)!, value);
+      return { ...r.trace.meta.counters, ...(r.trace.events.at(-1)?.vars ?? {}) } as Record<
+        string,
+        number
+      >;
+    };
+    const rev = [9, 8, 7, 6, 5, 4, 3, 2];
+    expect(c("binary-insertion-sort", rev)).toMatchObject({ comparisons: 17, shifts: 28 });
+    expect(c("insertion-sort", [8, 7, 6, 5, 4, 3, 2, 1]).comparisons).toBe(28);
+    expect(c("binary-insertion-sort", [1, 2, 3, 4, 5, 6, 7, 8]).comparisons).toBe(13);
+    const shelf = [47, 12, 85, 3, 61, 29, 74, 18, 90, 55];
+    expect(c("library-sort", shelf)).toMatchObject({ comparisons: 21, shifts: 8, rebalances: 4 });
+    expect(c("library-sort", rev).shifts).toBe(21);
+    expect(c("patience-sort", [7, 2, 8, 1, 3, 4, 10, 6, 9, 5]).piles).toBe(5);
+    expect(c("patience-sort", rev).piles).toBe(1);
+    expect(c("patience-sort", [1, 2, 3, 4, 5, 6, 7, 8]).piles).toBe(8);
+    expect(c("natural-merge-sort", [3, 7, 9, 2, 5, 8, 1, 4, 6])).toMatchObject({
+      merges: 2,
+      comparisons: 19,
+      passes: 2,
+    });
+    expect(c("natural-merge-sort", [1, 2, 3, 4, 5, 6, 7, 8])).toMatchObject({
+      comparisons: 7,
+      passes: 0,
+    });
+    expect(c("bottom-up-merge-sort", [5, 1, 4, 2, 8])).toMatchObject({
+      merges: 4,
+      comparisons: 9,
+      passes: 3,
+    });
+    expect(c("dual-pivot-quick-sort", [24, 8, 42, 75, 29, 77, 38, 57, 13, 3])).toMatchObject({
+      partitions: 4,
+      comparisons: 26,
+      swaps: 7,
+    });
+    expect(c("three-way-quick-sort", [4, 9, 4, 4, 1, 9, 4, 1, 4, 9])).toMatchObject({
+      partitions: 3,
+      comparisons: 12,
+    });
   });
 
   it("elementary sorting lessons (batch AD): worked examples match the engine", async () => {

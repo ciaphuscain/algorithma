@@ -132,6 +132,11 @@ import { gnomeSort } from "./sorting/gnome-sort";
 import { doubleSelectionSort } from "./sorting/double-selection-sort";
 import { bingoSort } from "./sorting/bingo-sort";
 import { cycleSort } from "./sorting/cycle-sort";
+import { binaryInsertionSort } from "./sorting/binary-insertion-sort";
+import { librarySort } from "./sorting/library-sort";
+import { patienceSort } from "./sorting/patience-sort";
+import { naturalMergeSort, bottomUpMergeSort } from "./sorting/merge-variants";
+import { dualPivotQuickSort, threeWayQuickSort } from "./sorting/quick-variants";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -206,6 +211,13 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   doubleSelectionSort,
   bingoSort,
   cycleSort,
+  binaryInsertionSort,
+  librarySort,
+  patienceSort,
+  naturalMergeSort,
+  bottomUpMergeSort,
+  dualPivotQuickSort,
+  threeWayQuickSort,
   mergeSort,
   quickSort,
   heapSort,

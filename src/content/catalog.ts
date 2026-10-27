@@ -123,6 +123,13 @@ import { gnomeSortEntry } from "./entries/gnome-sort";
 import { doubleSelectionSortEntry } from "./entries/double-selection-sort";
 import { bingoSortEntry } from "./entries/bingo-sort";
 import { cycleSortEntry } from "./entries/cycle-sort";
+import { binaryInsertionSortEntry } from "./entries/binary-insertion-sort";
+import { librarySortEntry } from "./entries/library-sort";
+import { patienceSortEntry } from "./entries/patience-sort";
+import { naturalMergeSortEntry } from "./entries/natural-merge-sort";
+import { bottomUpMergeSortEntry } from "./entries/bottom-up-merge-sort";
+import { dualPivotQuickSortEntry } from "./entries/dual-pivot-quick-sort";
+import { threeWayQuickSortEntry } from "./entries/three-way-quick-sort";
 import { leftistHeapEntry } from "./entries/leftist-heap";
 import { skewHeapEntry } from "./entries/skew-heap";
 import { morrisTraversalEntry } from "./entries/morris-traversal";
@@ -200,6 +207,13 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   doubleSelectionSortEntry,
   bingoSortEntry,
   cycleSortEntry,
+  binaryInsertionSortEntry,
+  librarySortEntry,
+  patienceSortEntry,
+  naturalMergeSortEntry,
+  bottomUpMergeSortEntry,
+  dualPivotQuickSortEntry,
+  threeWayQuickSortEntry,
   leftistHeapEntry,
   skewHeapEntry,
   morrisTraversalEntry,

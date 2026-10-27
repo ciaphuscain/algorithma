@@ -42,6 +42,7 @@ for (const path of [
   "/algorithms/skip-list",
   "/algorithms/jump-search",
   "/algorithms/cycle-sort",
+  "/algorithms/patience-sort",
   "/algorithms/heap-sort",
   "/algorithms/binary-search",
   "/algorithms/dfs",
