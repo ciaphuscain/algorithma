@@ -72,6 +72,14 @@ import { skipList, MAX_LEVEL } from "@/algorithms/lists/skip-list";
 import { lruCache } from "@/algorithms/caches/lru";
 import { lfuCache } from "@/algorithms/caches/lfu";
 import type { CacheInput, CacheOp } from "@/algorithms/caches/common";
+import { sentinelSearch } from "@/algorithms/searching/sentinel-search";
+import { recursiveBinarySearch } from "@/algorithms/searching/recursive-binary-search";
+import { ternarySearch } from "@/algorithms/searching/ternary-search";
+import { interpolationSearch } from "@/algorithms/searching/interpolation-search";
+import { exponentialSearch } from "@/algorithms/searching/exponential-search";
+import { jumpSearch } from "@/algorithms/searching/jump-search";
+import { fibonacciSearch } from "@/algorithms/searching/fibonacci-search";
+import { uniformBinarySearch } from "@/algorithms/searching/uniform-binary-search";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -2640,6 +2648,76 @@ describe("skip list and cache properties", () => {
           runAlgorithm(lruCache, one, { mode: "count" }).output.results,
         );
       }),
+    );
+  });
+});
+
+describe("searching variant properties", () => {
+  const sortedArb = fc
+    .array(fc.integer({ min: -50, max: 50 }), { minLength: 1, maxLength: 40 })
+    .map((a) => a.sort((x, y) => x - y));
+  const caseArb = sortedArb.chain((values) =>
+    fc.record({
+      values: fc.constant(values),
+      target: fc.oneof(fc.constantFrom(...values), fc.integer({ min: -60, max: 60 })),
+    }),
+  );
+  const ok = (m: { check: unknown; id: string }, input: unknown, output: unknown) =>
+    expect((m.check as (a: unknown, b: unknown) => string | null)(input, output), m.id).toBeNull();
+
+  it("every sorted-array search finds the target exactly when it is present", () => {
+    const mods = [
+      sentinelSearch,
+      recursiveBinarySearch,
+      interpolationSearch,
+      exponentialSearch,
+      jumpSearch,
+      fibonacciSearch,
+      uniformBinarySearch,
+    ];
+    fc.assert(
+      fc.property(caseArb, (input) => {
+        for (const m of mods)
+          ok(m, input, runAlgorithm(m as never, input, { mode: "count" }).output);
+      }),
+      { numRuns: 400 },
+    );
+  });
+
+  it("comparison bounds: binary-style ≤ ⌊log₂ n⌋ + 1, jump ≤ 2⌈√n⌉ + 1, Fibonacci ≤ its index", () => {
+    fc.assert(
+      fc.property(caseArb, (input) => {
+        const n = input.values.length;
+        const cmp = (m: unknown) =>
+          runAlgorithm(m as never, input, { mode: "count" }).trace.meta.counters.comparisons ?? 0;
+        const log = Math.floor(Math.log2(n)) + 1;
+        expect(cmp(recursiveBinarySearch)).toBeLessThanOrEqual(log);
+        expect(cmp(uniformBinarySearch)).toBeLessThanOrEqual(log);
+        expect(cmp(jumpSearch)).toBeLessThanOrEqual(2 * Math.ceil(Math.sqrt(n)) + 1);
+        let [a, b, k] = [0, 1, 1];
+        while (b < n) [a, b, k] = [b, a + b, k + 1];
+        expect(cmp(fibonacciSearch)).toBeLessThanOrEqual(k + 1);
+        expect(cmp(sentinelSearch)).toBeLessThanOrEqual(n + 1);
+      }),
+      { numRuns: 400 },
+    );
+  });
+
+  it("ternary search finds the peak of every strictly unimodal array", () => {
+    const uni = fc
+      .tuple(
+        fc.uniqueArray(fc.integer({ min: -99, max: 99 }), { maxLength: 20 }),
+        fc.uniqueArray(fc.integer({ min: -99, max: 99 }), { maxLength: 20 }),
+        fc.integer({ min: 100, max: 200 }),
+      )
+      .map(([l, r, p]) => ({
+        values: [...l.sort((a, b) => a - b), p, ...r.sort((a, b) => b - a)],
+      }));
+    fc.assert(
+      fc.property(uni, (input) => {
+        ok(ternarySearch, input, runAlgorithm(ternarySearch, input, { mode: "count" }).output);
+      }),
+      { numRuns: 300 },
     );
   });
 });

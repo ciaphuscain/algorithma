@@ -116,6 +116,14 @@ import { suffixTrie } from "./trees/tries/suffix-trie";
 import { skipList } from "./lists/skip-list";
 import { lruCache } from "./caches/lru";
 import { lfuCache } from "./caches/lfu";
+import { sentinelSearch } from "./searching/sentinel-search";
+import { recursiveBinarySearch } from "./searching/recursive-binary-search";
+import { ternarySearch } from "./searching/ternary-search";
+import { interpolationSearch } from "./searching/interpolation-search";
+import { exponentialSearch } from "./searching/exponential-search";
+import { jumpSearch } from "./searching/jump-search";
+import { fibonacciSearch } from "./searching/fibonacci-search";
+import { uniformBinarySearch } from "./searching/uniform-binary-search";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -174,6 +182,14 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   skipList,
   lruCache,
   lfuCache,
+  sentinelSearch,
+  recursiveBinarySearch,
+  ternarySearch,
+  interpolationSearch,
+  exponentialSearch,
+  jumpSearch,
+  fibonacciSearch,
+  uniformBinarySearch,
   mergeSort,
   quickSort,
   heapSort,

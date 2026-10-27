@@ -107,6 +107,14 @@ import { suffixTrieEntry } from "./entries/suffix-trie";
 import { skipListEntry } from "./entries/skip-list";
 import { lruCacheEntry } from "./entries/lru-cache";
 import { lfuCacheEntry } from "./entries/lfu-cache";
+import { sentinelSearchEntry } from "./entries/sentinel-search";
+import { recursiveBinarySearchEntry } from "./entries/recursive-binary-search";
+import { ternarySearchEntry } from "./entries/ternary-search";
+import { interpolationSearchEntry } from "./entries/interpolation-search";
+import { exponentialSearchEntry } from "./entries/exponential-search";
+import { jumpSearchEntry } from "./entries/jump-search";
+import { fibonacciSearchEntry } from "./entries/fibonacci-search";
+import { uniformBinarySearchEntry } from "./entries/uniform-binary-search";
 import { leftistHeapEntry } from "./entries/leftist-heap";
 import { skewHeapEntry } from "./entries/skew-heap";
 import { morrisTraversalEntry } from "./entries/morris-traversal";
@@ -168,6 +176,14 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   skipListEntry,
   lruCacheEntry,
   lfuCacheEntry,
+  sentinelSearchEntry,
+  recursiveBinarySearchEntry,
+  ternarySearchEntry,
+  interpolationSearchEntry,
+  exponentialSearchEntry,
+  jumpSearchEntry,
+  fibonacciSearchEntry,
+  uniformBinarySearchEntry,
   leftistHeapEntry,
   skewHeapEntry,
   morrisTraversalEntry,

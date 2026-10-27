@@ -190,15 +190,19 @@ describe("catalog search", () => {
       "dfs",
       "dijkstra",
       "euclid",
+      "exponential-search",
       "expression-tree",
       "fenwick-tree",
       "fft",
       "fibonacci-heap",
+      "fibonacci-search",
       "floyd-cycle",
       "graham-scan",
       "hash-chaining",
       "heap-sort",
       "heavy-light",
+      "interpolation-search",
+      "jump-search",
       "kd-tree",
       "kmp",
       "kosaraju",
@@ -229,12 +233,14 @@ describe("catalog search", () => {
       "queue-using-stacks",
       "radix-sort",
       "radix-tree",
+      "recursive-binary-search",
       "red-black-tree",
       "rendezvous-hashing",
       "reverse-linked-list",
       "robin-hood-hashing",
       "scapegoat-tree",
       "segment-tree",
+      "sentinel-search",
       "shunting-yard",
       "skew-heap",
       "skip-list",
@@ -245,6 +251,7 @@ describe("catalog search", () => {
       "suffix-automaton",
       "suffix-tree",
       "tarjan-scc",
+      "ternary-search",
       "ternary-search-tree",
       "topological-sort",
       "topological-sort-dfs",
@@ -252,6 +259,7 @@ describe("catalog search", () => {
       "tree-traversals",
       "trie",
       "two-pointers",
+      "uniform-binary-search",
       "union-find",
       "zobrist-hashing",
     ]);
@@ -269,15 +277,20 @@ describe("catalog search", () => {
       "crt",
       "cuckoo-hashing",
       "euclid",
+      "exponential-search",
       "fenwick-tree",
+      "fibonacci-search",
       "leftist-heap",
       "lfu-cache",
       "lru-cache",
       "matrix-exponentiation",
       "miller-rabin",
       "min-stack",
+      "recursive-binary-search",
       "red-black-tree",
       "segment-tree",
+      "ternary-search",
+      "uniform-binary-search",
       "union-find",
       "zobrist-hashing",
     ]);
@@ -285,14 +298,22 @@ describe("catalog search", () => {
       "binary-search",
       "bubble-sort",
       "counting-sort",
+      "exponential-search",
+      "fibonacci-search",
       "heap-sort",
       "insertion-sort",
+      "interpolation-search",
+      "jump-search",
       "linear-search",
       "merge-sort",
       "quick-sort",
       "radix-sort",
+      "recursive-binary-search",
       "selection-sort",
+      "sentinel-search",
       "shell-sort",
+      "ternary-search",
+      "uniform-binary-search",
     ]);
   });
 
@@ -1695,6 +1716,63 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("searching lessons (batch AC): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const basic = [2, 5, 8, 12, 16, 23, 38, 56, 72, 91];
+    const run = (id: string, value: unknown) => {
+      const r = runAlgorithm(getModule(id)!, value);
+      return { out: r.output as number, c: r.trace.meta.counters };
+    };
+    expect(run("sentinel-search", { values: [7, 3, 9, 1, 4, 8, 2], target: 5 })).toMatchObject({
+      out: -1,
+      c: { comparisons: 8 },
+    });
+    expect(run("sentinel-search", { values: [7, 3, 9, 1, 4, 8, 2], target: 4 }).c.comparisons).toBe(
+      5,
+    );
+    expect(run("recursive-binary-search", { values: basic, target: 23 })).toMatchObject({
+      out: 5,
+      c: { calls: 3, comparisons: 3 },
+    });
+    expect(run("recursive-binary-search", { values: basic, target: 40 }).c.calls).toBe(5);
+    expect(run("ternary-search", { values: [1, 4, 9, 15, 22, 18, 12, 7, 2] })).toMatchObject({
+      out: 4,
+      c: { comparisons: 4 },
+    });
+    const tens = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+    expect(run("interpolation-search", { values: tens, target: 70 })).toMatchObject({
+      out: 6,
+      c: { comparisons: 1 },
+    });
+    expect(
+      run("interpolation-search", { values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 999], target: 9 }),
+    ).toMatchObject({ out: 8, c: { comparisons: 9 } });
+    expect(run("exponential-search", { values: basic, target: 23 })).toMatchObject({
+      out: 5,
+      c: { comparisons: 8 },
+    });
+    const twenty = [1, 3, 4, 6, 9, 11, 14, 17, 20, 22, 25, 29, 31, 34, 38, 41, 45, 48, 52, 57];
+    expect(run("exponential-search", { values: twenty, target: 6 }).c.comparisons).toBe(5);
+    const fib16 = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610];
+    expect(run("jump-search", { values: fib16, target: 55 })).toMatchObject({
+      out: 10,
+      c: { comparisons: 6 },
+    });
+    expect(
+      run("fibonacci-search", {
+        values: [10, 22, 35, 40, 45, 50, 80, 82, 85, 90, 100],
+        target: 85,
+      }),
+    ).toMatchObject({ out: 8, c: { comparisons: 4 } });
+    const { deltaTable } = await import("@/algorithms/searching/uniform-binary-search");
+    expect(deltaTable(10).slice(1)).toEqual([5, 3, 1, 1, 0]);
+    expect(run("uniform-binary-search", { values: basic, target: 23 })).toMatchObject({
+      out: 5,
+      c: { comparisons: 4 },
+    });
+    expect(run("uniform-binary-search", { values: basic, target: 40 }).out).toBe(-1);
   });
 
   it("skip list and cache lessons (batch AB): worked examples match the engine", async () => {
