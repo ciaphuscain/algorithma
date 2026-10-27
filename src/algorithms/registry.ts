@@ -139,6 +139,14 @@ import { naturalMergeSort, bottomUpMergeSort } from "./sorting/merge-variants";
 import { dualPivotQuickSort, threeWayQuickSort } from "./sorting/quick-variants";
 import { weakHeapSort, smoothSort, tournamentSort } from "./sorting/heap-variants";
 import { msdRadixSort, bucketSort, flashSort } from "./sorting/distribution-variants";
+import {
+  timSort,
+  introSort,
+  treeSort,
+  pancakeSort,
+  strandSort,
+  americanFlagSort,
+} from "./sorting/specialized";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -226,6 +234,12 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   msdRadixSort,
   bucketSort,
   flashSort,
+  timSort,
+  introSort,
+  treeSort,
+  pancakeSort,
+  strandSort,
+  americanFlagSort,
   mergeSort,
   quickSort,
   heapSort,

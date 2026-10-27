@@ -6,8 +6,8 @@ ALGORITHMA is an algorithm encyclopedia whose entries can be run. Pick an algori
 
 ## What is here
 
-- **147 interactive algorithms**, covering every Tier 1, 2 and 3 item of the curriculum and more:
-  - searching and sorting: linear search (plain and with a sentinel), binary search (iterative, recursive and Knuth's uniform version), ternary, interpolation, exponential, jump and Fibonacci search; bubble (plain and optimised), cocktail shaker, comb, odd–even, gnome, selection, double selection, bingo, cycle, insertion (plain, binary, library) and patience sort, Shell sort, merge sort (top-down, bottom-up, natural), quicksort (Lomuto, three-way, dual-pivot), heap sort, weak-heap sort, smoothsort, tournament sort; counting, radix (LSD and MSD), bucket and flash sort; randomized quickselect;
+- **153 interactive algorithms**, covering every Tier 1, 2 and 3 item of the curriculum and more:
+  - searching and sorting: linear search (plain and with a sentinel), binary search (iterative, recursive and Knuth's uniform version), ternary, interpolation, exponential, jump and Fibonacci search; bubble (plain and optimised), cocktail shaker, comb, odd–even, gnome, selection, double selection, bingo, cycle, insertion (plain, binary, library) and patience sort, Shell sort, merge sort (top-down, bottom-up, natural), quicksort (Lomuto, three-way, dual-pivot), heap sort, weak-heap sort, smoothsort, tournament sort, Timsort, introsort, tree, pancake and strand sort; counting, radix (LSD, MSD and American flag), bucket and flash sort; randomized quickselect;
   - linked lists: reversal (whole and in groups of k), Floyd's cycle detection, merging sorted lists, two-pointer techniques (palindrome, rotate, remove n-th from end), copying a list with random pointers;
   - stacks: balanced brackets, infix to postfix (shunting-yard), postfix and prefix evaluation, expression trees, Tower of Hanoi;
   - queues and heaps: queue from two stacks and stack from a queue, min/max stack, circular queue (ring buffer), deque, binary heap (priority queue), leftist, skew, binomial, Fibonacci and pairing heaps;

@@ -99,6 +99,14 @@ import {
 import { dualPivotQuickSort, threeWayQuickSort } from "@/algorithms/sorting/quick-variants";
 import { weakHeapSort, smoothSort, tournamentSort } from "@/algorithms/sorting/heap-variants";
 import { msdRadixSort, bucketSort, flashSort } from "@/algorithms/sorting/distribution-variants";
+import {
+  timSort,
+  introSort,
+  treeSort,
+  pancakeSort,
+  strandSort,
+  americanFlagSort,
+} from "@/algorithms/sorting/specialized";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -2946,6 +2954,77 @@ describe("heap and distribution sorting properties", () => {
           expect(cmp(tournamentSort, a)).toBeLessThanOrEqual(n - 1 + n * k);
           const sorted = [...a].sort((x, y) => x - y);
           expect(cmp(smoothSort, sorted)).toBeLessThanOrEqual(4 * n);
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+});
+
+describe("specialized sorting properties", () => {
+  const ok = (m: { check: unknown; id: string }, a: number[], out: unknown) =>
+    expect((m.check as (x: unknown, y: unknown) => string | null)(a, out), m.id).toBeNull();
+  const counters = (m: unknown, a: number[]) =>
+    runAlgorithm(m as never, a, { mode: "count" }).trace.meta.counters;
+
+  it("every variant sorts, with duplicates", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: -30, max: 30 }), { minLength: 1, maxLength: 20 }),
+        (a) => {
+          for (const m of [timSort, introSort, treeSort, pancakeSort, strandSort])
+            ok(m, a, runAlgorithm(m as never, a, { mode: "count" }).output);
+        },
+      ),
+      { numRuns: 300 },
+    );
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 0, max: 999 }), { minLength: 1, maxLength: 24 }),
+        (a) => {
+          ok(americanFlagSort, a, runAlgorithm(americanFlagSort, a, { mode: "count" }).output);
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("Timsort is linear on sorted and strictly reversed input; pancake flips ≤ 2n − 3; introsort falls back on sorted input", () => {
+    fc.assert(
+      fc.property(
+        fc.uniqueArray(fc.integer({ min: -99, max: 99 }), { minLength: 2, maxLength: 30 }),
+        (a) => {
+          const up = [...a].sort((x, y) => x - y);
+          for (const v of [up, [...up].reverse()]) {
+            const k = counters(timSort, v);
+            expect(k.comparisons).toBe(v.length - 1);
+            expect(k.merges ?? 0).toBe(0);
+          }
+          expect(counters(pancakeSort, a).flips ?? 0).toBeLessThanOrEqual(2 * a.length - 3);
+          // With the last element as pivot, sorted input exhausts the depth limit: heapsort takes over.
+          // (Only when the ranges outlast the depth limit before shrinking to the cutoff of 4.)
+          if (a.length - 4 > 2 * Math.floor(Math.log2(a.length)))
+            expect(counters(introSort, up).heapsorts ?? 0).toBeGreaterThanOrEqual(1);
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+
+  it("strand sort makes one strand on sorted input and at least LDS strands", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: -30, max: 30 }), { minLength: 1, maxLength: 16 }),
+        (a) => {
+          const strands = (v: number[]) =>
+            runAlgorithm(strandSort, v).trace.events.at(-1)?.vars?.strands as number;
+          expect(strands([...a].sort((x, y) => x - y))).toBe(1);
+          const lds: number[] = [];
+          a.forEach((x, i) => {
+            lds[i] = 1;
+            for (let j = 0; j < i; j++) if (a[j]! > x) lds[i] = Math.max(lds[i]!, lds[j]! + 1);
+          });
+          expect(strands(a)).toBeGreaterThanOrEqual(Math.max(...lds));
         },
       ),
       { numRuns: 300 },

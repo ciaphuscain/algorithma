@@ -136,6 +136,12 @@ import { tournamentSortEntry } from "./entries/tournament-sort";
 import { msdRadixSortEntry } from "./entries/msd-radix-sort";
 import { bucketSortEntry } from "./entries/bucket-sort";
 import { flashSortEntry } from "./entries/flash-sort";
+import { timSortEntry } from "./entries/tim-sort";
+import { introSortEntry } from "./entries/intro-sort";
+import { treeSortEntry } from "./entries/tree-sort";
+import { pancakeSortEntry } from "./entries/pancake-sort";
+import { strandSortEntry } from "./entries/strand-sort";
+import { americanFlagSortEntry } from "./entries/american-flag-sort";
 import { leftistHeapEntry } from "./entries/leftist-heap";
 import { skewHeapEntry } from "./entries/skew-heap";
 import { morrisTraversalEntry } from "./entries/morris-traversal";
@@ -226,6 +232,12 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   msdRadixSortEntry,
   bucketSortEntry,
   flashSortEntry,
+  timSortEntry,
+  introSortEntry,
+  treeSortEntry,
+  pancakeSortEntry,
+  strandSortEntry,
+  americanFlagSortEntry,
   leftistHeapEntry,
   skewHeapEntry,
   morrisTraversalEntry,
