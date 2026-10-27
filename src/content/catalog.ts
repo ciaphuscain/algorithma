@@ -130,6 +130,12 @@ import { naturalMergeSortEntry } from "./entries/natural-merge-sort";
 import { bottomUpMergeSortEntry } from "./entries/bottom-up-merge-sort";
 import { dualPivotQuickSortEntry } from "./entries/dual-pivot-quick-sort";
 import { threeWayQuickSortEntry } from "./entries/three-way-quick-sort";
+import { weakHeapSortEntry } from "./entries/weak-heap-sort";
+import { smoothSortEntry } from "./entries/smooth-sort";
+import { tournamentSortEntry } from "./entries/tournament-sort";
+import { msdRadixSortEntry } from "./entries/msd-radix-sort";
+import { bucketSortEntry } from "./entries/bucket-sort";
+import { flashSortEntry } from "./entries/flash-sort";
 import { leftistHeapEntry } from "./entries/leftist-heap";
 import { skewHeapEntry } from "./entries/skew-heap";
 import { morrisTraversalEntry } from "./entries/morris-traversal";
@@ -214,6 +220,12 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   bottomUpMergeSortEntry,
   dualPivotQuickSortEntry,
   threeWayQuickSortEntry,
+  weakHeapSortEntry,
+  smoothSortEntry,
+  tournamentSortEntry,
+  msdRadixSortEntry,
+  bucketSortEntry,
+  flashSortEntry,
   leftistHeapEntry,
   skewHeapEntry,
   morrisTraversalEntry,

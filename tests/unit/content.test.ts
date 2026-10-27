@@ -239,6 +239,7 @@ describe("catalog search", () => {
       "monotonic-queue",
       "monotonic-stack",
       "morris-traversal",
+      "msd-radix-sort",
       "natural-merge-sort",
       "ntt",
       "open-addressing",
@@ -263,6 +264,7 @@ describe("catalog search", () => {
       "skew-heap",
       "skip-list",
       "sliding-window",
+      "smooth-sort",
       "sparse-table",
       "splay-tree",
       "suffix-array",
@@ -273,12 +275,14 @@ describe("catalog search", () => {
       "ternary-search-tree",
       "topological-sort",
       "topological-sort-dfs",
+      "tournament-sort",
       "treap",
       "tree-traversals",
       "trie",
       "two-pointers",
       "uniform-binary-search",
       "union-find",
+      "weak-heap-sort",
       "zobrist-hashing",
     ]);
     expect(slugs({ maxWorst: "log n" }).sort()).toEqual([
@@ -318,6 +322,7 @@ describe("catalog search", () => {
       "bingo-sort",
       "bottom-up-merge-sort",
       "bubble-sort",
+      "bucket-sort",
       "cocktail-shaker-sort",
       "comb-sort",
       "counting-sort",
@@ -326,6 +331,7 @@ describe("catalog search", () => {
       "dual-pivot-quick-sort",
       "exponential-search",
       "fibonacci-search",
+      "flash-sort",
       "gnome-sort",
       "heap-sort",
       "insertion-sort",
@@ -334,6 +340,7 @@ describe("catalog search", () => {
       "library-sort",
       "linear-search",
       "merge-sort",
+      "msd-radix-sort",
       "natural-merge-sort",
       "odd-even-sort",
       "optimized-bubble-sort",
@@ -344,9 +351,12 @@ describe("catalog search", () => {
       "selection-sort",
       "sentinel-search",
       "shell-sort",
+      "smooth-sort",
       "ternary-search",
       "three-way-quick-sort",
+      "tournament-sort",
       "uniform-binary-search",
+      "weak-heap-sort",
     ]);
   });
 
@@ -1749,6 +1759,38 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("heap and distribution sorting lessons (batch AF): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const c = (id: string, value: number[]) => {
+      const r = runAlgorithm(getModule(id)!, value);
+      return { ...r.trace.meta.counters, ...(r.trace.events.at(-1)?.vars ?? {}) } as Record<
+        string,
+        number
+      >;
+    };
+    const sorted8 = [1, 2, 3, 4, 5, 6, 7, 8];
+    expect(c("weak-heap-sort", sorted8).comparisons).toBe(17);
+    expect(c("weak-heap-sort", [9, 8, 7, 6, 5, 4, 3, 2]).comparisons).toBe(19);
+    expect(c("smooth-sort", sorted8)).toMatchObject({ comparisons: 17, swaps: 0 });
+    expect(c("heap-sort", [1, 2, 3, 4, 5, 6, 7])).toMatchObject({ comparisons: 21, swaps: 16 });
+    expect(c("smooth-sort", [9, 8, 7, 6, 5, 4, 3, 2])).toMatchObject({
+      comparisons: 34,
+      swaps: 18,
+    });
+    expect(c("tournament-sort", [5, 9, 2, 7, 4, 8, 1, 6]).comparisons).toBe(17);
+    expect(c("msd-radix-sort", [512, 507, 519, 503, 98, 511, 534, 5]).calls).toBe(5);
+    expect(c("msd-radix-sort", [170, 45, 75, 90, 802, 24, 2, 66]).calls).toBe(2);
+    expect(c("bucket-sort", [78, 17, 39, 26, 72, 94, 21, 12, 23, 68])).toMatchObject({
+      comparisons: 3,
+      swaps: 1,
+    });
+    expect(c("bucket-sort", [41, 44, 40, 47, 43, 42, 3, 95]).comparisons).toBe(11);
+    expect(c("flash-sort", [42, 7, 88, 15, 63, 29, 94, 51, 3, 76, 34, 60])).toMatchObject({
+      classes: 5,
+      comparisons: 37,
+    });
   });
 
   it("insertion and divide-and-conquer sorting lessons (batch AE): worked examples match the engine", async () => {

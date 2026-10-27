@@ -97,6 +97,8 @@ import {
   naturalRuns,
 } from "@/algorithms/sorting/merge-variants";
 import { dualPivotQuickSort, threeWayQuickSort } from "@/algorithms/sorting/quick-variants";
+import { weakHeapSort, smoothSort, tournamentSort } from "@/algorithms/sorting/heap-variants";
+import { msdRadixSort, bucketSort, flashSort } from "@/algorithms/sorting/distribution-variants";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -2890,6 +2892,62 @@ describe("insertion and divide-and-conquer sorting properties", () => {
           runAlgorithm(threeWayQuickSort, a, { mode: "count" }).trace.meta.counters.partitions ?? 0;
         expect(parts).toBeLessThanOrEqual(new Set(a).size);
       }),
+      { numRuns: 300 },
+    );
+  });
+});
+
+describe("heap and distribution sorting properties", () => {
+  const ok = (m: { check: unknown; id: string }, a: number[], out: unknown) =>
+    expect((m.check as (x: unknown, y: unknown) => string | null)(a, out), m.id).toBeNull();
+  const cmp = (m: unknown, a: number[]) =>
+    runAlgorithm(m as never, a, { mode: "count" }).trace.meta.counters.comparisons ?? 0;
+
+  it("every variant sorts, with duplicates", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: -50, max: 50 }), { minLength: 1, maxLength: 16 }),
+        (a) => {
+          for (const m of [weakHeapSort, smoothSort, tournamentSort, flashSort])
+            ok(m, a, runAlgorithm(m as never, a, { mode: "count" }).output);
+        },
+      ),
+      { numRuns: 300 },
+    );
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 0, max: 99 }), { minLength: 1, maxLength: 24 }),
+        (a) => {
+          for (const m of [msdRadixSort, bucketSort])
+            ok(m, a, runAlgorithm(m as never, a, { mode: "count" }).output);
+        },
+      ),
+      { numRuns: 300 },
+    );
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: 0, max: 999 }), { minLength: 1, maxLength: 24 }),
+        (a) => {
+          ok(msdRadixSort, a, runAlgorithm(msdRadixSort, a, { mode: "count" }).output);
+        },
+      ),
+      { numRuns: 200 },
+    );
+  });
+
+  it("comparison bounds: weak-heapsort, tournament sort, and smoothsort on sorted input", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.integer({ min: -50, max: 50 }), { minLength: 2, maxLength: 16 }),
+        (a) => {
+          const n = a.length;
+          const k = Math.ceil(Math.log2(n));
+          expect(cmp(weakHeapSort, a)).toBeLessThanOrEqual(n * k - 2 ** k + n - 1);
+          expect(cmp(tournamentSort, a)).toBeLessThanOrEqual(n - 1 + n * k);
+          const sorted = [...a].sort((x, y) => x - y);
+          expect(cmp(smoothSort, sorted)).toBeLessThanOrEqual(4 * n);
+        },
+      ),
       { numRuns: 300 },
     );
   });

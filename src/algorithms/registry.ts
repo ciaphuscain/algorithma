@@ -137,6 +137,8 @@ import { librarySort } from "./sorting/library-sort";
 import { patienceSort } from "./sorting/patience-sort";
 import { naturalMergeSort, bottomUpMergeSort } from "./sorting/merge-variants";
 import { dualPivotQuickSort, threeWayQuickSort } from "./sorting/quick-variants";
+import { weakHeapSort, smoothSort, tournamentSort } from "./sorting/heap-variants";
+import { msdRadixSort, bucketSort, flashSort } from "./sorting/distribution-variants";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -218,6 +220,12 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   bottomUpMergeSort,
   dualPivotQuickSort,
   threeWayQuickSort,
+  weakHeapSort,
+  smoothSort,
+  tournamentSort,
+  msdRadixSort,
+  bucketSort,
+  flashSort,
   mergeSort,
   quickSort,
   heapSort,
