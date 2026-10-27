@@ -115,6 +115,10 @@ import { majorityVote } from "@/algorithms/arrays/majority-vote";
 import { fisherYates, reservoirSampling } from "@/algorithms/arrays/random-sampling";
 import { findDuplicate } from "@/algorithms/arrays/find-duplicate";
 import { prefixXor } from "@/algorithms/arrays/prefix-xor";
+import { lazySegmentTree } from "@/algorithms/trees/lazy-segment-tree";
+import { sqrtDecomposition } from "@/algorithms/arrays/sqrt-decomposition";
+import { moAlgorithm } from "@/algorithms/arrays/mo-algorithm";
+import { offlineQueries } from "@/algorithms/arrays/offline-queries";
 import type { GraphInputValue } from "@/algorithms/inputs";
 import { layoutGraph } from "@/lib/graph-layout";
 import { TracePlayer } from "@/engine/player";
@@ -3196,6 +3200,56 @@ describe("array technique properties (batch AI)", () => {
         expect(r.trace.meta.counters.reads).toBeLessThanOrEqual(3 * (mu + lambda) + 2 * mu);
         const q = prefixXor.input.random(createRng(seed), m);
         expect(counters(prefixXor, q).reads).toBe(q.values.length + 2 * q.queries.length);
+      }),
+      { numRuns: 300 },
+    );
+  });
+});
+
+describe("range query properties (batch AJ)", () => {
+  const counters = (m: Parameters<typeof runAlgorithm>[0], input: unknown) =>
+    runAlgorithm(m, input, { mode: "count" }).trace.meta.counters;
+
+  it("a lazy segment tree visits at most 4 nodes per level for each operation", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 1, max: 16 }), fc.nat(), (n, seed) => {
+        const inp = lazySegmentTree.input.random(createRng(seed), n);
+        for (const op of inp.ops) {
+          const one = { values: inp.values, ops: [op] };
+          const levels = Math.ceil(Math.log2(n)) + 1;
+          expect(counters(lazySegmentTree, one)["nodes visited"]).toBeLessThanOrEqual(4 * levels);
+        }
+      }),
+      { numRuns: 200 },
+    );
+  });
+
+  it("sqrt decomposition reads fewer than 2b + n/b values per query", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 1, max: 16 }), fc.nat(), fc.nat(), (n, a, c) => {
+        const values = Array.from({ length: n }, (_, i) => i);
+        const [l, r] = [a % n, c % n].sort((x, y) => x - y) as [number, number];
+        const b = Math.ceil(Math.sqrt(n));
+        const reads =
+          counters(sqrtDecomposition, { values, ops: [{ kind: "sum", l, r }] }).reads! - n;
+        expect(reads).toBeLessThanOrEqual(2 * (b - 1) + Math.ceil(n / b));
+      }),
+      { numRuns: 300 },
+    );
+  });
+
+  it("Mo's window moves O((n + q)√n) steps and agrees with the offline sweep", () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 1, max: 16 }), fc.nat(), (n, seed) => {
+        const inp = moAlgorithm.input.random(createRng(seed), n);
+        const b = Math.max(1, Math.ceil(Math.sqrt(n)));
+        const r = runAlgorithm(moAlgorithm, inp, { mode: "count" });
+        expect(r.trace.meta.counters.moves ?? 0).toBeLessThanOrEqual(
+          2 * n * Math.ceil(n / b) + 2 * inp.queries.length * b,
+        );
+        expect(runAlgorithm(offlineQueries, inp, { mode: "count" }).output.answers).toEqual(
+          r.output.answers,
+        );
       }),
       { numRuns: 300 },
     );

@@ -6,7 +6,7 @@ ALGORITHMA is an algorithm encyclopedia whose entries can be run. Pick an algori
 
 ## What is here
 
-- **165 interactive algorithms**, covering every Tier 1, 2 and 3 item of the curriculum and more:
+- **169 interactive algorithms**, covering every Tier 1, 2 and 3 item of the curriculum and more:
   - searching and sorting: linear search (plain and with a sentinel), binary search (iterative, recursive and Knuth's uniform version), ternary, interpolation, exponential, jump and Fibonacci search; bubble (plain and optimised), cocktail shaker, comb, odd–even, gnome, selection, double selection, bingo, cycle, insertion (plain, binary, library) and patience sort, Shell sort, merge sort (top-down, bottom-up, natural), quicksort (Lomuto, three-way, dual-pivot), heap sort, weak-heap sort, smoothsort, tournament sort, Timsort, introsort, block (rotation-based in-place merging), tree, pancake and strand sort; bead, sleep (simulated) and bogo sort; counting, radix (LSD, MSD and American flag), bucket and flash sort; randomized quickselect;
   - linked lists: reversal (whole and in groups of k), Floyd's cycle detection, merging sorted lists, two-pointer techniques (palindrome, rotate, remove n-th from end), copying a list with random pointers;
   - stacks: balanced brackets, infix to postfix (shunting-yard), postfix and prefix evaluation, expression trees, Tower of Hanoi;
@@ -14,11 +14,11 @@ ALGORITHMA is an algorithm encyclopedia whose entries can be run. Pick an algori
   - lists and caches: skip list, LRU and LFU caches;
   - balanced search trees: AVL, red-black, splay, treap, scapegoat and AA; B-trees, B+ trees and B\* trees; Morris (stackless) traversal;
   - hashing: separate chaining, open addressing (linear probing, double hashing), Robin Hood and cuckoo hashing; consistent and rendezvous hashing; Zobrist hashing;
-  - arrays: prefix sums and prefix XOR, difference arrays, sliding window, two pointers, monotonic stack and queue, sparse table, Kadane's maximum subarray, the Dutch national flag, Boyer–Moore majority vote, Fisher–Yates shuffle, reservoir sampling, finding a duplicate with Floyd's cycle detection;
+  - arrays: prefix sums and prefix XOR, difference arrays, sliding window, two pointers, monotonic stack and queue, sparse table, Kadane's maximum subarray, the Dutch national flag, Boyer–Moore majority vote, Fisher–Yates shuffle, reservoir sampling, finding a duplicate with Floyd's cycle detection; square-root decomposition, Mo's algorithm and offline query processing;
   - graphs: BFS, DFS, Dijkstra, A\*, Bellman–Ford, Floyd–Warshall, topological sort (Kahn and DFS), strongly connected components (Kosaraju, Tarjan), bridges and articulation points, union-find, Kruskal, Prim; maximum flow (Dinic, push–relabel) and bipartite matching (Hopcroft–Karp);
   - dynamic programming: memoization vs tabulation, edit distance, LCS, 0/1 knapsack, longest increasing subsequence, Held–Karp, assignment by bitmask DP, digit DP, the convex hull trick;
   - strings: KMP, Rabin–Karp (rolling hash), Aho–Corasick, Manacher, suffix array, suffix tree, suffix automaton;
-  - trees: traversals, binary search trees, tries (plain, radix, Patricia, ternary search tree, suffix trie), segment trees, Fenwick trees, binary lifting (LCA), heavy-light decomposition, k-d trees;
+  - trees: traversals, binary search trees, tries (plain, radix, Patricia, ternary search tree, suffix trie), segment trees (plain and lazy), Fenwick trees, binary lifting (LCA), heavy-light decomposition, k-d trees;
   - maths: the extended Euclidean algorithm, the sieve of Eratosthenes, matrix exponentiation, Miller–Rabin, Pollard's rho, the Chinese remainder theorem, NTT and FFT;
   - geometry: Graham scan, closest pair of points;
   - search and learning: Monte Carlo tree search, gradient descent;

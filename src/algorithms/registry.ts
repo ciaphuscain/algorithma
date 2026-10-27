@@ -155,6 +155,10 @@ import { majorityVote } from "./arrays/majority-vote";
 import { fisherYates, reservoirSampling } from "./arrays/random-sampling";
 import { findDuplicate } from "./arrays/find-duplicate";
 import { prefixXor } from "./arrays/prefix-xor";
+import { lazySegmentTree } from "./trees/lazy-segment-tree";
+import { sqrtDecomposition } from "./arrays/sqrt-decomposition";
+import { moAlgorithm } from "./arrays/mo-algorithm";
+import { offlineQueries } from "./arrays/offline-queries";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -269,6 +273,10 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   bst,
   trie,
   segmentTree,
+  lazySegmentTree,
+  sqrtDecomposition,
+  moAlgorithm,
+  offlineQueries,
   unionFind,
   kruskal,
   prim,

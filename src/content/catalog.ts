@@ -154,6 +154,10 @@ import { fisherYatesEntry } from "./entries/fisher-yates";
 import { reservoirSamplingEntry } from "./entries/reservoir-sampling";
 import { floydFindDuplicateEntry } from "./entries/floyd-find-duplicate";
 import { prefixXorEntry } from "./entries/prefix-xor";
+import { lazySegmentTreeEntry } from "./entries/lazy-segment-tree";
+import { sqrtDecompositionEntry } from "./entries/sqrt-decomposition";
+import { moAlgorithmEntry } from "./entries/mo-algorithm";
+import { offlineDistinctQueriesEntry } from "./entries/offline-distinct-queries";
 import { leftistHeapEntry } from "./entries/leftist-heap";
 import { skewHeapEntry } from "./entries/skew-heap";
 import { morrisTraversalEntry } from "./entries/morris-traversal";
@@ -262,6 +266,10 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   reservoirSamplingEntry,
   floydFindDuplicateEntry,
   prefixXorEntry,
+  lazySegmentTreeEntry,
+  sqrtDecompositionEntry,
+  moAlgorithmEntry,
+  offlineDistinctQueriesEntry,
   leftistHeapEntry,
   skewHeapEntry,
   morrisTraversalEntry,

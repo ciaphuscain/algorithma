@@ -234,6 +234,7 @@ describe("catalog search", () => {
       "kmp",
       "kosaraju",
       "kruskal",
+      "lazy-segment-tree",
       "leftist-heap",
       "lfu-cache",
       "linear-search",
@@ -316,6 +317,7 @@ describe("catalog search", () => {
       "exponential-search",
       "fenwick-tree",
       "fibonacci-search",
+      "lazy-segment-tree",
       "leftist-heap",
       "lfu-cache",
       "lru-cache",
@@ -1783,6 +1785,48 @@ describe("worked examples agree with the engine", () => {
     });
     expect((cr.output as { random: unknown[] }).random).toEqual([null, 0, 4, 2, 0]);
     expect(cr.trace.meta.counters.copies).toBe(5);
+  });
+
+  it("range query lessons (batch AJ): worked examples match the engine", async () => {
+    const { runAlgorithm } = await import("@/algorithms/run");
+    const run = (id: string, value: unknown) => runAlgorithm(getModule(id)!, value);
+    const lazy = run("lazy-segment-tree", {
+      values: [5, 8, 6, 3, 2, 7, 2, 6],
+      ops: [
+        { kind: "add", l: 2, r: 6, d: 3 },
+        { kind: "sum", l: 0, r: 3 },
+        { kind: "add", l: 0, r: 7, d: -1 },
+        { kind: "sum", l: 4, r: 5 },
+      ],
+    });
+    expect(lazy.output).toEqual({ sums: [28, 13], total: 46 });
+    expect(lazy.trace.meta.counters).toMatchObject({ pushes: 2, "nodes visited": 18 });
+    const sq = run("sqrt-decomposition", {
+      values: [5, 8, 6, 3, 2, 7, 2, 6],
+      ops: [
+        { kind: "sum", l: 2, r: 5 },
+        { kind: "set", i: 3, value: 10 },
+        { kind: "sum", l: 0, r: 7 },
+      ],
+    });
+    expect([sq.output.sums, sq.trace.meta.counters.reads]).toEqual([[18, 46], 15]);
+    const value = {
+      values: [1, 2, 1, 3, 2, 2, 4, 1, 3],
+      queries: [
+        [0, 4],
+        [6, 8],
+        [1, 3],
+        [2, 7],
+        [4, 5],
+      ],
+    };
+    const mo = run("mo-algorithm", value);
+    expect(mo.output).toEqual({ answers: [3, 3, 3, 4, 1], order: [2, 0, 3, 4, 1] });
+    expect(mo.trace.meta.counters.moves).toBe(21);
+    expect(run("offline-distinct-queries", value).output).toEqual({
+      answers: [3, 3, 3, 4, 1],
+      order: [2, 0, 4, 3, 1],
+    });
   });
 
   it("array technique lessons (batch AI): worked examples match the engine", async () => {
