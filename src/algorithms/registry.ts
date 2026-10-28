@@ -159,6 +159,9 @@ import { lazySegmentTree } from "./trees/lazy-segment-tree";
 import { sqrtDecomposition } from "./arrays/sqrt-decomposition";
 import { moAlgorithm } from "./arrays/mo-algorithm";
 import { offlineQueries } from "./arrays/offline-queries";
+import { coordinateCompression } from "./arrays/coordinate-compression";
+import { cartesianTree } from "./arrays/cartesian-tree";
+import { sweepLine } from "./arrays/sweep-line";
 
 /**
  * Every traceable algorithm. Registering a module here is the only step needed for
@@ -277,6 +280,9 @@ export const ALGORITHM_MODULES: readonly AnyAlgorithmModule[] = [
   sqrtDecomposition,
   moAlgorithm,
   offlineQueries,
+  coordinateCompression,
+  cartesianTree,
+  sweepLine,
   unionFind,
   kruskal,
   prim,
