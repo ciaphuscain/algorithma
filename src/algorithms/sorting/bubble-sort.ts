@@ -37,7 +37,11 @@ export const bubbleSort: AlgorithmModule<number[], number[]> = {
     t.step({ line: 2, vars: { n }, note: `The array has n = ${n} element${n === 1 ? "" : "s"}.` });
 
     for (let i = 0; i <= n - 2; i++) {
-      t.step({ line: 3, vars: { i, j: null }, note: `Pass ${i + 1}: bubble the largest remaining value to position ${n - 1 - i}.` });
+      t.step({
+        line: 3,
+        vars: { i, j: null },
+        note: `Pass ${i + 1}: bubble the largest remaining value to position ${n - 1 - i}.`,
+      });
       for (let j = 0; j <= n - 2 - i; j++) {
         const order = A.compare(j, j + 1, () => ({
           line: 5,
@@ -54,7 +58,12 @@ export const bubbleSort: AlgorithmModule<number[], number[]> = {
         note: `${A.get(n - 1 - i)} has reached its final position ${n - 1 - i}.`,
       }));
     }
-    if (n > 0) A.mark(0, "sorted", { line: 8, vars: { i: null, j: null }, note: "The remaining element is the smallest. The array is sorted." });
+    if (n > 0)
+      A.mark(0, "sorted", {
+        line: 8,
+        vars: { i: null, j: null },
+        note: "The remaining element is the smallest. The array is sorted.",
+      });
     const output = A.toArray() as number[];
     t.finish(input, output, { line: 8 });
     return output;
