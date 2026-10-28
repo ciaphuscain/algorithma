@@ -158,6 +158,46 @@ import { lazySegmentTreeEntry } from "./entries/lazy-segment-tree";
 import { sqrtDecompositionEntry } from "./entries/sqrt-decomposition";
 import { moAlgorithmEntry } from "./entries/mo-algorithm";
 import { offlineDistinctQueriesEntry } from "./entries/offline-distinct-queries";
+import { sweepLineEntry } from "./entries/sweep-line";
+import { coordinateCompressionEntry } from "./entries/coordinate-compression";
+import { cartesianTreeEntry } from "./entries/cartesian-tree";
+import { bloomFilterEntry } from "./entries/bloom-filter";
+import { countingBloomFilterEntry } from "./entries/counting-bloom-filter";
+import { cuckooFilterEntry } from "./entries/cuckoo-filter";
+import { countMinSketchEntry } from "./entries/count-min-sketch";
+import { hyperLogLogEntry } from "./entries/hyperloglog";
+import { minHashEntry } from "./entries/minhash";
+import { perfectHashingEntry } from "./entries/perfect-hashing";
+import { universalHashingEntry } from "./entries/universal-hashing";
+import { fibonacciDpEntry } from "./entries/fibonacci-dp";
+import { climbingStairsEntry } from "./entries/climbing-stairs";
+import { minCostClimbingStairsEntry } from "./entries/min-cost-climbing-stairs";
+import { houseRobberEntry } from "./entries/house-robber";
+import { houseRobberIiEntry } from "./entries/house-robber-ii";
+import { unboundedKnapsackEntry } from "./entries/unbounded-knapsack";
+import { coinChangeMinEntry } from "./entries/coin-change-min";
+import { coinChangeWaysEntry } from "./entries/coin-change-ways";
+import { matrixChainEntry } from "./entries/matrix-chain-multiplication";
+import { uniquePathsEntry } from "./entries/unique-paths";
+import { minimumPathSumEntry } from "./entries/minimum-path-sum";
+import { differenceConstraintsEntry } from "./entries/difference-constraints";
+import { binaryLiftingArraysEntry } from "./entries/binary-lifting-arrays";
+import { naiveStringMatchingEntry } from "./entries/naive-string-matching";
+import { zAlgorithmEntry } from "./entries/z-algorithm";
+import { binaryExponentiationEntry } from "./entries/binary-exponentiation";
+import { iterativeDfsEntry } from "./entries/iterative-dfs";
+import { bidirectionalBfsEntry } from "./entries/bidirectional-bfs";
+import { longestCommonSubstringEntry } from "./entries/longest-common-substring";
+import { longestPalindromicSubsequenceEntry } from "./entries/longest-palindromic-subsequence";
+import { quotientFilterEntry } from "./entries/quotient-filter";
+import { softHeapEntry } from "./entries/soft-heap";
+import { ropeEntry } from "./entries/rope";
+import { gapBufferEntry } from "./entries/gap-buffer";
+import { huffmanTreeEntry } from "./entries/huffman-tree";
+import { intervalTreeEntry } from "./entries/interval-tree";
+import { eulerTourEntry } from "./entries/euler-tour";
+import { iddfsEntry } from "./entries/iddfs";
+import { johnsonsAlgorithmEntry } from "./entries/johnsons-algorithm";
 import { leftistHeapEntry } from "./entries/leftist-heap";
 import { skewHeapEntry } from "./entries/skew-heap";
 import { morrisTraversalEntry } from "./entries/morris-traversal";
@@ -270,6 +310,46 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   sqrtDecompositionEntry,
   moAlgorithmEntry,
   offlineDistinctQueriesEntry,
+  sweepLineEntry,
+  coordinateCompressionEntry,
+  cartesianTreeEntry,
+  bloomFilterEntry,
+  countingBloomFilterEntry,
+  cuckooFilterEntry,
+  countMinSketchEntry,
+  hyperLogLogEntry,
+  minHashEntry,
+  perfectHashingEntry,
+  universalHashingEntry,
+  fibonacciDpEntry,
+  climbingStairsEntry,
+  minCostClimbingStairsEntry,
+  houseRobberEntry,
+  houseRobberIiEntry,
+  unboundedKnapsackEntry,
+  coinChangeMinEntry,
+  coinChangeWaysEntry,
+  matrixChainEntry,
+  uniquePathsEntry,
+  minimumPathSumEntry,
+  differenceConstraintsEntry,
+  binaryLiftingArraysEntry,
+  naiveStringMatchingEntry,
+  zAlgorithmEntry,
+  binaryExponentiationEntry,
+  iterativeDfsEntry,
+  bidirectionalBfsEntry,
+  longestCommonSubstringEntry,
+  longestPalindromicSubsequenceEntry,
+  quotientFilterEntry,
+  softHeapEntry,
+  ropeEntry,
+  gapBufferEntry,
+  huffmanTreeEntry,
+  intervalTreeEntry,
+  eulerTourEntry,
+  iddfsEntry,
+  johnsonsAlgorithmEntry,
   leftistHeapEntry,
   skewHeapEntry,
   morrisTraversalEntry,
