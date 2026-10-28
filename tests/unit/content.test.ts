@@ -152,7 +152,14 @@ describe("catalog search", () => {
     // Bidirectional BFS also matches.
     const bfsHits = slugs({ query: "BFS" });
     expect(bfsHits).toContain("bfs");
-    expect([...bfsHits].sort()).toEqual(["bfs", "bidirectional-bfs", "dinic", "hopcroft-karp", "iddfs", "tree-traversals"]);
+    expect([...bfsHits].sort()).toEqual([
+      "bfs",
+      "bidirectional-bfs",
+      "dinic",
+      "hopcroft-karp",
+      "iddfs",
+      "tree-traversals",
+    ]);
     expect(slugs({ query: "levenshtein" })).toEqual(["edit-distance"]);
     expect(slugs({ query: "shortest path" })).toEqual(expect.arrayContaining(["bfs", "dijkstra"]));
     expect(slugs({ query: "stable sort" }).sort()).toEqual([
