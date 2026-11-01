@@ -43,7 +43,7 @@ export const cycleDetectionUndirectedEntry: AlgorithmEntry = {
       },
       {
         kind: "callout",
-        tone: "warn",
+        tone: "warning",
         text: "Multi-edges between the same pair of vertices form a cycle. Track edge indices or count occurrences if multi-edges are possible.",
         title: "Multi-edges",
       },

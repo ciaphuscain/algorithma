@@ -49,7 +49,7 @@ export const lz77Entry: AlgorithmEntry = {
         text: "Compression ratio depends on data redundancy. Larger windows find more matches but increase search time.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "LZ77 is universal: it asymptotically achieves the entropy rate for stationary ergodic sources. DEFLATE, gzip, and zlib are all based on LZ77.",
@@ -99,7 +99,6 @@ def lz77_decompress(tokens: list[tuple[int, int, str]]) -> str:
       tests: [
         {
           args: ["aabcabc"],
-          expected_type: "list",
         },
       ],
     },
@@ -159,7 +158,7 @@ def lz77_decompress(tokens: list[tuple[int, int, str]]) -> str:
     ],
     answers: [
       {
-        marks: 4,
+        marks: 5,
         outline: [
           "Token format (1).",
           "Window search (1).",

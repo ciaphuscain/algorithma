@@ -49,7 +49,7 @@ export const commentzWalterEntry: AlgorithmEntry = {
         text: "Sub-linear average case: $O(n \\cdot m_{\\min} / m_{\\max})$ where shifts skip based on the shortest pattern length.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "In practice, Wu-Manber (hash-based) is preferred for large pattern sets; Commentz-Walter excels with few long patterns.",
@@ -178,7 +178,7 @@ export const commentzWalterEntry: AlgorithmEntry = {
     ],
     answers: [
       {
-        marks: 4,
+        marks: 5,
         outline: ["Trie construction (1).", "Shift heuristics (2).", "Comparison with AC (1)."],
       },
     ],

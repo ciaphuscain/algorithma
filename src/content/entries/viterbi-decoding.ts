@@ -49,7 +49,7 @@ export const viterbiDecodingEntry: AlgorithmEntry = {
         text: "$O(T \\cdot |S|^2)$ time where T is sequence length and |S| is state count. Space $O(T \\cdot |S|)$ for traceback.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "For convolutional codes, the Viterbi algorithm is maximum likelihood decoding on the code trellis. Soft-decision Viterbi uses continuous channel outputs for ~2dB gain over hard-decision.",

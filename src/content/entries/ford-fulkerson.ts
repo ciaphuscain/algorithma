@@ -53,7 +53,7 @@ export const fordFulkersonEntry: AlgorithmEntry = {
       },
       {
         kind: "callout",
-        tone: "warn",
+        tone: "warning",
         text: "With DFS, the algorithm may not terminate for irrational capacities. Use BFS (Edmonds-Karp) for guaranteed polynomial time.",
         title: "Termination",
       },

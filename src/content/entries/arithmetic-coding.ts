@@ -49,7 +49,7 @@ export const arithmeticCodingEntry: AlgorithmEntry = {
         text: "Optimal: the code length approaches the entropy $H = -\\sum p_i \\log_2 p_i$, with at most 2 bits overhead for the entire message.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "Unlike Huffman coding which assigns whole bits per symbol, arithmetic coding can use fractional bits, achieving better compression for skewed distributions.",
@@ -97,7 +97,6 @@ def arithmetic_decode(code: float, length: int, probs: dict[str, tuple[float, fl
               b: [0.6, 1.0],
             },
           ],
-          expected_range: [0.0, 1.0],
         },
       ],
     },
@@ -152,7 +151,7 @@ def arithmetic_decode(code: float, length: int, probs: dict[str, tuple[float, fl
     ],
     answers: [
       {
-        marks: 4,
+        marks: 5,
         outline: ["Interval narrowing (2).", "Why near-optimal (1).", "vs Huffman (1)."],
       },
     ],

@@ -49,7 +49,7 @@ export const directedAcyclicWordGraphDawgEntry: AlgorithmEntry = {
         text: "At most $2n-1$ states and $3n-4$ transitions for a string of length $n$. Construction is $O(n)$.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "The endpos set of a state is the set of ending positions of all occurrences. States form a tree via suffix links, which is the reverse of the suffix tree's edges.",

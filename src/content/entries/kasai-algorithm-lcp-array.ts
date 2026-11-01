@@ -51,7 +51,7 @@ export const kasaiAlgorithmLcpArrayEntry: AlgorithmEntry = {
         text: "$O(n)$: k increases at most n times total (bounded by string length) and decreases by at most 1 per iteration.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "The LCP array enables O(1) LCP queries between any two suffixes using range minimum queries, which powers many suffix-array-based algorithms.",
@@ -159,7 +159,7 @@ export const kasaiAlgorithmLcpArrayEntry: AlgorithmEntry = {
     ],
     answers: [
       {
-        marks: 4,
+        marks: 5,
         outline: ["Algorithm (2).", "Amortized proof (1).", "Applications (1)."],
       },
     ],

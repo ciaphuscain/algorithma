@@ -48,7 +48,7 @@ export const stringInterleavingDpEntry: AlgorithmEntry = {
         text: "$O(mn)$ time and $O(mn)$ space, reducible to $O(\\min(m,n))$ space.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "The problem is equivalent to finding a path in a grid from (0,0) to (m,n) where right moves consume s2 characters and down moves consume s1 characters.",
@@ -153,7 +153,7 @@ export const stringInterleavingDpEntry: AlgorithmEntry = {
     ],
     answers: [
       {
-        marks: 4,
+        marks: 5,
         outline: ["Recurrence (2).", "Base cases (1).", "Grid analogy (1)."],
       },
     ],

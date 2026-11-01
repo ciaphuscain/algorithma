@@ -48,7 +48,7 @@ export const lexicographicRankAlgorithmEntry: AlgorithmEntry = {
         text: "With distinct characters: $\\text{rank} = \\sum_{i} c_i \\cdot (n-i-1)!$ where $c_i$ is the count of smaller remaining characters.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "This is essentially converting to the factorial number system. The inverse operation reconstructs the permutation from its rank.",
@@ -161,7 +161,7 @@ function lexRank(s) {
     ],
     answers: [
       {
-        marks: 3,
+        marks: 2,
         outline: ["Formula (1).", "Duplicate handling (1).", "Example (1)."],
       },
     ],

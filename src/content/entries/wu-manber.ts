@@ -51,7 +51,7 @@ export const wuManberEntry: AlgorithmEntry = {
         text: "Average case $O(Bn/m)$ where m is the shortest pattern length. Degrades when many patterns share B-gram suffixes.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "Wu-Manber scales well with pattern count: adding patterns mainly increases HASH table collisions without affecting the shift table much.",
@@ -186,7 +186,7 @@ export const wuManberEntry: AlgorithmEntry = {
     ],
     answers: [
       {
-        marks: 4,
+        marks: 5,
         outline: ["Shift table (2).", "Hash table (1).", "Comparison with AC (1)."],
       },
     ],

@@ -49,7 +49,7 @@ export const lz78Entry: AlgorithmEntry = {
         text: "Universal: asymptotically optimal for stationary ergodic sources. Number of phrases is $O(n / \\log n)$.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "LZ78 influenced LZW (dictionary initialized with single characters, outputs only indices). LZW was widely used in GIF and Unix compress.",
@@ -99,7 +99,6 @@ def lz78_decompress(tokens: list[tuple[int, str]]) -> str:
       tests: [
         {
           args: ["aabaabaab"],
-          expected_type: "list",
         },
       ],
     },
@@ -163,7 +162,7 @@ def lz78_decompress(tokens: list[tuple[int, str]]) -> str:
     ],
     answers: [
       {
-        marks: 4,
+        marks: 5,
         outline: [
           "Token format (1).",
           "Dictionary growth (1).",

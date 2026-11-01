@@ -49,7 +49,7 @@ export const deflateEntry: AlgorithmEntry = {
         text: "Compression ratio depends on data redundancy. Typically 60-70% reduction on text. Block-level adaptivity helps handle varying data characteristics.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "DEFLATE's simplicity and effectiveness made it ubiquitous. Zstandard improves on it with ANS and larger windows, but DEFLATE remains the standard for compatibility.",
@@ -105,7 +105,6 @@ def simplified_inflate(tokens: list) -> str:
       tests: [
         {
           args: ["abcabcabc"],
-          expected_type: "list",
         },
       ],
     },
@@ -170,7 +169,7 @@ def simplified_inflate(tokens: list) -> str:
     ],
     answers: [
       {
-        marks: 4,
+        marks: 5,
         outline: ["LZ77 stage (1).", "Huffman stage (1).", "Block types (1).", "Applications (1)."],
       },
     ],

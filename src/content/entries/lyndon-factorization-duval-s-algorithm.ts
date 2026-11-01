@@ -50,7 +50,7 @@ export const lyndonFactorizationDuvalSAlgorithmEntry: AlgorithmEntry = {
         text: "$O(n)$ time: each character is visited at most three times across the pointer advances.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "Lyndon factorization connects to suffix arrays: the suffixes of each Lyndon factor appear consecutively in the suffix array.",
@@ -151,7 +151,7 @@ export const lyndonFactorizationDuvalSAlgorithmEntry: AlgorithmEntry = {
     ],
     answers: [
       {
-        marks: 4,
+        marks: 5,
         outline: ["Lyndon word definition (1).", "Duval algorithm (2).", "Uniqueness theorem (1)."],
       },
     ],

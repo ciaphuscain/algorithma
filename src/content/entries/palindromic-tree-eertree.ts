@@ -49,7 +49,7 @@ export const palindromicTreeEertreeEntry: AlgorithmEntry = {
         text: "A string of length n has at most n+1 distinct palindromic substrings (including empty). Construction is amortized $O(n)$.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "The palindromic tree enables counting occurrences of all palindromic substrings, finding the longest palindrome, and solving palindrome-based DP problems.",

@@ -49,7 +49,7 @@ export const fmIndexFullTextSearchEntry: AlgorithmEntry = {
         text: "Counting takes $O(m)$ backward steps. Each step is O(1) with rank data structures. Space is $O(n \\cdot H_k)$ bits where $H_k$ is the k-th order entropy.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "The FM-index achieves self-indexing: the text can be reconstructed from the index, so no separate storage needed. Combined with sampling, locate queries are $O(m + \\text{occ} \\cdot \\log^\\epsilon n)$.",

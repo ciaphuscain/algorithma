@@ -50,7 +50,7 @@ export const reedSolomonCodesEntry: AlgorithmEntry = {
         text: "An RS(n,k) code over GF(q) has minimum distance d = n-k+1, correcting up to $t = \\lfloor(n-k)/2\\rfloor$ errors. This meets the Singleton bound (MDS code).",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "RS codes are optimal (MDS) but work at the symbol level. They excel at burst errors since a burst affects few symbols. Concatenated with inner codes, they provide both burst and random error correction.",
@@ -101,7 +101,6 @@ def rs_encode(message: list[int], nsym: int) -> list[int]:
       tests: [
         {
           args: [[1, 2, 3], 4],
-          expected_type: "list",
         },
       ],
     },

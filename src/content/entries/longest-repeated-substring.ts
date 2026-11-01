@@ -48,7 +48,7 @@ export const longestRepeatedSubstringEntry: AlgorithmEntry = {
         text: "$O(n)$ with linear SA construction and Kasai's algorithm.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "For the k-th longest repeated substring or repeated substrings with at least k occurrences, combine LCP with stack-based range queries.",
@@ -165,7 +165,7 @@ export const longestRepeatedSubstringEntry: AlgorithmEntry = {
     ],
     answers: [
       {
-        marks: 3,
+        marks: 2,
         outline: ["SA+LCP (1).", "Max LCP (1).", "Applications (1)."],
       },
     ],

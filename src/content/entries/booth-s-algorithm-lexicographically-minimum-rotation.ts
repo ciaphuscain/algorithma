@@ -55,7 +55,7 @@ export const boothSAlgorithmLexicographicallyMinimumRotationEntry: AlgorithmEntr
         text: "$O(n)$ time since each comparison either advances j or reduces i, similar to KMP analysis.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "Booth's algorithm is useful for canonical forms: two strings are rotations of each other if and only if their Booth-normalized forms are identical.",
@@ -167,7 +167,7 @@ export const boothSAlgorithmLexicographicallyMinimumRotationEntry: AlgorithmEntr
     ],
     answers: [
       {
-        marks: 4,
+        marks: 5,
         outline: ["Algorithm (2).", "Complexity proof (1).", "Application (1)."],
       },
     ],

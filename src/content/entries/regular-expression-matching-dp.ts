@@ -50,7 +50,7 @@ export const regularExpressionMatchingDpEntry: AlgorithmEntry = {
         text: "$O(mn)$ time and space where m=|s|, n=|p|.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "This DP handles the specific regex subset of '.', '*'. Full regex matching (with '+', '?', character classes) requires NFA-based approaches like Thompson's construction.",
@@ -159,7 +159,7 @@ export const regularExpressionMatchingDpEntry: AlgorithmEntry = {
     ],
     answers: [
       {
-        marks: 4,
+        marks: 5,
         outline: ["Recurrence (2).", "Base cases (1).", "Complexity (1)."],
       },
     ],

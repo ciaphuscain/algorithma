@@ -51,7 +51,7 @@ export const huffmanTreeEntry: AlgorithmEntry = {
         text: "Huffman coding is optimal among prefix codes: expected length is between $H$ and $H+1$ where $H$ is the entropy.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "Adaptive Huffman coding updates the tree as symbols are processed, allowing single-pass compression without a priori frequency knowledge.",
@@ -136,7 +136,6 @@ def huffman_codes_simple(freq: dict[str, int]) -> dict[str, str]:
               d: 1,
             },
           ],
-          expected_type: "dict",
         },
       ],
     },

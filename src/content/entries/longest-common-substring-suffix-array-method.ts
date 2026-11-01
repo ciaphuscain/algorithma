@@ -48,7 +48,7 @@ export const longestCommonSubstringSuffixArrayMethodEntry: AlgorithmEntry = {
         text: "$O(n)$ with linear SA and Kasai's LCP, where n = |A| + |B| + 2.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "For k strings, use a generalized suffix array and sweep with a sliding window minimum over LCP values, requiring suffixes from all k strings in the window.",
@@ -180,7 +180,7 @@ export const longestCommonSubstringSuffixArrayMethodEntry: AlgorithmEntry = {
     ],
     answers: [
       {
-        marks: 4,
+        marks: 5,
         outline: [
           "Concatenation (1).",
           "SA+LCP construction (1).",

@@ -49,7 +49,7 @@ export const ldpcDecodingBeliefPropagationEntry: AlgorithmEntry = {
         text: "For a code with n bits and m checks, each iteration is $O(n \\cdot d_v)$ where $d_v$ is the average variable node degree. Typically 10-50 iterations suffice.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "LDPC codes with BP decoding approach Shannon capacity on AWGN channels. Density evolution predicts the threshold noise level.",
@@ -105,7 +105,6 @@ def ldpc_decode(H: list[list[int]], llr: list[float], max_iter: int = 50) -> lis
             [2.0, -1.0, 1.5, 0.5],
             10,
           ],
-          expected_type: "list",
         },
       ],
     },

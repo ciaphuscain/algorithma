@@ -47,7 +47,7 @@ export const wildcardPatternMatchingEntry: AlgorithmEntry = {
         text: "DP is $O(mn)$ time and space. Greedy is $O(mn)$ worst case but $O(n)$ amortized for most patterns.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "Wildcard matching is simpler than regex: '*' is independent (not tied to a preceding char) and '?' is exactly one char, not zero or one.",
@@ -148,7 +148,7 @@ export const wildcardPatternMatchingEntry: AlgorithmEntry = {
     ],
     answers: [
       {
-        marks: 3,
+        marks: 2,
         outline: ["DP recurrence (2).", "Difference from regex (1)."],
       },
     ],

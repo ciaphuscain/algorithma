@@ -50,7 +50,7 @@ export const lzwEntry: AlgorithmEntry = {
         text: "$O(n)$ time with hash table dictionary. Space is $O(D)$ where D is dictionary size, typically capped at 2^12 to 2^16 entries.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "LZW was patented (Unisys) until 2004, which drove the transition from GIF to PNG (which uses DEFLATE). Now patent-free, LZW remains in TIFF and PDF.",
@@ -175,7 +175,7 @@ def lzw_decompress(codes: list[int]) -> str:
     ],
     answers: [
       {
-        marks: 4,
+        marks: 5,
         outline: ["Algorithm (2).", "Special decode case (1).", "Applications (1)."],
       },
     ],

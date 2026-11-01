@@ -47,7 +47,7 @@ export const asymmetricNumeralSystemsAnsEntry: AlgorithmEntry = {
         text: "Achieves compression within 1 bit of entropy per symbol. Encoding and decoding are each $O(1)$ per symbol after table construction.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "ANS combines the compression ratio of arithmetic coding with the speed of Huffman coding. Used in Zstandard (zstd), LZFSE, and JPEG XL.",
@@ -97,7 +97,6 @@ def rans_decode(x: int, length: int, freqs: list[int]) -> list[int]:
             [0, 0, 1, 0],
             [3, 1],
           ],
-          expected_type: "int",
         },
       ],
     },
@@ -157,7 +156,7 @@ def rans_decode(x: int, length: int, freqs: list[int]) -> list[int]:
     ],
     answers: [
       {
-        marks: 4,
+        marks: 5,
         outline: [
           "rANS formula (2).",
           "Comparison with arithmetic coding (1).",

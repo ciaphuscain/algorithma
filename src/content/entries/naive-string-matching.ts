@@ -48,7 +48,7 @@ export const naiveStringMatchingEntry: AlgorithmEntry = {
         text: "Worst case: $O((n-m+1) \\cdot m)$, e.g., text 'aaa...a' and pattern 'aa...ab'. Best case $O(n)$ when first character mismatches everywhere.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "Despite poor worst-case performance, naive search is competitive on random text because mismatches happen quickly on average, giving expected $O(n)$ with random patterns.",
@@ -138,7 +138,7 @@ export const naiveStringMatchingEntry: AlgorithmEntry = {
     ],
     answers: [
       {
-        marks: 3,
+        marks: 2,
         outline: [
           "Algorithm description (1).",
           "Complexity analysis (1).",

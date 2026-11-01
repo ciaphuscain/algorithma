@@ -49,7 +49,7 @@ export const zAlgorithmEntry: AlgorithmEntry = {
         text: "$O(n)$: each comparison either extends R (at most n times total) or completes in O(1) using cached values.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "The Z-algorithm generalizes to multiple patterns by concatenation. It also provides a simpler derivation of the KMP failure function.",

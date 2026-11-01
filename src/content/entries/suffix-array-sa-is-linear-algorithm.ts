@@ -51,7 +51,7 @@ export const suffixArraySaIsLinearAlgorithmEntry: AlgorithmEntry = {
         text: "$O(n)$ time: T(n) = T(n/2) + O(n) solves to O(n). Space is $O(n)$ with careful implementation.",
       },
     ],
-    deeper: [
+    advanced: [
       {
         kind: "p",
         text: "SA-IS is practically fast with small constants. It replaced DC3/Skew as the preferred linear SA construction algorithm.",
