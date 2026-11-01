@@ -67,7 +67,7 @@ export const wuManberEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "wu_manber",
+      entry: "wu_manber_search",
       code: `def wu_manber_search(text: str, patterns: list[str]) -> list[tuple[int, str]]:
     if not patterns:
         return []
@@ -124,7 +124,7 @@ export const wuManberEntry: AlgorithmEntry = {
     },
     {
       language: "javascript",
-      entry: "wuManber",
+      entry: "wuManberSearch",
       code: `function wuManberSearch(text, patterns) {
   if (!patterns.length) return [];
   const results = [];

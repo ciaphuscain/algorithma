@@ -97,7 +97,7 @@ export const persistentSegmentTreeEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "PersistentSegTree",
+      entry: "test_persistent_seg",
       code: `class Node:
     __slots__ = ['val', 'left', 'right']
     def __init__(self, val=0, left=None, right=None):

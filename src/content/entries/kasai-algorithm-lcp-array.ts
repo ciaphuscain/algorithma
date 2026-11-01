@@ -67,7 +67,7 @@ export const kasaiAlgorithmLcpArrayEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "kasai_algorithm",
+      entry: "kasai",
       code: `def kasai(s: str, sa: list[int]) -> list[int]:
     n = len(s)
     rank = [0] * n
@@ -96,7 +96,7 @@ export const kasaiAlgorithmLcpArrayEntry: AlgorithmEntry = {
     },
     {
       language: "javascript",
-      entry: "kasaiAlgorithm",
+      entry: "kasai",
       code: `function kasai(s, sa) {
   const n = s.length, rank = new Array(n), lcp = new Array(n).fill(0);
   for (let i = 0; i < n; i++) rank[sa[i]] = i;

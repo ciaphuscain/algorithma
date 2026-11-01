@@ -65,7 +65,7 @@ export const commentzWalterEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "commentz_walter",
+      entry: "commentz_walter_search",
       code: `def commentz_walter_search(text: str, patterns: list[str]) -> list[tuple[int, str]]:
     if not patterns:
         return []
@@ -114,7 +114,7 @@ export const commentzWalterEntry: AlgorithmEntry = {
     },
     {
       language: "javascript",
-      entry: "commentzWalter",
+      entry: "commentzWalterSearch",
       code: `function commentzWalterSearch(text, patterns) {
   if (!patterns.length) return [];
   const minLen = Math.min(...patterns.map(p => p.length));

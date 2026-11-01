@@ -103,7 +103,7 @@ export const eulerSTotientFunctionEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "euler_totient",
+      entry: "eulerTotient",
       code: `def euler_totient(n):
     """Return phi(n): count of integers in [1, n] coprime to n."""
     if n <= 0:

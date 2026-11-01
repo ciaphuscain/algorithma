@@ -67,7 +67,7 @@ export const suffixArraySaIsLinearAlgorithmEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "sa_is",
+      entry: "build_suffix_array",
       code: `def build_suffix_array(s: str) -> list[int]:
     """O(n log n) suffix array construction (simplified; true SA-IS is complex)."""
     n = len(s)
@@ -103,7 +103,7 @@ export const suffixArraySaIsLinearAlgorithmEntry: AlgorithmEntry = {
     },
     {
       language: "javascript",
-      entry: "suffixArraySaIs",
+      entry: "buildSuffixArray",
       code: `function buildSuffixArray(s) {
   const n = s.length;
   let sa = [...Array(n).keys()];

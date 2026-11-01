@@ -130,7 +130,7 @@ export const paxosEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "two_proposers",
+      entry: "propose",
       code: `class Acceptor:
     def __init__(self):
         self.promised = 0

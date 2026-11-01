@@ -66,7 +66,7 @@ export const lzwEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "lzw",
+      entry: "lzw_decompress",
       code: `def lzw_compress(data: str) -> list[int]:
     dictionary = {chr(i): i for i in range(256)}
     next_code = 256
@@ -112,7 +112,7 @@ def lzw_decompress(codes: list[int]) -> str:
     },
     {
       language: "javascript",
-      entry: "lzw",
+      entry: "lzwCompress",
       code: `function lzwCompress(data) {
   const dict = {};
   for (let i = 0; i < 256; i++) dict[String.fromCharCode(i)] = i;

@@ -64,7 +64,7 @@ export const lexicographicRankAlgorithmEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "lexicographic_rank",
+      entry: "lex_rank",
       code: `from math import factorial
 from collections import Counter
 
@@ -100,7 +100,7 @@ def lex_rank(s: str) -> int:
     },
     {
       language: "javascript",
-      entry: "lexicographicRank",
+      entry: "lexRank",
       code: `function factorial(n) { let r = 1; for (let i = 2; i <= n; i++) r *= i; return r; }
 function lexRank(s) {
   const n = s.length, freq = {};

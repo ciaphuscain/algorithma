@@ -63,7 +63,7 @@ export const wildcardPatternMatchingEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "wildcard_pattern_matching",
+      entry: "is_match",
       code: `def is_match(s: str, p: str) -> bool:
     m, n = len(s), len(p)
     dp = [[False] * (n + 1) for _ in range(m + 1)]
@@ -96,7 +96,7 @@ export const wildcardPatternMatchingEntry: AlgorithmEntry = {
     },
     {
       language: "javascript",
-      entry: "wildcardPatternMatching",
+      entry: "isMatch",
       code: `function isMatch(s, p) {
   const m = s.length, n = p.length;
   const dp = Array.from({length: m+1}, () => new Array(n+1).fill(false));

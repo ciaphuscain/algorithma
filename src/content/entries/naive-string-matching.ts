@@ -64,7 +64,7 @@ export const naiveStringMatchingEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "naive_string_matching",
+      entry: "naive_search",
       code: `def naive_search(text: str, pattern: str) -> list[int]:
     n, m = len(text), len(pattern)
     result = []
@@ -90,7 +90,7 @@ export const naiveStringMatchingEntry: AlgorithmEntry = {
     },
     {
       language: "javascript",
-      entry: "naiveStringMatching",
+      entry: "naiveSearch",
       code: `function naiveSearch(text, pattern) {
   const result = [];
   for (let i = 0; i <= text.length - pattern.length; i++) {

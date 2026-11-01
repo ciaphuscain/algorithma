@@ -85,7 +85,7 @@ export const bitonicSortEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "bitonic_sort",
+      entry: "bitonicSort",
       code: `def bitonic_sort(arr):
     """Sort array using bitonic sort. Array length must be a power of 2."""
     a = list(arr)

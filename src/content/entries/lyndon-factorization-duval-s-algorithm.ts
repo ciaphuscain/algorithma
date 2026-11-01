@@ -66,7 +66,7 @@ export const lyndonFactorizationDuvalSAlgorithmEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "lyndon_factorization",
+      entry: "duval",
       code: `def duval(s: str) -> list[str]:
     n = len(s)
     factorization = []
@@ -97,7 +97,7 @@ export const lyndonFactorizationDuvalSAlgorithmEntry: AlgorithmEntry = {
     },
     {
       language: "javascript",
-      entry: "lyndonFactorization",
+      entry: "duval",
       code: `function duval(s) {
   const n = s.length, result = [];
   let i = 0;

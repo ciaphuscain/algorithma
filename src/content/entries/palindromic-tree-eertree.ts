@@ -65,7 +65,7 @@ export const palindromicTreeEertreeEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "palindromic_tree",
+      entry: "build_eertree",
       code: `class Node:
     def __init__(self, length, suffix_link=0):
         self.length = length
@@ -116,7 +116,7 @@ def build_eertree(s: str) -> int:
     },
     {
       language: "javascript",
-      entry: "palindromicTree",
+      entry: "countDistinctPalindromes",
       code: `function countDistinctPalindromes(s) {
   const nodes = [{len: -1, suf: 0, ch: {}}, {len: 0, suf: 0, ch: {}}];
   let last = 1;

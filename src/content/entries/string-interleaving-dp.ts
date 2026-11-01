@@ -64,7 +64,7 @@ export const stringInterleavingDpEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "string_interleaving_dp",
+      entry: "is_interleave",
       code: `def is_interleave(s1: str, s2: str, s3: str) -> bool:
     m, n = len(s1), len(s2)
     if m + n != len(s3):
@@ -101,7 +101,7 @@ export const stringInterleavingDpEntry: AlgorithmEntry = {
     },
     {
       language: "javascript",
-      entry: "stringInterleavingDp",
+      entry: "isInterleave",
       code: `function isInterleave(s1, s2, s3) {
   const m = s1.length, n = s2.length;
   if (m + n !== s3.length) return false;

@@ -65,7 +65,7 @@ export const fmIndexFullTextSearchEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "fm_index",
+      entry: "fm_count",
       code: `def build_fm_index(text: str):
     text = text + "$"
     n = len(text)

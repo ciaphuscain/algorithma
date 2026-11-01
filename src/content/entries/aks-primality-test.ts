@@ -12,7 +12,7 @@ export const aksPrimalityTestEntry: AlgorithmEntry = {
     "The first deterministic polynomial-time primality test, proving that PRIMES is in P, based on a generalization of Fermat's little theorem to polynomial rings.",
   tags: ["primality", "number theory", "polynomial", "deterministic"],
   prerequisites: ["Modular Arithmetic"],
-  related: ["miller-rabin", "sieve-of-eratosthenes"],
+  related: ["miller-rabin", "sieve"],
   problem: {
     input: "A positive integer n >= 2.",
     output: "Whether n is prime or composite.",

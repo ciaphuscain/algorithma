@@ -65,7 +65,7 @@ export const deflateEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "deflate",
+      entry: "simplified_inflate",
       code: `def simplified_deflate(data: str) -> list:
     tokens = []
     i = 0
@@ -109,7 +109,7 @@ def simplified_inflate(tokens: list) -> str:
     },
     {
       language: "javascript",
-      entry: "deflate",
+      entry: "simplifiedDeflate",
       code: `function simplifiedDeflate(data) {
   const tokens = [];
   let i = 0;

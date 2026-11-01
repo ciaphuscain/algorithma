@@ -67,7 +67,7 @@ export const huffmanTreeEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "huffman_tree",
+      entry: "huffman_codes_simple",
       code: `import heapq
 
 def huffman_codes(freq: dict[str, int]) -> dict[str, str]:
@@ -137,7 +137,7 @@ def huffman_codes_simple(freq: dict[str, int]) -> dict[str, str]:
     },
     {
       language: "javascript",
-      entry: "huffmanTree",
+      entry: "huffmanCodes",
       code: `function huffmanCodes(freq) {
   const entries = Object.entries(freq);
   if (entries.length <= 1) return entries.length ? {[entries[0][0]]: "0"} : {};

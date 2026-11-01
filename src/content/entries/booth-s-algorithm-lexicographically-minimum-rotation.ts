@@ -71,7 +71,7 @@ export const boothSAlgorithmLexicographicallyMinimumRotationEntry: AlgorithmEntr
   implementations: [
     {
       language: "python",
-      entry: "booths_algorithm",
+      entry: "least_rotation",
       code: `def least_rotation(s: str) -> int:
     s2 = s + s
     n = len(s)
@@ -109,7 +109,7 @@ export const boothSAlgorithmLexicographicallyMinimumRotationEntry: AlgorithmEntr
     },
     {
       language: "javascript",
-      entry: "boothsAlgorithm",
+      entry: "leastRotation",
       code: `function leastRotation(s) {
   const s2 = s + s, n = s.length;
   const f = new Array(2 * n).fill(-1);

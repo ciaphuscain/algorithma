@@ -65,7 +65,7 @@ export const arithmeticCodingEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "arithmetic_coding",
+      entry: "arithmetic_decode",
       code: `def arithmetic_encode(message: str, probs: dict[str, tuple[float, float]]) -> float:
     low, high = 0.0, 1.0
     for ch in message:
@@ -101,7 +101,7 @@ def arithmetic_decode(code: float, length: int, probs: dict[str, tuple[float, fl
     },
     {
       language: "javascript",
-      entry: "arithmeticCoding",
+      entry: "arithmeticEncode",
       code: `function arithmeticEncode(message, probs) {
   let low = 0, high = 1;
   for (const ch of message) {

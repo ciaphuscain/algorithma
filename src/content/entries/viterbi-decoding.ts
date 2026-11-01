@@ -65,7 +65,7 @@ export const viterbiDecodingEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "viterbi_decoding",
+      entry: "viterbi",
       code: `import math
 
 def viterbi(obs: list[int], states: list[int], start_p: list[float],
@@ -110,7 +110,7 @@ def viterbi(obs: list[int], states: list[int], start_p: list[float],
     },
     {
       language: "javascript",
-      entry: "viterbiDecoding",
+      entry: "viterbi",
       code: `function viterbi(obs, states, startP, transP, emitP) {
   const T = obs.length, S = states.length;
   const dp = Array.from({length: T}, () => new Array(S).fill(-Infinity));

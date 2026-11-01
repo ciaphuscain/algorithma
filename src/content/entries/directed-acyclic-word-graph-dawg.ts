@@ -65,7 +65,7 @@ export const directedAcyclicWordGraphDawgEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "dawg",
+      entry: "count_distinct_substrings",
       code: `class State:
     def __init__(self):
         self.link = -1
@@ -122,7 +122,7 @@ def count_distinct_substrings(s: str) -> int:
     },
     {
       language: "javascript",
-      entry: "dawg",
+      entry: "countDistinctSubstrings",
       code: `function countDistinctSubstrings(s) {
   const sa = [{link: -1, len: 0, trans: {}}];
   let last = 0;

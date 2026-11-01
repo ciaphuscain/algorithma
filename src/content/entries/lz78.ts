@@ -65,7 +65,7 @@ export const lz78Entry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "lz78",
+      entry: "lz78_decompress",
       code: `def lz78_compress(data: str) -> list[tuple[int, str]]:
     dictionary: dict[str, int] = {"": 0}
     tokens = []
@@ -109,7 +109,7 @@ def lz78_decompress(tokens: list[tuple[int, str]]) -> str:
     },
     {
       language: "javascript",
-      entry: "lz78",
+      entry: "lz78Compress",
       code: `function lz78Compress(data) {
   const dict = {"": 0};
   const tokens = [];

@@ -65,7 +65,7 @@ export const zAlgorithmEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "z_algorithm",
+      entry: "z_search",
       code: `def z_function(s: str) -> list[int]:
     n = len(s)
     z = [0] * n
@@ -99,7 +99,7 @@ def z_search(text: str, pattern: str) -> list[int]:
     },
     {
       language: "javascript",
-      entry: "zAlgorithm",
+      entry: "zFunction",
       code: `function zFunction(s) {
   const n = s.length, z = new Array(n).fill(0);
   z[0] = n;

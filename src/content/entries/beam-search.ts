@@ -92,7 +92,7 @@ export const beamSearchEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "beam_search",
+      entry: "beamSearch",
       code: `def beam_search(start, expand, score, beam_width, max_depth):
     """Beam search: keep top beam_width candidates at each level.
     expand(state) -> list of next states.

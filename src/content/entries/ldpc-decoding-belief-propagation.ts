@@ -65,7 +65,7 @@ export const ldpcDecodingBeliefPropagationEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "ldpc_bp",
+      entry: "ldpc_decode",
       code: `import math
 
 def ldpc_decode(H: list[list[int]], llr: list[float], max_iter: int = 50) -> list[int]:
@@ -109,7 +109,7 @@ def ldpc_decode(H: list[list[int]], llr: list[float], max_iter: int = 50) -> lis
     },
     {
       language: "javascript",
-      entry: "ldpcBp",
+      entry: "ldpcDecode",
       code: `function ldpcDecode(H, llr, maxIter = 50) {
   const m = H.length, n = H[0].length;
   const c2v = Array.from({length: m}, () => new Array(n).fill(0));

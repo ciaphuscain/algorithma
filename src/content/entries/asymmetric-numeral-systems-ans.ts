@@ -63,7 +63,7 @@ export const asymmetricNumeralSystemsAnsEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "ans",
+      entry: "rans_decode",
       code: `def rans_encode(message: list[int], freqs: list[int]) -> int:
     total = sum(freqs)
     cumul = [0] * (len(freqs) + 1)
@@ -101,7 +101,7 @@ def rans_decode(x: int, length: int, freqs: list[int]) -> list[int]:
     },
     {
       language: "javascript",
-      entry: "ans",
+      entry: "ransEncode",
       code: `function ransEncode(message, freqs) {
   const total = freqs.reduce((a, b) => a + b, 0);
   const cumul = [0];

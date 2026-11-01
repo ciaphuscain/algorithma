@@ -66,7 +66,7 @@ export const reedSolomonCodesEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "reed_solomon",
+      entry: "rs_encode",
       code: `def gf256_mul(a: int, b: int) -> int:
     p = 0
     for _ in range(8):
@@ -105,7 +105,7 @@ def rs_encode(message: list[int], nsym: int) -> list[int]:
     },
     {
       language: "javascript",
-      entry: "reedSolomon",
+      entry: "rsEncode",
       code: `function gf256Mul(a, b) {
   let p = 0;
   for (let i = 0; i < 8; i++) {

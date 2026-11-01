@@ -66,7 +66,7 @@ export const regularExpressionMatchingDpEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "regex_matching_dp",
+      entry: "is_match",
       code: `def is_match(s: str, p: str) -> bool:
     m, n = len(s), len(p)
     dp = [[False] * (n + 1) for _ in range(m + 1)]
@@ -101,7 +101,7 @@ export const regularExpressionMatchingDpEntry: AlgorithmEntry = {
     },
     {
       language: "javascript",
-      entry: "regexMatchingDp",
+      entry: "isMatch",
       code: `function isMatch(s, p) {
   const m = s.length, n = p.length;
   const dp = Array.from({length: m + 1}, () => new Array(n + 1).fill(false));

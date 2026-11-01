@@ -86,7 +86,7 @@ export const oddEvenMergeSortEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "parallel_reduce",
+      entry: "parallelReduce",
       code: `def parallel_reduce(arr):
     """Simulate parallel reduction (sum) on an array.
     Returns the sum computed via divide and conquer (tree reduction)."""
