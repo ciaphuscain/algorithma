@@ -3,91 +3,141 @@ import type { AlgorithmEntry } from "../types";
 export const stateCompressionDpEntry: AlgorithmEntry = {
   slug: "state-compression-dp",
   name: "State Compression DP",
-  aliases: ["State Compression DP"],
+  aliases: ["Bitmask DP", "DP with bitmasks"],
   curriculum: [254],
   domain: "dynamic-programming",
   subcategory: "Dynamic Programming",
   difficulty: "intermediate",
-  summary: "State Compression DP is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["state compression dp", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+  summary:
+    "State compression DP represents subsets of elements as bitmasks, enabling DP over exponentially many states in O(2^n · poly(n)) time.",
+  tags: ["dynamic programming", "bitmask", "subset", "exponential"],
+  prerequisites: ["Dynamic Programming"],
+  related: ["space-optimized-dp", "state-machine-dp"],
   problem: {
-    input: "Input for State Compression DP.",
-    output: "Output of State Compression DP.",
+    input: "A problem where the state is a subset of n elements (n typically ≤ 20).",
+    output: "The optimal value over all subsets, computed by iterating over 2^n bitmask states.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "State Compression DP solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "When the DP state involves 'which items have been used', we can represent this as a bitmask: an integer where bit i is 1 if item i is included. For n ≤ 20, there are 2^n ≈ 10^6 states, which is feasible.",
+      },
+      {
+        kind: "p",
+        text: "The classic example is the travelling salesman problem (TSP): dp[mask][i] = minimum cost to visit the cities in mask, ending at city i. The bitmask encodes which cities have been visited.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Encode subsets as integers: mask = 0b1010 means items 1 and 3 are selected.",
+          "Iterate over all masks from 0 to 2^n - 1.",
+          "For each mask, try adding each unvisited element and update dp[new_mask].",
+          "Use bitwise operations: check bit i with (mask >> i) & 1, set bit i with mask | (1 << i).",
+        ],
+      },
+      {
         kind: "p",
-        text: "The State Compression DP algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Worked example** (TSP, 4 cities): dp[0001][0]=0 (start at city 0). dp[0011][1] = dist(0,1). dp[0101][2] = dist(0,2). ... dp[1111][i] = min over all paths visiting all cities, ending at i, + dist(i,0).",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of State Compression DP follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "n must be small (typically ≤ 20-25) since the state space is 2^n.",
+          "Iterate masks in increasing order to ensure subsets are processed before supersets.",
+          "Common operations: enumerate submasks of a mask with `sub = (sub - 1) & mask`.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of State Compression DP is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time: O(2^n · n) for TSP, O(3^n) for subset convolution. Space: O(2^n). The 2^n factor is optimal for problems that inherently require considering all subsets (like TSP, which is NP-hard).",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of State Compression DP exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Subset sum convolution runs in O(2^n · n^2) using the ranked Möbius transform.",
+          "Profile DP (broken profile) uses bitmasks for one dimension of a grid problem.",
+          "The Held–Karp algorithm for TSP is the canonical state-compression DP, running in O(2^n · n^2).",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      best: "O(2^n n)",
+      average: "O(2^n n)",
+      worst: "O(2^n n^2)",
     },
-    space: "O(n)",
-    worstClass: "other",
+    space: "O(2^n n)",
+    worstClass: "2^n",
+    note: "Exponential in n but polynomial for fixed n; practical for n ≤ 20.",
   },
   properties: [
     {
-      label: "Domain",
-      value: "dynamic programming",
+      label: "State space",
+      value: "2^n subsets",
+    },
+    {
+      label: "Applicable n",
+      value: "Typically ≤ 20",
+    },
+    {
+      label: "Subset encoding",
+      value: "Integer bitmask",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "tsp_bitmask",
+      code: `def tsp_bitmask(dist):
+    """Solve TSP on dist matrix (n x n). Returns minimum tour cost starting and ending at 0."""
+    n = len(dist)
+    INF = float('inf')
+    dp = [[INF]*n for _ in range(1 << n)]
+    dp[1][0] = 0  # start at city 0
+    for mask in range(1 << n):
+        for u in range(n):
+            if dp[mask][u] == INF: continue
+            if not (mask >> u & 1): continue
+            for v in range(n):
+                if mask >> v & 1: continue
+                nm = mask | (1 << v)
+                if dp[mask][u] + dist[u][v] < dp[nm][v]:
+                    dp[nm][v] = dp[mask][u] + dist[u][v]
+    full = (1 << n) - 1
+    return min(dp[full][i] + dist[i][0] for i in range(n))
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [0, 10, 15, 20],
+              [10, 0, 35, 25],
+              [15, 35, 0, 30],
+              [20, 25, 30, 0],
+            ],
+          ],
+          expected: 80,
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [0, 1, 2],
+              [1, 0, 3],
+              [2, 3, 0],
+            ],
+          ],
+          expected: 6,
         },
       ],
     },
@@ -95,54 +145,48 @@ export const stateCompressionDpEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "state-compression-dp-q1",
+      id: "bitmask-check",
       kind: "mcq",
-      prompt: "What is the primary purpose of State Compression DP?",
-      options: [
-        "To solve the State Compression DP problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "How do you check if city i is in bitmask 'mask'?",
+      options: ["(mask >> i) & 1", "mask % i", "mask[i]", "mask & i"],
       answer: 0,
-      explanation: "State Compression DP is designed to solve its specific problem efficiently.",
-      hints: ["Think about what State Compression DP does."],
-      objective: "Purpose",
+      explanation: "Right-shift by i and AND with 1 extracts bit i from the mask.",
+      hints: ["Think about bitwise operations."],
+      objective: "Know bitmask operations",
     },
   ],
   exam: {
-    definition: "State Compression DP is an algorithm in the domain of dynamic programming.",
+    definition:
+      "State compression DP encodes subsets as bitmasks, enabling DP over 2^n states for subset-based problems.",
     steps: [
-      "Apply the State Compression DP algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Represent subsets as integers.",
+      "Iterate masks in order.",
+      "Transition by adding/removing elements.",
+      "Use bitwise operations.",
     ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "O(2^n · n) to O(2^n · n^2)",
+    spaceComplexity: "O(2^n · n)",
+    correctness: "Exhaustive over all subsets; correctness follows from the DP recurrence.",
+    applications: ["TSP (Held-Karp)", "Hamiltonian path", "Assignment problems", "Profile DP"],
+    limitations: ["Exponential: only feasible for n ≤ ~20", "Memory-intensive"],
     faq: [
       {
-        q: "When should you use State Compression DP?",
-        a: "Use State Compression DP when the problem matches its designed use case in dynamic programming.",
+        q: "Can it solve problems larger than n=20?",
+        a: "Rarely; meet-in-the-middle can push to n≈40 for some problems.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define State Compression DP (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 2,
+        outline: ["Bitmask encoding and transitions (1).", "TSP example and complexity (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for State Compression DP.",
+      citation:
+        "M. Held, R. M. Karp, 'A Dynamic Programming Approach to Sequencing Problems,' Journal of SIAM, 10(1), 1962.",
+      supports: "The Held-Karp TSP algorithm.",
     },
   ],
   review: {

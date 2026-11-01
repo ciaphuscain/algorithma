@@ -3,27 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const ellipticCurveDigitalSignatureAlgorithmEcdsaEntry: AlgorithmEntry = {
   slug: "elliptic-curve-digital-signature-algorithm-ecdsa",
   name: "Elliptic Curve Digital Signature Algorithm (ECDSA)",
-  aliases: [
-    "ECDSA",
-  ],
-  curriculum: [
-    475,
-  ],
+  aliases: ["ECDSA"],
+  curriculum: [475],
   domain: "cryptography",
   subcategory: "Cryptography",
   difficulty: "intermediate",
-  summary: "A digital signature scheme using elliptic curves that generates compact signatures (64 bytes for 128-bit security), widely used in TLS, Bitcoin, and other protocols.",
-  tags: [
-    "digital signature",
-    "elliptic curve",
-    "cryptography",
-  ],
-  prerequisites: [
-    "Elliptic Curve Diffie–Hellman (ECDH)",
-  ],
-  related: [
-    "ed25519",
-  ],
+  summary:
+    "A digital signature scheme using elliptic curves that generates compact signatures (64 bytes for 128-bit security), widely used in TLS, Bitcoin, and other protocols.",
+  tags: ["digital signature", "elliptic curve", "cryptography"],
+  prerequisites: ["Elliptic Curve Diffie–Hellman (ECDH)"],
+  related: ["ed25519"],
   problem: {
     input: "A message and a private key (signing) or public key (verification).",
     output: "A signature (r, s) or a boolean verification result.",
@@ -125,28 +114,12 @@ export const ellipticCurveDigitalSignatureAlgorithmEcdsaEntry: AlgorithmEntry = 
 `,
       tests: [
         {
-          args: [
-            10,
-            3,
-            7,
-            11,
-          ],
-          expected: [
-            7,
-            7,
-          ],
+          args: [10, 3, 7, 11],
+          expected: [7, 7],
         },
         {
-          args: [
-            5,
-            2,
-            3,
-            7,
-          ],
-          expected: [
-            3,
-            6,
-          ],
+          args: [5, 2, 3, 7],
+          expected: [3, 6],
         },
       ],
     },
@@ -164,31 +137,22 @@ export const ellipticCurveDigitalSignatureAlgorithmEcdsaEntry: AlgorithmEntry = 
         "Nothing; nonces can be reused",
       ],
       answer: 0,
-      explanation: "Two signatures with the same k but different messages yield two equations in two unknowns (k and private key d), which can be solved.",
-      hints: [
-        "What is shared between the two signatures?",
-      ],
+      explanation:
+        "Two signatures with the same k but different messages yield two equations in two unknowns (k and private key d), which can be solved.",
+      hints: ["What is shared between the two signatures?"],
       objective: "Understand the nonce-reuse vulnerability",
     },
   ],
   exam: {
-    definition: "ECDSA produces compact digital signatures using elliptic curve scalar multiplication.",
-    steps: [
-      "Sign: r = (kG).x, s = k⁻¹(H(m) + rd) mod n.",
-      "Verify: check (u₁G + u₂Q).x = r.",
-    ],
+    definition:
+      "ECDSA produces compact digital signatures using elliptic curve scalar multiplication.",
+    steps: ["Sign: r = (kG).x, s = k⁻¹(H(m) + rd) mod n.", "Verify: check (u₁G + u₂Q).x = r."],
     timeComplexity: "O(log n) per operation",
     spaceComplexity: "O(1)",
-    correctness: "Algebraically, verification reconstructs the point R = kG from the signature and message.",
-    applications: [
-      "Bitcoin transactions",
-      "TLS certificates",
-      "Code signing",
-    ],
-    limitations: [
-      "Nonce reuse catastrophic",
-      "Not quantum-resistant",
-    ],
+    correctness:
+      "Algebraically, verification reconstructs the point R = kG from the signature and message.",
+    applications: ["Bitcoin transactions", "TLS certificates", "Code signing"],
+    limitations: ["Nonce reuse catastrophic", "Not quantum-resistant"],
     faq: [
       {
         q: "Why use deterministic nonces (RFC 6979)?",
@@ -198,16 +162,14 @@ export const ellipticCurveDigitalSignatureAlgorithmEcdsaEntry: AlgorithmEntry = 
     answers: [
       {
         marks: 2,
-        outline: [
-          "ECDSA sign/verify steps.",
-          "Nonce-reuse vulnerability.",
-        ],
+        outline: ["ECDSA sign/verify steps.", "Nonce-reuse vulnerability."],
       },
     ],
   },
   references: [
     {
-      citation: "D. Johnson, A. Menezes, S. Vanstone, 'The Elliptic Curve Digital Signature Algorithm (ECDSA),' Int. J. Inf. Security, 1(1), 2001.",
+      citation:
+        "D. Johnson, A. Menezes, S. Vanstone, 'The Elliptic Curve Digital Signature Algorithm (ECDSA),' Int. J. Inf. Security, 1(1), 2001.",
       supports: "ECDSA specification and analysis.",
     },
   ],

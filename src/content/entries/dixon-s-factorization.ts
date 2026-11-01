@@ -3,28 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const dixonSFactorizationEntry: AlgorithmEntry = {
   slug: "dixon-s-factorization",
   name: "Dixon's Factorization",
-  aliases: [
-    "Dixon's method",
-    "Dixon's random squares",
-  ],
-  curriculum: [
-    369,
-  ],
+  aliases: ["Dixon's method", "Dixon's random squares"],
+  curriculum: [369],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Factors a composite number N by finding x² ≡ y² (mod N) with x ≢ ±y, using a factor base of small primes and linear algebra over GF(2) to combine smooth relations.",
-  tags: [
-    "factorization",
-    "number theory",
-    "smooth numbers",
-  ],
-  prerequisites: [
-    "Binary Exponentiation",
-  ],
-  related: [
-    "fermat-factorization",
-  ],
+  summary:
+    "Factors a composite number N by finding x² ≡ y² (mod N) with x ≢ ±y, using a factor base of small primes and linear algebra over GF(2) to combine smooth relations.",
+  tags: ["factorization", "number theory", "smooth numbers"],
+  prerequisites: ["Binary Exponentiation"],
+  related: ["fermat-factorization"],
   problem: {
     input: "A composite integer N.",
     output: "A non-trivial factor of N.",
@@ -128,21 +116,15 @@ export const dixonSFactorizationEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            15,
-          ],
+          args: [15],
           expected: 3,
         },
         {
-          args: [
-            1649,
-          ],
+          args: [1649],
           expected: 17,
         },
         {
-          args: [
-            7,
-          ],
+          args: [7],
           expected: 7,
         },
       ],
@@ -162,14 +144,13 @@ export const dixonSFactorizationEntry: AlgorithmEntry = {
       ],
       answer: 0,
       explanation: "Finding x² ≡ y² (mod N) with x ≢ ±y (mod N) lets us factor N via gcd(x−y, N).",
-      hints: [
-        "What algebraic identity lets us factor the difference of squares?",
-      ],
+      hints: ["What algebraic identity lets us factor the difference of squares?"],
       objective: "Understand the congruence of squares approach",
     },
   ],
   exam: {
-    definition: "Dixon's method factors N by finding x² ≡ y² (mod N) through smooth relations over a factor base.",
+    definition:
+      "Dixon's method factors N by finding x² ≡ y² (mod N) through smooth relations over a factor base.",
     steps: [
       "Choose factor base.",
       "Collect smooth relations.",
@@ -178,14 +159,10 @@ export const dixonSFactorizationEntry: AlgorithmEntry = {
     ],
     timeComplexity: "O(L(N)^√2) subexponential",
     spaceComplexity: "O(L(N))",
-    correctness: "Gaussian elimination finds a product of relations that is a perfect square, yielding the congruence.",
-    applications: [
-      "Integer factorization",
-      "Cryptanalysis of RSA",
-    ],
-    limitations: [
-      "Slower than quadratic sieve / GNFS",
-    ],
+    correctness:
+      "Gaussian elimination finds a product of relations that is a perfect square, yielding the congruence.",
+    applications: ["Integer factorization", "Cryptanalysis of RSA"],
+    limitations: ["Slower than quadratic sieve / GNFS"],
     faq: [
       {
         q: "Why subexponential?",
@@ -195,16 +172,14 @@ export const dixonSFactorizationEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Congruence of squares idea.",
-          "Factor base + linear algebra.",
-        ],
+        outline: ["Congruence of squares idea.", "Factor base + linear algebra."],
       },
     ],
   },
   references: [
     {
-      citation: "J. D. Dixon, 'Asymptotically Fast Factorization of Integers,' Mathematics of Computation, 36(153), 1981.",
+      citation:
+        "J. D. Dixon, 'Asymptotically Fast Factorization of Integers,' Mathematics of Computation, 36(153), 1981.",
       supports: "The original Dixon's method paper.",
     },
   ],

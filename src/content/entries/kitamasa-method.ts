@@ -3,28 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const kitamasaMethodEntry: AlgorithmEntry = {
   slug: "kitamasa-method",
   name: "Kitamasa Method",
-  aliases: [
-    "Kitamasa's algorithm",
-  ],
-  curriculum: [
-    530,
-  ],
+  aliases: ["Kitamasa's algorithm"],
+  curriculum: [530],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Computes the n-th term of a linear recurrence in O(k² log n) time by expressing it as a linear combination of the first k terms using polynomial reduction modulo the characteristic polynomial.",
-  tags: [
-    "linear recurrence",
-    "polynomial",
-    "fast computation",
-  ],
-  prerequisites: [
-    "Linear Recurrence",
-    "Polynomial Arithmetic",
-  ],
-  related: [
-    "matrix-exponentiation-for-linear-recurrences",
-  ],
+  summary:
+    "Computes the n-th term of a linear recurrence in O(k² log n) time by expressing it as a linear combination of the first k terms using polynomial reduction modulo the characteristic polynomial.",
+  tags: ["linear recurrence", "polynomial", "fast computation"],
+  prerequisites: ["Linear Recurrence", "Polynomial Arithmetic"],
+  related: ["matrix-exponentiation-for-linear-recurrences"],
   problem: {
     input: "A k-th order linear recurrence with initial values, and an index n.",
     output: "The n-th term of the sequence.",
@@ -165,43 +153,15 @@ export const kitamasaMethodEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            [
-              1,
-              1,
-            ],
-            [
-              0,
-              1,
-            ],
-            10,
-          ],
+          args: [[1, 1], [0, 1], 10],
           expected: 55,
         },
         {
-          args: [
-            [
-              1,
-              1,
-            ],
-            [
-              0,
-              1,
-            ],
-            0,
-          ],
+          args: [[1, 1], [0, 1], 0],
           expected: 0,
         },
         {
-          args: [
-            [
-              2,
-            ],
-            [
-              1,
-            ],
-            10,
-          ],
+          args: [[2], [1], 10],
           expected: 1024,
         },
       ],
@@ -212,7 +172,8 @@ export const kitamasaMethodEntry: AlgorithmEntry = {
     {
       id: "kitamasa-vs-matrix",
       kind: "mcq",
-      prompt: "How does Kitamasa's method compare to matrix exponentiation for order-k recurrences?",
+      prompt:
+        "How does Kitamasa's method compare to matrix exponentiation for order-k recurrences?",
       options: [
         "O(k² log n) vs O(k³ log n)",
         "Same complexity",
@@ -221,14 +182,13 @@ export const kitamasaMethodEntry: AlgorithmEntry = {
       ],
       answer: 0,
       explanation: "Kitamasa avoids matrix multiplication, reducing the k³ factor to k².",
-      hints: [
-        "What's the cost of multiplying k×k matrices?",
-      ],
+      hints: ["What's the cost of multiplying k×k matrices?"],
       objective: "Compare Kitamasa and matrix exponentiation",
     },
   ],
   exam: {
-    definition: "Kitamasa computes x^n mod the characteristic polynomial to express the n-th recurrence term as a linear combination of initial values.",
+    definition:
+      "Kitamasa computes x^n mod the characteristic polynomial to express the n-th recurrence term as a linear combination of initial values.",
     steps: [
       "Write characteristic polynomial.",
       "Repeated squaring on polynomials.",
@@ -237,7 +197,8 @@ export const kitamasaMethodEntry: AlgorithmEntry = {
     ],
     timeComplexity: "$O(k^2 \\log n)$",
     spaceComplexity: "$O(k)$",
-    correctness: "Cayley-Hamilton guarantees the companion matrix satisfies its char poly; polynomial reduction gives the same coefficients as matrix power.",
+    correctness:
+      "Cayley-Hamilton guarantees the companion matrix satisfies its char poly; polynomial reduction gives the same coefficients as matrix power.",
     applications: [
       "Large-index Fibonacci",
       "Competitive programming recurrences",
@@ -256,15 +217,14 @@ export const kitamasaMethodEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Polynomial reduction approach (1). Complexity comparison (1).",
-        ],
+        outline: ["Polynomial reduction approach (1). Complexity comparison (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "M. Fiduccia, 'An efficient formula for linear recurrences,' SIAM Journal on Computing, 14(1), 1985.",
+      citation:
+        "M. Fiduccia, 'An efficient formula for linear recurrences,' SIAM Journal on Computing, 14(1), 1985.",
       supports: "Polynomial approach to linear recurrences.",
     },
   ],

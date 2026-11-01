@@ -3,34 +3,20 @@ import type { AlgorithmEntry } from "../types";
 export const borVkaSAlgorithmEntry: AlgorithmEntry = {
   slug: "bor-vka-s-algorithm",
   name: "Borůvka's Algorithm",
-  aliases: [
-    "Boruvka's Algorithm",
-    "Sollin's Algorithm",
-  ],
-  curriculum: [
-    218,
-  ],
+  aliases: ["Boruvka's Algorithm", "Sollin's Algorithm"],
+  curriculum: [218],
   domain: "graphs",
   subcategory: "Graph Algorithms",
   difficulty: "intermediate",
-  summary: "Finds the minimum spanning tree by repeatedly finding the cheapest edge leaving each component and contracting those edges, running in O(E log V) time.",
-  tags: [
-    "minimum spanning tree",
-    "greedy",
-    "parallel",
-    "graph",
-  ],
-  prerequisites: [
-    "Graph Theory",
-    "Union-Find",
-  ],
-  related: [
-    "kruskal",
-    "prim",
-  ],
+  summary:
+    "Finds the minimum spanning tree by repeatedly finding the cheapest edge leaving each component and contracting those edges, running in O(E log V) time.",
+  tags: ["minimum spanning tree", "greedy", "parallel", "graph"],
+  prerequisites: ["Graph Theory", "Union-Find"],
+  related: ["kruskal", "prim"],
   problem: {
     input: "A connected undirected weighted graph.",
-    output: "A minimum spanning tree (set of edges with minimum total weight connecting all vertices).",
+    output:
+      "A minimum spanning tree (set of edges with minimum total weight connecting all vertices).",
   },
   levels: {
     intuition: [
@@ -61,25 +47,10 @@ export const borVkaSAlgorithmEntry: AlgorithmEntry = {
       },
       {
         kind: "table",
-        head: [
-          "Round",
-          "Components",
-          "Cheapest edges",
-          "MST so far",
-        ],
+        head: ["Round", "Components", "Cheapest edges", "MST so far"],
         rows: [
-          [
-            "0",
-            "{A},{B},{C},{D}",
-            "A:A-B(1), B:A-B(1), C:C-D(2), D:C-D(2)",
-            "A-B, C-D",
-          ],
-          [
-            "1",
-            "{A,B},{C,D}",
-            "AB:A-C(3), CD:A-C(3)",
-            "A-B, C-D, A-C",
-          ],
+          ["0", "{A},{B},{C},{D}", "A:A-B(1), B:A-B(1), C:C-D(2), D:C-D(2)", "A-B, C-D"],
+          ["1", "{A,B},{C,D}", "AB:A-C(3), CD:A-C(3)", "A-B, C-D, A-C"],
         ],
       },
       {
@@ -190,31 +161,11 @@ export const borVkaSAlgorithmEntry: AlgorithmEntry = {
           args: [
             4,
             [
-              [
-                0,
-                1,
-                1,
-              ],
-              [
-                1,
-                2,
-                4,
-              ],
-              [
-                0,
-                2,
-                3,
-              ],
-              [
-                2,
-                3,
-                2,
-              ],
-              [
-                1,
-                3,
-                5,
-              ],
+              [0, 1, 1],
+              [1, 2, 4],
+              [0, 2, 3],
+              [2, 3, 2],
+              [1, 3, 5],
             ],
           ],
           expected: 6,
@@ -223,21 +174,9 @@ export const borVkaSAlgorithmEntry: AlgorithmEntry = {
           args: [
             3,
             [
-              [
-                0,
-                1,
-                1,
-              ],
-              [
-                1,
-                2,
-                2,
-              ],
-              [
-                0,
-                2,
-                3,
-              ],
+              [0, 1, 1],
+              [1, 2, 2],
+              [0, 2, 3],
             ],
           ],
           expected: 3,
@@ -245,21 +184,22 @@ export const borVkaSAlgorithmEntry: AlgorithmEntry = {
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "boruvka-rounds",
       kind: "numeric",
       prompt: "A graph has 16 vertices. At most how many rounds does Boruvka's algorithm need?",
       answer: 4,
-      explanation: "Each round at least halves the number of components. ceil(log2(16)) = 4 rounds.",
-      hints: [
-        "How many times can you halve 16?",
-      ],
+      explanation:
+        "Each round at least halves the number of components. ceil(log2(16)) = 4 rounds.",
+      hints: ["How many times can you halve 16?"],
       objective: "Calculate Boruvka round count",
     },
   ],
   exam: {
-    definition: "Boruvka's algorithm finds MST by repeatedly having each component select its cheapest outgoing edge, merging components each round, in O(E log V).",
+    definition:
+      "Boruvka's algorithm finds MST by repeatedly having each component select its cheapest outgoing edge, merging components each round, in O(E log V).",
     steps: [
       "Each vertex starts as a component",
       "Each round: find cheapest edge per component",
@@ -268,12 +208,9 @@ export const borVkaSAlgorithmEntry: AlgorithmEntry = {
     ],
     timeComplexity: "O(E log V)",
     spaceComplexity: "O(V + E)",
-    correctness: "Cut property: the cheapest edge crossing any cut is in the MST. Each component's cheapest edge crosses a cut. O(log V) rounds because component count halves each time.",
-    applications: [
-      "MST computation",
-      "Network design",
-      "Clustering",
-    ],
+    correctness:
+      "Cut property: the cheapest edge crossing any cut is in the MST. Each component's cheapest edge crosses a cut. O(log V) rounds because component count halves each time.",
+    applications: ["MST computation", "Network design", "Clustering"],
     limitations: [
       "Multiple edges to handle (duplicates in cheapest)",
       "Less commonly used than Kruskal/Prim",
@@ -287,15 +224,14 @@ export const borVkaSAlgorithmEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Component cheapest-edge selection with O(log V) rounds (2)",
-        ],
+        outline: ["Component cheapest-edge selection with O(log V) rounds (2)"],
       },
     ],
   },
   references: [
     {
-      citation: "O. Boruvka, 'O jistem problemu minimalnim,' Prace Moravske Prirodovedecke Spolecnosti, 3:37-58, 1926.",
+      citation:
+        "O. Boruvka, 'O jistem problemu minimalnim,' Prace Moravske Prirodovedecke Spolecnosti, 3:37-58, 1926.",
       supports: "The original MST algorithm.",
     },
     {

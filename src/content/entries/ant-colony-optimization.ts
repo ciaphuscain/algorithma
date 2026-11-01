@@ -3,29 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const antColonyOptimizationEntry: AlgorithmEntry = {
   slug: "ant-colony-optimization",
   name: "Ant Colony Optimization",
-  aliases: [
-    "ACO",
-  ],
-  curriculum: [
-    449,
-  ],
+  aliases: ["ACO"],
+  curriculum: [449],
   domain: "optimization",
   subcategory: "Optimization",
   difficulty: "intermediate",
-  summary: "A metaheuristic inspired by ant foraging behavior, where artificial ants build solutions guided by pheromone trails and local heuristics, applied to combinatorial optimization problems like TSP.",
-  tags: [
-    "metaheuristic",
-    "swarm intelligence",
-    "TSP",
-    "optimization",
-  ],
-  prerequisites: [
-    "Graph Theory",
-  ],
-  related: [
-    "simulated-annealing",
-    "genetic-algorithm",
-  ],
+  summary:
+    "A metaheuristic inspired by ant foraging behavior, where artificial ants build solutions guided by pheromone trails and local heuristics, applied to combinatorial optimization problems like TSP.",
+  tags: ["metaheuristic", "swarm intelligence", "TSP", "optimization"],
+  prerequisites: ["Graph Theory"],
+  related: ["simulated-annealing", "genetic-algorithm"],
   problem: {
     input: "A combinatorial optimization problem (e.g., a weighted graph for TSP).",
     output: "A near-optimal solution found through iterative pheromone-guided construction.",
@@ -172,30 +159,10 @@ def aco_test(dist):
         {
           args: [
             [
-              [
-                0,
-                10,
-                15,
-                20,
-              ],
-              [
-                10,
-                0,
-                35,
-                25,
-              ],
-              [
-                15,
-                35,
-                0,
-                30,
-              ],
-              [
-                20,
-                25,
-                30,
-                0,
-              ],
+              [0, 10, 15, 20],
+              [10, 0, 35, 25],
+              [15, 35, 0, 30],
+              [20, 25, 30, 0],
             ],
           ],
           expected: 80,
@@ -203,6 +170,7 @@ def aco_test(dist):
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "aco-balance",
@@ -215,15 +183,15 @@ def aco_test(dist):
         "Influence of pheromone",
       ],
       answer: 1,
-      explanation: "Beta weights the heuristic information (like inverse distance). Alpha weights the pheromone. Together they balance exploitation and exploration.",
-      hints: [
-        "What are the two factors in the transition probability?",
-      ],
+      explanation:
+        "Beta weights the heuristic information (like inverse distance). Alpha weights the pheromone. Together they balance exploitation and exploration.",
+      hints: ["What are the two factors in the transition probability?"],
       objective: "Understand ACO parameters",
     },
   ],
   exam: {
-    definition: "ACO simulates ant foraging: artificial ants build solutions guided by pheromone trails and heuristics, with pheromone reinforcing good solutions.",
+    definition:
+      "ACO simulates ant foraging: artificial ants build solutions guided by pheromone trails and heuristics, with pheromone reinforcing good solutions.",
     steps: [
       "Initialize pheromone",
       "Ants build solutions using pheromone * heuristic",
@@ -233,16 +201,10 @@ def aco_test(dist):
     ],
     timeComplexity: "O(T * m * n^2)",
     spaceComplexity: "O(n^2)",
-    correctness: "Positive feedback: better solutions get more pheromone, attracting more ants. Evaporation prevents stagnation.",
-    applications: [
-      "Traveling Salesman Problem",
-      "Vehicle routing",
-      "Network routing",
-    ],
-    limitations: [
-      "No optimality guarantee",
-      "Many parameters to tune",
-    ],
+    correctness:
+      "Positive feedback: better solutions get more pheromone, attracting more ants. Evaporation prevents stagnation.",
+    applications: ["Traveling Salesman Problem", "Vehicle routing", "Network routing"],
+    limitations: ["No optimality guarantee", "Many parameters to tune"],
     faq: [
       {
         q: "Why evaporate?",
@@ -252,15 +214,14 @@ def aco_test(dist):
     answers: [
       {
         marks: 2,
-        outline: [
-          "Pheromone-guided construction with evaporation and reinforcement (2)",
-        ],
+        outline: ["Pheromone-guided construction with evaporation and reinforcement (2)"],
       },
     ],
   },
   references: [
     {
-      citation: "M. Dorigo and L. M. Gambardella, 'Ant Colony System: A Cooperative Learning Approach to the Traveling Salesman Problem,' IEEE Trans. Evolutionary Computation, 1(1):53-66, 1997.",
+      citation:
+        "M. Dorigo and L. M. Gambardella, 'Ant Colony System: A Cooperative Learning Approach to the Traveling Salesman Problem,' IEEE Trans. Evolutionary Computation, 1(1):53-66, 1997.",
       supports: "Foundational ACO paper.",
     },
   ],

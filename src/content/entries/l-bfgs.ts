@@ -3,29 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const lBfgsEntry: AlgorithmEntry = {
   slug: "l-bfgs",
   name: "L-BFGS",
-  aliases: [
-    "Limited-memory BFGS",
-  ],
-  curriculum: [
-    592,
-  ],
+  aliases: ["Limited-memory BFGS"],
+  curriculum: [592],
   domain: "optimization",
   subcategory: "Optimization",
   difficulty: "intermediate",
-  summary: "A memory-efficient quasi-Newton optimization method that approximates the inverse Hessian using the most recent m gradient differences, enabling large-scale unconstrained optimization.",
-  tags: [
-    "optimization",
-    "quasi-Newton",
-    "gradient",
-    "large-scale",
-  ],
-  prerequisites: [
-    "Gradient Descent",
-  ],
-  related: [
-    "newton-s-method-for-optimization",
-    "conjugate-gradient",
-  ],
+  summary:
+    "A memory-efficient quasi-Newton optimization method that approximates the inverse Hessian using the most recent m gradient differences, enabling large-scale unconstrained optimization.",
+  tags: ["optimization", "quasi-Newton", "gradient", "large-scale"],
+  prerequisites: ["Gradient Descent"],
+  related: ["newton-s-method-for-optimization", "conjugate-gradient"],
   problem: {
     input: "A differentiable function f: R^n → R and its gradient.",
     output: "An approximate minimizer of f.",
@@ -179,15 +166,9 @@ export const lBfgsEntry: AlgorithmEntry = {
           args: [
             "lambda x: (x[0]-3)**2 + (x[1]+1)**2",
             "lambda x: [2*(x[0]-3), 2*(x[1]+1)]",
-            [
-              0.0,
-              0.0,
-            ],
+            [0.0, 0.0],
           ],
-          expected: [
-            3.0,
-            -1.0,
-          ],
+          expected: [3.0, -1.0],
         },
       ],
     },
@@ -198,22 +179,16 @@ export const lBfgsEntry: AlgorithmEntry = {
       id: "lbfgs-memory",
       kind: "mcq",
       prompt: "How much memory does L-BFGS use?",
-      options: [
-        "O(mn) where m is history size and n is dimension",
-        "O(n²)",
-        "O(n)",
-        "O(1)",
-      ],
+      options: ["O(mn) where m is history size and n is dimension", "O(n²)", "O(n)", "O(1)"],
       answer: 0,
       explanation: "L-BFGS stores m (s, y) pairs, each of size n.",
-      hints: [
-        "It's 'limited-memory' — what is the limit?",
-      ],
+      hints: ["It's 'limited-memory' — what is the limit?"],
       objective: "Understand L-BFGS memory usage",
     },
   ],
   exam: {
-    definition: "L-BFGS approximates the inverse Hessian from m recent gradient differences using a two-loop recursion, achieving O(mn) memory per iteration.",
+    definition:
+      "L-BFGS approximates the inverse Hessian from m recent gradient differences using a two-loop recursion, achieving O(mn) memory per iteration.",
     steps: [
       "Store m recent (s, y) pairs.",
       "Two-loop recursion for search direction.",
@@ -222,16 +197,14 @@ export const lBfgsEntry: AlgorithmEntry = {
     ],
     timeComplexity: "$O(mn)$ per iteration",
     spaceComplexity: "$O(mn)$",
-    correctness: "BFGS update formula is implicitly applied via the two-loop recursion; Wolfe line search ensures sufficient decrease.",
+    correctness:
+      "BFGS update formula is implicitly applied via the two-loop recursion; Wolfe line search ensures sufficient decrease.",
     applications: [
       "Large-scale optimization",
       "Machine learning (logistic regression)",
       "Scientific computing",
     ],
-    limitations: [
-      "Not suitable for non-smooth functions",
-      "Line search overhead",
-    ],
+    limitations: ["Not suitable for non-smooth functions", "Line search overhead"],
     faq: [
       {
         q: "Why not full BFGS?",
@@ -241,15 +214,14 @@ export const lBfgsEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Two-loop recursion description (1). Memory advantage over BFGS (1).",
-        ],
+        outline: ["Two-loop recursion description (1). Memory advantage over BFGS (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "D. C. Liu and J. Nocedal, 'On the limited memory BFGS method for large scale optimization,' Mathematical Programming, 45(1-3), 1989.",
+      citation:
+        "D. C. Liu and J. Nocedal, 'On the limited memory BFGS method for large scale optimization,' Mathematical Programming, 45(1-3), 1989.",
       supports: "Introduced L-BFGS.",
     },
   ],

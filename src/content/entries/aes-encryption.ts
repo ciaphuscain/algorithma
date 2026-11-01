@@ -3,29 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const aesEncryptionEntry: AlgorithmEntry = {
   slug: "aes-encryption",
   name: "AES Encryption",
-  aliases: [
-    "Advanced Encryption Standard",
-    "Rijndael",
-  ],
-  curriculum: [
-    476,
-  ],
+  aliases: ["Advanced Encryption Standard", "Rijndael"],
+  curriculum: [476],
   domain: "cryptography",
   subcategory: "Cryptography",
   difficulty: "intermediate",
-  summary: "A symmetric block cipher that encrypts 128-bit blocks using a key of 128, 192, or 256 bits through multiple rounds of substitution, shifting, mixing, and key addition.",
-  tags: [
-    "encryption",
-    "symmetric",
-    "block cipher",
-    "cryptography",
-  ],
-  prerequisites: [
-    "Bit Manipulation",
-  ],
-  related: [
-    "chacha20",
-  ],
+  summary:
+    "A symmetric block cipher that encrypts 128-bit blocks using a key of 128, 192, or 256 bits through multiple rounds of substitution, shifting, mixing, and key addition.",
+  tags: ["encryption", "symmetric", "block cipher", "cryptography"],
+  prerequisites: ["Bit Manipulation"],
+  related: ["chacha20"],
   problem: {
     input: "A 128-bit plaintext block and a 128/192/256-bit key.",
     output: "A 128-bit ciphertext block.",
@@ -145,47 +132,36 @@ export const aesEncryptionEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            0,
-          ],
+          args: [0],
           expected: 99,
         },
         {
-          args: [
-            1,
-          ],
+          args: [1],
           expected: 124,
         },
         {
-          args: [
-            255,
-          ],
+          args: [255],
           expected: 22,
         },
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "aes-rounds",
       kind: "mcq",
       prompt: "How many rounds does AES-256 use?",
-      options: [
-        "10",
-        "12",
-        "14",
-        "16",
-      ],
+      options: ["10", "12", "14", "16"],
       answer: 2,
       explanation: "AES-128 uses 10 rounds, AES-192 uses 12, and AES-256 uses 14.",
-      hints: [
-        "How does key size relate to round count?",
-      ],
+      hints: ["How does key size relate to round count?"],
       objective: "Know AES round counts",
     },
   ],
   exam: {
-    definition: "AES is a symmetric block cipher encrypting 128-bit blocks through rounds of SubBytes, ShiftRows, MixColumns, and AddRoundKey.",
+    definition:
+      "AES is a symmetric block cipher encrypting 128-bit blocks through rounds of SubBytes, ShiftRows, MixColumns, and AddRoundKey.",
     steps: [
       "Key expansion",
       "Initial AddRoundKey",
@@ -194,16 +170,10 @@ export const aesEncryptionEntry: AlgorithmEntry = {
     ],
     timeComplexity: "O(1) per block",
     spaceComplexity: "O(1)",
-    correctness: "The combination of substitution (S-box), permutation (ShiftRows, MixColumns), and key injection provides both confusion and diffusion after sufficient rounds.",
-    applications: [
-      "TLS/SSL encryption",
-      "Disk encryption",
-      "VPN protocols",
-    ],
-    limitations: [
-      "Requires secure key management",
-      "ECB mode leaks patterns",
-    ],
+    correctness:
+      "The combination of substitution (S-box), permutation (ShiftRows, MixColumns), and key injection provides both confusion and diffusion after sufficient rounds.",
+    applications: ["TLS/SSL encryption", "Disk encryption", "VPN protocols"],
+    limitations: ["Requires secure key management", "ECB mode leaks patterns"],
     faq: [
       {
         q: "Why no MixColumns in the last round?",
@@ -213,9 +183,7 @@ export const aesEncryptionEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Four operations per round, 10-14 rounds (2)",
-        ],
+        outline: ["Four operations per round, 10-14 rounds (2)"],
       },
       {
         marks: 5,
@@ -230,7 +198,8 @@ export const aesEncryptionEntry: AlgorithmEntry = {
   },
   references: [
     {
-      citation: "J. Daemen and V. Rijmen, The Design of Rijndael: AES — The Advanced Encryption Standard, Springer, 2002.",
+      citation:
+        "J. Daemen and V. Rijmen, The Design of Rijndael: AES — The Advanced Encryption Standard, Springer, 2002.",
       supports: "AES specification by its designers.",
     },
     {

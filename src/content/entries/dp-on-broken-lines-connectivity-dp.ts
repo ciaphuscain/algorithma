@@ -3,31 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const dpOnBrokenLinesConnectivityDpEntry: AlgorithmEntry = {
   slug: "dp-on-broken-lines-connectivity-dp",
   name: "DP on Broken Lines / Connectivity DP",
-  aliases: [
-    "Broken profile DP",
-    "Profile DP",
-    "Plug DP",
-  ],
-  curriculum: [
-    527,
-  ],
+  aliases: ["Broken profile DP", "Profile DP", "Plug DP"],
+  curriculum: [527],
   domain: "dynamic-programming",
   subcategory: "Dynamic Programming",
   difficulty: "intermediate",
-  summary: "Solves grid problems (tiling, Hamiltonian paths, connectivity) by processing cells left-to-right, top-to-bottom, maintaining a bitmask or connectivity profile of the boundary between processed and unprocessed regions.",
-  tags: [
-    "dynamic programming",
-    "bitmask",
-    "grid",
-    "profile",
-    "connectivity",
-  ],
-  prerequisites: [
-    "Dynamic Programming Basics",
-  ],
-  related: [
-    "broken-profile-dp",
-  ],
+  summary:
+    "Solves grid problems (tiling, Hamiltonian paths, connectivity) by processing cells left-to-right, top-to-bottom, maintaining a bitmask or connectivity profile of the boundary between processed and unprocessed regions.",
+  tags: ["dynamic programming", "bitmask", "grid", "profile", "connectivity"],
+  prerequisites: ["Dynamic Programming Basics"],
+  related: ["broken-profile-dp"],
   problem: {
     input: "A grid of size n×m with constraints (tiles, connections, etc.).",
     output: "The number of valid configurations (tilings, Hamiltonian paths, etc.).",
@@ -147,31 +132,19 @@ export const dpOnBrokenLinesConnectivityDpEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            2,
-            3,
-          ],
+          args: [2, 3],
           expected: 3,
         },
         {
-          args: [
-            2,
-            2,
-          ],
+          args: [2, 2],
           expected: 2,
         },
         {
-          args: [
-            1,
-            1,
-          ],
+          args: [1, 1],
           expected: 0,
         },
         {
-          args: [
-            3,
-            4,
-          ],
+          args: [3, 4],
           expected: 11,
         },
       ],
@@ -190,15 +163,15 @@ export const dpOnBrokenLinesConnectivityDpEntry: AlgorithmEntry = {
         "The color of each cell",
       ],
       answer: 0,
-      explanation: "The bitmask tracks which cells at the boundary between processed and unprocessed regions are already occupied.",
-      hints: [
-        "Think about what information carries forward when processing cell by cell.",
-      ],
+      explanation:
+        "The bitmask tracks which cells at the boundary between processed and unprocessed regions are already occupied.",
+      hints: ["Think about what information carries forward when processing cell by cell."],
       objective: "Understand the profile DP state",
     },
   ],
   exam: {
-    definition: "Profile DP processes grid cells sequentially, maintaining a bitmask or connectivity encoding of the boundary.",
+    definition:
+      "Profile DP processes grid cells sequentially, maintaining a bitmask or connectivity encoding of the boundary.",
     steps: [
       "Scan cells left-to-right, top-to-bottom.",
       "State = boundary profile.",
@@ -207,14 +180,10 @@ export const dpOnBrokenLinesConnectivityDpEntry: AlgorithmEntry = {
     ],
     timeComplexity: "O(n × 4^m)",
     spaceComplexity: "O(2^m)",
-    correctness: "The profile captures all information needed from processed cells to determine valid completions.",
-    applications: [
-      "Grid tiling",
-      "Hamiltonian path counting on grids",
-    ],
-    limitations: [
-      "Exponential in the smaller grid dimension",
-    ],
+    correctness:
+      "The profile captures all information needed from processed cells to determine valid completions.",
+    applications: ["Grid tiling", "Hamiltonian path counting on grids"],
+    limitations: ["Exponential in the smaller grid dimension"],
     faq: [
       {
         q: "Why use the smaller dimension for m?",
@@ -224,10 +193,7 @@ export const dpOnBrokenLinesConnectivityDpEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Define the profile concept.",
-          "Explain transitions for domino tiling.",
-        ],
+        outline: ["Define the profile concept.", "Explain transitions for domino tiling."],
       },
     ],
   },

@@ -3,26 +3,15 @@ import type { AlgorithmEntry } from "../types";
 export const dominatorTreeLengauerTarjanEntry: AlgorithmEntry = {
   slug: "dominator-tree-lengauer-tarjan",
   name: "Dominator Tree (Lengauer–Tarjan)",
-  aliases: [
-    "Lengauer-Tarjan",
-    "Dominator tree",
-  ],
-  curriculum: [
-    506,
-  ],
+  aliases: ["Lengauer-Tarjan", "Dominator tree"],
+  curriculum: [506],
   domain: "graphs",
   subcategory: "Graph Algorithms",
   difficulty: "intermediate",
-  summary: "Computes the dominator tree of a directed graph in O(E α(V)) time, where vertex u dominates v if every path from the entry to v passes through u.",
-  tags: [
-    "dominator tree",
-    "control flow",
-    "graph",
-    "compiler",
-  ],
-  prerequisites: [
-    "DFS",
-  ],
+  summary:
+    "Computes the dominator tree of a directed graph in O(E α(V)) time, where vertex u dominates v if every path from the entry to v passes through u.",
+  tags: ["dominator tree", "control flow", "graph", "compiler"],
+  prerequisites: ["DFS"],
   related: [],
   problem: {
     input: "A directed graph with a distinguished entry vertex.",
@@ -163,49 +152,12 @@ export const dominatorTreeLengauerTarjanEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            4,
-            [
-              [
-                1,
-                2,
-              ],
-              [
-                3,
-              ],
-              [
-                3,
-              ],
-              [],
-            ],
-            0,
-          ],
-          expected: [
-            -1,
-            0,
-            0,
-            0,
-          ],
+          args: [4, [[1, 2], [3], [3], []], 0],
+          expected: [-1, 0, 0, 0],
         },
         {
-          args: [
-            3,
-            [
-              [
-                1,
-              ],
-              [
-                2,
-              ],
-              [],
-            ],
-            0,
-          ],
-          expected: [
-            -1,
-            0,
-            1,
-          ],
+          args: [3, [[1], [2], []], 0],
+          expected: [-1, 0, 1],
         },
       ],
     },
@@ -224,14 +176,13 @@ export const dominatorTreeLengauerTarjanEntry: AlgorithmEntry = {
       ],
       answer: 0,
       explanation: "u dominates v if removing u disconnects v from the entry.",
-      hints: [
-        "Think about what vertices are unavoidable on all paths.",
-      ],
+      hints: ["Think about what vertices are unavoidable on all paths."],
       objective: "Define dominance",
     },
   ],
   exam: {
-    definition: "The Lengauer–Tarjan algorithm computes immediate dominators in near-linear time using semi-dominators and link-eval.",
+    definition:
+      "The Lengauer–Tarjan algorithm computes immediate dominators in near-linear time using semi-dominators and link-eval.",
     steps: [
       "DFS numbering.",
       "Compute semi-dominators.",
@@ -240,14 +191,10 @@ export const dominatorTreeLengauerTarjanEntry: AlgorithmEntry = {
     ],
     timeComplexity: "O(E α(V))",
     spaceComplexity: "O(V + E)",
-    correctness: "Semi-dominators correctly approximate dominators; the link-eval structure enables efficient path minimum queries.",
-    applications: [
-      "Compiler optimization (SSA form)",
-      "Control flow analysis",
-    ],
-    limitations: [
-      "Complex to implement correctly",
-    ],
+    correctness:
+      "Semi-dominators correctly approximate dominators; the link-eval structure enables efficient path minimum queries.",
+    applications: ["Compiler optimization (SSA form)", "Control flow analysis"],
+    limitations: ["Complex to implement correctly"],
     faq: [
       {
         q: "What is a semi-dominator?",
@@ -257,16 +204,14 @@ export const dominatorTreeLengauerTarjanEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Define dominance and immediate dominator.",
-          "Sketch Lengauer–Tarjan steps.",
-        ],
+        outline: ["Define dominance and immediate dominator.", "Sketch Lengauer–Tarjan steps."],
       },
     ],
   },
   references: [
     {
-      citation: "T. Lengauer, R. E. Tarjan, 'A Fast Algorithm for Finding Dominators in a Flowgraph,' TOPLAS 1(1), 1979.",
+      citation:
+        "T. Lengauer, R. E. Tarjan, 'A Fast Algorithm for Finding Dominators in a Flowgraph,' TOPLAS 1(1), 1979.",
       supports: "The original Lengauer–Tarjan algorithm.",
     },
   ],

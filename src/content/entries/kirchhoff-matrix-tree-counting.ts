@@ -3,31 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const kirchhoffMatrixTreeCountingEntry: AlgorithmEntry = {
   slug: "kirchhoff-matrix-tree-counting",
   name: "Kirchhoff Matrix-Tree Counting",
-  aliases: [
-    "Kirchhoff's theorem",
-    "Matrix tree theorem",
-  ],
-  curriculum: [
-    512,
-  ],
+  aliases: ["Kirchhoff's theorem", "Matrix tree theorem"],
+  curriculum: [512],
   domain: "graphs",
   subcategory: "Graph Algorithms",
   difficulty: "intermediate",
-  summary: "Counts the number of spanning trees of a graph by computing a cofactor of the Laplacian matrix, using the matrix tree theorem.",
-  tags: [
-    "spanning tree",
-    "Laplacian",
-    "determinant",
-    "graph",
-  ],
-  prerequisites: [
-    "Graph Theory",
-    "Linear Algebra",
-  ],
-  related: [
-    "kruskal",
-    "prim",
-  ],
+  summary:
+    "Counts the number of spanning trees of a graph by computing a cofactor of the Laplacian matrix, using the matrix tree theorem.",
+  tags: ["spanning tree", "Laplacian", "determinant", "graph"],
+  prerequisites: ["Graph Theory", "Linear Algebra"],
+  related: ["kruskal", "prim"],
   problem: {
     input: "An undirected graph with n vertices.",
     output: "The number of spanning trees.",
@@ -156,18 +141,9 @@ export const kirchhoffMatrixTreeCountingEntry: AlgorithmEntry = {
           args: [
             3,
             [
-              [
-                0,
-                1,
-              ],
-              [
-                1,
-                2,
-              ],
-              [
-                0,
-                2,
-              ],
+              [0, 1],
+              [1, 2],
+              [0, 2],
             ],
           ],
           expected: 3,
@@ -176,30 +152,12 @@ export const kirchhoffMatrixTreeCountingEntry: AlgorithmEntry = {
           args: [
             4,
             [
-              [
-                0,
-                1,
-              ],
-              [
-                0,
-                2,
-              ],
-              [
-                0,
-                3,
-              ],
-              [
-                1,
-                2,
-              ],
-              [
-                1,
-                3,
-              ],
-              [
-                2,
-                3,
-              ],
+              [0, 1],
+              [0, 2],
+              [0, 3],
+              [1, 2],
+              [1, 3],
+              [2, 3],
             ],
           ],
           expected: 16,
@@ -220,32 +178,21 @@ export const kirchhoffMatrixTreeCountingEntry: AlgorithmEntry = {
         "Eulerian circuits",
       ],
       answer: 0,
-      explanation: "The determinant of any cofactor of the Laplacian matrix equals the number of spanning trees.",
-      hints: [
-        "It involves the Laplacian matrix L = D - A.",
-      ],
+      explanation:
+        "The determinant of any cofactor of the Laplacian matrix equals the number of spanning trees.",
+      hints: ["It involves the Laplacian matrix L = D - A."],
       objective: "State the matrix tree theorem",
     },
   ],
   exam: {
-    definition: "Kirchhoff's theorem counts spanning trees as the determinant of any cofactor of the Laplacian matrix L = D - A.",
-    steps: [
-      "Build Laplacian L = D - A.",
-      "Delete one row and column.",
-      "Compute determinant.",
-    ],
+    definition:
+      "Kirchhoff's theorem counts spanning trees as the determinant of any cofactor of the Laplacian matrix L = D - A.",
+    steps: ["Build Laplacian L = D - A.", "Delete one row and column.", "Compute determinant."],
     timeComplexity: "$O(n^3)$",
     spaceComplexity: "$O(n^2)$",
     correctness: "L has rank n-1; all cofactors are equal and count spanning trees.",
-    applications: [
-      "Spanning tree counting",
-      "Network reliability",
-      "Random tree generation",
-    ],
-    limitations: [
-      "Only counts, doesn't enumerate",
-      "Numerical issues for large graphs",
-    ],
+    applications: ["Spanning tree counting", "Network reliability", "Random tree generation"],
+    limitations: ["Only counts, doesn't enumerate", "Numerical issues for large graphs"],
     faq: [
       {
         q: "How many spanning trees does K_n have?",
@@ -255,15 +202,14 @@ export const kirchhoffMatrixTreeCountingEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Laplacian construction and cofactor computation (2).",
-        ],
+        outline: ["Laplacian construction and cofactor computation (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "G. Kirchhoff, 'Über die Auflösung der Gleichungen,' Annalen der Physik, 148(12), 1847.",
+      citation:
+        "G. Kirchhoff, 'Über die Auflösung der Gleichungen,' Annalen der Physik, 148(12), 1847.",
       supports: "The original matrix tree theorem.",
     },
   ],

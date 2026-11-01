@@ -3,24 +3,15 @@ import type { AlgorithmEntry } from "../types";
 export const choleskyDecompositionEntry: AlgorithmEntry = {
   slug: "cholesky-decomposition",
   name: "Cholesky Decomposition",
-  aliases: [
-    "Cholesky Factorization",
-  ],
-  curriculum: [
-    389,
-  ],
+  aliases: ["Cholesky Factorization"],
+  curriculum: [389],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Decomposes a symmetric positive-definite matrix A into L * L^T where L is lower triangular, providing a numerically stable and efficient way to solve linear systems and compute determinants.",
-  tags: [
-    "linear algebra",
-    "matrix decomposition",
-    "numerical methods",
-  ],
-  prerequisites: [
-    "Matrix Multiplication",
-  ],
+  summary:
+    "Decomposes a symmetric positive-definite matrix A into L * L^T where L is lower triangular, providing a numerically stable and efficient way to solve linear systems and compute determinants.",
+  tags: ["linear algebra", "matrix decomposition", "numerical methods"],
+  prerequisites: ["Matrix Multiplication"],
   related: [],
   problem: {
     input: "A symmetric positive-definite n x n matrix A.",
@@ -143,91 +134,57 @@ def cholesky_test(A):
         {
           args: [
             [
-              [
-                4,
-                2,
-              ],
-              [
-                2,
-                5,
-              ],
+              [4, 2],
+              [2, 5],
             ],
           ],
           expected: [
-            [
-              2.0,
-              0.0,
-            ],
-            [
-              1.0,
-              2.0,
-            ],
+            [2.0, 0.0],
+            [1.0, 2.0],
           ],
         },
         {
           args: [
             [
-              [
-                1,
-                0,
-              ],
-              [
-                0,
-                1,
-              ],
+              [1, 0],
+              [0, 1],
             ],
           ],
           expected: [
-            [
-              1.0,
-              0.0,
-            ],
-            [
-              0.0,
-              1.0,
-            ],
+            [1.0, 0.0],
+            [0.0, 1.0],
           ],
         },
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "chol-req",
       kind: "mcq",
       prompt: "What property must a matrix have for Cholesky decomposition to exist?",
-      options: [
-        "Invertible",
-        "Symmetric positive-definite",
-        "Orthogonal",
-        "Diagonal",
-      ],
+      options: ["Invertible", "Symmetric positive-definite", "Orthogonal", "Diagonal"],
       answer: 1,
-      explanation: "Cholesky requires the matrix to be symmetric (A = A^T) and positive-definite (all eigenvalues > 0).",
-      hints: [
-        "What can go wrong with a non-positive matrix?",
-      ],
+      explanation:
+        "Cholesky requires the matrix to be symmetric (A = A^T) and positive-definite (all eigenvalues > 0).",
+      hints: ["What can go wrong with a non-positive matrix?"],
       objective: "Know Cholesky prerequisites",
     },
   ],
   exam: {
-    definition: "Cholesky decomposes a symmetric positive-definite matrix A into L*L^T where L is lower triangular, in O(n^3/3) time.",
+    definition:
+      "Cholesky decomposes a symmetric positive-definite matrix A into L*L^T where L is lower triangular, in O(n^3/3) time.",
     steps: [
       "For each diagonal: L[i][i] = sqrt(A[i][i] - sum of squares)",
       "For each below-diagonal: L[j][i] = (A[j][i] - dot product) / L[i][i]",
     ],
     timeComplexity: "O(n^3)",
     spaceComplexity: "O(n^2)",
-    correctness: "Positive-definiteness ensures all diagonal entries under the square root are positive. Uniqueness follows from the structure of triangular systems.",
-    applications: [
-      "Solving linear systems",
-      "Gaussian processes",
-      "Monte Carlo simulation",
-    ],
-    limitations: [
-      "Only for SPD matrices",
-      "O(n^3) for dense matrices",
-    ],
+    correctness:
+      "Positive-definiteness ensures all diagonal entries under the square root are positive. Uniqueness follows from the structure of triangular systems.",
+    applications: ["Solving linear systems", "Gaussian processes", "Monte Carlo simulation"],
+    limitations: ["Only for SPD matrices", "O(n^3) for dense matrices"],
     faq: [
       {
         q: "Why faster than LU?",
@@ -237,15 +194,14 @@ def cholesky_test(A):
     answers: [
       {
         marks: 2,
-        outline: [
-          "L*L^T factorization for SPD matrices in O(n^3/3) (2)",
-        ],
+        outline: ["L*L^T factorization for SPD matrices in O(n^3/3) (2)"],
       },
     ],
   },
   references: [
     {
-      citation: "G. H. Golub and C. F. Van Loan, Matrix Computations, 4th ed., Johns Hopkins, 2013, §4.2.",
+      citation:
+        "G. H. Golub and C. F. Van Loan, Matrix Computations, 4th ed., Johns Hopkins, 2013, §4.2.",
       supports: "Cholesky factorization and its applications.",
     },
   ],

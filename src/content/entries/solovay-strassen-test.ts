@@ -3,92 +3,141 @@ import type { AlgorithmEntry } from "../types";
 export const solovayStrassenTestEntry: AlgorithmEntry = {
   slug: "solovay-strassen-test",
   name: "Solovay–Strassen Test",
-  aliases: ["Solovay–Strassen Test"],
+  aliases: ["Solovay-Strassen", "Euler witness test"],
   curriculum: [372],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
   summary:
-    "Solovay–Strassen Test is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["solovay strassen test", "math"],
-  prerequisites: [],
+    "The Solovay–Strassen test is a probabilistic primality test that checks whether a^((n-1)/2) ≡ Jacobi(a,n) (mod n) for random witnesses a, catching composites with probability ≥ 1/2 per round.",
+  tags: ["primality testing", "probabilistic", "Jacobi symbol", "Euler criterion"],
+  prerequisites: ["Modular Arithmetic", "Binary Exponentiation"],
   related: [],
   problem: {
-    input: "Input for Solovay–Strassen Test.",
-    output: "Output of Solovay–Strassen Test.",
+    input: "An odd integer n > 2 and a number of rounds k.",
+    output:
+      "Whether n is probably prime (with error probability ≤ (1/2)^k) or definitely composite.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Solovay–Strassen Test solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Euler's criterion says that for prime p and gcd(a,p)=1: a^((p-1)/2) ≡ Jacobi(a,p) (mod p). If n is composite, this fails for at least half of all a in [1, n-1]. So by testing random a values, we catch composites with high probability.",
+      },
+      {
+        kind: "p",
+        text: "The Solovay–Strassen test was the first polynomial-time probabilistic primality test (1977), predating Miller–Rabin. It's slightly weaker (1/2 error per round vs 1/4 for Miller–Rabin) but historically important.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Solovay–Strassen Test algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Given odd n > 2, pick random a in [2, n-2].",
+          "Compute the Jacobi symbol J = (a/n) using the law of quadratic reciprocity.",
+          "Compute x = a^((n-1)/2) mod n.",
+          "If J ≡ 0 (mod n) or x ≠ J mod n, declare n composite.",
+          "Repeat k times. If no witness found, declare probably prime.",
+        ],
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of Solovay–Strassen Test follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "The Jacobi symbol is computed in O(log^2 n) using quadratic reciprocity and reduction rules.",
+          "Modular exponentiation uses binary exponentiation in O(log n) multiplications.",
+          "In practice, Miller–Rabin is preferred (fewer rounds for same confidence).",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Solovay–Strassen Test is based on the algorithm's structure and the operations performed at each step.",
+        text: "If n is composite, at most half of a in [1, n-1] satisfy the Euler criterion. So each round catches a composite with probability ≥ 1/2. After k rounds, the error probability is ≤ (1/2)^k. For 30 rounds, error < 10^{-9}.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Solovay–Strassen Test exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Euler pseudoprimes (composites passing the test for a specific a) are a strict subset of Fermat pseudoprimes.",
+          "No Carmichael-number analogue: every composite fails for ≥ half of witnesses.",
+          "The AKS algorithm (2002) provides deterministic polynomial-time primality testing, but is slower in practice.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
+      best: "O(k log^2 n)",
+      average: "O(k log^2 n)",
+      worst: "O(k log^2 n)",
     },
-    space: "O(n)",
-    worstClass: "n",
+    space: "O(log n)",
+    worstClass: "other",
+    note: "k rounds, each computing Jacobi symbol and modular exponentiation.",
   },
   properties: [
     {
-      label: "Domain",
-      value: "number theory and mathematics",
+      label: "Type",
+      value: "Probabilistic (Monte Carlo)",
+    },
+    {
+      label: "Error per round",
+      value: "≤ 1/2",
+    },
+    {
+      label: "False positives",
+      value: "Possible (calls composite 'prime')",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solovay_strassen",
+      code: `def solovay_strassen(n, k=20):
+    """Test if n is probably prime using k rounds. Returns True if probably prime."""
+    if n < 3: return n == 2
+    if n % 2 == 0: return False
+    def jacobi(a, n):
+        a = a % n
+        result = 1
+        while a != 0:
+            while a % 2 == 0:
+                a //= 2
+                if n % 8 in (3, 5): result = -result
+            a, n = n, a
+            if a % 4 == 3 and n % 4 == 3: result = -result
+            a = a % n
+        return result if n == 1 else 0
+    import random
+    random.seed(42)
+    for _ in range(k):
+        a = random.randint(2, n - 2)
+        j = jacobi(a, n) % n
+        x = pow(a, (n - 1) // 2, n)
+        if j == 0 or x != j:
+            return False
+    return True
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [97],
+          expected: true,
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [561],
+          expected: false,
+        },
+        {
+          args: [2],
+          expected: true,
+        },
+        {
+          args: [15],
+          expected: false,
         },
       ],
     },
@@ -96,55 +145,50 @@ export const solovayStrassenTestEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "solovay-strassen-test-q1",
+      id: "ss-vs-mr",
       kind: "mcq",
-      prompt: "What is the primary purpose of Solovay–Strassen Test?",
-      options: [
-        "To solve the Solovay–Strassen Test problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "What is the error probability per round for Solovay–Strassen?",
+      options: ["1/2", "1/4", "1/3", "1/8"],
       answer: 0,
-      explanation: "Solovay–Strassen Test is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Solovay–Strassen Test does."],
-      objective: "Purpose",
+      explanation:
+        "Each round catches a composite with probability ≥ 1/2, so the error is at most 1/2. Miller–Rabin achieves 1/4.",
+      hints: ["Compare with Miller-Rabin's guarantee."],
+      objective: "Know error bounds",
     },
   ],
   exam: {
     definition:
-      "Solovay–Strassen Test is an algorithm in the domain of number theory and mathematics.",
+      "The Solovay–Strassen test checks a^((n-1)/2) ≡ Jacobi(a,n) mod n for random a, catching composites with probability ≥ 1/2 per round.",
     steps: [
-      "Apply the Solovay–Strassen Test algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Pick random a.",
+      "Compute Jacobi symbol and modular exponentiation.",
+      "Compare; if different, composite.",
+      "Repeat k times.",
     ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "O(k log^2 n)",
+    spaceComplexity: "O(log n)",
+    correctness:
+      "At most half of a satisfy the criterion for composites; k rounds give error ≤ (1/2)^k.",
+    applications: ["Historical primality testing", "Basis for Miller-Rabin"],
+    limitations: ["Weaker than Miller-Rabin (1/2 vs 1/4 error)", "Superseded in practice"],
     faq: [
       {
-        q: "When should you use Solovay–Strassen Test?",
-        a: "Use Solovay–Strassen Test when the problem matches its designed use case in number theory and mathematics.",
+        q: "Why was it important historically?",
+        a: "First polynomial-time probabilistic primality test (1977), before Miller-Rabin (1980).",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Solovay–Strassen Test (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 2,
+        outline: ["Euler criterion test (1).", "Error analysis (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Solovay–Strassen Test.",
+      citation:
+        "R. Solovay, V. Strassen, 'A Fast Monte-Carlo Test for Primality,' SIAM Journal on Computing, 6(1), 1977.",
+      supports: "The original paper.",
     },
   ],
   review: {

@@ -3,29 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const lasVegasAlgorithmEntry: AlgorithmEntry = {
   slug: "las-vegas-algorithm",
   name: "Las Vegas Algorithm",
-  aliases: [
-    "Las Vegas randomized algorithm",
-  ],
-  curriculum: [
-    431,
-  ],
+  aliases: ["Las Vegas randomized algorithm"],
+  curriculum: [431],
   domain: "randomized",
   subcategory: "Randomized Algorithms",
   difficulty: "intermediate",
-  summary: "A class of randomized algorithms that always produce correct results but whose running time varies randomly, with expected polynomial time — in contrast to Monte Carlo algorithms which may give wrong answers.",
-  tags: [
-    "randomized",
-    "Las Vegas",
-    "always correct",
-    "expected time",
-  ],
-  prerequisites: [
-    "Randomized Algorithms",
-  ],
-  related: [
-    "monte-carlo-algorithm",
-    "karger-s-minimum-cut-algorithm",
-  ],
+  summary:
+    "A class of randomized algorithms that always produce correct results but whose running time varies randomly, with expected polynomial time — in contrast to Monte Carlo algorithms which may give wrong answers.",
+  tags: ["randomized", "Las Vegas", "always correct", "expected time"],
+  prerequisites: ["Randomized Algorithms"],
+  related: ["monte-carlo-algorithm", "karger-s-minimum-cut-algorithm"],
   problem: {
     input: "A problem instance and a source of random bits.",
     output: "A guaranteed correct solution (with random running time).",
@@ -133,30 +120,11 @@ def las_vegas_search(arr, target, seed=42):
 `,
       tests: [
         {
-          args: [
-            [
-              3,
-              1,
-              4,
-              1,
-              5,
-              9,
-            ],
-            5,
-            42,
-          ],
+          args: [[3, 1, 4, 1, 5, 9], 5, 42],
           expected: 4,
         },
         {
-          args: [
-            [
-              1,
-              2,
-              3,
-            ],
-            7,
-            42,
-          ],
+          args: [[1, 2, 3], 7, 42],
           expected: -1,
         },
       ],
@@ -175,15 +143,15 @@ def las_vegas_search(arr, target, seed=42):
         "They are the same",
       ],
       answer: 0,
-      explanation: "Las Vegas = always correct, random time. Monte Carlo = bounded time, possibly wrong.",
-      hints: [
-        "Which one sacrifices correctness vs running time?",
-      ],
+      explanation:
+        "Las Vegas = always correct, random time. Monte Carlo = bounded time, possibly wrong.",
+      hints: ["Which one sacrifices correctness vs running time?"],
       objective: "Distinguish Las Vegas and Monte Carlo",
     },
   ],
   exam: {
-    definition: "Las Vegas algorithms always produce correct results with randomized running time (expected polynomial), unlike Monte Carlo which may err.",
+    definition:
+      "Las Vegas algorithms always produce correct results with randomized running time (expected polynomial), unlike Monte Carlo which may err.",
     steps: [
       "Use randomness for decisions.",
       "Guarantee correctness regardless of random choices.",
@@ -191,12 +159,9 @@ def las_vegas_search(arr, target, seed=42):
     ],
     timeComplexity: "Expected polynomial",
     spaceComplexity: "Varies",
-    correctness: "Correctness is structural (verified or guaranteed by construction); only running time is random.",
-    applications: [
-      "Randomized quicksort",
-      "Randomized selection",
-      "Random sampling algorithms",
-    ],
+    correctness:
+      "Correctness is structural (verified or guaranteed by construction); only running time is random.",
+    applications: ["Randomized quicksort", "Randomized selection", "Random sampling algorithms"],
     limitations: [
       "Worst case may be slow (though exponentially unlikely)",
       "Cannot guarantee a time bound",
@@ -210,15 +175,14 @@ def las_vegas_search(arr, target, seed=42):
     answers: [
       {
         marks: 2,
-        outline: [
-          "Define Las Vegas vs Monte Carlo (1). Example algorithm (1).",
-        ],
+        outline: ["Define Las Vegas vs Monte Carlo (1). Example algorithm (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "L. Babai, 'Monte-Carlo algorithms in graph isomorphism testing,' Université de Montréal Technical Report, 1979.",
+      citation:
+        "L. Babai, 'Monte-Carlo algorithms in graph isomorphism testing,' Université de Montréal Technical Report, 1979.",
       supports: "Formalized the Monte Carlo / Las Vegas distinction.",
     },
   ],

@@ -3,29 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const liChaoTreeEntry: AlgorithmEntry = {
   slug: "li-chao-tree",
   name: "Li Chao Tree",
-  aliases: [
-    "Li Chao segment tree",
-  ],
-  curriculum: [
-    197,
-  ],
+  aliases: ["Li Chao segment tree"],
+  curriculum: [197],
   domain: "trees",
   subcategory: "Tree Algorithms",
   difficulty: "intermediate",
-  summary: "A segment tree variant that maintains a set of linear functions and supports queries for the minimum (or maximum) function value at any given x-coordinate in O(log n) time per insertion and query.",
-  tags: [
-    "segment tree",
-    "convex hull trick",
-    "linear functions",
-    "optimization",
-  ],
-  prerequisites: [
-    "Segment Tree",
-  ],
-  related: [
-    "segment-tree",
-    "convex-hull-trick",
-  ],
+  summary:
+    "A segment tree variant that maintains a set of linear functions and supports queries for the minimum (or maximum) function value at any given x-coordinate in O(log n) time per insertion and query.",
+  tags: ["segment tree", "convex hull trick", "linear functions", "optimization"],
+  prerequisites: ["Segment Tree"],
+  related: ["segment-tree", "convex-hull-trick"],
   problem: {
     input: "A set of linear functions $f(x) = mx + b$ and query points.",
     output: "For each query point x, the minimum value among all inserted functions at x.",
@@ -178,52 +165,22 @@ def li_chao_query(lines, queries):
         {
           args: [
             [
-              [
-                1,
-                0,
-              ],
-              [
-                -1,
-                4,
-              ],
+              [1, 0],
+              [-1, 4],
             ],
-            [
-              0,
-              1,
-              2,
-              3,
-            ],
+            [0, 1, 2, 3],
           ],
-          expected: [
-            0,
-            1,
-            2,
-            1,
-          ],
+          expected: [0, 1, 2, 1],
         },
         {
           args: [
             [
-              [
-                0,
-                5,
-              ],
-              [
-                1,
-                0,
-              ],
+              [0, 5],
+              [1, 0],
             ],
-            [
-              0,
-              3,
-              5,
-            ],
+            [0, 3, 5],
           ],
-          expected: [
-            0,
-            3,
-            5,
-          ],
+          expected: [0, 3, 5],
         },
       ],
     },
@@ -241,15 +198,15 @@ def li_chao_query(lines, queries):
         "Handles non-linear functions",
       ],
       answer: 0,
-      explanation: "The convex hull trick requires sorted slopes; Li Chao tree allows arbitrary insertion order.",
-      hints: [
-        "What constraint does the convex hull trick impose on insertion?",
-      ],
+      explanation:
+        "The convex hull trick requires sorted slopes; Li Chao tree allows arbitrary insertion order.",
+      hints: ["What constraint does the convex hull trick impose on insertion?"],
       objective: "Understand Li Chao tree advantages",
     },
   ],
   exam: {
-    definition: "Li Chao tree is a segment tree for maintaining linear functions, supporting O(log n) insert and minimum-value queries at any x.",
+    definition:
+      "Li Chao tree is a segment tree for maintaining linear functions, supporting O(log n) insert and minimum-value queries at any x.",
     steps: [
       "Store dominant line at each node's midpoint.",
       "Insert: compare at midpoint, push loser to child.",
@@ -257,15 +214,10 @@ def li_chao_query(lines, queries):
     ],
     timeComplexity: "$O(\\log n)$ per operation",
     spaceComplexity: "$O(n)$",
-    correctness: "Each insert visits O(log n) nodes; the stored line at each node is optimal at the midpoint, ensuring the global minimum is found along any query path.",
-    applications: [
-      "DP optimization",
-      "Competitive programming",
-      "Line container",
-    ],
-    limitations: [
-      "Limited to functions that cross at most once per interval",
-    ],
+    correctness:
+      "Each insert visits O(log n) nodes; the stored line at each node is optimal at the midpoint, ensuring the global minimum is found along any query path.",
+    applications: ["DP optimization", "Competitive programming", "Line container"],
+    limitations: ["Limited to functions that cross at most once per interval"],
     faq: [
       {
         q: "When to use Li Chao vs CHT?",
@@ -275,9 +227,7 @@ def li_chao_query(lines, queries):
     answers: [
       {
         marks: 2,
-        outline: [
-          "Midpoint comparison insert strategy (1). Query correctness (1).",
-        ],
+        outline: ["Midpoint comparison insert strategy (1). Query correctness (1)."],
       },
     ],
   },

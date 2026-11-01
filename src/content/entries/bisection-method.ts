@@ -3,28 +3,19 @@ import type { AlgorithmEntry } from "../types";
 export const bisectionMethodEntry: AlgorithmEntry = {
   slug: "bisection-method",
   name: "Bisection Method",
-  aliases: [
-    "Binary Search for Roots",
-    "Interval Halving",
-  ],
-  curriculum: [
-    385,
-  ],
+  aliases: ["Binary Search for Roots", "Interval Halving"],
+  curriculum: [385],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Finds a root of a continuous function on an interval [a, b] where f(a) and f(b) have opposite signs, by repeatedly halving the interval, guaranteeing convergence with one bit of precision per iteration.",
-  tags: [
-    "root finding",
-    "numerical methods",
-    "binary search",
-  ],
-  prerequisites: [
-    "Binary Search",
-  ],
+  summary:
+    "Finds a root of a continuous function on an interval [a, b] where f(a) and f(b) have opposite signs, by repeatedly halving the interval, guaranteeing convergence with one bit of precision per iteration.",
+  tags: ["root finding", "numerical methods", "binary search"],
+  prerequisites: ["Binary Search"],
   related: [],
   problem: {
-    input: "A continuous function f, an interval [a, b] with f(a) * f(b) < 0, and a tolerance epsilon.",
+    input:
+      "A continuous function f, an interval [a, b] with f(a) * f(b) < 0, and a tolerance epsilon.",
     output: "A value x in [a, b] with |f(x)| < epsilon (approximately a root of f).",
   },
   levels: {
@@ -56,42 +47,12 @@ export const bisectionMethodEntry: AlgorithmEntry = {
       },
       {
         kind: "table",
-        head: [
-          "Step",
-          "a",
-          "b",
-          "mid",
-          "f(mid)",
-        ],
+        head: ["Step", "a", "b", "mid", "f(mid)"],
         rows: [
-          [
-            "0",
-            "1.0",
-            "2.0",
-            "1.5",
-            "0.25",
-          ],
-          [
-            "1",
-            "1.0",
-            "1.5",
-            "1.25",
-            "-0.4375",
-          ],
-          [
-            "2",
-            "1.25",
-            "1.5",
-            "1.375",
-            "-0.109375",
-          ],
-          [
-            "3",
-            "1.375",
-            "1.5",
-            "1.4375",
-            "0.06640625",
-          ],
+          ["0", "1.0", "2.0", "1.5", "0.25"],
+          ["1", "1.0", "1.5", "1.25", "-0.4375"],
+          ["2", "1.25", "1.5", "1.375", "-0.109375"],
+          ["3", "1.375", "1.5", "1.4375", "0.06640625"],
         ],
       },
     ],
@@ -180,35 +141,32 @@ def bisect_test(target_sq):
 `,
       tests: [
         {
-          args: [
-            4,
-          ],
+          args: [4],
           expected: 2.0,
         },
         {
-          args: [
-            9,
-          ],
+          args: [9],
           expected: 3.0,
         },
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "bisect-iters",
       kind: "numeric",
-      prompt: "How many bisection iterations are needed to narrow an interval of width 1024 to width 1?",
+      prompt:
+        "How many bisection iterations are needed to narrow an interval of width 1024 to width 1?",
       answer: 10,
       explanation: "Each iteration halves the width. 1024 / 2^10 = 1, so 10 iterations.",
-      hints: [
-        "How many times can you halve 1024?",
-      ],
+      hints: ["How many times can you halve 1024?"],
       objective: "Calculate iteration count",
     },
   ],
   exam: {
-    definition: "The bisection method finds roots of continuous functions by repeatedly halving a bracketing interval, converging linearly with one bit per step.",
+    definition:
+      "The bisection method finds roots of continuous functions by repeatedly halving a bracketing interval, converging linearly with one bit per step.",
     steps: [
       "Verify opposite signs at endpoints",
       "Compute midpoint",
@@ -217,16 +175,10 @@ def bisect_test(target_sq):
     ],
     timeComplexity: "O(log((b-a)/epsilon))",
     spaceComplexity: "O(1)",
-    correctness: "By the intermediate value theorem, a root exists in the bracket. Each step maintains the invariant that f changes sign across the interval.",
-    applications: [
-      "Root finding",
-      "Optimization (find zero of derivative)",
-      "Numerical analysis",
-    ],
-    limitations: [
-      "Linear convergence (slower than Newton)",
-      "Needs initial bracket",
-    ],
+    correctness:
+      "By the intermediate value theorem, a root exists in the bracket. Each step maintains the invariant that f changes sign across the interval.",
+    applications: ["Root finding", "Optimization (find zero of derivative)", "Numerical analysis"],
+    limitations: ["Linear convergence (slower than Newton)", "Needs initial bracket"],
     faq: [
       {
         q: "When does bisection beat Newton?",
@@ -236,9 +188,7 @@ def bisect_test(target_sq):
     answers: [
       {
         marks: 2,
-        outline: [
-          "Interval halving with IVT guarantee (2)",
-        ],
+        outline: ["Interval halving with IVT guarantee (2)"],
       },
     ],
   },

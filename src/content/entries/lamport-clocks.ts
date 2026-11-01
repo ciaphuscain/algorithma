@@ -3,30 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const lamportClocksEntry: AlgorithmEntry = {
   slug: "lamport-clocks",
   name: "Lamport Clocks",
-  aliases: [
-    "Lamport logical clocks",
-    "Lamport timestamps",
-  ],
-  curriculum: [
-    546,
-  ],
+  aliases: ["Lamport logical clocks", "Lamport timestamps"],
+  curriculum: [546],
   domain: "distributed",
   subcategory: "Distributed Algorithms",
   difficulty: "intermediate",
-  summary: "Assigns logical timestamps to events in a distributed system so that if event a causally precedes event b, then the timestamp of a is less than b's — capturing the 'happened-before' relation.",
-  tags: [
-    "logical clock",
-    "distributed",
-    "happened-before",
-    "causality",
-  ],
-  prerequisites: [
-    "Distributed Systems",
-  ],
-  related: [
-    "vector-clocks",
-    "chandy-lamport-snapshot-algorithm",
-  ],
+  summary:
+    "Assigns logical timestamps to events in a distributed system so that if event a causally precedes event b, then the timestamp of a is less than b's — capturing the 'happened-before' relation.",
+  tags: ["logical clock", "distributed", "happened-before", "causality"],
+  prerequisites: ["Distributed Systems"],
+  related: ["vector-clocks", "chandy-lamport-snapshot-algorithm"],
   problem: {
     input: "A distributed system with multiple processes exchanging messages.",
     output: "A timestamp for each event such that causally ordered events have ordered timestamps.",
@@ -163,56 +149,23 @@ def lamport_clock(events):
         {
           args: [
             [
-              [
-                0,
-                "send",
-                1,
-              ],
-              [
-                0,
-                "local",
-              ],
-              [
-                1,
-                "receive",
-                0,
-              ],
-              [
-                1,
-                "send",
-                0,
-              ],
+              [0, "send", 1],
+              [0, "local"],
+              [1, "receive", 0],
+              [1, "send", 0],
             ],
           ],
-          expected: [
-            1,
-            2,
-            2,
-            3,
-          ],
+          expected: [1, 2, 2, 3],
         },
         {
           args: [
             [
-              [
-                0,
-                "local",
-              ],
-              [
-                1,
-                "local",
-              ],
-              [
-                0,
-                "local",
-              ],
+              [0, "local"],
+              [1, "local"],
+              [0, "local"],
             ],
           ],
-          expected: [
-            1,
-            1,
-            2,
-          ],
+          expected: [1, 1, 2],
         },
       ],
     },
@@ -230,15 +183,15 @@ def lamport_clock(events):
         "Only if a message was sent",
       ],
       answer: 0,
-      explanation: "Lamport clocks capture one direction only: a→b implies C(a)<C(b), but not the converse.",
-      hints: [
-        "Can two independent processes have ordered timestamps?",
-      ],
+      explanation:
+        "Lamport clocks capture one direction only: a→b implies C(a)<C(b), but not the converse.",
+      hints: ["Can two independent processes have ordered timestamps?"],
       objective: "Understand Lamport clock limitations",
     },
   ],
   exam: {
-    definition: "Lamport clocks assign logical timestamps to distributed events such that causally ordered events have ordered timestamps (but not vice versa).",
+    definition:
+      "Lamport clocks assign logical timestamps to distributed events such that causally ordered events have ordered timestamps (but not vice versa).",
     steps: [
       "Each process maintains a counter.",
       "Increment on every event.",
@@ -247,16 +200,14 @@ def lamport_clock(events):
     ],
     timeComplexity: "$O(1)$ per event",
     spaceComplexity: "$O(1)$ per process",
-    correctness: "Induction: if a→b through a chain of local events and message sends/receives, each step increases the timestamp.",
+    correctness:
+      "Induction: if a→b through a chain of local events and message sends/receives, each step increases the timestamp.",
     applications: [
       "Event ordering in distributed systems",
       "Mutual exclusion",
       "Debugging distributed logs",
     ],
-    limitations: [
-      "Cannot detect concurrent events",
-      "Vector clocks needed for full causality",
-    ],
+    limitations: ["Cannot detect concurrent events", "Vector clocks needed for full causality"],
     faq: [
       {
         q: "How do vector clocks improve on Lamport clocks?",
@@ -266,15 +217,14 @@ def lamport_clock(events):
     answers: [
       {
         marks: 2,
-        outline: [
-          "Rules for updating the clock (1). Clock condition and its limitation (1).",
-        ],
+        outline: ["Rules for updating the clock (1). Clock condition and its limitation (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "L. Lamport, 'Time, clocks, and the ordering of events in a distributed system,' Communications of the ACM, 21(7), 1978.",
+      citation:
+        "L. Lamport, 'Time, clocks, and the ordering of events in a distributed system,' Communications of the ACM, 21(7), 1978.",
       supports: "The seminal paper on logical clocks.",
     },
   ],

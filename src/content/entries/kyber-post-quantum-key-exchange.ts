@@ -3,30 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const kyberPostQuantumKeyExchangeEntry: AlgorithmEntry = {
   slug: "kyber-post-quantum-key-exchange",
   name: "Kyber (Post-Quantum Key Exchange)",
-  aliases: [
-    "CRYSTALS-Kyber",
-    "ML-KEM",
-  ],
-  curriculum: [
-    597,
-  ],
+  aliases: ["CRYSTALS-Kyber", "ML-KEM"],
+  curriculum: [597],
   domain: "cryptography",
   subcategory: "Cryptography",
   difficulty: "intermediate",
-  summary: "A lattice-based key encapsulation mechanism (KEM) standardized by NIST as ML-KEM, based on the hardness of the Module Learning With Errors (M-LWE) problem, designed to resist quantum computer attacks.",
-  tags: [
-    "post-quantum",
-    "lattice",
-    "KEM",
-    "NIST",
-  ],
-  prerequisites: [
-    "Public-Key Cryptography",
-  ],
-  related: [
-    "aes-encryption",
-    "rsa-key-generation",
-  ],
+  summary:
+    "A lattice-based key encapsulation mechanism (KEM) standardized by NIST as ML-KEM, based on the hardness of the Module Learning With Errors (M-LWE) problem, designed to resist quantum computer attacks.",
+  tags: ["post-quantum", "lattice", "KEM", "NIST"],
+  prerequisites: ["Public-Key Cryptography"],
+  related: ["aes-encryption", "rsa-key-generation"],
   problem: {
     input: "Two parties wanting to establish a shared secret key.",
     output: "A shared secret, secure against both classical and quantum adversaries.",
@@ -146,10 +132,7 @@ export const kyberPostQuantumKeyExchangeEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            4,
-            97,
-          ],
+          args: [4, 97],
           expected: 1,
         },
       ],
@@ -169,14 +152,13 @@ export const kyberPostQuantumKeyExchangeEntry: AlgorithmEntry = {
       ],
       answer: 0,
       explanation: "Kyber's security reduces to the hardness of M-LWE on structured lattices.",
-      hints: [
-        "It involves adding noise to a linear system.",
-      ],
+      hints: ["It involves adding noise to a linear system."],
       objective: "Understand Kyber's security basis",
     },
   ],
   exam: {
-    definition: "Kyber is a lattice-based KEM using the Module-LWE problem, standardized by NIST as ML-KEM for post-quantum key exchange.",
+    definition:
+      "Kyber is a lattice-based KEM using the Module-LWE problem, standardized by NIST as ML-KEM for post-quantum key exchange.",
     steps: [
       "Generate keys from noisy matrix-vector product.",
       "Encapsulate with fresh noise.",
@@ -185,15 +167,8 @@ export const kyberPostQuantumKeyExchangeEntry: AlgorithmEntry = {
     timeComplexity: "$O(n \\log n)$ per operation",
     spaceComplexity: "$O(n)$",
     correctness: "M-LWE hardness: recovering s from (A, As+e) is hard even for quantum computers.",
-    applications: [
-      "Post-quantum TLS",
-      "Hybrid key exchange",
-      "VPN encryption",
-    ],
-    limitations: [
-      "Larger keys than classical schemes",
-      "Relatively new, less battle-tested",
-    ],
+    applications: ["Post-quantum TLS", "Hybrid key exchange", "VPN encryption"],
+    limitations: ["Larger keys than classical schemes", "Relatively new, less battle-tested"],
     faq: [
       {
         q: "Why not just use RSA/DH?",
@@ -203,15 +178,14 @@ export const kyberPostQuantumKeyExchangeEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "LWE problem description (1). Key generation and encapsulation (1).",
-        ],
+        outline: ["LWE problem description (1). Key generation and encapsulation (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "R. Avanzi et al., 'CRYSTALS-Kyber Algorithm Specifications and Supporting Documentation,' NIST PQC Round 3 Submission, 2021.",
+      citation:
+        "R. Avanzi et al., 'CRYSTALS-Kyber Algorithm Specifications and Supporting Documentation,' NIST PQC Round 3 Submission, 2021.",
       supports: "The Kyber specification.",
     },
   ],

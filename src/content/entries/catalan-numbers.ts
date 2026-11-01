@@ -4,25 +4,15 @@ export const catalanNumbersEntry: AlgorithmEntry = {
   slug: "catalan-numbers",
   name: "Catalan Numbers",
   aliases: [],
-  curriculum: [
-    381,
-  ],
+  curriculum: [381],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Computes the n-th Catalan number C_n = C(2n, n)/(n+1), which counts balanced parenthesizations, binary trees, triangulations, and many other combinatorial structures.",
-  tags: [
-    "combinatorics",
-    "dynamic programming",
-    "counting",
-  ],
-  prerequisites: [
-    "Dynamic Programming",
-    "Binomial Coefficients",
-  ],
-  related: [
-    "binomial-coefficient-dp",
-  ],
+  summary:
+    "Computes the n-th Catalan number C_n = C(2n, n)/(n+1), which counts balanced parenthesizations, binary trees, triangulations, and many other combinatorial structures.",
+  tags: ["combinatorics", "dynamic programming", "counting"],
+  prerequisites: ["Dynamic Programming", "Binomial Coefficients"],
+  related: ["binomial-coefficient-dp"],
   problem: {
     input: "A non-negative integer n.",
     output: "The n-th Catalan number.",
@@ -130,63 +120,47 @@ export const catalanNumbersEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            0,
-          ],
+          args: [0],
           expected: 1,
         },
         {
-          args: [
-            3,
-          ],
+          args: [3],
           expected: 5,
         },
         {
-          args: [
-            5,
-          ],
+          args: [5],
           expected: 42,
         },
         {
-          args: [
-            10,
-          ],
+          args: [10],
           expected: 16796,
         },
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "catalan-4",
       kind: "numeric",
       prompt: "What is the 4th Catalan number C_4?",
       answer: 14,
-      explanation: "C_4 = C(8,4)/5 = 70/5 = 14. Or by recurrence: C_0*C_3 + C_1*C_2 + C_2*C_1 + C_3*C_0 = 5 + 2 + 2 + 5 = 14.",
-      hints: [
-        "Use the recurrence or the formula C(2n,n)/(n+1).",
-      ],
+      explanation:
+        "C_4 = C(8,4)/5 = 70/5 = 14. Or by recurrence: C_0*C_3 + C_1*C_2 + C_2*C_1 + C_3*C_0 = 5 + 2 + 2 + 5 = 14.",
+      hints: ["Use the recurrence or the formula C(2n,n)/(n+1)."],
       objective: "Compute a Catalan number",
     },
   ],
   exam: {
-    definition: "The n-th Catalan number C_n = C(2n,n)/(n+1) counts balanced parenthesizations, binary trees, and many other structures, computable by DP or direct formula.",
-    steps: [
-      "C_0 = 1",
-      "C_n = sum of C_i * C_{n-1-i}",
-      "Or C_n = C(2n,n) / (n+1)",
-    ],
+    definition:
+      "The n-th Catalan number C_n = C(2n,n)/(n+1) counts balanced parenthesizations, binary trees, and many other structures, computable by DP or direct formula.",
+    steps: ["C_0 = 1", "C_n = sum of C_i * C_{n-1-i}", "Or C_n = C(2n,n) / (n+1)"],
     timeComplexity: "O(n) with formula, O(n^2) with DP",
     spaceComplexity: "O(n)",
-    correctness: "The recurrence follows from choosing the split point. The closed form is derived via generating functions.",
-    applications: [
-      "Counting binary trees",
-      "Parenthesization problems",
-      "Polygon triangulation",
-    ],
-    limitations: [
-      "Grows exponentially",
-    ],
+    correctness:
+      "The recurrence follows from choosing the split point. The closed form is derived via generating functions.",
+    applications: ["Counting binary trees", "Parenthesization problems", "Polygon triangulation"],
+    limitations: ["Grows exponentially"],
     faq: [
       {
         q: "Why C(2n,n)/(n+1)?",
@@ -196,9 +170,7 @@ export const catalanNumbersEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Recurrence, closed form, and counting interpretation (2)",
-        ],
+        outline: ["Recurrence, closed form, and counting interpretation (2)"],
       },
     ],
   },

@@ -3,29 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const andrewSMonotoneChainEntry: AlgorithmEntry = {
   slug: "andrew-s-monotone-chain",
   name: "Andrew's Monotone Chain",
-  aliases: [
-    "Monotone Chain Convex Hull",
-  ],
-  curriculum: [
-    408,
-  ],
+  aliases: ["Monotone Chain Convex Hull"],
+  curriculum: [408],
   domain: "geometry",
   subcategory: "Computational Geometry",
   difficulty: "intermediate",
-  summary: "Computes the convex hull of a set of 2D points in O(n log n) by sorting points lexicographically and building upper and lower hulls separately using a stack-based monotone chain.",
-  tags: [
-    "convex hull",
-    "computational geometry",
-    "sorting",
-    "stack",
-  ],
-  prerequisites: [
-    "Sorting",
-    "Cross Product",
-  ],
-  related: [
-    "graham-scan",
-  ],
+  summary:
+    "Computes the convex hull of a set of 2D points in O(n log n) by sorting points lexicographically and building upper and lower hulls separately using a stack-based monotone chain.",
+  tags: ["convex hull", "computational geometry", "sorting", "stack"],
+  prerequisites: ["Sorting", "Cross Product"],
+  related: ["graham-scan"],
   problem: {
     input: "A set of n points in 2D.",
     output: "The vertices of the convex hull in counter-clockwise order.",
@@ -143,78 +130,37 @@ export const andrewSMonotoneChainEntry: AlgorithmEntry = {
         {
           args: [
             [
-              [
-                0,
-                0,
-              ],
-              [
-                1,
-                1,
-              ],
-              [
-                2,
-                0,
-              ],
-              [
-                0,
-                2,
-              ],
-              [
-                2,
-                2,
-              ],
+              [0, 0],
+              [1, 1],
+              [2, 0],
+              [0, 2],
+              [2, 2],
             ],
           ],
           expected: [
-            [
-              0,
-              0,
-            ],
-            [
-              2,
-              0,
-            ],
-            [
-              2,
-              2,
-            ],
-            [
-              0,
-              2,
-            ],
+            [0, 0],
+            [2, 0],
+            [2, 2],
+            [0, 2],
           ],
         },
         {
           args: [
             [
-              [
-                0,
-                0,
-              ],
-              [
-                1,
-                0,
-              ],
-              [
-                2,
-                0,
-              ],
+              [0, 0],
+              [1, 0],
+              [2, 0],
             ],
           ],
           expected: [
-            [
-              0,
-              0,
-            ],
-            [
-              2,
-              0,
-            ],
+            [0, 0],
+            [2, 0],
           ],
         },
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "mc-turn",
@@ -227,15 +173,15 @@ export const andrewSMonotoneChainEntry: AlgorithmEntry = {
         "When x-coordinate decreases",
       ],
       answer: 1,
-      explanation: "A clockwise turn means the middle point is inside the hull, so it should be removed.",
-      hints: [
-        "What does the cross product sign tell you?",
-      ],
+      explanation:
+        "A clockwise turn means the middle point is inside the hull, so it should be removed.",
+      hints: ["What does the cross product sign tell you?"],
       objective: "Understand the stack invariant",
     },
   ],
   exam: {
-    definition: "Andrew's monotone chain computes 2D convex hulls by sorting points and building lower/upper hulls with a stack, removing clockwise turns.",
+    definition:
+      "Andrew's monotone chain computes 2D convex hulls by sorting points and building lower/upper hulls with a stack, removing clockwise turns.",
     steps: [
       "Sort by (x, y)",
       "Lower hull: sweep left to right, pop clockwise turns",
@@ -244,15 +190,10 @@ export const andrewSMonotoneChainEntry: AlgorithmEntry = {
     ],
     timeComplexity: "O(n log n)",
     spaceComplexity: "O(n)",
-    correctness: "Each triple on the hull makes a CCW turn (cross product > 0). Points causing CW turns are interior and correctly removed.",
-    applications: [
-      "Convex hull computation",
-      "Collision detection",
-      "Geographic boundaries",
-    ],
-    limitations: [
-      "Only for 2D points",
-    ],
+    correctness:
+      "Each triple on the hull makes a CCW turn (cross product > 0). Points causing CW turns are interior and correctly removed.",
+    applications: ["Convex hull computation", "Collision detection", "Geographic boundaries"],
+    limitations: ["Only for 2D points"],
     faq: [
       {
         q: "Why sort by x?",
@@ -262,15 +203,14 @@ export const andrewSMonotoneChainEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Sort + two sweeps with cross-product test (2)",
-        ],
+        outline: ["Sort + two sweeps with cross-product test (2)"],
       },
     ],
   },
   references: [
     {
-      citation: "A. M. Andrew, 'Another efficient algorithm for convex hulls in two dimensions,' Information Processing Letters, 9(5):216-219, 1979.",
+      citation:
+        "A. M. Andrew, 'Another efficient algorithm for convex hulls in two dimensions,' Information Processing Letters, 9(5):216-219, 1979.",
       supports: "Original monotone chain algorithm.",
     },
   ],

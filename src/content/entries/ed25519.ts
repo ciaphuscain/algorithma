@@ -3,28 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const ed25519Entry: AlgorithmEntry = {
   slug: "ed25519",
   name: "Ed25519",
-  aliases: [
-    "Edwards-curve Digital Signature Algorithm",
-  ],
-  curriculum: [
-    596,
-  ],
+  aliases: ["Edwards-curve Digital Signature Algorithm"],
+  curriculum: [596],
   domain: "cryptography",
   subcategory: "Cryptography",
   difficulty: "intermediate",
-  summary: "A digital signature scheme using Curve25519 (a twisted Edwards curve) that produces 64-byte signatures with 128-bit security, valued for speed, small keys, and resistance to side-channel attacks.",
-  tags: [
-    "digital signature",
-    "elliptic curve",
-    "Curve25519",
-    "cryptography",
-  ],
-  prerequisites: [
-    "Elliptic Curve Diffie–Hellman (ECDH)",
-  ],
-  related: [
-    "elliptic-curve-digital-signature-algorithm-ecdsa",
-  ],
+  summary:
+    "A digital signature scheme using Curve25519 (a twisted Edwards curve) that produces 64-byte signatures with 128-bit security, valued for speed, small keys, and resistance to side-channel attacks.",
+  tags: ["digital signature", "elliptic curve", "Curve25519", "cryptography"],
+  prerequisites: ["Elliptic Curve Diffie–Hellman (ECDH)"],
+  related: ["elliptic-curve-digital-signature-algorithm-ecdsa"],
   problem: {
     input: "A message and a private key (or public key for verification).",
     output: "A 64-byte digital signature (signing) or a boolean (verification).",
@@ -123,26 +111,12 @@ export const ed25519Entry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            100,
-            32,
-          ],
-          expected: [
-            32,
-            32,
-            64,
-          ],
+          args: [100, 32],
+          expected: [32, 32, 64],
         },
         {
-          args: [
-            1000000,
-            32,
-          ],
-          expected: [
-            32,
-            32,
-            64,
-          ],
+          args: [1000000, 32],
+          expected: [32, 32, 64],
         },
       ],
     },
@@ -160,15 +134,15 @@ export const ed25519Entry: AlgorithmEntry = {
         "Increases speed",
       ],
       answer: 0,
-      explanation: "If the same nonce is used for two different messages, the private key can be extracted. Deterministic nonce derivation prevents this.",
-      hints: [
-        "What happens if a nonce is reused in ECDSA?",
-      ],
+      explanation:
+        "If the same nonce is used for two different messages, the private key can be extracted. Deterministic nonce derivation prevents this.",
+      hints: ["What happens if a nonce is reused in ECDSA?"],
       objective: "Understand Ed25519 security advantages",
     },
   ],
   exam: {
-    definition: "Ed25519 is a deterministic signature scheme on Curve25519 with 128-bit security and 64-byte signatures.",
+    definition:
+      "Ed25519 is a deterministic signature scheme on Curve25519 with 128-bit security and 64-byte signatures.",
     steps: [
       "Hash private key to get scalar and prefix.",
       "Sign: R = rB, S = r + H(R,A,msg)·s.",
@@ -177,14 +151,8 @@ export const ed25519Entry: AlgorithmEntry = {
     timeComplexity: "O(1) per signature",
     spaceComplexity: "O(1)",
     correctness: "Security reduces to the discrete logarithm problem on Curve25519.",
-    applications: [
-      "SSH key authentication",
-      "TLS 1.3",
-      "Cryptocurrency signing",
-    ],
-    limitations: [
-      "Quantum computers threaten all elliptic curve schemes",
-    ],
+    applications: ["SSH key authentication", "TLS 1.3", "Cryptocurrency signing"],
+    limitations: ["Quantum computers threaten all elliptic curve schemes"],
     faq: [
       {
         q: "Why is Ed25519 preferred over ECDSA?",
@@ -194,16 +162,14 @@ export const ed25519Entry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Sign and verify steps.",
-          "Deterministic nonce advantage.",
-        ],
+        outline: ["Sign and verify steps.", "Deterministic nonce advantage."],
       },
     ],
   },
   references: [
     {
-      citation: "D. J. Bernstein et al., 'High-speed high-security signatures,' Journal of Cryptographic Engineering, 2(2), 2012.",
+      citation:
+        "D. J. Bernstein et al., 'High-speed high-security signatures,' Journal of Cryptographic Engineering, 2(2), 2012.",
       supports: "The Ed25519 specification.",
     },
   ],

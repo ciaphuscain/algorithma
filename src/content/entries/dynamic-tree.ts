@@ -3,29 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const dynamicTreeEntry: AlgorithmEntry = {
   slug: "dynamic-tree",
   name: "Dynamic Tree",
-  aliases: [
-    "Link-Cut Tree",
-    "Splay tree dynamic connectivity",
-  ],
-  curriculum: [
-    199,
-  ],
+  aliases: ["Link-Cut Tree", "Splay tree dynamic connectivity"],
+  curriculum: [199],
   domain: "trees",
   subcategory: "Tree Algorithms",
   difficulty: "intermediate",
-  summary: "Maintains a forest of rooted trees supporting link, cut, and path queries (e.g., path aggregate, LCA) in O(log n) amortized time using splay trees on preferred paths.",
-  tags: [
-    "link-cut tree",
-    "splay tree",
-    "dynamic forest",
-    "path queries",
-  ],
-  prerequisites: [
-    "Splay Tree",
-  ],
-  related: [
-    "euler-tour-tree",
-  ],
+  summary:
+    "Maintains a forest of rooted trees supporting link, cut, and path queries (e.g., path aggregate, LCA) in O(log n) amortized time using splay trees on preferred paths.",
+  tags: ["link-cut tree", "splay tree", "dynamic forest", "path queries"],
+  prerequisites: ["Splay Tree"],
+  related: ["euler-tour-tree"],
   problem: {
     input: "A dynamic forest with link, cut, and path query operations.",
     output: "Responses to queries while maintaining the forest under structural changes.",
@@ -138,43 +125,15 @@ export const dynamicTreeEntry: AlgorithmEntry = {
           args: [
             4,
             [
-              [
-                "link",
-                0,
-                1,
-              ],
-              [
-                "link",
-                2,
-                3,
-              ],
-              [
-                "connected",
-                0,
-                1,
-              ],
-              [
-                "connected",
-                0,
-                2,
-              ],
-              [
-                "link",
-                1,
-                2,
-              ],
-              [
-                "connected",
-                0,
-                3,
-              ],
+              ["link", 0, 1],
+              ["link", 2, 3],
+              ["connected", 0, 1],
+              ["connected", 0, 2],
+              ["link", 1, 2],
+              ["connected", 0, 3],
             ],
           ],
-          expected: [
-            true,
-            false,
-            true,
-          ],
+          expected: [true, false, true],
         },
       ],
     },
@@ -192,15 +151,15 @@ export const dynamicTreeEntry: AlgorithmEntry = {
         "Deletes a node",
       ],
       answer: 0,
-      explanation: "Access restructures preferred paths so that the path from the accessed node to the root becomes a single preferred path (one splay tree).",
-      hints: [
-        "What path do we need to expose for path queries?",
-      ],
+      explanation:
+        "Access restructures preferred paths so that the path from the accessed node to the root becomes a single preferred path (one splay tree).",
+      hints: ["What path do we need to expose for path queries?"],
       objective: "Understand the access operation",
     },
   ],
   exam: {
-    definition: "Link-cut trees maintain dynamic forests with O(log n) amortized link, cut, and path query operations.",
+    definition:
+      "Link-cut trees maintain dynamic forests with O(log n) amortized link, cut, and path query operations.",
     steps: [
       "Preferred path decomposition with splay trees.",
       "Access: expose root-to-node path.",
@@ -209,16 +168,14 @@ export const dynamicTreeEntry: AlgorithmEntry = {
     ],
     timeComplexity: "O(log n) amortized per operation",
     spaceComplexity: "O(n)",
-    correctness: "Splay tree amortized analysis (potential = sum of log sizes) gives O(log n) per access.",
+    correctness:
+      "Splay tree amortized analysis (potential = sum of log sizes) gives O(log n) per access.",
     applications: [
       "Maximum flow (path augmentation)",
       "Dynamic connectivity",
       "Network optimization",
     ],
-    limitations: [
-      "Complex implementation",
-      "Amortized not worst-case",
-    ],
+    limitations: ["Complex implementation", "Amortized not worst-case"],
     faq: [
       {
         q: "How does access work?",
@@ -228,16 +185,14 @@ export const dynamicTreeEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Preferred path decomposition.",
-          "Access, link, cut operations.",
-        ],
+        outline: ["Preferred path decomposition.", "Access, link, cut operations."],
       },
     ],
   },
   references: [
     {
-      citation: "D. D. Sleator, R. E. Tarjan, 'A Data Structure for Dynamic Trees,' JCSS 26(3), 1983.",
+      citation:
+        "D. D. Sleator, R. E. Tarjan, 'A Data Structure for Dynamic Trees,' JCSS 26(3), 1983.",
       supports: "The original link-cut tree paper.",
     },
   ],

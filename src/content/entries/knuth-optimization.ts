@@ -3,32 +3,19 @@ import type { AlgorithmEntry } from "../types";
 export const knuthOptimizationEntry: AlgorithmEntry = {
   slug: "knuth-optimization",
   name: "Knuth Optimization",
-  aliases: [
-    "Knuth's optimization",
-    "Optimal BST DP speedup",
-  ],
-  curriculum: [
-    521,
-  ],
+  aliases: ["Knuth's optimization", "Optimal BST DP speedup"],
+  curriculum: [521],
   domain: "dynamic-programming",
   subcategory: "Dynamic Programming",
   difficulty: "intermediate",
-  summary: "Speeds up certain O(n³) interval DP recurrences to O(n²) by exploiting the monotonicity of optimal split points, originally applied to optimal binary search tree construction.",
-  tags: [
-    "DP optimization",
-    "interval DP",
-    "monotone",
-    "Knuth",
-  ],
-  prerequisites: [
-    "Dynamic Programming",
-    "Interval DP",
-  ],
-  related: [
-    "divide-and-conquer-optimization",
-  ],
+  summary:
+    "Speeds up certain O(n³) interval DP recurrences to O(n²) by exploiting the monotonicity of optimal split points, originally applied to optimal binary search tree construction.",
+  tags: ["DP optimization", "interval DP", "monotone", "Knuth"],
+  prerequisites: ["Dynamic Programming", "Interval DP"],
+  related: ["divide-and-conquer-optimization"],
   problem: {
-    input: "An interval DP recurrence $dp[i][j] = \\min_{i \\le k < j} (dp[i][k] + dp[k+1][j] + C[i][j])$ where optimal split points are monotone.",
+    input:
+      "An interval DP recurrence $dp[i][j] = \\min_{i \\le k < j} (dp[i][k] + dp[k+1][j] + C[i][j])$ where optimal split points are monotone.",
     output: "The optimal DP values computed in O(n²) instead of O(n³).",
   },
   levels: {
@@ -148,30 +135,15 @@ export const knuthOptimizationEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            [
-              3,
-              1,
-              2,
-            ],
-          ],
+          args: [[3, 1, 2]],
           expected: 9,
         },
         {
-          args: [
-            [
-              1,
-              1,
-            ],
-          ],
+          args: [[1, 1]],
           expected: 3,
         },
         {
-          args: [
-            [
-              5,
-            ],
-          ],
+          args: [[5]],
           expected: 5,
         },
       ],
@@ -183,22 +155,17 @@ export const knuthOptimizationEntry: AlgorithmEntry = {
       id: "knuth-condition",
       kind: "mcq",
       prompt: "What condition must the cost function satisfy for Knuth's optimization?",
-      options: [
-        "Quadrangle inequality",
-        "Triangle inequality",
-        "Submodularity",
-        "Convexity",
-      ],
+      options: ["Quadrangle inequality", "Triangle inequality", "Submodularity", "Convexity"],
       answer: 0,
-      explanation: "The quadrangle inequality C[a][c]+C[b][d] ≤ C[a][d]+C[b][c] ensures monotone optimal splits.",
-      hints: [
-        "It's a condition on intervals.",
-      ],
+      explanation:
+        "The quadrangle inequality C[a][c]+C[b][d] ≤ C[a][d]+C[b][c] ensures monotone optimal splits.",
+      hints: ["It's a condition on intervals."],
       objective: "Understand the quadrangle inequality",
     },
   ],
   exam: {
-    definition: "Knuth's optimization reduces interval DP from O(n³) to O(n²) by exploiting monotonicity of optimal split points under the quadrangle inequality.",
+    definition:
+      "Knuth's optimization reduces interval DP from O(n³) to O(n²) by exploiting monotonicity of optimal split points under the quadrangle inequality.",
     steps: [
       "Fill DP by interval length.",
       "Search splits only in [opt[i][j-1], opt[i+1][j]].",
@@ -206,14 +173,10 @@ export const knuthOptimizationEntry: AlgorithmEntry = {
     ],
     timeComplexity: "$O(n^2)$",
     spaceComplexity: "$O(n^2)$",
-    correctness: "Quadrangle inequality implies opt[i][j-1] ≤ opt[i][j] ≤ opt[i+1][j]; search ranges telescope to O(n) per length.",
-    applications: [
-      "Optimal BST",
-      "Optimal alphabetic tree",
-    ],
-    limitations: [
-      "Only applies when quadrangle inequality holds",
-    ],
+    correctness:
+      "Quadrangle inequality implies opt[i][j-1] ≤ opt[i][j] ≤ opt[i+1][j]; search ranges telescope to O(n) per length.",
+    applications: ["Optimal BST", "Optimal alphabetic tree"],
+    limitations: ["Only applies when quadrangle inequality holds"],
     faq: [
       {
         q: "Why does the total work become O(n²)?",
@@ -223,9 +186,7 @@ export const knuthOptimizationEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Quadrangle inequality statement (1). Why O(n²) (1).",
-        ],
+        outline: ["Quadrangle inequality statement (1). Why O(n²) (1)."],
       },
     ],
   },

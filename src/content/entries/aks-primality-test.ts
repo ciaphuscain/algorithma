@@ -3,29 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const aksPrimalityTestEntry: AlgorithmEntry = {
   slug: "aks-primality-test",
   name: "AKS Primality Test",
-  aliases: [
-    "Agrawal-Kayal-Saxena",
-  ],
-  curriculum: [
-    373,
-  ],
+  aliases: ["Agrawal-Kayal-Saxena"],
+  curriculum: [373],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "The first deterministic polynomial-time primality test, proving that PRIMES is in P, based on a generalization of Fermat's little theorem to polynomial rings.",
-  tags: [
-    "primality",
-    "number theory",
-    "polynomial",
-    "deterministic",
-  ],
-  prerequisites: [
-    "Modular Arithmetic",
-  ],
-  related: [
-    "miller-rabin",
-    "sieve-of-eratosthenes",
-  ],
+  summary:
+    "The first deterministic polynomial-time primality test, proving that PRIMES is in P, based on a generalization of Fermat's little theorem to polynomial rings.",
+  tags: ["primality", "number theory", "polynomial", "deterministic"],
+  prerequisites: ["Modular Arithmetic"],
+  related: ["miller-rabin", "sieve-of-eratosthenes"],
   problem: {
     input: "A positive integer n >= 2.",
     output: "Whether n is prime or composite.",
@@ -140,59 +127,45 @@ def is_prime_aks_simple(n):
 `,
       tests: [
         {
-          args: [
-            2,
-          ],
+          args: [2],
           expected: true,
         },
         {
-          args: [
-            17,
-          ],
+          args: [17],
           expected: true,
         },
         {
-          args: [
-            25,
-          ],
+          args: [25],
           expected: false,
         },
         {
-          args: [
-            1009,
-          ],
+          args: [1009],
           expected: true,
         },
         {
-          args: [
-            1000,
-          ],
+          args: [1000],
           expected: false,
         },
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "aks-class",
       kind: "mcq",
       prompt: "What complexity class did the AKS test prove PRIMES belongs to?",
-      options: [
-        "NP-complete",
-        "P",
-        "BPP only",
-        "co-NP",
-      ],
+      options: ["NP-complete", "P", "BPP only", "co-NP"],
       answer: 1,
-      explanation: "AKS showed that primality testing has a deterministic polynomial-time algorithm, placing PRIMES in P.",
-      hints: [
-        "What does a deterministic polynomial-time algorithm prove?",
-      ],
+      explanation:
+        "AKS showed that primality testing has a deterministic polynomial-time algorithm, placing PRIMES in P.",
+      hints: ["What does a deterministic polynomial-time algorithm prove?"],
       objective: "Know AKS significance",
     },
   ],
   exam: {
-    definition: "AKS is the first deterministic polynomial-time primality test, based on verifying (x+a)^n = x^n + a in a polynomial quotient ring.",
+    definition:
+      "AKS is the first deterministic polynomial-time primality test, based on verifying (x+a)^n = x^n + a in a polynomial quotient ring.",
     steps: [
       "Eliminate perfect powers",
       "Find suitable r with high order",
@@ -201,13 +174,10 @@ def is_prime_aks_simple(n):
     ],
     timeComplexity: "O(log^6 n)",
     spaceComplexity: "O(log^2 n)",
-    correctness: "If n is prime, the polynomial identity holds for all a by Fermat's little theorem generalized to polynomials. If composite, the identity fails for some a in the tested range.",
-    applications: [
-      "Theoretical proof that PRIMES is in P",
-    ],
-    limitations: [
-      "Too slow for practical use compared to Miller-Rabin",
-    ],
+    correctness:
+      "If n is prime, the polynomial identity holds for all a by Fermat's little theorem generalized to polynomials. If composite, the identity fails for some a in the tested range.",
+    applications: ["Theoretical proof that PRIMES is in P"],
+    limitations: ["Too slow for practical use compared to Miller-Rabin"],
     faq: [
       {
         q: "Why not used in practice?",
@@ -217,15 +187,14 @@ def is_prime_aks_simple(n):
     answers: [
       {
         marks: 2,
-        outline: [
-          "Deterministic polynomial primality; PRIMES in P (2)",
-        ],
+        outline: ["Deterministic polynomial primality; PRIMES in P (2)"],
       },
     ],
   },
   references: [
     {
-      citation: "M. Agrawal, N. Kayal, N. Saxena, 'PRIMES is in P,' Annals of Mathematics, 160(2):781-793, 2004.",
+      citation:
+        "M. Agrawal, N. Kayal, N. Saxena, 'PRIMES is in P,' Annals of Mathematics, 160(2):781-793, 2004.",
       supports: "The original AKS paper.",
     },
   ],

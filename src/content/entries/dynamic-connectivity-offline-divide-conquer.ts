@@ -3,29 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const dynamicConnectivityOfflineDivideConquerEntry: AlgorithmEntry = {
   slug: "dynamic-connectivity-offline-divide-conquer",
   name: "Dynamic Connectivity (Offline, Divide & Conquer)",
-  aliases: [
-    "Offline dynamic connectivity",
-    "Link-cut by time",
-  ],
-  curriculum: [
-    518,
-  ],
+  aliases: ["Offline dynamic connectivity", "Link-cut by time"],
+  curriculum: [518],
   domain: "graphs",
   subcategory: "Graph Algorithms",
   difficulty: "intermediate",
-  summary: "Answers connectivity queries on a graph with edge insertions and deletions, processed offline using divide-and-conquer on the time axis with a rollback-capable union-find.",
-  tags: [
-    "connectivity",
-    "union-find",
-    "divide and conquer",
-    "offline",
-  ],
-  prerequisites: [
-    "Union-Find",
-  ],
-  related: [
-    "dynamic-tree",
-  ],
+  summary:
+    "Answers connectivity queries on a graph with edge insertions and deletions, processed offline using divide-and-conquer on the time axis with a rollback-capable union-find.",
+  tags: ["connectivity", "union-find", "divide and conquer", "offline"],
+  prerequisites: ["Union-Find"],
+  related: ["dynamic-tree"],
   problem: {
     input: "A sequence of edge insertions, deletions, and connectivity queries.",
     output: "The answer to each connectivity query.",
@@ -161,63 +148,25 @@ export const dynamicConnectivityOfflineDivideConquerEntry: AlgorithmEntry = {
           args: [
             3,
             [
-              [
-                "add",
-                0,
-                1,
-              ],
-              [
-                "add",
-                1,
-                2,
-              ],
-              [
-                "query",
-                0,
-                2,
-              ],
-              [
-                "remove",
-                0,
-                1,
-              ],
-              [
-                "query",
-                0,
-                2,
-              ],
+              ["add", 0, 1],
+              ["add", 1, 2],
+              ["query", 0, 2],
+              ["remove", 0, 1],
+              ["query", 0, 2],
             ],
           ],
-          expected: [
-            true,
-            false,
-          ],
+          expected: [true, false],
         },
         {
           args: [
             2,
             [
-              [
-                "query",
-                0,
-                1,
-              ],
-              [
-                "add",
-                0,
-                1,
-              ],
-              [
-                "query",
-                0,
-                1,
-              ],
+              ["query", 0, 1],
+              ["add", 0, 1],
+              ["query", 0, 1],
             ],
           ],
-          expected: [
-            false,
-            true,
-          ],
+          expected: [false, true],
         },
       ],
     },
@@ -235,15 +184,15 @@ export const dynamicConnectivityOfflineDivideConquerEntry: AlgorithmEntry = {
         "It requires O(n²) space",
       ],
       answer: 0,
-      explanation: "Path compression modifies many parent pointers along the path, so undoing a single union requires reverting all those changes.",
-      hints: [
-        "What does path compression change during find?",
-      ],
+      explanation:
+        "Path compression modifies many parent pointers along the path, so undoing a single union requires reverting all those changes.",
+      hints: ["What does path compression change during find?"],
       objective: "Understand rollback union-find limitations",
     },
   ],
   exam: {
-    definition: "Offline dynamic connectivity uses divide-and-conquer on the time axis with rollback union-find.",
+    definition:
+      "Offline dynamic connectivity uses divide-and-conquer on the time axis with rollback union-find.",
     steps: [
       "Map edges to time intervals.",
       "Insert intervals into segment tree.",
@@ -251,14 +200,10 @@ export const dynamicConnectivityOfflineDivideConquerEntry: AlgorithmEntry = {
     ],
     timeComplexity: "O((E+Q) log² n)",
     spaceComplexity: "O((E+Q) log n)",
-    correctness: "Each edge is unioned/rolled-back O(log T) times; union-find by rank gives O(log n) per operation.",
-    applications: [
-      "Competitive programming",
-      "Graph algorithms with temporal edges",
-    ],
-    limitations: [
-      "Offline only; online requires more complex structures",
-    ],
+    correctness:
+      "Each edge is unioned/rolled-back O(log T) times; union-find by rank gives O(log n) per operation.",
+    applications: ["Competitive programming", "Graph algorithms with temporal edges"],
+    limitations: ["Offline only; online requires more complex structures"],
     faq: [
       {
         q: "How does rollback work?",
@@ -268,16 +213,14 @@ export const dynamicConnectivityOfflineDivideConquerEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Segment tree on time.",
-          "Rollback union-find.",
-        ],
+        outline: ["Segment tree on time.", "Rollback union-find."],
       },
     ],
   },
   references: [
     {
-      citation: "M. L. Fredman, M. R. Henzinger, 'Lower Bounds for Fully Dynamic Connectivity Problems in Graphs,' Algorithmica, 22(3), 1998.",
+      citation:
+        "M. L. Fredman, M. R. Henzinger, 'Lower Bounds for Fully Dynamic Connectivity Problems in Graphs,' Algorithmica, 22(3), 1998.",
       supports: "Lower bounds for dynamic connectivity.",
     },
   ],

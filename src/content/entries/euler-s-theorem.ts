@@ -3,32 +3,20 @@ import type { AlgorithmEntry } from "../types";
 export const eulerSTheoremEntry: AlgorithmEntry = {
   slug: "euler-s-theorem",
   name: "Euler's Theorem",
-  aliases: [
-    "Euler's generalization of Fermat's little theorem",
-  ],
-  curriculum: [
-    375,
-  ],
+  aliases: ["Euler's generalization of Fermat's little theorem"],
+  curriculum: [375],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "States that a^φ(n) ≡ 1 (mod n) for any a coprime to n, where φ(n) is Euler's totient function, generalizing Fermat's little theorem to composite moduli.",
-  tags: [
-    "number theory",
-    "modular arithmetic",
-    "totient",
-    "Fermat",
-  ],
-  prerequisites: [
-    "Euler's Totient Function",
-  ],
-  related: [
-    "euler-s-totient-function",
-    "binary-exponentiation",
-  ],
+  summary:
+    "States that a^φ(n) ≡ 1 (mod n) for any a coprime to n, where φ(n) is Euler's totient function, generalizing Fermat's little theorem to composite moduli.",
+  tags: ["number theory", "modular arithmetic", "totient", "Fermat"],
+  prerequisites: ["Euler's Totient Function"],
+  related: ["euler-s-totient-function", "binary-exponentiation"],
   problem: {
     input: "Integers a and n with gcd(a, n) = 1.",
-    output: "Verification that a^φ(n) ≡ 1 (mod n) and applications like computing modular inverses.",
+    output:
+      "Verification that a^φ(n) ≡ 1 (mod n) and applications like computing modular inverses.",
   },
   levels: {
     intuition: [
@@ -141,34 +129,16 @@ export const eulerSTheoremEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            3,
-            10,
-          ],
-          expected: [
-            4,
-            1,
-          ],
+          args: [3, 10],
+          expected: [4, 1],
         },
         {
-          args: [
-            2,
-            7,
-          ],
-          expected: [
-            6,
-            1,
-          ],
+          args: [2, 7],
+          expected: [6, 1],
         },
         {
-          args: [
-            5,
-            12,
-          ],
-          expected: [
-            4,
-            1,
-          ],
+          args: [5, 12],
+          expected: [4, 1],
         },
       ],
     },
@@ -186,15 +156,15 @@ export const eulerSTheoremEntry: AlgorithmEntry = {
         "It hashes the key",
       ],
       answer: 0,
-      explanation: "RSA picks e and d such that ed ≡ 1 (mod φ(n)), so raising m^e to d recovers m by Euler's theorem.",
-      hints: [
-        "What is the relationship between e, d, and φ(n)?",
-      ],
+      explanation:
+        "RSA picks e and d such that ed ≡ 1 (mod φ(n)), so raising m^e to d recovers m by Euler's theorem.",
+      hints: ["What is the relationship between e, d, and φ(n)?"],
       objective: "Understand RSA's use of Euler's theorem",
     },
   ],
   exam: {
-    definition: "Euler's theorem: a^φ(n) ≡ 1 (mod n) when gcd(a,n) = 1, generalizing Fermat's little theorem.",
+    definition:
+      "Euler's theorem: a^φ(n) ≡ 1 (mod n) when gcd(a,n) = 1, generalizing Fermat's little theorem.",
     steps: [
       "Compute φ(n).",
       "a^φ(n) ≡ 1 (mod n) for coprime a.",
@@ -203,14 +173,8 @@ export const eulerSTheoremEntry: AlgorithmEntry = {
     timeComplexity: "O(√n + log n)",
     spaceComplexity: "O(1)",
     correctness: "Follows from Lagrange's theorem applied to the multiplicative group (Z/nZ)*.",
-    applications: [
-      "RSA encryption",
-      "Modular inverse computation",
-      "Discrete log cryptography",
-    ],
-    limitations: [
-      "Requires gcd(a,n) = 1",
-    ],
+    applications: ["RSA encryption", "Modular inverse computation", "Discrete log cryptography"],
+    limitations: ["Requires gcd(a,n) = 1"],
     faq: [
       {
         q: "When does Fermat's little theorem suffice?",
@@ -220,10 +184,7 @@ export const eulerSTheoremEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "State theorem and condition.",
-          "Connection to RSA.",
-        ],
+        outline: ["State theorem and condition.", "Connection to RSA."],
       },
     ],
   },

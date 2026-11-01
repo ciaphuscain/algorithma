@@ -3,32 +3,19 @@ import type { AlgorithmEntry } from "../types";
 export const adamOptimizerEntry: AlgorithmEntry = {
   slug: "adam-optimizer",
   name: "Adam Optimizer",
-  aliases: [
-    "Adaptive Moment Estimation",
-  ],
-  curriculum: [
-    566,
-  ],
+  aliases: ["Adaptive Moment Estimation"],
+  curriculum: [566],
   domain: "deep-learning",
   subcategory: "Deep Learning",
   difficulty: "intermediate",
-  summary: "An adaptive learning rate optimizer combining momentum (first moment) and RMSProp (second moment) with bias correction, widely used for training neural networks.",
-  tags: [
-    "optimizer",
-    "gradient descent",
-    "deep learning",
-    "adaptive learning rate",
-  ],
-  prerequisites: [
-    "Gradient Descent",
-    "Backpropagation",
-  ],
-  related: [
-    "gradient-descent",
-    "backpropagation",
-  ],
+  summary:
+    "An adaptive learning rate optimizer combining momentum (first moment) and RMSProp (second moment) with bias correction, widely used for training neural networks.",
+  tags: ["optimizer", "gradient descent", "deep learning", "adaptive learning rate"],
+  prerequisites: ["Gradient Descent", "Backpropagation"],
+  related: ["gradient-descent", "backpropagation"],
   problem: {
-    input: "A differentiable loss function, initial parameters, learning rate, and decay rates beta1 and beta2.",
+    input:
+      "A differentiable loss function, initial parameters, learning rate, and decay rates beta1 and beta2.",
     output: "Updated parameters that minimize the loss function.",
   },
   levels: {
@@ -141,28 +128,13 @@ export const adamOptimizerEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            [
-              0.5,
-            ],
-            [
-              0.1,
-            ],
-            [
-              0.0,
-            ],
-            [
-              0.0,
-            ],
-            1,
-          ],
-          expected: [
-            0.499,
-          ],
+          args: [[0.5], [0.1], [0.0], [0.0], 1],
+          expected: [0.499],
         },
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "adam-moments",
@@ -175,15 +147,15 @@ export const adamOptimizerEntry: AlgorithmEntry = {
         "Loss and accuracy",
       ],
       answer: 1,
-      explanation: "Adam tracks the first moment (mean) and second moment (uncentered variance) of the gradients.",
-      hints: [
-        "What does 'moment' mean in statistics?",
-      ],
+      explanation:
+        "Adam tracks the first moment (mean) and second moment (uncentered variance) of the gradients.",
+      hints: ["What does 'moment' mean in statistics?"],
       objective: "Understand Adam's components",
     },
   ],
   exam: {
-    definition: "Adam combines momentum (first moment of gradients) with RMSProp (second moment) and bias correction to adapt learning rates per parameter.",
+    definition:
+      "Adam combines momentum (first moment of gradients) with RMSProp (second moment) and bias correction to adapt learning rates per parameter.",
     steps: [
       "Init m=0, v=0, t=0",
       "m = beta1*m + (1-beta1)*g",
@@ -193,16 +165,10 @@ export const adamOptimizerEntry: AlgorithmEntry = {
     ],
     timeComplexity: "O(n) per step",
     spaceComplexity: "O(n) for m and v",
-    correctness: "Bias correction ensures unbiased moment estimates. Convergence follows from the adaptive step size normalizing gradient magnitudes.",
-    applications: [
-      "Neural network training",
-      "NLP transformers",
-      "Computer vision",
-    ],
-    limitations: [
-      "May not converge without AMSGrad fix",
-      "Sensitive to beta2",
-    ],
+    correctness:
+      "Bias correction ensures unbiased moment estimates. Convergence follows from the adaptive step size normalizing gradient magnitudes.",
+    applications: ["Neural network training", "NLP transformers", "Computer vision"],
+    limitations: ["May not converge without AMSGrad fix", "Sensitive to beta2"],
     faq: [
       {
         q: "Why bias correction?",
@@ -212,9 +178,7 @@ export const adamOptimizerEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Momentum + RMSProp with bias correction (2)",
-        ],
+        outline: ["Momentum + RMSProp with bias correction (2)"],
       },
     ],
   },

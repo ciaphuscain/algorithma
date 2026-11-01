@@ -3,28 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const ellipticCurveDiffieHellmanEcdhEntry: AlgorithmEntry = {
   slug: "elliptic-curve-diffie-hellman-ecdh",
   name: "Elliptic Curve Diffie–Hellman (ECDH)",
-  aliases: [
-    "ECDH",
-  ],
-  curriculum: [
-    474,
-  ],
+  aliases: ["ECDH"],
+  curriculum: [474],
   domain: "cryptography",
   subcategory: "Cryptography",
   difficulty: "intermediate",
-  summary: "Performs key agreement over an insecure channel using elliptic curve point multiplication, providing equivalent security to classical DH with much smaller keys (256-bit vs 3072-bit).",
-  tags: [
-    "key exchange",
-    "elliptic curve",
-    "cryptography",
-  ],
-  prerequisites: [
-    "Diffie–Hellman Key Exchange",
-  ],
-  related: [
-    "diffie-hellman-key-exchange",
-    "elliptic-curve-digital-signature-algorithm-ecdsa",
-  ],
+  summary:
+    "Performs key agreement over an insecure channel using elliptic curve point multiplication, providing equivalent security to classical DH with much smaller keys (256-bit vs 3072-bit).",
+  tags: ["key exchange", "elliptic curve", "cryptography"],
+  prerequisites: ["Diffie–Hellman Key Exchange"],
+  related: ["diffie-hellman-key-exchange", "elliptic-curve-digital-signature-algorithm-ecdsa"],
   problem: {
     input: "A public elliptic curve, generator point G, and each party's private key (scalar).",
     output: "A shared secret point on the curve.",
@@ -128,19 +116,11 @@ export const ellipticCurveDiffieHellmanEcdhEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            7,
-            11,
-            23,
-          ],
+          args: [7, 11, 23],
           expected: 8,
         },
         {
-          args: [
-            3,
-            5,
-            13,
-          ],
+          args: [3, 5, 13],
           expected: 2,
         },
       ],
@@ -160,14 +140,13 @@ export const ellipticCurveDiffieHellmanEcdhEntry: AlgorithmEntry = {
       ],
       answer: 0,
       explanation: "A 256-bit ECC key provides security comparable to a 3072-bit classical DH key.",
-      hints: [
-        "Compare key sizes for the same security level.",
-      ],
+      hints: ["Compare key sizes for the same security level."],
       objective: "Know ECDH key size advantage",
     },
   ],
   exam: {
-    definition: "ECDH performs Diffie–Hellman over elliptic curves, achieving equivalent security with smaller keys.",
+    definition:
+      "ECDH performs Diffie–Hellman over elliptic curves, achieving equivalent security with smaller keys.",
     steps: [
       "Agree on curve and generator G.",
       "Each party picks scalar, sends scalar × G.",
@@ -176,14 +155,8 @@ export const ellipticCurveDiffieHellmanEcdhEntry: AlgorithmEntry = {
     timeComplexity: "O(log n) scalar multiplication",
     spaceComplexity: "O(1)",
     correctness: "Security reduces to the ECDLP on the chosen curve.",
-    applications: [
-      "TLS key exchange",
-      "Signal Protocol",
-      "Cryptocurrency",
-    ],
-    limitations: [
-      "Not quantum-resistant",
-    ],
+    applications: ["TLS key exchange", "Signal Protocol", "Cryptocurrency"],
+    limitations: ["Not quantum-resistant"],
     faq: [
       {
         q: "Why use curves instead of Z_p*?",
@@ -193,10 +166,7 @@ export const ellipticCurveDiffieHellmanEcdhEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "ECDH protocol steps.",
-          "Key size advantage over classical DH.",
-        ],
+        outline: ["ECDH protocol steps.", "Key size advantage over classical DH."],
       },
     ],
   },

@@ -3,32 +3,20 @@ import type { AlgorithmEntry } from "../types";
 export const edmondsArborescenceChuLiuEdmondsEntry: AlgorithmEntry = {
   slug: "edmonds-arborescence-chu-liu-edmonds",
   name: "Edmonds' Arborescence (Chu–Liu/Edmonds)",
-  aliases: [
-    "Chu-Liu/Edmonds",
-    "Minimum spanning arborescence",
-  ],
-  curriculum: [
-    505,
-  ],
+  aliases: ["Chu-Liu/Edmonds", "Minimum spanning arborescence"],
+  curriculum: [505],
   domain: "graphs",
   subcategory: "Graph Algorithms",
   difficulty: "intermediate",
-  summary: "Finds the minimum-weight arborescence (directed spanning tree rooted at a given vertex) in a weighted directed graph by iteratively contracting cycles and adjusting edge weights.",
-  tags: [
-    "directed graph",
-    "spanning tree",
-    "arborescence",
-    "cycle contraction",
-  ],
-  prerequisites: [
-    "Graphs",
-  ],
-  related: [
-    "bor-vka-s-algorithm",
-  ],
+  summary:
+    "Finds the minimum-weight arborescence (directed spanning tree rooted at a given vertex) in a weighted directed graph by iteratively contracting cycles and adjusting edge weights.",
+  tags: ["directed graph", "spanning tree", "arborescence", "cycle contraction"],
+  prerequisites: ["Graphs"],
+  related: ["bor-vka-s-algorithm"],
   problem: {
     input: "A weighted directed graph and a root vertex.",
-    output: "A minimum-weight arborescence (every vertex reachable from the root via a unique directed path).",
+    output:
+      "A minimum-weight arborescence (every vertex reachable from the root via a unique directed path).",
   },
   levels: {
     intuition: [
@@ -180,21 +168,9 @@ export const edmondsArborescenceChuLiuEdmondsEntry: AlgorithmEntry = {
           args: [
             3,
             [
-              [
-                0,
-                1,
-                2,
-              ],
-              [
-                0,
-                2,
-                3,
-              ],
-              [
-                1,
-                2,
-                1,
-              ],
+              [0, 1, 2],
+              [0, 2, 3],
+              [1, 2, 1],
             ],
             0,
           ],
@@ -204,21 +180,9 @@ export const edmondsArborescenceChuLiuEdmondsEntry: AlgorithmEntry = {
           args: [
             3,
             [
-              [
-                0,
-                1,
-                1,
-              ],
-              [
-                1,
-                2,
-                1,
-              ],
-              [
-                2,
-                0,
-                1,
-              ],
+              [0, 1, 1],
+              [1, 2, 1],
+              [2, 0, 1],
             ],
             0,
           ],
@@ -240,15 +204,15 @@ export const edmondsArborescenceChuLiuEdmondsEntry: AlgorithmEntry = {
         "The heaviest edge is deleted",
       ],
       answer: 0,
-      explanation: "Edmonds' algorithm contracts cycles, adjusting incoming edge weights to account for the edge being replaced.",
-      hints: [
-        "Why can't we just delete a cycle edge?",
-      ],
+      explanation:
+        "Edmonds' algorithm contracts cycles, adjusting incoming edge weights to account for the edge being replaced.",
+      hints: ["Why can't we just delete a cycle edge?"],
       objective: "Understand cycle contraction",
     },
   ],
   exam: {
-    definition: "Edmonds' algorithm finds minimum arborescences by greedily selecting min incoming edges and contracting cycles.",
+    definition:
+      "Edmonds' algorithm finds minimum arborescences by greedily selecting min incoming edges and contracting cycles.",
     steps: [
       "Select min incoming edge per vertex.",
       "If cycle, contract it, adjust weights.",
@@ -257,14 +221,10 @@ export const edmondsArborescenceChuLiuEdmondsEntry: AlgorithmEntry = {
     ],
     timeComplexity: "O(VE)",
     spaceComplexity: "O(V + E)",
-    correctness: "Weight adjustment ensures the contracted problem's optimum corresponds to the original's.",
-    applications: [
-      "Phylogenetic trees",
-      "NLP dependency parsing",
-    ],
-    limitations: [
-      "Directed graphs only; undirected case is simpler (Kruskal/Prim)",
-    ],
+    correctness:
+      "Weight adjustment ensures the contracted problem's optimum corresponds to the original's.",
+    applications: ["Phylogenetic trees", "NLP dependency parsing"],
+    limitations: ["Directed graphs only; undirected case is simpler (Kruskal/Prim)"],
     faq: [
       {
         q: "Why not use Prim/Kruskal?",
@@ -274,10 +234,7 @@ export const edmondsArborescenceChuLiuEdmondsEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 2,
-        outline: [
-          "Greedy min incoming + cycle contraction.",
-          "Weight adjustment formula.",
-        ],
+        outline: ["Greedy min incoming + cycle contraction.", "Weight adjustment formula."],
       },
     ],
   },

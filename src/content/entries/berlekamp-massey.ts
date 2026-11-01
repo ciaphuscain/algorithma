@@ -3,29 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const berlekampMasseyEntry: AlgorithmEntry = {
   slug: "berlekamp-massey",
   name: "Berlekamp-Massey",
-  aliases: [
-    "Berlekamp-Massey Algorithm",
-  ],
-  curriculum: [
-    529,
-  ],
+  aliases: ["Berlekamp-Massey Algorithm"],
+  curriculum: [529],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Finds the shortest linear recurrence that generates a given sequence, running in O(n^2) time, widely used in coding theory and competitive programming.",
-  tags: [
-    "linear recurrence",
-    "sequence",
-    "coding theory",
-    "competitive programming",
-  ],
-  prerequisites: [
-    "Linear Algebra",
-    "Modular Arithmetic",
-  ],
-  related: [
-    "matrix-exponentiation",
-  ],
+  summary:
+    "Finds the shortest linear recurrence that generates a given sequence, running in O(n^2) time, widely used in coding theory and competitive programming.",
+  tags: ["linear recurrence", "sequence", "coding theory", "competitive programming"],
+  prerequisites: ["Linear Algebra", "Modular Arithmetic"],
+  related: ["matrix-exponentiation"],
   problem: {
     input: "A sequence of n elements from a field (e.g., integers mod p).",
     output: "The shortest linear recurrence relation that generates the sequence.",
@@ -158,57 +145,34 @@ def bm_test(s):
 `,
       tests: [
         {
-          args: [
-            [
-              1,
-              1,
-              2,
-              3,
-              5,
-              8,
-              13,
-              21,
-            ],
-          ],
+          args: [[1, 1, 2, 3, 5, 8, 13, 21]],
           expected: 2,
         },
         {
-          args: [
-            [
-              1,
-              2,
-              4,
-              8,
-              16,
-              32,
-            ],
-          ],
+          args: [[1, 2, 4, 8, 16, 32]],
           expected: 1,
         },
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "bm-min",
       kind: "mcq",
-      prompt: "How many terms of a sequence are needed to determine a linear recurrence of length d?",
-      options: [
-        "d",
-        "2d",
-        "d^2",
-        "d + 1",
-      ],
+      prompt:
+        "How many terms of a sequence are needed to determine a linear recurrence of length d?",
+      options: ["d", "2d", "d^2", "d + 1"],
       answer: 1,
-      explanation: "You need at least 2d terms: d to establish the recurrence and d more to confirm it.",
-      hints: [
-        "Think about the degrees of freedom.",
-      ],
+      explanation:
+        "You need at least 2d terms: d to establish the recurrence and d more to confirm it.",
+      hints: ["Think about the degrees of freedom."],
       objective: "Know Berlekamp-Massey requirements",
     },
   ],
   exam: {
-    definition: "Berlekamp-Massey finds the shortest linear recurrence generating a sequence in O(n^2), processing elements online and updating when discrepancies occur.",
+    definition:
+      "Berlekamp-Massey finds the shortest linear recurrence generating a sequence in O(n^2), processing elements online and updating when discrepancies occur.",
     steps: [
       "Start with empty recurrence",
       "For each element, compute discrepancy",
@@ -217,12 +181,9 @@ def bm_test(s):
     ],
     timeComplexity: "O(n^2) worst case",
     spaceComplexity: "O(n)",
-    correctness: "At each step, the recurrence is consistent with all seen elements. The update uses the last change point to minimize the new length.",
-    applications: [
-      "BCH/RS decoding",
-      "Competitive programming",
-      "Sequence analysis",
-    ],
+    correctness:
+      "At each step, the recurrence is consistent with all seen elements. The update uses the last change point to minimize the new length.",
+    applications: ["BCH/RS decoding", "Competitive programming", "Sequence analysis"],
     limitations: [
       "Requires a field (division must be possible)",
       "2d terms needed for length-d recurrence",
@@ -236,19 +197,19 @@ def bm_test(s):
     answers: [
       {
         marks: 2,
-        outline: [
-          "Online discrepancy-driven minimal recurrence finding (2)",
-        ],
+        outline: ["Online discrepancy-driven minimal recurrence finding (2)"],
       },
     ],
   },
   references: [
     {
-      citation: "E. R. Berlekamp, 'Nonbinary BCH decoding,' IEEE Trans. Information Theory, 14(2), 1968.",
+      citation:
+        "E. R. Berlekamp, 'Nonbinary BCH decoding,' IEEE Trans. Information Theory, 14(2), 1968.",
       supports: "Original algorithm for BCH decoding.",
     },
     {
-      citation: "J. L. Massey, 'Shift-register synthesis and BCH decoding,' IEEE Trans. Information Theory, 15(1), 1969.",
+      citation:
+        "J. L. Massey, 'Shift-register synthesis and BCH decoding,' IEEE Trans. Information Theory, 15(1), 1969.",
       supports: "Simplified formulation.",
     },
   ],
