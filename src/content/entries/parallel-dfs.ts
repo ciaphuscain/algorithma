@@ -3,91 +3,124 @@ import type { AlgorithmEntry } from "../types";
 export const parallelDfsEntry: AlgorithmEntry = {
   slug: "parallel-dfs",
   name: "Parallel DFS",
-  aliases: ["Parallel DFS"],
+  aliases: ["Parallel Depth-First Search"],
   curriculum: [463],
   domain: "parallel",
   subcategory: "Parallel Algorithms",
   difficulty: "intermediate",
-  summary: "Parallel DFS is a well-known algorithm in the domain of parallel computing.",
-  tags: ["parallel dfs", "parallel"],
-  prerequisites: [],
-  related: [],
+  summary:
+    "Parallelises depth-first search by distributing subtrees across processors, though DFS is inherently more sequential than BFS and typically achieves limited speedup except on tree-structured graphs.",
+  tags: ["parallel", "DFS", "graph traversal"],
+  prerequisites: ["DFS", "Parallel BFS"],
+  related: ["dfs", "parallel-bfs"],
   problem: {
-    input: "Input for Parallel DFS.",
-    output: "Output of Parallel DFS.",
+    input: "A graph and a source vertex, with p processors.",
+    output: "A DFS traversal order, computed with parallelism where possible.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Parallel DFS solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Unlike BFS where each level is independent, DFS has a stack-based order that's hard to parallelise — the next vertex depends on what's currently on the stack. The key insight is that when a vertex has multiple unvisited neighbours, different processors can explore different subtrees.",
+      },
+      {
+        kind: "p",
+        text: "On trees this works well (each subtree is independent). On general graphs, contention arises because multiple processors may try to visit the same vertex.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Maintain a shared work pool of (vertex, stack-state) tasks.",
+          "Each processor pops a task, explores from that vertex, and pushes new tasks for unvisited neighbours.",
+          "Use atomic visited flags to avoid duplicate exploration.",
+          "Terminate when the pool is empty and all processors are idle.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Parallel DFS algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Example:** On a binary tree of depth 3, one processor takes the left subtree and another takes the right, achieving 2x speedup.",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of Parallel DFS follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "Work stealing helps balance load when subtree sizes differ.",
+          "The DFS numbering may differ from sequential DFS, but reachability results are the same.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Parallel DFS is based on the algorithm's structure and the operations performed at each step.",
+        text: "Work is $O(V + E)$. Span is $O(V)$ in the worst case (a path graph), so parallel DFS has limited theoretical speedup on general graphs. On trees with balanced branching, span is $O(\\text{depth})$.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Parallel DFS exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Parallel DFS is P-complete, meaning it is unlikely to have an efficient parallel algorithm for general graphs.",
+          "Randomised approaches and related problems (like parallel connectivity) achieve better parallelism.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n/p)",
-      average: "O(n log n / p)",
-      worst: "O(n log n / p)",
+      best: "O((V+E)/p)",
+      average: "O(V+E)",
+      worst: "O(V+E)",
     },
-    space: "O(n)",
-    worstClass: "other",
+    space: "O(V)",
+    worstClass: "n",
+    note: "Limited speedup on general graphs; best on trees.",
   },
   properties: [
     {
-      label: "Domain",
-      value: "parallel computing",
+      label: "Work",
+      value: "$O(V + E)$",
+    },
+    {
+      label: "Span",
+      value: "$O(V)$ worst case",
+    },
+    {
+      label: "P-complete",
+      value: "Hard to parallelise in general",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "parallel_dfs",
+      code: `def parallel_dfs(adj, source):
+    """Simulated parallel DFS using iterative approach. Returns visit order."""
+    n = len(adj)
+    visited = [False] * n
+    order = []
+    stack = [source]
+    visited[source] = True
+    while stack:
+        u = stack.pop()
+        order.append(u)
+        for v in adj[u]:
+            if not visited[v]:
+                visited[v] = True
+                stack.append(v)
+    return order
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[[1, 2], [3], [3], []], 0],
+          expected: [0, 2, 3, 1],
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[[1], [2], [], []], 3],
+          expected: [3],
         },
       ],
     },
@@ -95,54 +128,54 @@ export const parallelDfsEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "parallel-dfs-q1",
+      id: "pdfs-hard",
       kind: "mcq",
-      prompt: "What is the primary purpose of Parallel DFS?",
+      prompt: "Why is parallel DFS harder to speed up than parallel BFS?",
       options: [
-        "To solve the Parallel DFS problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "DFS ordering is inherently sequential (P-complete)",
+        "DFS uses more memory",
+        "DFS visits fewer vertices",
+        "DFS requires sorting",
       ],
       answer: 0,
-      explanation: "Parallel DFS is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Parallel DFS does."],
-      objective: "Purpose",
+      explanation:
+        "DFS is P-complete: the next vertex to visit depends on the current stack state, limiting parallelism.",
+      hints: ["What determines which vertex DFS visits next?"],
+      objective: "Understand limitations of parallel DFS",
     },
   ],
   exam: {
-    definition: "Parallel DFS is an algorithm in the domain of parallel computing.",
+    definition:
+      "Parallel DFS distributes subtree exploration across processors but faces inherent sequentiality (P-completeness) on general graphs.",
     steps: [
-      "Apply the Parallel DFS algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Shared work pool of tasks.",
+      "Processors explore subtrees.",
+      "Atomic visited flags.",
+      "Work stealing for load balance.",
     ],
-    timeComplexity: "$O(n/p)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["parallel computing applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "$O(V+E)$ work, $O(V)$ span.",
+    spaceComplexity: "$O(V)$.",
+    correctness: "DFS is P-complete, so no polylog-span algorithm is known for general graphs.",
+    applications: ["Parallel tree traversal", "Game tree search"],
+    limitations: ["Poor parallelism on general graphs"],
     faq: [
       {
-        q: "When should you use Parallel DFS?",
-        a: "Use Parallel DFS when the problem matches its designed use case in parallel computing.",
+        q: "When does parallel DFS work well?",
+        a: "On trees or graphs with many independent subtrees, where each processor can explore a different branch.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Parallel DFS (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 2,
+        outline: ["P-completeness and subtree distribution (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Parallel DFS.",
+      citation:
+        'J. Reif, "Depth-first search is inherently sequential," Information Processing Letters, 20(5), 1985.',
+      supports: "Proof that DFS is P-complete.",
     },
   ],
   review: {

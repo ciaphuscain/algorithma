@@ -3,91 +3,125 @@ import type { AlgorithmEntry } from "../types";
 export const parallelMergeSortEntry: AlgorithmEntry = {
   slug: "parallel-merge-sort",
   name: "Parallel Merge Sort",
-  aliases: ["Parallel Merge Sort"],
+  aliases: ["Parallel Mergesort"],
   curriculum: [457],
   domain: "parallel",
   subcategory: "Parallel Algorithms",
   difficulty: "intermediate",
-  summary: "Parallel Merge Sort is a well-known algorithm in the domain of parallel computing.",
-  tags: ["parallel merge sort", "parallel"],
-  prerequisites: [],
-  related: [],
+  summary:
+    "Sorts n elements by recursively dividing the array and sorting halves in parallel, then merging the sorted halves, achieving O(n log n / p) time with p processors and O(log² n) or O(log n) span.",
+  tags: ["parallel", "sorting", "merge sort", "divide and conquer"],
+  prerequisites: ["Merge Sort"],
+  related: ["merge-sort", "parallel-quicksort"],
   problem: {
-    input: "Input for Parallel Merge Sort.",
-    output: "Output of Parallel Merge Sort.",
+    input: "An array of n elements and p processors.",
+    output: "The sorted array, computed in parallel.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Parallel Merge Sort solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Merge sort naturally parallelises: the two recursive calls are independent, so they can run on different processors. The merge step is the bottleneck, but it too can be parallelised using binary search to split the merge into independent pieces.",
+      },
+      {
+        kind: "p",
+        text: "With parallel recursion and parallel merge, the algorithm achieves O(log² n) span — far less than the O(n log n) sequential time.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Divide the array in half.",
+          "Sort both halves in parallel (recursive calls on different processors).",
+          "Merge the two sorted halves. To parallelise the merge: pick the median of one half, binary-search for it in the other, and merge the two resulting subproblems in parallel.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Parallel Merge Sort algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Example:** [4,2,3,1]. Split into [4,2] and [3,1]. Sort in parallel → [2,4] and [1,3]. Merge → [1,2,3,4].",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of Parallel Merge Sort follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "Practical implementations switch to sequential sort for small subarrays.",
+          "The parallel merge uses O(log n) binary searches, each O(log n), giving O(log n) merge span.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Parallel Merge Sort is based on the algorithm's structure and the operations performed at each step.",
+        text: "Work: $O(n \\log n)$. Span with parallel merge: $T_\\infty = O(\\log^2 n)$ (or $O(\\log n)$ with a more sophisticated merge). Parallelism: $O(n / \\log n)$.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Parallel Merge Sort exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Cole's merge sort achieves O(log n) span via pipelining.",
+          "Sample sort and bitonic sort are alternatives with different trade-offs.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n/p)",
+      best: "O(n log n / p)",
       average: "O(n log n / p)",
       worst: "O(n log n / p)",
     },
     space: "O(n)",
-    worstClass: "other",
+    worstClass: "n log n",
+    note: "Span is O(log² n) with parallel merge.",
   },
   properties: [
     {
-      label: "Domain",
-      value: "parallel computing",
+      label: "Work",
+      value: "$O(n \\log n)$",
+    },
+    {
+      label: "Span",
+      value: "$O(\\log^2 n)$",
+    },
+    {
+      label: "Stable",
+      value: "Yes",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "parallel_merge_sort",
+      code: `def parallel_merge_sort(arr):
+    """Simulated parallel merge sort. Returns sorted list."""
+    if len(arr) <= 1:
+        return list(arr)
+    mid = len(arr) // 2
+    left = parallel_merge_sort(arr[:mid])
+    right = parallel_merge_sort(arr[mid:])
+    result = []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i]); i += 1
+        else:
+            result.append(right[j]); j += 1
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[4, 2, 3, 1]],
+          expected: [1, 2, 3, 4],
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[5, 1, 4, 2, 8]],
+          expected: [1, 2, 4, 5, 8],
         },
       ],
     },
@@ -95,54 +129,47 @@ export const parallelMergeSortEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "parallel-merge-sort-q1",
+      id: "pms-bottleneck",
       kind: "mcq",
-      prompt: "What is the primary purpose of Parallel Merge Sort?",
-      options: [
-        "To solve the Parallel Merge Sort problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "What is the bottleneck in parallelising merge sort?",
+      options: ["The merge step", "The divide step", "Memory allocation", "Comparison count"],
       answer: 0,
-      explanation: "Parallel Merge Sort is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Parallel Merge Sort does."],
-      objective: "Purpose",
+      explanation:
+        "The recursive sorts are independent, but the merge step processes elements sequentially unless it too is parallelised.",
+      hints: ["Which step of merge sort is hardest to parallelise?"],
+      objective: "Identify the parallel bottleneck",
     },
   ],
   exam: {
-    definition: "Parallel Merge Sort is an algorithm in the domain of parallel computing.",
+    definition:
+      "Parallel merge sort sorts both halves concurrently and parallelises the merge via binary-search splitting.",
     steps: [
-      "Apply the Parallel Merge Sort algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Divide in half.",
+      "Sort halves in parallel.",
+      "Parallel merge using median + binary search.",
     ],
-    timeComplexity: "$O(n/p)$.",
+    timeComplexity: "$O(n \\log n / p)$.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["parallel computing applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness: "Work is O(n log n); span is O(log² n) with parallel merge.",
+    applications: ["Large-scale sorting", "External sorting"],
+    limitations: ["Parallel merge adds complexity"],
     faq: [
       {
-        q: "When should you use Parallel Merge Sort?",
-        a: "Use Parallel Merge Sort when the problem matches its designed use case in parallel computing.",
+        q: "Why O(log² n) span?",
+        a: "log n levels of recursion, each with a parallel merge of O(log n) span.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Parallel Merge Sort (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 2,
+        outline: ["Parallel recursion and merge analysis (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Parallel Merge Sort.",
+      citation: "T. H. Cormen et al., Introduction to Algorithms, 3rd ed., MIT Press, 2009, §27.3.",
+      supports: "Parallel merge sort analysis.",
     },
   ],
   review: {

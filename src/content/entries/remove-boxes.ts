@@ -56,16 +56,11 @@ export const removeBoxesEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n⁴)",
-    },
-    space: {
-      worst: "O(n³)",
-    },
-  },
-  properties: {
+    time: { best: "O(n⁴)", average: "O(n⁴)", worst: "O(n⁴)" },
+    space: "O(n³)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -91,15 +86,11 @@ export const removeBoxesEntry: AlgorithmEntry = {
     return dp(0, n - 1, 0)`,
       tests: [
         {
-          input: {
-            boxes: [1, 3, 2, 2, 2, 3, 4, 3, 1],
-          },
+          args: [[1, 3, 2, 2, 2, 3, 4, 3, 1]],
           expected: 23,
         },
         {
-          input: {
-            boxes: [1, 1, 1],
-          },
+          args: [[1, 1, 1]],
           expected: 9,
         },
       ],
@@ -129,15 +120,11 @@ export const removeBoxesEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            boxes: [1, 3, 2, 2, 2, 3, 4, 3, 1],
-          },
+          args: [[1, 3, 2, 2, 2, 3, 4, 3, 1]],
           expected: 23,
         },
         {
-          input: {
-            boxes: [1, 1, 1],
-          },
+          args: [[1, 1, 1]],
           expected: 9,
         },
       ],

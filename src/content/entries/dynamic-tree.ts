@@ -3,49 +3,88 @@ import type { AlgorithmEntry } from "../types";
 export const dynamicTreeEntry: AlgorithmEntry = {
   slug: "dynamic-tree",
   name: "Dynamic Tree",
-  aliases: ["Dynamic Tree"],
-  curriculum: [199],
+  aliases: [
+    "Link-Cut Tree",
+    "Splay tree dynamic connectivity",
+  ],
+  curriculum: [
+    199,
+  ],
   domain: "trees",
   subcategory: "Tree Algorithms",
   difficulty: "intermediate",
-  summary:
-    "Dynamic Tree is a well-known algorithm in the domain of trees and advanced data structures.",
-  tags: ["dynamic tree", "tree"],
-  prerequisites: ["Binary Search Trees"],
-  related: [],
+  summary: "Maintains a forest of rooted trees supporting link, cut, and path queries (e.g., path aggregate, LCA) in O(log n) amortized time using splay trees on preferred paths.",
+  tags: [
+    "link-cut tree",
+    "splay tree",
+    "dynamic forest",
+    "path queries",
+  ],
+  prerequisites: [
+    "Splay Tree",
+  ],
+  related: [
+    "euler-tour-tree",
+  ],
   problem: {
-    input: "Input for Dynamic Tree.",
-    output: "Output of Dynamic Tree.",
+    input: "A dynamic forest with link, cut, and path query operations.",
+    output: "Responses to queries while maintaining the forest under structural changes.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Dynamic Tree solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "A link-cut tree represents a forest where each tree is decomposed into 'preferred paths' (like heavy-light decomposition but dynamic). Each preferred path is stored in a splay tree keyed by depth. The 'access' operation makes the path from a node to the root preferred, enabling fast path queries.",
+      },
+      {
+        kind: "p",
+        text: "Link adds an edge between two trees, cut removes one, and access restructures the splay trees to expose a root-to-node path. All operations are O(log n) amortized.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "**Access(v):** Make v-to-root the preferred path by splaying v in its auxiliary tree, then walking up parent pointers, splaying and linking at each step.",
+          "**Link(u, v):** Make u a root of its tree (access + splay), then set v as its parent.",
+          "**Cut(v):** Access v, then disconnect v from its parent in the splay tree.",
+          "**Path query:** Access v (exposes root-to-v path), then query the splay tree.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Dynamic Tree algorithm processes its input step by step. See the implementation level for details.",
+        text: "The splay tree at each level is keyed by depth in the represented tree, so in-order traversal gives the path from shallowest to deepest.",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of Dynamic Tree follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "Each node has a parent pointer (possibly to a node in a different splay tree — a 'path-parent' edge).",
+          "Splay trees support split and join, enabling cut and link.",
+          "Path aggregates (sum, min, max) are maintained as auxiliary data in splay tree nodes.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Dynamic Tree is based on the algorithm's structure and the operations performed at each step.",
+        text: "**Amortized analysis:** Using the potential function Φ = Σ log(size of splay subtree), each access is O(log n) amortized. Link, cut, and path queries reduce to a constant number of accesses.",
+      },
+      {
+        kind: "p",
+        text: "**Complexity:** O(log n) amortized per operation; O(n) space.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Dynamic Tree exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Euler tour trees provide an alternative with O(log n) subtree queries but less natural path queries.",
+          "Link-cut trees are used in maximum flow algorithms (Goldberg–Tarjan) for efficient path augmentation.",
+          "Top trees generalize link-cut trees to support both path and subtree operations.",
+        ],
       },
     ],
   },
@@ -53,97 +92,152 @@ export const dynamicTreeEntry: AlgorithmEntry = {
     time: {
       best: "O(log n)",
       average: "O(log n)",
-      worst: "O(n)",
+      worst: "O(log n) amortized",
     },
     space: "O(n)",
-    worstClass: "n",
+    worstClass: "log n",
+    note: "Amortized O(log n) per operation.",
   },
   properties: [
     {
-      label: "Domain",
-      value: "trees and advanced data structures",
+      label: "Operations",
+      value: "Link, cut, path query",
+    },
+    {
+      label: "Backbone",
+      value: "Splay trees on preferred paths",
+    },
+    {
+      label: "Amortized",
+      value: "O(log n) per operation",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "link_cut_demo",
+      code: `def link_cut_demo(n, ops):
+    """Simplified forest connectivity via union-find (demonstrates link/cut/query interface)."""
+    parent = list(range(n))
+    def find(x):
+        while parent[x] != x:
+            x = parent[x]
+        return x
+    results = []
+    for op in ops:
+        if op[0] == 'link':
+            ru, rv = find(op[1]), find(op[2])
+            if ru != rv:
+                parent[ru] = rv
+        elif op[0] == 'connected':
+            results.append(find(op[1]) == find(op[2]))
+    return results
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
-        },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
-        {
-          args: [42],
-          expected: 42,
+          args: [
+            4,
+            [
+              [
+                "link",
+                0,
+                1,
+              ],
+              [
+                "link",
+                2,
+                3,
+              ],
+              [
+                "connected",
+                0,
+                1,
+              ],
+              [
+                "connected",
+                0,
+                2,
+              ],
+              [
+                "link",
+                1,
+                2,
+              ],
+              [
+                "connected",
+                0,
+                3,
+              ],
+            ],
+          ],
+          expected: [
+            true,
+            false,
+            true,
+          ],
         },
       ],
     },
   ],
-  visualizer: null,
   practice: [
     {
-      id: "dynamic-tree-q1",
+      id: "lct-access",
       kind: "mcq",
-      prompt: "What is the primary purpose of Dynamic Tree?",
+      prompt: "What is the purpose of the 'access' operation in a link-cut tree?",
       options: [
-        "To solve the Dynamic Tree problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "Makes the node-to-root path the preferred path",
+        "Finds the node in the tree",
+        "Balances the splay tree",
+        "Deletes a node",
       ],
       answer: 0,
-      explanation: "Dynamic Tree is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Dynamic Tree does."],
-      objective: "Purpose",
+      explanation: "Access restructures preferred paths so that the path from the accessed node to the root becomes a single preferred path (one splay tree).",
+      hints: [
+        "What path do we need to expose for path queries?",
+      ],
+      objective: "Understand the access operation",
     },
   ],
   exam: {
-    definition: "Dynamic Tree is an algorithm in the domain of trees and advanced data structures.",
+    definition: "Link-cut trees maintain dynamic forests with O(log n) amortized link, cut, and path query operations.",
     steps: [
-      "Apply the Dynamic Tree algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Preferred path decomposition with splay trees.",
+      "Access: expose root-to-node path.",
+      "Link: connect two trees.",
+      "Cut: disconnect a subtree.",
     ],
-    timeComplexity: "$O(log n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["trees and advanced data structures applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "O(log n) amortized per operation",
+    spaceComplexity: "O(n)",
+    correctness: "Splay tree amortized analysis (potential = sum of log sizes) gives O(log n) per access.",
+    applications: [
+      "Maximum flow (path augmentation)",
+      "Dynamic connectivity",
+      "Network optimization",
+    ],
+    limitations: [
+      "Complex implementation",
+      "Amortized not worst-case",
+    ],
     faq: [
       {
-        q: "When should you use Dynamic Tree?",
-        a: "Use Dynamic Tree when the problem matches its designed use case in trees and advanced data structures.",
+        q: "How does access work?",
+        a: "Splay the node, then walk up path-parent pointers, splaying and linking at each level.",
       },
     ],
     answers: [
       {
-        marks: 5,
+        marks: 2,
         outline: [
-          "Define Dynamic Tree (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Preferred path decomposition.",
+          "Access, link, cut operations.",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Dynamic Tree.",
+      citation: "D. D. Sleator, R. E. Tarjan, 'A Data Structure for Dynamic Trees,' JCSS 26(3), 1983.",
+      supports: "The original link-cut tree paper.",
     },
   ],
   review: {

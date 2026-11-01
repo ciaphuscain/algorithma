@@ -57,16 +57,11 @@ export const mergeStonesEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n³)",
-    },
-    space: {
-      worst: "O(n²)",
-    },
-  },
-  properties: {
+    time: { best: "O(n³)", average: "O(n³)", worst: "O(n³)" },
+    space: "O(n²)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -92,24 +87,15 @@ export const mergeStonesEntry: AlgorithmEntry = {
     return dp[0][n - 1]`,
       tests: [
         {
-          input: {
-            stones: [3, 2, 4, 1],
-            k: 2,
-          },
+          args: [[3, 2, 4, 1], 2],
           expected: 20,
         },
         {
-          input: {
-            stones: [3, 2, 4, 1],
-            k: 3,
-          },
+          args: [[3, 2, 4, 1], 3],
           expected: -1,
         },
         {
-          input: {
-            stones: [3, 5, 1, 2, 6],
-            k: 3,
-          },
+          args: [[3, 5, 1, 2, 6], 3],
           expected: 25,
         },
       ],
@@ -138,24 +124,15 @@ export const mergeStonesEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            stones: [3, 2, 4, 1],
-            k: 2,
-          },
+          args: [[3, 2, 4, 1], 2],
           expected: 20,
         },
         {
-          input: {
-            stones: [3, 2, 4, 1],
-            k: 3,
-          },
+          args: [[3, 2, 4, 1], 3],
           expected: -1,
         },
         {
-          input: {
-            stones: [3, 5, 1, 2, 6],
-            k: 3,
-          },
+          args: [[3, 5, 1, 2, 6], 3],
           expected: 25,
         },
       ],

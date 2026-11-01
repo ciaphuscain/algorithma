@@ -58,11 +58,9 @@ export const regularExpressionMatchingDpEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    worstClass: "n",
-    best: "$O(mn)$",
-    average: "$O(mn)$",
-    worst: "$O(mn)$",
+    time: { best: "$O(mn)$", average: "$O(mn)$", worst: "$O(mn)$" },
     space: "$O(mn)$",
+    worstClass: "n",
   },
   properties: [],
   implementations: [

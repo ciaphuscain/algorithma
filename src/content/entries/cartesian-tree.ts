@@ -3,25 +3,30 @@ import type { AlgorithmEntry } from "../types";
 export const cartesianTreeEntry: AlgorithmEntry = {
   slug: "cartesian-tree",
   name: "Cartesian Tree",
-  aliases: ["Cartesian tree construction", "Min-heap in-order tree", "Treap structure"],
+  aliases: ["Treap (implicit)"],
   curriculum: [97],
   domain: "arrays-hashing",
   subcategory: "Further Array Techniques",
   difficulty: "advanced",
   summary:
-    "Build the unique tree that is a min-heap on the values and whose in-order traversal gives back the array, in O(n) with a stack. Scan left to right keeping the right spine on the stack: pop every value larger than the new one, making the last popped subtree the new node's left child.",
-  tags: ["cartesian tree", "heap", "stack", "in-order", "tree construction"],
-  prerequisites: ["Binary Heap", "Monotonic Stack"],
-  related: ["monotonic-stack", "binary-heap", "treap"],
+    "A binary tree derived from an array where each node holds an element, the tree is a min-heap by value and an in-order traversal recovers the original array order, built in O(n) using a stack.",
+  tags: ["tree", "stack", "range minimum", "heap"],
+  prerequisites: ["Binary Trees", "Stacks"],
+  related: ["segment-tree", "sparse-table"],
   problem: {
-    input: "An array of n values.",
-    output: "The parent of each node (−1 for the root): the Cartesian tree as a parent array.",
+    input: "An array of n comparable elements.",
+    output:
+      "A binary tree that is a min-heap by value and whose in-order traversal gives the array in its original order.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Imagine stacking blocks on a table where shorter blocks go on top. A new block pushes aside every taller block on the right edge and sits on top of the tallest remaining one. The pushed blocks become the new block's left subtree. The result is a tree where every parent is shorter than its children (a heap), and reading the blocks left to right recovers the original order.",
+        text: "A Cartesian tree encodes the structure of range minimum queries: the root is the minimum of the whole array, its left subtree is the Cartesian tree of elements to its left, and its right subtree of elements to its right. This recursive structure mirrors how RMQ splits.",
+      },
+      {
+        kind: "p",
+        text: "Building it in O(n) uses a stack: process elements left to right, popping stack elements that are larger than the current one (they become the left child), then push the current element.",
       },
     ],
     mechanics: [
@@ -29,40 +34,61 @@ export const cartesianTreeEntry: AlgorithmEntry = {
         kind: "list",
         ordered: true,
         items: [
-          "Start with a sentinel −∞ at the bottom of the stack (it is the tree's virtual root).",
-          "For each value A[i], left to right: pop every stack entry larger than A[i]; the last popped becomes i's left child.",
-          "Push i onto the stack. It becomes the right child of whatever is now on top.",
+          "Initialize an empty stack.",
+          "For each element a[i] from left to right:",
+          "Pop all stack elements with value > a[i]; the last popped becomes a[i]'s left child.",
+          "If the stack is non-empty, a[i] becomes the right child of the stack's top.",
+          "Push a[i] onto the stack.",
+          "The bottom of the stack is the root.",
         ],
       },
       {
         kind: "p",
-        text: "**Worked example** (the first preset): A = [9, 3, 7, 1, 8, 12, 10, 20, 15]. Processing 9: push (right child of sentinel). Processing 3: pop 9 (9 becomes 3's left child), push 3. Processing 7: push (right child of 3). Processing 1: pop 7, pop 3 (3, with 9 and 7 below it, becomes 1's left child), push 1. The root is 1, the minimum. Parents: [1, 3, 1, −1, 6, 6, 3, 8, 6].",
+        text: "**Worked example**: [3, 2, 6, 1, 9]. Stack trace:",
+      },
+      {
+        kind: "table",
+        head: ["Element", "Stack (bottom→top)", "Action"],
+        rows: [
+          ["3", "[3]", "Push 3"],
+          ["2", "[2]", "Pop 3 (becomes left child of 2), push 2"],
+          ["6", "[2, 6]", "Push 6 (right child of 2)"],
+          ["1", "[1]", "Pop 6, pop 2 (2 becomes left child of 1), push 1"],
+          ["9", "[1, 9]", "Push 9 (right child of 1)"],
+        ],
+      },
+      {
+        kind: "p",
+        text: "Result: root=1, left subtree has root 2 with left child 3 and right child 6, right subtree has root 9.",
       },
     ],
     implementation: [
       {
         kind: "list",
         items: [
-          "Each element is pushed and popped at most once, giving O(n) total.",
-          "The Cartesian tree is unique: the root is the leftmost minimum; the left subtree is the Cartesian tree of the values before it, and the right subtree the values after.",
-          "A Cartesian tree of random values is a random BST and has O(log n) expected depth.",
-          "The same tree with random priorities is a treap: a BST by key and a heap by priority.",
+          "Each element is pushed and popped at most once → O(n) total.",
+          "Store parent/left/right pointers or indices.",
+          "The Cartesian tree is unique for a given array (assuming distinct elements).",
         ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "**Cost.** Each of the n elements enters the stack once and leaves at most once: 2n operations in all. The tree has n nodes and n − 1 edges. The tests verify the parent array against a recursive O(n²) construction (root = leftmost minimum; recurse on both sides) and check that the tree structure in the trace matches the returned parent array.",
+        text: "**Build time**: O(n) — each element enters and leaves the stack at most once.",
+      },
+      {
+        kind: "p",
+        text: "The Cartesian tree of an array is isomorphic to the tree of recursive RMQ splits, establishing a connection to the Sparse Table and Fischer–Heun RMQ structures.",
       },
     ],
     advanced: [
       {
         kind: "list",
         items: [
-          "Range minimum queries reduce to LCA queries on the Cartesian tree (and back), so RMQ and LCA are linearly equivalent.",
-          "The Cartesian tree of a suffix array, weighted by LCP values, is the 'LCP tree' used in string algorithms.",
-          "Building a Cartesian tree is the key step in several linear-time algorithms for RMQ without sparse tables.",
+          "The Cartesian tree number (structure ignoring values) determines the RMQ answer for all queries, enabling O(n) / O(1) RMQ via block decomposition.",
+          "Treaps are Cartesian trees where priorities are random, giving expected O(log n) depth.",
+          "Cartesian tree sorting uses the tree to sort adaptively in O(n log n) worst case but faster on nearly-sorted inputs.",
         ],
       },
     ],
@@ -75,120 +101,110 @@ export const cartesianTreeEntry: AlgorithmEntry = {
     },
     space: "O(n)",
     worstClass: "n",
+    note: "Linear-time construction using a monotone stack.",
   },
   properties: [
     {
-      label: "Stack ops",
-      value: "2n total",
+      label: "Heap property",
+      value: "Min-heap by value",
     },
     {
-      label: "Tree depth",
-      value: "O(log n) expected for random input",
+      label: "In-order",
+      value: "Recovers original array",
+    },
+    {
+      label: "Unique",
+      value: "Yes (for distinct elements)",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "build_cartesian_tree",
+      code: `def build_cartesian_tree(arr):
+    """Build Cartesian tree, return root index. parent[i], left[i], right[i] are indices or -1."""
+    n = len(arr)
+    if n == 0:
+        return -1
+    parent = [-1] * n
+    left = [-1] * n
+    right = [-1] * n
+    stack = []
+    for i in range(n):
+        last_popped = -1
+        while stack and arr[stack[-1]] > arr[i]:
+            last_popped = stack.pop()
+        if last_popped != -1:
+            left[i] = last_popped
+            parent[last_popped] = i
+        if stack:
+            right[stack[-1]] = i
+            parent[i] = stack[-1]
+        stack.append(i)
+    root = stack[0]
+    return root
 `,
-      tests: [{ args: [42], expected: 42 }],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [{ args: [42], expected: 42 }],
+      tests: [
+        {
+          args: [[3, 2, 6, 1, 9]],
+          expected: 3,
+        },
+        {
+          args: [[1, 2, 3]],
+          expected: 0,
+        },
+        {
+          args: [[5]],
+          expected: 0,
+        },
+      ],
     },
   ],
-  visualizer: "cartesian-tree",
+  visualizer: null,
   practice: [
     {
       id: "ct-root",
       kind: "mcq",
-      prompt: "What value is always at the root of a Cartesian tree?",
-      options: [
-        "The leftmost minimum of the array",
-        "The first element",
-        "The last element",
-        "The median",
-      ],
-      answer: 0,
-      explanation: "The root is the minimum (heap property) and the leftmost one (in-order).",
-      distractors: {
-        "1": "Only if it is the smallest.",
-        "2": "Only if it is the smallest.",
-        "3": "Not necessarily the root.",
-      },
-      hints: ["Think about the heap property and in-order traversal."],
-      objective: "Root",
-    },
-    {
-      id: "ct-time",
-      kind: "mcq",
-      prompt: "Why is the stack-based construction O(n)?",
-      options: [
-        "Each element is pushed and popped at most once",
-        "The tree is balanced",
-        "Binary search is used",
-        "The array is sorted first",
-      ],
-      answer: 0,
-      explanation: "n pushes + at most n pops = 2n operations.",
-      distractors: {
-        "1": "The tree can be a path.",
-        "2": "No binary search is needed.",
-        "3": "No sorting.",
-      },
-      hints: ["How many times can each element visit the stack?"],
-      objective: "Complexity",
+      prompt: "What is the root of the Cartesian tree for [5, 3, 8, 1, 4]?",
+      options: ["5 (index 0)", "3 (index 1)", "1 (index 3)", "4 (index 4)"],
+      answer: 2,
+      explanation: "The root is the minimum element, which is 1 at index 3.",
+      hints: ["What property does the root satisfy in a min-heap?"],
+      objective: "Identify Cartesian tree root",
     },
   ],
   exam: {
     definition:
-      "A Cartesian tree of an array is the unique binary tree that is a min-heap on values and whose in-order traversal reproduces the array.",
+      "A Cartesian tree is a binary tree built from an array satisfying min-heap order and in-order traversal order, constructible in O(n) with a stack.",
     steps: [
-      "Scan left to right with a stack (the right spine).",
-      "Pop larger elements; the last popped is the new node's left child.",
-      "The new node becomes the right child of the stack top.",
+      "Process elements left to right",
+      "Pop larger elements from stack (become left child)",
+      "Current element becomes right child of stack top",
+      "Push current element",
     ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
+    timeComplexity: "O(n)",
+    spaceComplexity: "O(n)",
     correctness:
-      "Each node is smaller than its children (heap), and in-order visits nodes in array order.",
-    applications: ["RMQ ↔ LCA reduction", "Treap structure", "LCP trees in suffix arrays"],
-    limitations: ["Not balanced in the worst case"],
+      "Each element is pushed and popped at most once. The heap and in-order properties follow from the construction: popped elements are larger and to the left.",
+    applications: ["Range minimum query structures", "Treap basis", "Adaptive sorting"],
+    limitations: ["Static structure (no efficient updates)"],
     faq: [
       {
-        q: "Is the tree unique?",
-        a: "Yes; the recursive definition (root = leftmost min, recurse on both sides) is deterministic.",
+        q: "Why is it unique?",
+        a: "The root must be the minimum (heap), and left/right subtrees are determined by position relative to the minimum.",
       },
     ],
     answers: [
       {
-        marks: 10,
-        outline: [
-          "Definition: heap + in-order (2).",
-          "Stack algorithm (3).",
-          "Amortised O(n) (2).",
-          "RMQ reduction (3).",
-        ],
+        marks: 2,
+        outline: ["Stack-based O(n) construction with heap + in-order properties (2)"],
       },
     ],
   },
   references: [
     {
-      citation:
-        'J. Vuillemin, "A unifying look at data structures," Communications of the ACM, 23(4), 1980, pp. 229-239.',
-      supports: "The original Cartesian tree paper.",
-    },
-    {
-      citation: "A. Laaksonen, Guide to Competitive Programming, Springer, 2017.",
-      supports: "Stack-based tree construction.",
+      citation: "J. Vuillemin, 'A Unifying Look at Data Structures,' CACM, 23(4):229-239, 1980.",
+      supports: "Introduced Cartesian trees.",
     },
   ],
   review: {

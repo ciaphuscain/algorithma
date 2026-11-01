@@ -55,16 +55,11 @@ export const burstBalloonsEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n³)",
-    },
-    space: {
-      worst: "O(n²)",
-    },
-  },
-  properties: {
+    time: { best: "O(n³)", average: "O(n³)", worst: "O(n³)" },
+    space: "O(n²)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -83,15 +78,11 @@ export const burstBalloonsEntry: AlgorithmEntry = {
     return dp[1][n - 2]`,
       tests: [
         {
-          input: {
-            nums: [3, 1, 5, 8],
-          },
+          args: [[3, 1, 5, 8]],
           expected: 167,
         },
         {
-          input: {
-            nums: [1, 5],
-          },
+          args: [[1, 5]],
           expected: 10,
         },
       ],
@@ -116,15 +107,11 @@ export const burstBalloonsEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            nums: [3, 1, 5, 8],
-          },
+          args: [[3, 1, 5, 8]],
           expected: 167,
         },
         {
-          input: {
-            nums: [1, 5],
-          },
+          args: [[1, 5]],
           expected: 10,
         },
       ],

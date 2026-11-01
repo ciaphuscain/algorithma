@@ -55,16 +55,11 @@ export const palindromePartitioningEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n²)",
-    },
-    space: {
-      worst: "O(n²)",
-    },
-  },
-  properties: {
+    time: { best: "O(n²)", average: "O(n²)", worst: "O(n²)" },
+    space: "O(n²)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -93,21 +88,15 @@ export const palindromePartitioningEntry: AlgorithmEntry = {
     return cuts[n - 1]`,
       tests: [
         {
-          input: {
-            s: "aab",
-          },
+          args: ["aab"],
           expected: 1,
         },
         {
-          input: {
-            s: "a",
-          },
+          args: ["a"],
           expected: 0,
         },
         {
-          input: {
-            s: "abcba",
-          },
+          args: ["abcba"],
           expected: 0,
         },
       ],
@@ -138,21 +127,15 @@ export const palindromePartitioningEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            s: "aab",
-          },
+          args: ["aab"],
           expected: 1,
         },
         {
-          input: {
-            s: "a",
-          },
+          args: ["a"],
           expected: 0,
         },
         {
-          input: {
-            s: "abcba",
-          },
+          args: ["abcba"],
           expected: 0,
         },
       ],

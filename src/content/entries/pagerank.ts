@@ -3,91 +3,136 @@ import type { AlgorithmEntry } from "../types";
 export const pagerankEntry: AlgorithmEntry = {
   slug: "pagerank",
   name: "PageRank",
-  aliases: ["PageRank"],
+  aliases: ["Google PageRank"],
   curriculum: [519],
   domain: "graphs",
   subcategory: "Graph Algorithms",
   difficulty: "intermediate",
-  summary: "PageRank is a well-known algorithm in the domain of graph algorithms.",
-  tags: ["pagerank", "graph"],
-  prerequisites: ["BFS", "DFS"],
-  related: [],
+  summary:
+    "Assigns an importance score to each node in a directed graph by iteratively distributing each node's rank equally among its outgoing neighbours, with a damping factor that models random restarts.",
+  tags: ["graph", "ranking", "web", "linear algebra", "Markov chain"],
+  prerequisites: ["Graphs"],
+  related: ["bfs", "topological-sort"],
   problem: {
-    input: "Input for PageRank.",
-    output: "Output of PageRank.",
+    input: "A directed graph with n nodes and a damping factor d (typically 0.85).",
+    output:
+      "A rank vector of length n summing to 1, where each entry reflects the node's importance.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "PageRank solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Imagine a random web surfer who follows links uniformly at random and occasionally jumps to a random page. PageRank is the fraction of time spent at each page in the long run — pages linked by many important pages score higher.",
+      },
+      {
+        kind: "p",
+        text: "The computation is an iterative fixed-point: each node divides its current rank among its neighbours, mixes in the random-jump probability, and repeats until the values stabilise.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialise every node's rank to $1/n$.",
+          "Repeat: for each node $v$, $r'[v] = (1-d)/n + d \\cdot \\sum_{u \\to v} r[u]/\\text{out}(u)$.",
+          "Stop when $\\|r' - r\\|_1 < \\varepsilon$.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The PageRank algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Example:** Three nodes A→B, B→C, C→A (a cycle) with d = 0.85. By symmetry all converge to 1/3.",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of PageRank follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "Handle dangling nodes (no outgoing edges) by distributing their rank equally to all nodes.",
+          "Sparse representation: store only existing edges, iterate over in-neighbours.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of PageRank is based on the algorithm's structure and the operations performed at each step.",
+        text: "PageRank solves $r = (1-d)/n \\cdot \\mathbf{1} + d \\cdot M^T r$ where $M$ is the row-stochastic adjacency matrix. Power iteration converges geometrically at rate $d$; each iteration is $O(E)$.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of PageRank exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Can be formulated as the dominant eigenvector of a modified adjacency matrix.",
+          "Topic-sensitive PageRank biases the random-jump distribution toward a topic.",
+          "Used beyond the web: citation networks, social influence, recommendation.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(V + E)",
-      average: "O(k(V + E))",
-      worst: "O(k(V + E))",
+      best: "O(E)",
+      average: "O(k E)",
+      worst: "O(k E)",
     },
-    space: "O(V)",
+    space: "O(V + E)",
     worstClass: "other",
+    note: "k is the number of iterations until convergence; typically 50–100.",
   },
   properties: [
     {
-      label: "Domain",
-      value: "graph algorithms",
+      label: "Damping factor",
+      value: "Typically 0.85",
+    },
+    {
+      label: "Convergence",
+      value: "Geometric at rate d",
+    },
+    {
+      label: "Output",
+      value: "Probability distribution over nodes",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "pagerank",
+      code: `def pagerank(n, edges, d=0.85, eps=1e-6, max_iter=100):
+    """edges: list of [u, v]. Returns list of ranks summing to ~1."""
+    out = [0] * n
+    in_nbrs = [[] for _ in range(n)]
+    for u, v in edges:
+        out[u] += 1
+        in_nbrs[v].append(u)
+    r = [1.0 / n] * n
+    for _ in range(max_iter):
+        r2 = [(1 - d) / n] * n
+        dangling = sum(r[v] for v in range(n) if out[v] == 0)
+        for v in range(n):
+            r2[v] += d * dangling / n
+            for u in in_nbrs[v]:
+                r2[v] += d * r[u] / out[u]
+        if sum(abs(r2[i] - r[i]) for i in range(n)) < eps:
+            return [round(x, 6) for x in r2]
+        r = r2
+    return [round(x, 6) for x in r]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            3,
+            [
+              [0, 1],
+              [1, 2],
+              [2, 0],
+            ],
+          ],
+          expected: [0.333333, 0.333333, 0.333333],
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [2, [[0, 1]], 0.85, 1e-6, 100],
+          expected: [0.15, 0.85],
         },
       ],
     },
@@ -95,50 +140,54 @@ export const pagerankEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "pagerank-q1",
+      id: "pr-damping",
       kind: "mcq",
-      prompt: "What is the primary purpose of PageRank?",
+      prompt: "What does the damping factor d model in PageRank?",
       options: [
-        "To solve the PageRank problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "The probability of following a link rather than jumping randomly",
+        "The number of iterations",
+        "The convergence threshold",
+        "The number of outgoing edges",
       ],
       answer: 0,
-      explanation: "PageRank is designed to solve its specific problem efficiently.",
-      hints: ["Think about what PageRank does."],
-      objective: "Purpose",
+      explanation:
+        "With probability d the surfer follows a link; with probability 1−d they jump to a random node.",
+      hints: ["Think of the random surfer model."],
+      objective: "Understand the damping factor",
     },
   ],
   exam: {
-    definition: "PageRank is an algorithm in the domain of graph algorithms.",
+    definition:
+      "PageRank computes importance scores by iteratively distributing rank along directed edges, mixing in a random-jump probability.",
     steps: [
-      "Apply the PageRank algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Init r[v] = 1/n.",
+      "Iterate: r'[v] = (1−d)/n + d · Σ r[u]/out(u) for u→v.",
+      "Stop when ||r'−r|| < ε.",
     ],
-    timeComplexity: "$O(V + E)$.",
-    spaceComplexity: "$O(V)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["graph algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "$O(kE)$ for k iterations.",
+    spaceComplexity: "$O(V + E)$.",
+    correctness:
+      "The iteration is a power method on a stochastic matrix; the damping factor guarantees convergence to a unique stationary distribution.",
+    applications: ["Web search ranking", "Citation analysis", "Social network influence"],
+    limitations: ["Sensitive to spam links", "Requires the full graph"],
     faq: [
       {
-        q: "When should you use PageRank?",
-        a: "Use PageRank when the problem matches its designed use case in graph algorithms.",
+        q: "Why the random jump?",
+        a: "It ensures the Markov chain is irreducible and aperiodic, guaranteeing a unique stationary distribution.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: ["Define PageRank (1).", "Describe the algorithm (2).", "Analyze complexity (2)."],
+        marks: 2,
+        outline: ["Formula and damping factor interpretation (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for PageRank.",
+      citation:
+        'L. Page, S. Brin, R. Motwani, T. Winograd, "The PageRank Citation Ranking: Bringing Order to the Web," Stanford InfoLab, 1999.',
+      supports: "The original PageRank paper.",
     },
   ],
   review: {

@@ -3,92 +3,120 @@ import type { AlgorithmEntry } from "../types";
 export const orientationTestCcwTestEntry: AlgorithmEntry = {
   slug: "orientation-test-ccw-test",
   name: "Orientation Test (CCW Test)",
-  aliases: ["Orientation Test (CCW Test)"],
+  aliases: ["CCW Test", "Cross Product Orientation", "Turn Direction"],
   curriculum: [401],
   domain: "geometry",
   subcategory: "Computational Geometry",
   difficulty: "intermediate",
   summary:
-    "Orientation Test (CCW Test) is a well-known algorithm in the domain of computational geometry.",
-  tags: ["orientation test ccw test", "geometry"],
-  prerequisites: ["Sorting"],
-  related: [],
+    "Determines whether three points make a left turn (counter-clockwise), right turn (clockwise), or are collinear, using the sign of the cross product of the two edge vectors.",
+  tags: ["geometry", "cross product", "orientation", "collinear", "convex hull"],
+  prerequisites: ["Vectors"],
+  related: ["andrew-s-monotone-chain", "graham-scan"],
   problem: {
-    input: "Input for Orientation Test (CCW Test).",
-    output: "Output of Orientation Test (CCW Test).",
+    input: "Three 2D points P, Q, R.",
+    output: "1 if the turn P→Q→R is counter-clockwise, −1 if clockwise, 0 if collinear.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Orientation Test (CCW Test) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Imagine walking from P to Q to R. If you turn left, the points are in counter-clockwise order; if you turn right, clockwise. The cross product of the vectors PQ and QR captures this: its sign tells the turn direction, and zero means the points lie on a single line.",
+      },
+      {
+        kind: "p",
+        text: "This tiny test is a building block for nearly every computational geometry algorithm — convex hulls, polygon containment, segment intersection, and more.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Compute vectors $\\vec{PQ} = (Q_x - P_x, Q_y - P_y)$ and $\\vec{PR} = (R_x - P_x, R_y - P_y)$.",
+          "Compute the 2D cross product: $\\text{cross} = (Q_x - P_x)(R_y - P_y) - (Q_y - P_y)(R_x - P_x)$.",
+          "If cross > 0 → CCW (left turn). If cross < 0 → CW (right turn). If cross = 0 → collinear.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Orientation Test (CCW Test) algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Example:** P = (0,0), Q = (1,0), R = (1,1). cross = (1)(1) − (0)(1) = 1 > 0 → CCW.",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of Orientation Test (CCW Test) follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "Use integer coordinates or exact arithmetic to avoid floating-point issues with collinear checks.",
+          "The sign convention depends on the coordinate system; in screen coordinates (y down), CCW and CW swap.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Orientation Test (CCW Test) is based on the algorithm's structure and the operations performed at each step.",
+        text: "The cross product $(Q-P) \\times (R-P)$ equals the signed area of the parallelogram formed by the two vectors, and half of it is the signed area of triangle PQR. The test is $O(1)$ time and space.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Orientation Test (CCW Test) exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Used as the predicate in Graham scan and Andrew's monotone chain convex hull algorithms.",
+          "Robust implementations use exact predicates (Shewchuk's orient2d) to handle near-collinear cases.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n log n)",
-      average: "O(n log n)",
-      worst: "O(n log n)",
+      best: "O(1)",
+      average: "O(1)",
+      worst: "O(1)",
     },
-    space: "O(n)",
-    worstClass: "n log n",
+    space: "O(1)",
+    worstClass: "1",
+    note: "A single arithmetic expression.",
   },
   properties: [
     {
-      label: "Domain",
-      value: "computational geometry",
+      label: "Time",
+      value: "$O(1)$",
+    },
+    {
+      label: "Exact for integers",
+      value: "Yes, if using integer arithmetic",
+    },
+    {
+      label: "Foundation",
+      value: "Building block for convex hull, polygon tests",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "orientation",
+      code: `def orientation(px, py, qx, qy, rx, ry):
+    """Return 1 for CCW, -1 for CW, 0 for collinear."""
+    cross = (qx - px) * (ry - py) - (qy - py) * (rx - px)
+    if cross > 0:
+        return 1
+    elif cross < 0:
+        return -1
+    return 0
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [0, 0, 1, 0, 1, 1],
+          expected: 1,
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [0, 0, 1, 0, 1, -1],
+          expected: -1,
+        },
+        {
+          args: [0, 0, 1, 1, 2, 2],
+          expected: 0,
         },
       ],
     },
@@ -96,56 +124,45 @@ export const orientationTestCcwTestEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "orientation-test-ccw-test-q1",
+      id: "orient-sign",
       kind: "mcq",
-      prompt: "What is the primary purpose of Orientation Test (CCW Test)?",
-      options: [
-        "To solve the Orientation Test (CCW Test) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "What does a positive cross product of PQ × PR indicate?",
+      options: ["Counter-clockwise turn", "Clockwise turn", "Collinear", "Undefined"],
       answer: 0,
       explanation:
-        "Orientation Test (CCW Test) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Orientation Test (CCW Test) does."],
-      objective: "Purpose",
+        "A positive cross product means the turn from P to Q to R goes counter-clockwise (left turn).",
+      hints: ["Think about the sign of the signed area of triangle PQR."],
+      objective: "Understand the orientation test",
     },
   ],
   exam: {
     definition:
-      "Orientation Test (CCW Test) is an algorithm in the domain of computational geometry.",
-    steps: [
-      "Apply the Orientation Test (CCW Test) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n log n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["computational geometry applications"],
-    limitations: ["Specific to its problem domain"],
+      "The orientation test uses the sign of the 2D cross product to classify the turn direction of three points as CCW, CW, or collinear.",
+    steps: ["Compute cross = (Qx−Px)(Ry−Py) − (Qy−Py)(Rx−Px).", "Return sign(cross)."],
+    timeComplexity: "$O(1)$.",
+    spaceComplexity: "$O(1)$.",
+    correctness:
+      "The cross product equals twice the signed area of triangle PQR; its sign is the orientation.",
+    applications: ["Convex hull algorithms", "Segment intersection", "Polygon containment"],
+    limitations: ["Floating-point imprecision for near-collinear points"],
     faq: [
       {
-        q: "When should you use Orientation Test (CCW Test)?",
-        a: "Use Orientation Test (CCW Test) when the problem matches its designed use case in computational geometry.",
+        q: "Why integers?",
+        a: "Integer cross products are exact, avoiding rounding errors that flip the sign for near-collinear points.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Orientation Test (CCW Test) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 2,
+        outline: ["Cross product formula and sign interpretation (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Orientation Test (CCW Test).",
+      citation:
+        "F. P. Preparata, M. I. Shamos, Computational Geometry: An Introduction, Springer, 1985.",
+      supports: "Foundation of orientation-based geometric predicates.",
     },
   ],
   review: {

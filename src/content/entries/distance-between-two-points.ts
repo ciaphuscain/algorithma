@@ -3,92 +3,128 @@ import type { AlgorithmEntry } from "../types";
 export const distanceBetweenTwoPointsEntry: AlgorithmEntry = {
   slug: "distance-between-two-points",
   name: "Distance Between Two Points",
-  aliases: ["Distance Between Two Points"],
+  aliases: ["Euclidean distance", "L2 distance"],
   curriculum: [404],
   domain: "geometry",
   subcategory: "Computational Geometry",
   difficulty: "intermediate",
   summary:
-    "Distance Between Two Points is a well-known algorithm in the domain of computational geometry.",
-  tags: ["distance between two points", "geometry"],
-  prerequisites: ["Sorting"],
-  related: [],
+    "Computes the Euclidean distance between two points in d-dimensional space as the square root of the sum of squared coordinate differences.",
+  tags: ["geometry", "distance", "Euclidean", "metric"],
+  prerequisites: [],
+  related: ["distance-from-point-to-line"],
   problem: {
-    input: "Input for Distance Between Two Points.",
-    output: "Output of Distance Between Two Points.",
+    input: "Two points p and q in d-dimensional space.",
+    output: "The Euclidean distance ||p − q||₂.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Distance Between Two Points solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "The Euclidean distance is the straight-line distance between two points, generalizing the Pythagorean theorem to any number of dimensions. In 2D: √((x₂−x₁)² + (y₂−y₁)²).",
+      },
+      {
+        kind: "p",
+        text: "It is the most common distance metric and satisfies the triangle inequality, symmetry, and non-negativity (a proper metric).",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Compute the difference in each coordinate: Δᵢ = pᵢ − qᵢ.",
+          "Square each difference: Δᵢ².",
+          "Sum all squared differences.",
+          "Take the square root.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Distance Between Two Points algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Worked example:** p=(1,2,3), q=(4,6,3). Differences: (3,4,0). Squares: (9,16,0). Sum: 25. Distance: √25 = 5.",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of Distance Between Two Points follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "For comparisons only, skip the square root and compare squared distances.",
+          "Use math.hypot in Python for numerical stability in 2D/3D.",
+          "Manhattan (L1) and Chebyshev (L∞) distances are useful alternatives.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Distance Between Two Points is based on the algorithm's structure and the operations performed at each step.",
+        text: "d(p, q) = √(Σ(pᵢ − qᵢ)²) for i = 1..d. This is the L2 norm of the difference vector.",
+      },
+      {
+        kind: "p",
+        text: "**Complexity:** O(d) time and O(1) space for d-dimensional points.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Distance Between Two Points exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "For approximate nearest-neighbor search, locality-sensitive hashing uses random projections of Euclidean distance.",
+          "Squared Euclidean distance avoids the expensive square root and preserves ordering for nearest-neighbor queries.",
+          "In high dimensions, distances concentrate: all pairwise distances become nearly equal (curse of dimensionality).",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n log n)",
-      average: "O(n log n)",
-      worst: "O(n log n)",
+      best: "O(d)",
+      average: "O(d)",
+      worst: "O(d)",
     },
-    space: "O(n)",
-    worstClass: "n log n",
+    space: "O(1)",
+    worstClass: "n",
+    note: "d = number of dimensions.",
   },
   properties: [
     {
-      label: "Domain",
-      value: "computational geometry",
+      label: "Metric",
+      value: "Yes (satisfies triangle inequality)",
+    },
+    {
+      label: "Dimensions",
+      value: "Works in any d",
+    },
+    {
+      label: "Numerics",
+      value: "Use squared distance when possible",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "euclidean_distance",
+      code: `def euclidean_distance(p, q):
+    """Euclidean distance between two points (lists of coordinates)."""
+    return sum((a - b) ** 2 for a, b in zip(p, q)) ** 0.5
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [0, 0],
+            [3, 4],
+          ],
+          expected: 5.0,
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [1, 2, 3],
+            [4, 6, 3],
+          ],
+          expected: 5.0,
+        },
+        {
+          args: [[0], [0]],
+          expected: 0.0,
         },
       ],
     },
@@ -96,56 +132,47 @@ export const distanceBetweenTwoPointsEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "distance-between-two-points-q1",
+      id: "euclid-dist-skip-sqrt",
       kind: "mcq",
-      prompt: "What is the primary purpose of Distance Between Two Points?",
+      prompt:
+        "When comparing which of two points is closer to a query, what optimization can be applied?",
       options: [
-        "To solve the Distance Between Two Points problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "Compare squared distances instead",
+        "Use Manhattan distance",
+        "Round coordinates",
+        "Use absolute differences",
       ],
       answer: 0,
-      explanation:
-        "Distance Between Two Points is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Distance Between Two Points does."],
-      objective: "Purpose",
+      explanation: "Squared distance preserves the ordering and avoids the expensive square root.",
+      hints: ["The square root is monotonic."],
+      objective: "Know when to skip the square root",
     },
   ],
   exam: {
-    definition:
-      "Distance Between Two Points is an algorithm in the domain of computational geometry.",
-    steps: [
-      "Apply the Distance Between Two Points algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n log n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["computational geometry applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Euclidean distance is √(Σ(pᵢ − qᵢ)²), the straight-line distance in d dimensions.",
+    steps: ["Compute coordinate differences.", "Square and sum.", "Take square root."],
+    timeComplexity: "O(d)",
+    spaceComplexity: "O(1)",
+    correctness: "Follows from the Pythagorean theorem generalized to d dimensions.",
+    applications: ["Nearest-neighbor search", "Clustering", "Collision detection"],
+    limitations: ["Expensive square root for comparisons", "Curse of dimensionality in high-d"],
     faq: [
       {
-        q: "When should you use Distance Between Two Points?",
-        a: "Use Distance Between Two Points when the problem matches its designed use case in computational geometry.",
+        q: "Why use squared distance?",
+        a: "It preserves ordering for comparisons and avoids the costly square root.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Distance Between Two Points (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 2,
+        outline: ["Formula derivation from Pythagorean theorem.", "O(d) complexity."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Distance Between Two Points.",
+      citation: "T. H. Cormen et al., Introduction to Algorithms, 3rd ed., MIT Press, 2009.",
+      supports: "Computational geometry basics.",
     },
   ],
   review: {

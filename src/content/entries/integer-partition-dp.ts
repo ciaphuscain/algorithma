@@ -55,16 +55,11 @@ export const integerPartitionDpEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n²)",
-    },
-    space: {
-      worst: "O(n)",
-    },
-  },
-  properties: {
+    time: { best: "O(n²)", average: "O(n²)", worst: "O(n²)" },
+    space: "O(n)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -78,21 +73,15 @@ export const integerPartitionDpEntry: AlgorithmEntry = {
     return dp[n]`,
       tests: [
         {
-          input: {
-            n: 5,
-          },
+          args: [5],
           expected: 7,
         },
         {
-          input: {
-            n: 10,
-          },
+          args: [10],
           expected: 42,
         },
         {
-          input: {
-            n: 1,
-          },
+          args: [1],
           expected: 1,
         },
       ],
@@ -110,21 +99,15 @@ export const integerPartitionDpEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            n: 5,
-          },
+          args: [5],
           expected: 7,
         },
         {
-          input: {
-            n: 10,
-          },
+          args: [10],
           expected: 42,
         },
         {
-          input: {
-            n: 1,
-          },
+          args: [1],
           expected: 1,
         },
       ],

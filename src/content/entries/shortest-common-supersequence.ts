@@ -55,16 +55,11 @@ export const shortestCommonSupersequenceEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(m·n)",
-    },
-    space: {
-      worst: "O(m·n)",
-    },
-  },
-  properties: {
+    time: { best: "O(m·n)", average: "O(m·n)", worst: "O(m·n)" },
+    space: "O(m·n)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -81,17 +76,11 @@ export const shortestCommonSupersequenceEntry: AlgorithmEntry = {
     return m + n - dp[m][n]`,
       tests: [
         {
-          input: {
-            a: "abac",
-            b: "cab",
-          },
+          args: ["abac", "cab"],
           expected: 5,
         },
         {
-          input: {
-            a: "abc",
-            b: "abc",
-          },
+          args: ["abc", "abc"],
           expected: 3,
         },
       ],
@@ -111,17 +100,11 @@ export const shortestCommonSupersequenceEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            a: "abac",
-            b: "cab",
-          },
+          args: ["abac", "cab"],
           expected: 5,
         },
         {
-          input: {
-            a: "abc",
-            b: "abc",
-          },
+          args: ["abc", "abc"],
           expected: 3,
         },
       ],

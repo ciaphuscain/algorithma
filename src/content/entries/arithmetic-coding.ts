@@ -57,11 +57,9 @@ export const arithmeticCodingEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    worstClass: "n",
-    best: "$O(n)$",
-    average: "$O(n)$",
-    worst: "$O(n)$",
+    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(n)$" },
     space: "$O(|\\Sigma|)$",
+    worstClass: "n",
   },
   properties: [],
   implementations: [
@@ -97,6 +95,7 @@ def arithmetic_decode(code: float, length: int, probs: dict[str, tuple[float, fl
               b: [0.6, 1.0],
             },
           ],
+          expected: 0.288,
         },
       ],
     },

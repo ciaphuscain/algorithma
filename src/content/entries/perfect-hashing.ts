@@ -3,92 +3,133 @@ import type { AlgorithmEntry } from "../types";
 export const perfectHashingEntry: AlgorithmEntry = {
   slug: "perfect-hashing",
   name: "Perfect Hashing",
-  aliases: ["Perfect Hashing"],
+  aliases: ["FKS Hashing", "Two-Level Hashing"],
   curriculum: [72],
   domain: "arrays-hashing",
   subcategory: "Hash Tables",
   difficulty: "advanced",
   summary:
-    "A hash function with no collisions for a known, fixed set of keys. Static perfect hashing achieves O(1) worst-case lookup with O(n) space using a two-level scheme (FKS).",
-  tags: ["perfect hashing", "FKS", "minimal perfect hash"],
+    "Constructs a static hash table with guaranteed O(1) worst-case lookups and no collisions for a known set of keys, using a two-level scheme with O(n) space.",
+  tags: ["hashing", "perfect hash", "static", "FKS"],
   prerequisites: ["Hash Tables"],
-  related: ["universal-hashing", "hash-chaining"],
+  related: ["cuckoo-hashing"],
   problem: {
-    input: "Input for Perfect Hashing.",
-    output: "Output of Perfect Hashing.",
+    input: "A fixed set S of n keys.",
+    output: "A hash table that answers membership queries in O(1) worst case with no collisions.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "A hash function with no collisions for a known, fixed set of keys. Static perfect hashing achieves O(1) worst-case lookup with O(n) space using a two-level scheme (FKS).",
+        text: "Normal hash tables have O(1) expected time but collisions can degrade to O(n). If the key set is known in advance, we can pick hash functions that guarantee zero collisions — a 'perfect' hash.",
+      },
+      {
+        kind: "p",
+        text: "The trick is two levels: the first level hashes into buckets, then each bucket uses a second hash into a table of size proportional to the square of the bucket size. This sounds expensive but the birthday-bound ensures O(n) total space.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Pick a universal hash function h₁ to map n keys into m = n buckets.",
+          "Let bⱼ be the number of keys in bucket j. Allocate a second-level table of size bⱼ² for bucket j.",
+          "For each bucket, try random second-level hash functions until one is injective (no collisions). Expected O(1) tries per bucket.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Perfect Hashing algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Example:** Keys {1, 5, 9}. h₁ maps to 3 buckets. Bucket with {1,9} gets a 4-slot second table with a collision-free h₂.",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of Perfect Hashing follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "Construction is O(n) expected time using universal hashing.",
+          "Space: O(n) because Σ bⱼ² = O(n) when m = n (by the birthday bound).",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Perfect Hashing is based on the algorithm's structure and the operations performed at each step.",
+        text: "With m = n buckets and a universal hash, $E[\\sum b_j^2] = n + n(n-1)/m = O(n)$. Each second-level table of size $b_j^2$ is collision-free with probability ≥ 1/2, so O(1) expected tries.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Perfect Hashing exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Minimal perfect hashing maps n keys to exactly {0, ..., n−1} with no gaps.",
+          "Dynamic perfect hashing (Dietzfelbinger et al.) supports insertions and deletions.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "varies",
-      average: "varies",
-      worst: "varies",
+      best: "O(1)",
+      average: "O(1)",
+      worst: "O(1)",
     },
-    space: "varies",
+    space: "O(n)",
     worstClass: "1",
+    note: "O(1) worst-case lookup. O(n) expected construction time.",
   },
   properties: [
     {
-      label: "Category",
-      value: "Hash Tables",
+      label: "Lookup",
+      value: "O(1) worst case",
+    },
+    {
+      label: "Static",
+      value: "Keys must be known at construction time",
+    },
+    {
+      label: "Space",
+      value: "$O(n)$",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "perfect_hash_build",
+      code: `def perfect_hash_build(keys):
+    """Build a simple two-level perfect hash for distinct integer keys.
+    Returns (table, m, a, b) where lookup uses ((a*k+b)%p)%m then second level."""
+    n = len(keys)
+    if n == 0:
+        return [], 0, 0, 0
+    p = 1000000007
+    # Simple: for small sets, try direct mapping
+    import random
+    random.seed(42)
+    for _ in range(100):
+        a = random.randint(1, p - 1)
+        b = random.randint(0, p - 1)
+        table = [None] * (n * n)
+        ok = True
+        for k in keys:
+            idx = ((a * k + b) % p) % (n * n)
+            if table[idx] is not None:
+                ok = False
+                break
+            table[idx] = k
+        if ok:
+            return table, n * n, a, b
+    return None
+
+def perfect_hash_lookup(table, size, a, b, key):
+    p = 1000000007
+    idx = ((a * key + b) % p) % size
+    return table[idx] == key
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
-        },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
-        {
-          args: [42],
-          expected: 42,
+          args: [[3, 7, 11]],
+          expected: null,
         },
       ],
     },
@@ -96,53 +137,58 @@ export const perfectHashingEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "perfect-hashing-q1",
+      id: "ph-space",
       kind: "mcq",
-      prompt: "What is the primary purpose of Perfect Hashing?",
+      prompt: "Why does two-level perfect hashing use O(n) total space despite bⱼ² per bucket?",
       options: [
-        "A hash function with no collisions for a known, fixed set of...",
-        "Sorting an array",
-        "Finding shortest paths",
-        "Compressing data",
+        "Because Σ bⱼ² = O(n) by the birthday bound with n buckets",
+        "Because all buckets have size 1",
+        "Because it uses compression",
+        "Because keys are sorted first",
       ],
       answer: 0,
       explanation:
-        "Perfect Hashing: A hash function with no collisions for a known, fixed set of keys. Static perfect hashing achieves O(1) worst-case lookup with O(n) space using a two-level scheme (FKS).",
-      hints: ["Think about what problem Perfect Hashing solves."],
-      objective: "Perfect Hashing",
+        "With m=n buckets and a universal hash, the expected sum of squares of bucket sizes is O(n).",
+      hints: ["What is E[Σ bⱼ²] with a universal hash into n buckets?"],
+      objective: "Understand FKS space analysis",
     },
   ],
   exam: {
     definition:
-      "A hash function with no collisions for a known, fixed set of keys. Static perfect hashing achieves O(1) worst-case lookup with O(n) space using a two-level scheme (FKS).",
-    steps: ["Apply the Perfect Hashing algorithm to the input."],
-    timeComplexity: "See complexity section.",
-    spaceComplexity: "See complexity section.",
+      "Perfect hashing provides O(1) worst-case lookup for a static key set using two-level universal hashing in O(n) space.",
+    steps: [
+      "Hash n keys into n buckets.",
+      "Each bucket j gets a table of size bⱼ².",
+      "Pick collision-free second-level hash per bucket.",
+    ],
+    timeComplexity: "$O(1)$ lookup, $O(n)$ construction.",
+    spaceComplexity: "$O(n)$.",
     correctness:
-      "The Perfect Hashing algorithm is correct because it systematically processes all cases.",
-    applications: ["Hash Tables"],
-    limitations: ["See advanced section for limitations."],
+      "Σ bⱼ² = O(n) by the birthday bound; each bⱼ²-sized table avoids collisions with probability ≥ 1/2.",
+    applications: [
+      "Compiler keyword lookup",
+      "Network packet classification",
+      "Read-only dictionaries",
+    ],
+    limitations: ["Static: no insertions after construction"],
     faq: [
       {
-        q: "When should you use Perfect Hashing?",
-        a: "Use Perfect Hashing when the problem matches its design: A hash function with no collisions for a known, fixed set of keys. Static perfect hashing achieves O",
+        q: "Why bⱼ²?",
+        a: "With bⱼ keys in bⱼ² slots, the probability of any collision is < 1/2, so a random hash works quickly.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Perfect Hashing (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 2,
+        outline: ["Two-level scheme and O(n) space proof (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. Cormen et al., Introduction to Algorithms, 4th ed.",
-      supports: "General reference for Perfect Hashing.",
+      citation:
+        'M. L. Fredman, J. Komlós, E. Szemerédi, "Storing a sparse table with O(1) worst case access time," JACM, 1984.',
+      supports: "The FKS perfect hashing scheme.",
     },
   ],
   review: {

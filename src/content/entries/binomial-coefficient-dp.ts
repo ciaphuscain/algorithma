@@ -3,92 +3,154 @@ import type { AlgorithmEntry } from "../types";
 export const binomialCoefficientDpEntry: AlgorithmEntry = {
   slug: "binomial-coefficient-dp",
   name: "Binomial Coefficient DP",
-  aliases: ["Binomial Coefficient DP"],
+  aliases: ["Pascal's Triangle DP", "nCr DP"],
   curriculum: [380],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
   summary:
-    "Binomial Coefficient DP is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["binomial coefficient dp", "math"],
-  prerequisites: [],
-  related: [],
+    "Computes binomial coefficients C(n, k) using Pascal's triangle recurrence C(n, k) = C(n-1, k-1) + C(n-1, k), avoiding large intermediate values and overflow issues.",
+  tags: ["combinatorics", "dynamic programming", "Pascal's triangle"],
+  prerequisites: ["Dynamic Programming"],
+  related: ["catalan-numbers"],
   problem: {
-    input: "Input for Binomial Coefficient DP.",
-    output: "Output of Binomial Coefficient DP.",
+    input: "Two non-negative integers n and k with k <= n.",
+    output: "The binomial coefficient C(n, k) = n! / (k! * (n-k)!).",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Binomial Coefficient DP solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "The binomial coefficient C(n, k) counts the number of ways to choose k items from n. Computing it directly as n!/(k!(n-k)!) involves huge factorials that overflow. Pascal's recurrence breaks it into smaller subproblems that never exceed the final answer.",
+      },
+      {
+        kind: "p",
+        text: "Think of Pascal's triangle: each entry is the sum of the two entries above it. Row n, column k gives C(n, k). We only need the previous row to compute the current one, so we can use O(k) space.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Create an array dp of size k+1, initialized to 0 except dp[0] = 1.",
+          "For i from 1 to n: for j from min(i, k) down to 1: dp[j] += dp[j-1].",
+          "Return dp[k].",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Binomial Coefficient DP algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Worked example**: C(5, 2).",
+      },
+      {
+        kind: "table",
+        head: ["After row", "dp[0]", "dp[1]", "dp[2]"],
+        rows: [
+          ["0", "1", "0", "0"],
+          ["1", "1", "1", "0"],
+          ["2", "1", "2", "1"],
+          ["3", "1", "3", "3"],
+          ["4", "1", "4", "6"],
+          ["5", "1", "5", "10"],
+        ],
+      },
+      {
+        kind: "p",
+        text: "C(5, 2) = 10.",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of Binomial Coefficient DP follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "Iterate j downward to avoid using the same row's updated values.",
+          "For modular C(n, k), replace addition with modular addition.",
+          "For a full row of Pascal's triangle, compute all dp[0..n] in O(n) per row.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Binomial Coefficient DP is based on the algorithm's structure and the operations performed at each step.",
+        text: "**Recurrence**: C(n, k) = C(n-1, k-1) + C(n-1, k) with C(n, 0) = C(n, n) = 1.",
+      },
+      {
+        kind: "p",
+        text: "**Time**: O(n * k). **Space**: O(k) with the rolling array.",
+      },
+      {
+        kind: "p",
+        text: "All intermediate values are at most C(n, k), avoiding overflow that the factorial formula would cause.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Binomial Coefficient DP exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Lucas' theorem computes C(n, k) mod p for prime p by reducing to smaller binomial coefficients.",
+          "For very large n with small p, Lucas' theorem is O(log_p(n) * p) while DP is O(nk).",
+          "Precomputing factorials and inverse factorials mod p allows O(1) per query after O(n) setup.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
+      best: "O(n * k)",
+      average: "O(n * k)",
+      worst: "O(n * k)",
     },
-    space: "O(n)",
-    worstClass: "n",
+    space: "O(k)",
+    worstClass: "n^2",
+    note: "O(k) space with rolling array.",
   },
   properties: [
     {
-      label: "Domain",
-      value: "number theory and mathematics",
+      label: "Overflow-safe",
+      value: "All intermediates <= C(n,k)",
+    },
+    {
+      label: "Space-optimized",
+      value: "O(k) with 1D array",
+    },
+    {
+      label: "Modular",
+      value: "Easy to extend",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "binom",
+      code: `def binom(n, k):
+    """Compute C(n, k) using DP."""
+    if k < 0 or k > n:
+        return 0
+    if k > n - k:
+        k = n - k
+    dp = [0] * (k + 1)
+    dp[0] = 1
+    for i in range(1, n + 1):
+        for j in range(min(i, k), 0, -1):
+            dp[j] += dp[j - 1]
+    return dp[k]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [5, 2],
+          expected: 10,
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [10, 3],
+          expected: 120,
+        },
+        {
+          args: [0, 0],
+          expected: 1,
+        },
+        {
+          args: [7, 0],
+          expected: 1,
         },
       ],
     },
@@ -96,55 +158,48 @@ export const binomialCoefficientDpEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "binomial-coefficient-dp-q1",
-      kind: "mcq",
-      prompt: "What is the primary purpose of Binomial Coefficient DP?",
-      options: [
-        "To solve the Binomial Coefficient DP problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
-      answer: 0,
-      explanation: "Binomial Coefficient DP is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Binomial Coefficient DP does."],
-      objective: "Purpose",
+      id: "binom-val",
+      kind: "numeric",
+      prompt: "What is C(6, 3)?",
+      answer: 20,
+      explanation: "C(6,3) = 6!/(3!*3!) = 720/36 = 20.",
+      hints: ["Use Pascal's recurrence or the formula."],
+      objective: "Compute a binomial coefficient",
     },
   ],
   exam: {
     definition:
-      "Binomial Coefficient DP is an algorithm in the domain of number theory and mathematics.",
+      "Binomial coefficient DP computes C(n,k) using Pascal's recurrence C(n,k) = C(n-1,k-1) + C(n-1,k) in O(nk) time and O(k) space.",
     steps: [
-      "Apply the Binomial Coefficient DP algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "dp[0] = 1, rest 0",
+      "For each row 1..n, update dp[j] += dp[j-1] right to left",
+      "Return dp[k]",
     ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "O(nk)",
+    spaceComplexity: "O(k)",
+    correctness:
+      "By induction, dp[j] after processing row i equals C(i, j). The downward iteration ensures each value uses the previous row's entries.",
+    applications: ["Combinatorial counting", "Probability calculations", "Polynomial expansion"],
+    limitations: [
+      "O(nk) is slow for very large n; use factorial/inverse for O(n) with modular arithmetic",
+    ],
     faq: [
       {
-        q: "When should you use Binomial Coefficient DP?",
-        a: "Use Binomial Coefficient DP when the problem matches its designed use case in number theory and mathematics.",
+        q: "Why iterate j downward?",
+        a: "To avoid using dp[j-1] that was already updated for the current row.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Binomial Coefficient DP (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 2,
+        outline: ["Pascal recurrence with rolling array in O(nk)/O(k) (2)"],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Binomial Coefficient DP.",
+      citation: "T. H. Cormen et al., Introduction to Algorithms, 3rd ed., §C.1, 2009.",
+      supports: "Binomial coefficients and Pascal's triangle.",
     },
   ],
   review: {

@@ -63,11 +63,9 @@ export const boothSAlgorithmLexicographicallyMinimumRotationEntry: AlgorithmEntr
     ],
   },
   complexity: {
-    worstClass: "n",
-    best: "$O(n)$",
-    average: "$O(n)$",
-    worst: "$O(n)$",
+    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(n)$" },
     space: "$O(n)$",
+    worstClass: "n",
   },
   properties: [],
   implementations: [

@@ -55,16 +55,11 @@ export const damerauLevenshteinDistanceEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(m·n)",
-    },
-    space: {
-      worst: "O(m·n)",
-    },
-  },
-  properties: {
+    time: { best: "O(m·n)", average: "O(m·n)", worst: "O(m·n)" },
+    space: "O(m·n)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -85,24 +80,15 @@ export const damerauLevenshteinDistanceEntry: AlgorithmEntry = {
     return dp[m][n]`,
       tests: [
         {
-          input: {
-            a: "ca",
-            b: "abc",
-          },
+          args: ["ca", "abc"],
           expected: 2,
         },
         {
-          input: {
-            a: "kitten",
-            b: "sitting",
-          },
+          args: ["kitten", "sitting"],
           expected: 3,
         },
         {
-          input: {
-            a: "",
-            b: "abc",
-          },
+          args: ["", "abc"],
           expected: 3,
         },
       ],
@@ -127,24 +113,15 @@ export const damerauLevenshteinDistanceEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            a: "ca",
-            b: "abc",
-          },
+          args: ["ca", "abc"],
           expected: 2,
         },
         {
-          input: {
-            a: "kitten",
-            b: "sitting",
-          },
+          args: ["kitten", "sitting"],
           expected: 3,
         },
         {
-          input: {
-            a: "",
-            b: "abc",
-          },
+          args: ["", "abc"],
           expected: 3,
         },
       ],

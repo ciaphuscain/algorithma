@@ -3,91 +3,135 @@ import type { AlgorithmEntry } from "../types";
 export const particleFilterEntry: AlgorithmEntry = {
   slug: "particle-filter",
   name: "Particle Filter",
-  aliases: ["Particle Filter"],
+  aliases: ["Sequential Monte Carlo", "SMC"],
   curriculum: [576],
   domain: "machine-learning",
   subcategory: "Machine Learning",
   difficulty: "intermediate",
-  summary: "Particle Filter is a well-known algorithm in the domain of machine learning.",
-  tags: ["particle filter", "ml"],
-  prerequisites: [],
-  related: [],
+  summary:
+    "Estimates the state of a dynamic system from noisy observations by maintaining a weighted set of samples (particles) that are propagated, weighted by observation likelihood, and resampled each time step.",
+  tags: ["Bayesian", "state estimation", "Monte Carlo", "filtering"],
+  prerequisites: ["Probability"],
+  related: ["belief-propagation"],
   problem: {
-    input: "Input for Particle Filter.",
-    output: "Output of Particle Filter.",
+    input:
+      "A sequence of observations from a hidden Markov model and the transition/observation models.",
+    output: "An estimate of the hidden state at each time step.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Particle Filter solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Imagine tracking a robot's position using noisy sensor readings. A particle filter represents uncertainty about the position with thousands of hypothetical positions (particles). Each step: move each particle according to the motion model, weight it by how well it explains the sensor reading, then resample — particles consistent with observations survive, others die off.",
+      },
+      {
+        kind: "p",
+        text: "Over time, the particles cluster around the true state, giving a non-parametric approximation to the posterior distribution.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialise N particles from the prior distribution.",
+          "For each time step: (a) propagate each particle through the transition model, (b) weight each by observation likelihood, (c) normalise weights, (d) resample with replacement proportional to weights.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Particle Filter algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Example:** 1D tracking with N=4 particles at positions [2,3,5,7], observation=4. Weights peak near 4, so after resampling particles cluster around 3–5.",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of Particle Filter follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "Systematic resampling is more efficient and lower-variance than multinomial resampling.",
+          "Effective sample size (ESS) determines when to resample — resample only when ESS drops below N/2.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Particle Filter is based on the algorithm's structure and the operations performed at each step.",
+        text: "Each step is $O(N)$ for propagation, weighting, and resampling. Total for T steps: $O(NT)$. The approximation converges to the true posterior as $N \\to \\infty$, with error $O(1/\\sqrt{N})$.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Particle Filter exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Rao-Blackwellised particle filters marginalise some variables analytically to reduce variance.",
+          "Used in SLAM (simultaneous localisation and mapping) for robotics.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
-      average: "O(n·d)",
-      worst: "O(n·d·k)",
+      best: "O(N T)",
+      average: "O(N T)",
+      worst: "O(N T)",
     },
-    space: "O(n)",
-    worstClass: "other",
+    space: "O(N)",
+    worstClass: "n",
+    note: "N particles, T time steps.",
   },
   properties: [
     {
-      label: "Domain",
-      value: "machine learning",
+      label: "Non-parametric",
+      value: "Handles multimodal distributions",
+    },
+    {
+      label: "Convergence",
+      value: "$O(1/\\sqrt{N})$ error",
+    },
+    {
+      label: "Online",
+      value: "Processes observations one at a time",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "particle_filter_1d",
+      code: `import random
+
+def particle_filter_1d(observations, n_particles=100, noise=1.0):
+    """Simple 1D particle filter. Returns estimated state at each step."""
+    random.seed(42)
+    particles = [random.gauss(0, 5) for _ in range(n_particles)]
+    estimates = []
+    for obs in observations:
+        # Propagate
+        particles = [p + random.gauss(0, noise) for p in particles]
+        # Weight by Gaussian likelihood
+        weights = [max(1e-300, __import__('math').exp(-0.5 * ((p - obs) / noise) ** 2)) for p in particles]
+        total = sum(weights)
+        weights = [w / total for w in weights]
+        # Estimate
+        estimates.append(round(sum(p * w for p, w in zip(particles, weights)), 1))
+        # Resample
+        cum = []
+        s = 0
+        for w in weights:
+            s += w
+            cum.append(s)
+        new_particles = []
+        for _ in range(n_particles):
+            r = random.random()
+            for i, c in enumerate(cum):
+                if r <= c:
+                    new_particles.append(particles[i])
+                    break
+        particles = new_particles
+    return estimates
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
-        },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
-        {
-          args: [42],
-          expected: 42,
+          args: [[0.0, 1.0, 2.0], 50, 1.0],
+          expected: [0.1, 0.8, 1.7],
         },
       ],
     },
@@ -95,54 +139,55 @@ export const particleFilterEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "particle-filter-q1",
+      id: "pf-resample",
       kind: "mcq",
-      prompt: "What is the primary purpose of Particle Filter?",
+      prompt: "Why is resampling needed in a particle filter?",
       options: [
-        "To solve the Particle Filter problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "To focus particles on high-likelihood regions and prevent weight degeneracy",
+        "To reduce computation",
+        "To sort particles",
+        "To remove noise",
       ],
       answer: 0,
-      explanation: "Particle Filter is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Particle Filter does."],
-      objective: "Purpose",
+      explanation:
+        "Without resampling, most particles end up with near-zero weight, wasting computation on unlikely states.",
+      hints: ["What happens if you skip resampling?"],
+      objective: "Understand resampling",
     },
   ],
   exam: {
-    definition: "Particle Filter is an algorithm in the domain of machine learning.",
+    definition:
+      "A particle filter approximates Bayesian filtering using weighted samples that are propagated, weighted, and resampled at each step.",
     steps: [
-      "Apply the Particle Filter algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Init N particles from prior.",
+      "Propagate through transition model.",
+      "Weight by observation likelihood.",
+      "Resample proportional to weights.",
     ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["machine learning applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "$O(NT)$.",
+    spaceComplexity: "$O(N)$.",
+    correctness:
+      "Monte Carlo approximation converges with O(1/√N) error by the law of large numbers.",
+    applications: ["Robot localisation", "Object tracking", "Financial modelling"],
+    limitations: ["Curse of dimensionality", "Particle degeneracy"],
     faq: [
       {
-        q: "When should you use Particle Filter?",
-        a: "Use Particle Filter when the problem matches its designed use case in machine learning.",
+        q: "What is ESS?",
+        a: "Effective sample size: 1/Σw² measures how many particles carry meaningful weight.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Particle Filter (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 2,
+        outline: ["Propagate-weight-resample cycle and convergence (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Particle Filter.",
+      citation:
+        "A. Doucet, N. de Freitas, N. Gordon, Sequential Monte Carlo Methods in Practice, Springer, 2001.",
+      supports: "Comprehensive reference on particle filters.",
     },
   ],
   review: {

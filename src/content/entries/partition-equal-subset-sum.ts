@@ -56,16 +56,11 @@ export const partitionEqualSubsetSumEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n·S)",
-    },
-    space: {
-      worst: "O(S)",
-    },
-  },
-  properties: {
+    time: { best: "O(n·S)", average: "O(n·S)", worst: "O(n·S)" },
+    space: "O(S)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -83,21 +78,15 @@ export const partitionEqualSubsetSumEntry: AlgorithmEntry = {
     return dp[target]`,
       tests: [
         {
-          input: {
-            nums: [1, 5, 11, 5],
-          },
+          args: [[1, 5, 11, 5]],
           expected: true,
         },
         {
-          input: {
-            nums: [1, 2, 3, 5],
-          },
+          args: [[1, 2, 3, 5]],
           expected: false,
         },
         {
-          input: {
-            nums: [1, 1],
-          },
+          args: [[1, 1]],
           expected: true,
         },
       ],
@@ -118,21 +107,15 @@ export const partitionEqualSubsetSumEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            nums: [1, 5, 11, 5],
-          },
+          args: [[1, 5, 11, 5]],
           expected: true,
         },
         {
-          input: {
-            nums: [1, 2, 3, 5],
-          },
+          args: [[1, 2, 3, 5]],
           expected: false,
         },
         {
-          input: {
-            nums: [1, 1],
-          },
+          args: [[1, 1]],
           expected: true,
         },
       ],

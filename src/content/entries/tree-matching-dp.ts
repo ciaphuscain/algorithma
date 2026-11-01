@@ -55,16 +55,11 @@ export const treeMatchingDpEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n)",
-    },
-    space: {
-      worst: "O(n)",
-    },
-  },
-  properties: {
+    time: { best: "O(n)", average: "O(n)", worst: "O(n)" },
+    space: "O(n)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -102,15 +97,11 @@ export const treeMatchingDpEntry: AlgorithmEntry = {
     return max(dp0[0], dp1[0])`,
       tests: [
         {
-          input: {
-            adj: [[1, 2], [0, 3, 4], [0], [1], [1]],
-          },
+          args: [[[1, 2], [0, 3, 4], [0], [1], [1]]],
           expected: 2,
         },
         {
-          input: {
-            adj: [[1], [0]],
-          },
+          args: [[[1], [0]]],
           expected: 1,
         },
       ],
@@ -153,15 +144,11 @@ export const treeMatchingDpEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            adj: [[1, 2], [0, 3, 4], [0], [1], [1]],
-          },
+          args: [[[1, 2], [0, 3, 4], [0], [1], [1]]],
           expected: 2,
         },
         {
-          input: {
-            adj: [[1], [0]],
-          },
+          args: [[[1], [0]]],
           expected: 1,
         },
       ],

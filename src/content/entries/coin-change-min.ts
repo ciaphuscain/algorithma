@@ -55,16 +55,11 @@ export const coinChangeMinEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n·k)",
-    },
-    space: {
-      worst: "O(n)",
-    },
-  },
-  properties: {
+    time: { best: "O(n·k)", average: "O(n·k)", worst: "O(n·k)" },
+    space: "O(n)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -79,24 +74,15 @@ export const coinChangeMinEntry: AlgorithmEntry = {
     return dp[amount] if dp[amount] != float('inf') else -1`,
       tests: [
         {
-          input: {
-            coins: [1, 5, 10, 25],
-            amount: 30,
-          },
+          args: [[1, 5, 10, 25], 30],
           expected: 2,
         },
         {
-          input: {
-            coins: [2],
-            amount: 3,
-          },
+          args: [[2], 3],
           expected: -1,
         },
         {
-          input: {
-            coins: [1, 3, 4],
-            amount: 6,
-          },
+          args: [[1, 3, 4], 6],
           expected: 2,
         },
       ],
@@ -116,24 +102,15 @@ export const coinChangeMinEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            coins: [1, 5, 10, 25],
-            amount: 30,
-          },
+          args: [[1, 5, 10, 25], 30],
           expected: 2,
         },
         {
-          input: {
-            coins: [2],
-            amount: 3,
-          },
+          args: [[2], 3],
           expected: -1,
         },
         {
-          input: {
-            coins: [1, 3, 4],
-            amount: 6,
-          },
+          args: [[1, 3, 4], 6],
           expected: 2,
         },
       ],

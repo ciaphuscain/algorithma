@@ -55,16 +55,11 @@ export const groupKnapsackEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(W·N)",
-    },
-    space: {
-      worst: "O(W)",
-    },
-  },
-  properties: {
+    time: { best: "O(W·N)", average: "O(W·N)", worst: "O(W·N)" },
+    space: "O(W)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -80,8 +75,8 @@ export const groupKnapsackEntry: AlgorithmEntry = {
     return dp[capacity]`,
       tests: [
         {
-          input: {
-            groups: [
+          args: [
+            [
               [
                 [2, 10],
                 [3, 15],
@@ -91,21 +86,21 @@ export const groupKnapsackEntry: AlgorithmEntry = {
                 [5, 25],
               ],
             ],
-            capacity: 7,
-          },
+            7,
+          ],
           expected: 35,
         },
         {
-          input: {
-            groups: [
+          args: [
+            [
               [
                 [1, 5],
                 [2, 8],
               ],
               [[3, 12]],
             ],
-            capacity: 4,
-          },
+            4,
+          ],
           expected: 17,
         },
       ],
@@ -128,8 +123,8 @@ export const groupKnapsackEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            groups: [
+          args: [
+            [
               [
                 [2, 10],
                 [3, 15],
@@ -139,21 +134,21 @@ export const groupKnapsackEntry: AlgorithmEntry = {
                 [5, 25],
               ],
             ],
-            capacity: 7,
-          },
+            7,
+          ],
           expected: 35,
         },
         {
-          input: {
-            groups: [
+          args: [
+            [
               [
                 [1, 5],
                 [2, 8],
               ],
               [[3, 12]],
             ],
-            capacity: 4,
-          },
+            4,
+          ],
           expected: 17,
         },
       ],

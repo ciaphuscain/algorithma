@@ -55,16 +55,11 @@ export const fractionalKnapsackGreedyDpComparisonEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n log n)",
-    },
-    space: {
-      worst: "O(n)",
-    },
-  },
-  properties: {
+    time: { best: "O(n log n)", average: "O(n log n)", worst: "O(n log n)" },
+    space: "O(n)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -82,19 +77,11 @@ export const fractionalKnapsackGreedyDpComparisonEntry: AlgorithmEntry = {
     return total`,
       tests: [
         {
-          input: {
-            weights: [10, 20, 30],
-            values: [60, 100, 120],
-            capacity: 50,
-          },
+          args: [[10, 20, 30], [60, 100, 120], 50],
           expected: 240.0,
         },
         {
-          input: {
-            weights: [5, 10],
-            values: [50, 60],
-            capacity: 15,
-          },
+          args: [[5, 10], [50, 60], 15],
           expected: 110.0,
         },
       ],
@@ -116,19 +103,11 @@ export const fractionalKnapsackGreedyDpComparisonEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            weights: [10, 20, 30],
-            values: [60, 100, 120],
-            capacity: 50,
-          },
+          args: [[10, 20, 30], [60, 100, 120], 50],
           expected: 240.0,
         },
         {
-          input: {
-            weights: [5, 10],
-            values: [50, 60],
-            capacity: 15,
-          },
+          args: [[5, 10], [50, 60], 15],
           expected: 110.0,
         },
       ],

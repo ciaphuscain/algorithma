@@ -3,149 +3,237 @@ import type { AlgorithmEntry } from "../types";
 export const dpOnBrokenLinesConnectivityDpEntry: AlgorithmEntry = {
   slug: "dp-on-broken-lines-connectivity-dp",
   name: "DP on Broken Lines / Connectivity DP",
-  aliases: ["DP on Broken Lines / Connectivity DP"],
-  curriculum: [527],
+  aliases: [
+    "Broken profile DP",
+    "Profile DP",
+    "Plug DP",
+  ],
+  curriculum: [
+    527,
+  ],
   domain: "dynamic-programming",
   subcategory: "Dynamic Programming",
   difficulty: "intermediate",
-  summary:
-    "DP on Broken Lines / Connectivity DP is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["dp on broken lines connectivity dp", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+  summary: "Solves grid problems (tiling, Hamiltonian paths, connectivity) by processing cells left-to-right, top-to-bottom, maintaining a bitmask or connectivity profile of the boundary between processed and unprocessed regions.",
+  tags: [
+    "dynamic programming",
+    "bitmask",
+    "grid",
+    "profile",
+    "connectivity",
+  ],
+  prerequisites: [
+    "Dynamic Programming Basics",
+  ],
+  related: [
+    "broken-profile-dp",
+  ],
   problem: {
-    input: "Input for DP on Broken Lines / Connectivity DP.",
-    output: "Output of DP on Broken Lines / Connectivity DP.",
+    input: "A grid of size n×m with constraints (tiles, connections, etc.).",
+    output: "The number of valid configurations (tilings, Hamiltonian paths, etc.).",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "DP on Broken Lines / Connectivity DP solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "When filling a grid cell by cell, the 'broken line' or 'profile' is the jagged boundary between filled and unfilled cells. The DP state encodes what happens at this boundary — which cells have open connections, which plugs connect to which.",
+      },
+      {
+        kind: "p",
+        text: "For simple problems like domino tiling, a bitmask suffices. For Hamiltonian path problems, we need a connectivity encoding (which boundary plugs are connected) to track path fragments.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Process cells left-to-right, top-to-bottom.",
+          "The state is the profile: a description of the boundary between processed and unprocessed cells.",
+          "For each cell, try all valid placements and transition to the new profile.",
+          "Count the number of ways to reach each final profile.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The DP on Broken Lines / Connectivity DP algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Example:** For 2×3 domino tiling, the profile is a 2-bit mask of which cells in the current column are already covered by horizontal dominoes from the previous column.",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of DP on Broken Lines / Connectivity DP follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "For tiling: profile is a bitmask of width m, giving 2^m states.",
+          "For Hamiltonian paths: profile encodes connectivity of boundary plugs, typically using a compact encoding.",
+          "Keep m as the smaller dimension to minimize the number of states.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of DP on Broken Lines / Connectivity DP is based on the algorithm's structure and the operations performed at each step.",
+        text: "**State count:** O(2^m) for bitmask profiles, O(C_m) (Catalan-like) for connectivity profiles where C_m ≈ 4^m/m^(3/2).",
+      },
+      {
+        kind: "p",
+        text: "**Complexity:** O(n × states × transitions_per_state). For bitmask tiling: O(n × 2^m × 2^m) = O(n × 4^m).",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of DP on Broken Lines / Connectivity DP exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "The transfer matrix method converts profile DP to matrix exponentiation, useful when n is huge.",
+          "Connectivity profiles can be encoded efficiently using bracket sequences or hash maps.",
+          "These techniques solve #P-hard counting problems on grids in pseudo-polynomial time.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      best: "O(n × 2^m)",
+      average: "O(n × 4^m)",
+      worst: "O(n × 4^m)",
     },
-    space: "O(n)",
-    worstClass: "other",
+    space: "O(2^m)",
+    worstClass: "2^n",
+    note: "m = min dimension of the grid.",
   },
   properties: [
     {
-      label: "Domain",
-      value: "dynamic programming",
+      label: "Profile",
+      value: "Bitmask or connectivity encoding",
+    },
+    {
+      label: "Grid scan",
+      value: "Left-to-right, top-to-bottom",
+    },
+    {
+      label: "Applications",
+      value: "Tiling, Hamiltonian paths, matching on grids",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "domino_tiling",
+      code: `def domino_tiling(n, m):
+    """Count ways to tile an n×m grid with 1×2 dominoes (0 if impossible)."""
+    if (n * m) % 2 == 1:
+        return 0
+    if n < m:
+        n, m = m, n  # keep m small
+    dp = {0: 1}
+    for row in range(n):
+        for col in range(m):
+            new_dp = {}
+            for mask, ways in dp.items():
+                bit = 1 << col
+                if mask & bit:
+                    # Cell already filled by vertical domino from above
+                    key = mask ^ bit
+                    new_dp[key] = new_dp.get(key, 0) + ways
+                else:
+                    # Place vertical domino (fills this cell and next row's cell)
+                    key = mask | bit
+                    new_dp[key] = new_dp.get(key, 0) + ways
+                    # Place horizontal domino (if next column is free)
+                    if col + 1 < m and not (mask & (1 << (col + 1))):
+                        key2 = mask | (1 << (col + 1))
+                        new_dp[key2] = new_dp.get(key2, 0) + ways
+            dp = new_dp
+    return dp.get(0, 0)
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            2,
+            3,
+          ],
+          expected: 3,
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            2,
+            2,
+          ],
+          expected: 2,
+        },
+        {
+          args: [
+            1,
+            1,
+          ],
+          expected: 0,
+        },
+        {
+          args: [
+            3,
+            4,
+          ],
+          expected: 11,
         },
       ],
     },
   ],
-  visualizer: null,
   practice: [
     {
-      id: "dp-on-broken-lines-connectivity-dp-q1",
+      id: "profile-dp-state",
       kind: "mcq",
-      prompt: "What is the primary purpose of DP on Broken Lines / Connectivity DP?",
+      prompt: "In profile DP for grid tiling, what does the bitmask represent?",
       options: [
-        "To solve the DP on Broken Lines / Connectivity DP problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "Which boundary cells are already covered",
+        "The number of dominoes placed",
+        "Which rows are complete",
+        "The color of each cell",
       ],
       answer: 0,
-      explanation:
-        "DP on Broken Lines / Connectivity DP is designed to solve its specific problem efficiently.",
-      hints: ["Think about what DP on Broken Lines / Connectivity DP does."],
-      objective: "Purpose",
+      explanation: "The bitmask tracks which cells at the boundary between processed and unprocessed regions are already occupied.",
+      hints: [
+        "Think about what information carries forward when processing cell by cell.",
+      ],
+      objective: "Understand the profile DP state",
     },
   ],
   exam: {
-    definition:
-      "DP on Broken Lines / Connectivity DP is an algorithm in the domain of dynamic programming.",
+    definition: "Profile DP processes grid cells sequentially, maintaining a bitmask or connectivity encoding of the boundary.",
     steps: [
-      "Apply the DP on Broken Lines / Connectivity DP algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Scan cells left-to-right, top-to-bottom.",
+      "State = boundary profile.",
+      "Transition by placing tiles/connections.",
+      "Count valid completions.",
     ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "O(n × 4^m)",
+    spaceComplexity: "O(2^m)",
+    correctness: "The profile captures all information needed from processed cells to determine valid completions.",
+    applications: [
+      "Grid tiling",
+      "Hamiltonian path counting on grids",
+    ],
+    limitations: [
+      "Exponential in the smaller grid dimension",
+    ],
     faq: [
       {
-        q: "When should you use DP on Broken Lines / Connectivity DP?",
-        a: "Use DP on Broken Lines / Connectivity DP when the problem matches its designed use case in dynamic programming.",
+        q: "Why use the smaller dimension for m?",
+        a: "The state space is 2^m, so smaller m gives fewer states.",
       },
     ],
     answers: [
       {
-        marks: 5,
+        marks: 2,
         outline: [
-          "Define DP on Broken Lines / Connectivity DP (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Define the profile concept.",
+          "Explain transitions for domino tiling.",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for DP on Broken Lines / Connectivity DP.",
+      citation: "A. V. Aho, J. D. Ullman, Foundations of Computer Science, W. H. Freeman, 1994.",
+      supports: "Grid DP techniques.",
     },
   ],
   review: {

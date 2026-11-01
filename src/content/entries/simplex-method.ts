@@ -3,91 +3,178 @@ import type { AlgorithmEntry } from "../types";
 export const simplexMethodEntry: AlgorithmEntry = {
   slug: "simplex-method",
   name: "Simplex Method",
-  aliases: ["Simplex Method"],
+  aliases: ["Simplex Algorithm", "Dantzig's Simplex"],
   curriculum: [586],
   domain: "optimization",
   subcategory: "Optimization",
   difficulty: "intermediate",
-  summary: "Simplex Method is a well-known algorithm in the domain of optimization.",
-  tags: ["simplex method", "optimization"],
-  prerequisites: [],
-  related: [],
+  summary:
+    "The simplex method solves linear programs by walking along vertices of the feasible polytope, improving the objective at each step, until it reaches the optimum.",
+  tags: ["linear programming", "optimization", "polytope", "LP"],
+  prerequisites: ["Linear Algebra"],
+  related: ["branch-and-bound"],
   problem: {
-    input: "Input for Simplex Method.",
-    output: "Output of Simplex Method.",
+    input:
+      "A linear objective function to maximize and linear inequality constraints (an LP in standard form).",
+    output:
+      "An optimal solution and objective value, or a certificate of infeasibility/unboundedness.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Simplex Method solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "A linear program's feasible region is a convex polytope (a higher-dimensional polygon). The optimal solution always lies at a vertex. The simplex method starts at one vertex and moves to an adjacent vertex with a better objective value, repeating until no improvement is possible.",
+      },
+      {
+        kind: "p",
+        text: "Each vertex corresponds to a basic feasible solution where some variables are zero (non-basic) and the rest are determined by the constraints. A pivot operation swaps one variable in and one out, moving to a neighboring vertex.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Convert to standard form: maximize c^T x subject to Ax ≤ b, x ≥ 0. Add slack variables to get Ax = b.",
+          "Start with an initial basic feasible solution (identity basis from slacks).",
+          "Choose entering variable: the non-basic variable with the most positive reduced cost (Dantzig's rule).",
+          "Choose leaving variable via the minimum ratio test: ensures feasibility.",
+          "Pivot: update the tableau. Repeat until all reduced costs are ≤ 0 (optimal).",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Simplex Method algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Worked example**: Maximize 3x+2y subject to x+y≤4, x+3y≤6, x,y≥0. Add slacks s1,s2. Initial BFS: (0,0,4,6). Pivot x in (reduced cost 3), s1 out (ratio 4/1 < 6/1). New BFS: (4,0,0,2), obj=12. Next pivot y: ratio test gives 2/2=1, pivot s2 out. BFS: (3,1,0,0), obj=11. Actually checking: all reduced costs ≤ 0 at (4,0) with obj=12. Optimal.",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of Simplex Method follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "The revised simplex method stores only the basis inverse, not the full tableau, for efficiency.",
+          "Bland's rule (smallest index) prevents cycling on degenerate problems.",
+          "In practice, interior-point methods compete with simplex for large LPs, but simplex is often faster for sparse problems.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Simplex Method is based on the algorithm's structure and the operations performed at each step.",
+        text: "The simplex method visits at most $\\binom{m+n}{m}$ vertices in the worst case (exponential), but in practice it runs in O(m) pivots on average. Smoothed analysis (Spielman–Teng, 2004) shows polynomial expected time under small random perturbations.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Simplex Method exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "The Klee–Minty cube shows exponential worst-case behavior for Dantzig's pivot rule.",
+          "Interior-point methods (Karmarkar, 1984) solve LPs in polynomial worst-case time.",
+          "The simplex method extends to network flow, assignment, and transportation problems with specialised pivoting.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
-      average: "O(n²)",
+      best: "O(m)",
+      average: "O(m^2 n)",
       worst: "O(2^n)",
     },
-    space: "O(n²)",
+    space: "O(m n)",
     worstClass: "2^n",
+    note: "m constraints, n variables. Exponential worst case but fast in practice.",
   },
   properties: [
     {
-      label: "Domain",
-      value: "optimization",
+      label: "Exact",
+      value: "Yes, finds exact optimum",
+    },
+    {
+      label: "Worst case",
+      value: "Exponential (Klee–Minty), but rare in practice",
+    },
+    {
+      label: "Practical speed",
+      value: "Typically O(m) pivots",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "simplex",
+      code: `def simplex(c, A, b):
+    """Solve maximize c^T x subject to Ax <= b, x >= 0.
+    Returns (optimal_value, solution) or None if infeasible/unbounded.
+    c: list[float], A: list[list[float]], b: list[float]."""
+    m = len(A)
+    n = len(c)
+    # Build tableau with slack variables
+    tab = []
+    for i in range(m):
+        row = A[i][:] + [0]*m + [b[i]]
+        row[n + i] = 1
+        tab.append(row)
+    obj = [-v for v in c] + [0]*(m+1)
+    tab.append(obj)
+    basis = list(range(n, n + m))
+    total = n + m
+    for _ in range(1000):
+        # Find entering: most negative in objective row
+        pivot_col = -1
+        best = -1e-9
+        for j in range(total):
+            if tab[m][j] < best:
+                best = tab[m][j]
+                pivot_col = j
+        if pivot_col == -1:
+            break  # optimal
+        # Min ratio test
+        pivot_row = -1
+        min_ratio = float('inf')
+        for i in range(m):
+            if tab[i][pivot_col] > 1e-9:
+                ratio = tab[i][-1] / tab[i][pivot_col]
+                if ratio < min_ratio:
+                    min_ratio = ratio
+                    pivot_row = i
+        if pivot_row == -1:
+            return None  # unbounded
+        # Pivot
+        pv = tab[pivot_row][pivot_col]
+        tab[pivot_row] = [v / pv for v in tab[pivot_row]]
+        for i in range(m + 1):
+            if i != pivot_row:
+                factor = tab[i][pivot_col]
+                tab[i] = [tab[i][j] - factor * tab[pivot_row][j] for j in range(total + 1)]
+        basis[pivot_row] = pivot_col
+    sol = [0.0] * n
+    for i in range(m):
+        if basis[i] < n:
+            sol[basis[i]] = tab[i][-1]
+    return (round(tab[m][-1], 6), [round(v, 6) for v in sol])
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [3, 2],
+            [
+              [1, 1],
+              [1, 3],
+            ],
+            [4, 6],
+          ],
+          expected: [12.0, [4.0, 0.0]],
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [5, 4],
+            [
+              [1, 1],
+              [2, 1],
+            ],
+            [6, 10],
+          ],
+          expected: [28.0, [4.0, 2.0]],
         },
       ],
     },
@@ -95,54 +182,60 @@ export const simplexMethodEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "simplex-method-q1",
+      id: "simplex-vertex",
       kind: "mcq",
-      prompt: "What is the primary purpose of Simplex Method?",
+      prompt: "Why does the simplex method only visit vertices of the feasible region?",
       options: [
-        "To solve the Simplex Method problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "The optimum of a linear function over a convex polytope is always at a vertex",
+        "Vertices are easier to compute",
+        "Interior points are infeasible",
+        "The objective is nonlinear inside",
       ],
       answer: 0,
-      explanation: "Simplex Method is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Simplex Method does."],
-      objective: "Purpose",
+      explanation:
+        "A linear function over a convex set attains its maximum at an extreme point (vertex).",
+      hints: ["What property of linear functions on convex sets is key?"],
+      objective: "Know why vertices suffice",
     },
   ],
   exam: {
-    definition: "Simplex Method is an algorithm in the domain of optimization.",
+    definition:
+      "The simplex method solves linear programs by moving between adjacent vertices of the feasible polytope, improving the objective at each pivot.",
     steps: [
-      "Apply the Simplex Method algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Standard form with slacks.",
+      "Initial BFS.",
+      "Pivot: entering (reduced cost) and leaving (ratio test).",
+      "Repeat until optimal.",
     ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n²)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["optimization applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "Exponential worst case, O(m) pivots typical",
+    spaceComplexity: "O(mn)",
+    correctness:
+      "Terminates at optimum because reduced costs are non-positive; Bland's rule prevents cycling.",
+    applications: ["Operations research", "Network flow", "Resource allocation"],
+    limitations: ["Exponential worst case", "Degeneracy can cause cycling"],
     faq: [
       {
-        q: "When should you use Simplex Method?",
-        a: "Use Simplex Method when the problem matches its designed use case in optimization.",
+        q: "Why not always use interior-point methods?",
+        a: "Simplex is often faster on sparse problems and provides exact vertex solutions naturally.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Simplex Method (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 2,
+        outline: ["Tableau and pivoting (1).", "Optimality and complexity (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Simplex Method.",
+      citation:
+        "G. B. Dantzig, 'Maximization of a Linear Function of Variables Subject to Linear Inequalities,' 1947.",
+      supports: "The original simplex method.",
+    },
+    {
+      citation:
+        "D. A. Spielman, S.-H. Teng, 'Smoothed Analysis of Algorithms: Why the Simplex Algorithm Usually Takes Polynomial Time,' JACM, 2004.",
+      supports: "Smoothed analysis of the simplex method.",
     },
   ],
   review: {

@@ -56,16 +56,11 @@ export const matrixChainEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n³)",
-    },
-    space: {
-      worst: "O(n²)",
-    },
-  },
-  properties: {
+    time: { best: "O(n³)", average: "O(n³)", worst: "O(n³)" },
+    space: "O(n²)",
     worstClass: "n^3",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -85,15 +80,11 @@ export const matrixChainEntry: AlgorithmEntry = {
     return dp[0][n-1]`,
       tests: [
         {
-          input: {
-            p: [10, 20, 30, 40, 30],
-          },
+          args: [[10, 20, 30, 40, 30]],
           expected: 30000,
         },
         {
-          input: {
-            p: [40, 20, 30, 10, 30],
-          },
+          args: [[40, 20, 30, 10, 30]],
           expected: 26000,
         },
       ],
@@ -119,15 +110,11 @@ export const matrixChainEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            p: [10, 20, 30, 40, 30],
-          },
+          args: [[10, 20, 30, 40, 30]],
           expected: 30000,
         },
         {
-          input: {
-            p: [40, 20, 30, 10, 30],
-          },
+          args: [[40, 20, 30, 10, 30]],
           expected: 26000,
         },
       ],

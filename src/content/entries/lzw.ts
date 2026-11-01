@@ -58,11 +58,9 @@ export const lzwEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    worstClass: "n",
-    best: "$O(n)$",
-    average: "$O(n)$",
-    worst: "$O(n)$",
+    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(n)$" },
     space: "$O(D)$",
+    worstClass: "n",
   },
   properties: [],
   implementations: [

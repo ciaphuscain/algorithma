@@ -55,16 +55,11 @@ export const unboundedKnapsackEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n·W)",
-    },
-    space: {
-      worst: "O(W)",
-    },
-  },
-  properties: {
+    time: { best: "O(n·W)", average: "O(n·W)", worst: "O(n·W)" },
+    space: "O(W)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -78,19 +73,11 @@ export const unboundedKnapsackEntry: AlgorithmEntry = {
     return dp[capacity]`,
       tests: [
         {
-          input: {
-            weights: [1, 3, 4, 5],
-            values: [10, 40, 50, 70],
-            capacity: 8,
-          },
+          args: [[1, 3, 4, 5], [10, 40, 50, 70], 8],
           expected: 110,
         },
         {
-          input: {
-            weights: [2, 3],
-            values: [5, 8],
-            capacity: 7,
-          },
+          args: [[2, 3], [5, 8], 7],
           expected: 21,
         },
       ],
@@ -109,19 +96,11 @@ export const unboundedKnapsackEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            weights: [1, 3, 4, 5],
-            values: [10, 40, 50, 70],
-            capacity: 8,
-          },
+          args: [[1, 3, 4, 5], [10, 40, 50, 70], 8],
           expected: 110,
         },
         {
-          input: {
-            weights: [2, 3],
-            values: [5, 8],
-            capacity: 7,
-          },
+          args: [[2, 3], [5, 8], 7],
           expected: 21,
         },
       ],

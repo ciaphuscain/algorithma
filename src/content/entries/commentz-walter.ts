@@ -57,11 +57,9 @@ export const commentzWalterEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    worstClass: "n",
-    best: "$O(n/m)$",
-    average: "$O(n)$",
-    worst: "$O(nm)$",
+    time: { best: "$O(n/m)$", average: "$O(n)$", worst: "$O(nm)$" },
     space: "$O(\\Sigma p_i)$",
+    worstClass: "n",
   },
   properties: [],
   implementations: [

@@ -58,11 +58,9 @@ export const reedSolomonCodesEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    worstClass: "n",
-    best: "$O(n \\log n)$",
-    average: "$O(n^2)$",
-    worst: "$O(n^2)$",
+    time: { best: "$O(n \\log n)$", average: "$O(n^2)$", worst: "$O(n^2)$" },
     space: "$O(n)$",
+    worstClass: "n",
   },
   properties: [],
   implementations: [
@@ -101,6 +99,7 @@ def rs_encode(message: list[int], nsym: int) -> list[int]:
       tests: [
         {
           args: [[1, 2, 3], 4],
+          expected: [1, 2, 3, 2],
         },
       ],
     },

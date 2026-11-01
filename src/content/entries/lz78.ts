@@ -57,11 +57,9 @@ export const lz78Entry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    worstClass: "n",
-    best: "$O(n)$",
-    average: "$O(n)$",
-    worst: "$O(n)$",
+    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(n)$" },
     space: "$O(n)$",
+    worstClass: "n",
   },
   properties: [],
   implementations: [
@@ -99,6 +97,13 @@ def lz78_decompress(tokens: list[tuple[int, str]]) -> str:
       tests: [
         {
           args: ["aabaabaab"],
+          expected: [
+            [0, "a"],
+            [1, "b"],
+            [1, "a"],
+            [0, "b"],
+            [3, "b"],
+          ],
         },
       ],
     },

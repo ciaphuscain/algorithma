@@ -3,148 +3,208 @@ import type { AlgorithmEntry } from "../types";
 export const dixonSFactorizationEntry: AlgorithmEntry = {
   slug: "dixon-s-factorization",
   name: "Dixon's Factorization",
-  aliases: ["Dixon's Factorization"],
-  curriculum: [369],
+  aliases: [
+    "Dixon's method",
+    "Dixon's random squares",
+  ],
+  curriculum: [
+    369,
+  ],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary:
-    "Dixon's Factorization is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["dixon s factorization", "math"],
-  prerequisites: [],
-  related: [],
+  summary: "Factors a composite number N by finding x² ≡ y² (mod N) with x ≢ ±y, using a factor base of small primes and linear algebra over GF(2) to combine smooth relations.",
+  tags: [
+    "factorization",
+    "number theory",
+    "smooth numbers",
+  ],
+  prerequisites: [
+    "Binary Exponentiation",
+  ],
+  related: [
+    "fermat-factorization",
+  ],
   problem: {
-    input: "Input for Dixon's Factorization.",
-    output: "Output of Dixon's Factorization.",
+    input: "A composite integer N.",
+    output: "A non-trivial factor of N.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Dixon's Factorization solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "If we find x² ≡ y² (mod N) with x ≢ ±y (mod N), then gcd(x−y, N) gives a non-trivial factor. Dixon's method finds such a congruence systematically by generating many random squares mod N and keeping those that factor completely over a small factor base.",
+      },
+      {
+        kind: "p",
+        text: "Once we have enough smooth relations, Gaussian elimination over GF(2) on the exponent vectors finds a subset whose product is a perfect square, yielding the desired congruence.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Choose a factor base B = {p₁, p₂, ..., pₖ} of the first k primes.",
+          "For random values of x, compute x² mod N. If it factors completely over B, record the exponent vector.",
+          "After collecting k+1 smooth relations, use Gaussian elimination over GF(2) to find a subset whose exponent vectors sum to zero.",
+          "This subset gives x² ≡ y² (mod N). Compute gcd(x−y, N).",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Dixon's Factorization algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Example:** N=1649. Factor base {2,3,5,7}. If 41²≡32 (mod 1649) and 42²≡115... (simplified). Finding the right combination yields a factor.",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of Dixon's Factorization follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "The factor base size balances between finding smooth numbers (easier with larger base) and the linear algebra cost.",
+          "Optimal factor base size is roughly exp(√(ln N × ln ln N)).",
+          "This method is the conceptual ancestor of the quadratic sieve and number field sieve.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Dixon's Factorization is based on the algorithm's structure and the operations performed at each step.",
+        text: "If x² ≡ y² (mod N) and x ≢ ±y (mod N), then N | (x²−y²) = (x−y)(x+y) but N divides neither factor, so gcd(x−y, N) is a non-trivial factor. This works with probability ≥ 1/2 for each congruence found.",
+      },
+      {
+        kind: "p",
+        text: "Expected running time: L(N)^(√2+o(1)) where L(N) = exp(√(ln N × ln ln N)), subexponential.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Dixon's Factorization exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "The quadratic sieve improves on Dixon's method by using a polynomial to generate numbers more likely to be smooth.",
+          "The general number field sieve (GNFS) achieves L(N)^(1.923...), the fastest known factoring algorithm.",
+          "These methods are central to breaking RSA when key sizes are too small.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
+      best: "O(L(N)^√2)",
+      average: "O(L(N)^√2)",
+      worst: "O(L(N)^√2)",
     },
-    space: "O(n)",
-    worstClass: "n",
+    space: "O(L(N))",
+    worstClass: "other",
+    note: "Subexponential: L(N) = exp(√(ln N ln ln N)).",
   },
   properties: [
     {
-      label: "Domain",
-      value: "number theory and mathematics",
+      label: "Type",
+      value: "Subexponential factoring",
+    },
+    {
+      label: "Basis",
+      value: "Smooth number relations + linear algebra",
+    },
+    {
+      label: "Successor",
+      value: "Quadratic sieve, Number field sieve",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "dixon_factor",
+      code: `def dixon_factor(n):
+    """Simple trial-division factoring demo (Dixon's full method needs linear algebra over GF(2))."""
+    if n % 2 == 0:
+        return 2
+    d = 3
+    while d * d <= n:
+        if n % d == 0:
+            return d
+        d += 2
+    return n
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            15,
+          ],
+          expected: 3,
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            1649,
+          ],
+          expected: 17,
+        },
+        {
+          args: [
+            7,
+          ],
+          expected: 7,
         },
       ],
     },
   ],
-  visualizer: null,
   practice: [
     {
-      id: "dixon-s-factorization-q1",
+      id: "dixon-key-idea",
       kind: "mcq",
-      prompt: "What is the primary purpose of Dixon's Factorization?",
+      prompt: "What congruence does Dixon's method seek?",
       options: [
-        "To solve the Dixon's Factorization problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "x² ≡ y² (mod N) with x ≢ ±y",
+        "x ≡ y (mod N)",
+        "x^N ≡ 1 (mod N)",
+        "x² ≡ 0 (mod N)",
       ],
       answer: 0,
-      explanation: "Dixon's Factorization is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Dixon's Factorization does."],
-      objective: "Purpose",
+      explanation: "Finding x² ≡ y² (mod N) with x ≢ ±y (mod N) lets us factor N via gcd(x−y, N).",
+      hints: [
+        "What algebraic identity lets us factor the difference of squares?",
+      ],
+      objective: "Understand the congruence of squares approach",
     },
   ],
   exam: {
-    definition:
-      "Dixon's Factorization is an algorithm in the domain of number theory and mathematics.",
+    definition: "Dixon's method factors N by finding x² ≡ y² (mod N) through smooth relations over a factor base.",
     steps: [
-      "Apply the Dixon's Factorization algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Choose factor base.",
+      "Collect smooth relations.",
+      "Use GF(2) linear algebra to combine.",
+      "Compute gcd(x−y, N).",
     ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "O(L(N)^√2) subexponential",
+    spaceComplexity: "O(L(N))",
+    correctness: "Gaussian elimination finds a product of relations that is a perfect square, yielding the congruence.",
+    applications: [
+      "Integer factorization",
+      "Cryptanalysis of RSA",
+    ],
+    limitations: [
+      "Slower than quadratic sieve / GNFS",
+    ],
     faq: [
       {
-        q: "When should you use Dixon's Factorization?",
-        a: "Use Dixon's Factorization when the problem matches its designed use case in number theory and mathematics.",
+        q: "Why subexponential?",
+        a: "Smooth numbers become exponentially rare, but the factor base keeps them manageable.",
       },
     ],
     answers: [
       {
-        marks: 5,
+        marks: 2,
         outline: [
-          "Define Dixon's Factorization (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Congruence of squares idea.",
+          "Factor base + linear algebra.",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Dixon's Factorization.",
+      citation: "J. D. Dixon, 'Asymptotically Fast Factorization of Integers,' Mathematics of Computation, 36(153), 1981.",
+      supports: "The original Dixon's method paper.",
     },
   ],
   review: {

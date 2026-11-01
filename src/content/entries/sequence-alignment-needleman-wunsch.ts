@@ -55,16 +55,11 @@ export const sequenceAlignmentNeedlemanWunschEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(m·n)",
-    },
-    space: {
-      worst: "O(m·n)",
-    },
-  },
-  properties: {
+    time: { best: "O(m·n)", average: "O(m·n)", worst: "O(m·n)" },
+    space: "O(m·n)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -83,17 +78,11 @@ export const sequenceAlignmentNeedlemanWunschEntry: AlgorithmEntry = {
     return dp[m][n]`,
       tests: [
         {
-          input: {
-            a: "GATTACA",
-            b: "GCATGCU",
-          },
+          args: ["GATTACA", "GCATGCU"],
           expected: 0,
         },
         {
-          input: {
-            a: "ABC",
-            b: "ABC",
-          },
+          args: ["ABC", "ABC"],
           expected: 3,
         },
       ],
@@ -116,17 +105,11 @@ export const sequenceAlignmentNeedlemanWunschEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            a: "GATTACA",
-            b: "GCATGCU",
-          },
+          args: ["GATTACA", "GCATGCU"],
           expected: 0,
         },
         {
-          input: {
-            a: "ABC",
-            b: "ABC",
-          },
+          args: ["ABC", "ABC"],
           expected: 3,
         },
       ],

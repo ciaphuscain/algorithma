@@ -55,16 +55,11 @@ export const coinChangeWaysEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n·k)",
-    },
-    space: {
-      worst: "O(n)",
-    },
-  },
-  properties: {
+    time: { best: "O(n·k)", average: "O(n·k)", worst: "O(n·k)" },
+    space: "O(n)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -78,24 +73,15 @@ export const coinChangeWaysEntry: AlgorithmEntry = {
     return dp[amount]`,
       tests: [
         {
-          input: {
-            coins: [1, 2, 5],
-            amount: 5,
-          },
+          args: [[1, 2, 5], 5],
           expected: 4,
         },
         {
-          input: {
-            coins: [2],
-            amount: 3,
-          },
+          args: [[2], 3],
           expected: 0,
         },
         {
-          input: {
-            coins: [1],
-            amount: 0,
-          },
+          args: [[1], 0],
           expected: 1,
         },
       ],
@@ -113,24 +99,15 @@ export const coinChangeWaysEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            coins: [1, 2, 5],
-            amount: 5,
-          },
+          args: [[1, 2, 5], 5],
           expected: 4,
         },
         {
-          input: {
-            coins: [2],
-            amount: 3,
-          },
+          args: [[2], 3],
           expected: 0,
         },
         {
-          input: {
-            coins: [1],
-            amount: 0,
-          },
+          args: [[1], 0],
           expected: 1,
         },
       ],

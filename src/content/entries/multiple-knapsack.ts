@@ -55,16 +55,11 @@ export const multipleKnapsackEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(W·n·logC)",
-    },
-    space: {
-      worst: "O(W)",
-    },
-  },
-  properties: {
+    time: { best: "O(W·n·logC)", average: "O(W·n·logC)", worst: "O(W·n·logC)" },
+    space: "O(W)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -84,21 +79,11 @@ export const multipleKnapsackEntry: AlgorithmEntry = {
     return dp[capacity]`,
       tests: [
         {
-          input: {
-            weights: [2, 3],
-            values: [5, 8],
-            counts: [3, 2],
-            capacity: 10,
-          },
+          args: [[2, 3], [5, 8], [3, 2], 10],
           expected: 25,
         },
         {
-          input: {
-            weights: [1, 2, 3],
-            values: [2, 5, 8],
-            counts: [3, 2, 1],
-            capacity: 7,
-          },
+          args: [[1, 2, 3], [2, 5, 8], [3, 2, 1], 7],
           expected: 18,
         },
       ],
@@ -122,21 +107,11 @@ export const multipleKnapsackEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            weights: [2, 3],
-            values: [5, 8],
-            counts: [3, 2],
-            capacity: 10,
-          },
+          args: [[2, 3], [5, 8], [3, 2], 10],
           expected: 25,
         },
         {
-          input: {
-            weights: [1, 2, 3],
-            values: [2, 5, 8],
-            counts: [3, 2, 1],
-            capacity: 7,
-          },
+          args: [[1, 2, 3], [2, 5, 8], [3, 2, 1], 7],
           expected: 18,
         },
       ],

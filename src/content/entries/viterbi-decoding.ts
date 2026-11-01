@@ -57,11 +57,9 @@ export const viterbiDecodingEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    worstClass: "n",
-    best: "$O(T \\cdot S^2)$",
-    average: "$O(T \\cdot S^2)$",
-    worst: "$O(T \\cdot S^2)$",
+    time: { best: "$O(T \\cdot S^2)$", average: "$O(T \\cdot S^2)$", worst: "$O(T \\cdot S^2)$" },
     space: "$O(T \\cdot S)$",
+    worstClass: "n",
   },
   properties: [],
   implementations: [

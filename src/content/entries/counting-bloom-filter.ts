@@ -3,25 +3,30 @@ import type { AlgorithmEntry } from "../types";
 export const countingBloomFilterEntry: AlgorithmEntry = {
   slug: "counting-bloom-filter",
   name: "Counting Bloom Filter",
-  aliases: ["Counting Bloom Filter"],
+  aliases: ["CBF"],
   curriculum: [75],
   domain: "arrays-hashing",
   subcategory: "Probabilistic Data Structures",
   difficulty: "intermediate",
   summary:
-    "A Bloom filter variant that replaces each bit with a small counter, enabling deletions. Insert increments k counters; delete decrements them. A position is 'set' if its counter is positive.",
-  tags: ["counting bloom filter", "probabilistic", "deletion"],
-  prerequisites: ["Bloom Filter"],
+    "Extends a Bloom filter by replacing single bits with small counters, enabling deletions while preserving the probabilistic membership guarantee.",
+  tags: ["probabilistic", "bloom filter", "hashing", "deletion"],
+  prerequisites: ["Bloom Filter", "Hash Tables"],
   related: ["bloom-filter", "cuckoo-filter"],
   problem: {
-    input: "A set of insert and delete operations and a query element.",
-    output: "Whether the query element is probably in the set.",
+    input: "A dynamic set with insert, delete, and membership-query operations.",
+    output:
+      "Membership answers with no false negatives; false positive rate bounded by design parameters.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Standard Bloom filters cannot support deletions because clearing a bit might affect other elements. A counting Bloom filter replaces each bit with a counter (typically 3-4 bits). Insertion increments the k counters; deletion decrements them. The filter is 'set' at a position if the counter is positive.",
+        text: "A standard Bloom filter cannot delete elements because clearing a bit might affect other elements that hash to the same position. A counting Bloom filter replaces each bit with a small counter (typically 4 bits). Insert increments k counters; delete decrements them; query checks all k counters are non-zero.",
+      },
+      {
+        kind: "p",
+        text: "The trade-off is space: a 4-bit counter CBF uses 4x the space of a standard Bloom filter, but supports deletions without rebuilding.",
       },
     ],
     mechanics: [
@@ -29,41 +34,57 @@ export const countingBloomFilterEntry: AlgorithmEntry = {
         kind: "list",
         ordered: true,
         items: [
-          "Initialize an array of m counters, all 0.",
-          "Insert(x): increment counters at h1(x)...hk(x).",
-          "Delete(x): decrement counters at h1(x)...hk(x) (only if all are positive).",
-          "Query(x): return True if all k counters are positive.",
+          "Allocate an array of m counters, each 4 bits, all zero.",
+          "Insert(x): for each hash function h_i, increment counter[h_i(x)].",
+          "Delete(x): for each hash function h_i, decrement counter[h_i(x)].",
+          "Query(x): return True if all counter[h_i(x)] > 0.",
+        ],
+      },
+      {
+        kind: "p",
+        text: "**Worked example**: m=8, k=2. h1(a)=1, h2(a)=5, h1(b)=3, h2(b)=5.",
+      },
+      {
+        kind: "table",
+        head: ["Operation", "Counters [0..7]"],
+        rows: [
+          ["init", "[0,0,0,0,0,0,0,0]"],
+          ["insert(a)", "[0,1,0,0,0,1,0,0]"],
+          ["insert(b)", "[0,1,0,1,0,2,0,0]"],
+          ["delete(a)", "[0,0,0,1,0,1,0,0]"],
+          ["query(a)?", "counter[1]=0 → False (correct)"],
+          ["query(b)?", "counter[3]=1,counter[5]=1 → True"],
         ],
       },
     ],
     implementation: [
       {
-        kind: "code",
-        language: "python",
-        code: `class CountingBloom:
-    def __init__(self, m, k):
-        self.c = [0] * m
-        self.m, self.k = m, k
-    def _h(self, x): return [(hash((x,i)) % self.m) for i in range(self.k)]
-    def insert(self, x):
-        for h in self._h(x): self.c[h] += 1
-    def delete(self, x):
-        hs = self._h(x)
-        if all(self.c[h] > 0 for h in hs):
-            for h in hs: self.c[h] -= 1
-    def query(self, x): return all(self.c[h] > 0 for h in self._h(x))`,
+        kind: "list",
+        items: [
+          "4 bits per counter suffices in practice; overflow probability is negligible for reasonable load.",
+          "If a counter would overflow, leave it at max (saturating arithmetic) — this can cause false negatives on delete.",
+          "Variable-length counters save space when most counters are small.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "With 4-bit counters, overflow probability is negligible for typical loads. Space is 4x a standard Bloom filter. The false positive rate is the same as a standard Bloom filter with the same m and k.",
+        text: "The false positive rate is the same as a standard Bloom filter with the same m and k: approximately (1 - e^(-kn/m))^k.",
+      },
+      {
+        kind: "p",
+        text: "The probability that any counter exceeds c is bounded by (e * kn/m / c)^c by a Chernoff-like argument. For c=16 (4 bits) and typical loads, this is negligible.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "d-left counting Bloom filters use d-left hashing for better space efficiency. Spectral Bloom filters generalize counters to handle multiplicity queries.",
+        kind: "list",
+        items: [
+          "Spectral Bloom filters extend CBFs to estimate frequencies, not just membership.",
+          "d-left counting Bloom filters use d-left hashing for better space efficiency.",
+          "In distributed systems, CBFs enable set reconciliation by exchanging and merging counter arrays.",
+        ],
       },
     ],
   },
@@ -75,97 +96,136 @@ export const countingBloomFilterEntry: AlgorithmEntry = {
     },
     space: "O(m)",
     worstClass: "1",
-    note: "Same as Bloom filter but with 3-4x space for counters.",
+    note: "k hash functions per operation; m counters total.",
   },
   properties: [
     {
-      label: "Counter size",
-      value: "Typically 3-4 bits",
+      label: "False positives",
+      value: "Possible",
     },
     {
-      label: "Deletions",
+      label: "False negatives",
+      value: "No (unless counter overflow)",
+    },
+    {
+      label: "Deletion",
       value: "Supported",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "CountingBloomFilter",
+      code: `class CountingBloomFilter:
+    def __init__(self, size, num_hashes):
+        self.m = size
+        self.k = num_hashes
+        self.counters = [0] * size
+
+    def _hashes(self, item):
+        return [hash((i, item)) % self.m for i in range(self.k)]
+
+    def insert(self, item):
+        for h in self._hashes(item):
+            self.counters[h] += 1
+
+    def delete(self, item):
+        for h in self._hashes(item):
+            if self.counters[h] > 0:
+                self.counters[h] -= 1
+
+    def query(self, item):
+        return all(self.counters[h] > 0 for h in self._hashes(item))
+
+def cbf_test(ops):
+    """ops: list of [op, item]. Returns list of query results."""
+    cbf = CountingBloomFilter(1000, 5)
+    results = []
+    for op, item in ops:
+        if op == "insert":
+            cbf.insert(item)
+        elif op == "delete":
+            cbf.delete(item)
+        else:
+            results.append(cbf.query(item))
+    return results
 `,
-      tests: [{ args: [42], expected: 42 }],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [{ args: [42], expected: 42 }],
+      tests: [
+        {
+          args: [
+            [
+              ["insert", "a"],
+              ["insert", "b"],
+              ["query", "a"],
+              ["query", "b"],
+              ["delete", "a"],
+              ["query", "a"],
+              ["query", "b"],
+            ],
+          ],
+          expected: [true, true, false, true],
+        },
+      ],
     },
   ],
   visualizer: null,
   practice: [
     {
-      id: "cbf-del",
+      id: "cbf-advantage",
       kind: "mcq",
-      prompt: "Why can a counting Bloom filter support deletions?",
+      prompt: "What is the main advantage of a counting Bloom filter over a standard Bloom filter?",
       options: [
-        "It stores the original elements",
-        "It uses counters instead of bits, so decrementing is safe",
-        "It rehashes on delete",
-        "It uses a backup table",
+        "Lower false positive rate",
+        "Supports deletion",
+        "Uses less space",
+        "Faster queries",
       ],
       answer: 1,
-      explanation:
-        "Counters track how many elements hash to each position, so decrementing for a known element is safe.",
-      hints: ["What replaces the single bit?"],
-      objective: "Deletion support",
+      explanation: "The counters allow decrementing on delete, which single bits cannot do.",
+      hints: ["What can you do with a counter that you can't with a bit?"],
+      objective: "Understand CBF motivation",
     },
   ],
   exam: {
     definition:
-      "A counting Bloom filter extends a standard Bloom filter by replacing each bit with a small counter, enabling safe deletions.",
+      "A counting Bloom filter replaces each bit in a Bloom filter with a small counter, supporting deletions by decrementing counters.",
     steps: [
-      "Initialize m counters to 0.",
-      "Insert: increment k counter positions.",
-      "Delete: decrement k counter positions.",
-      "Query: check if all k counters > 0.",
+      "Allocate m counters",
+      "Insert: increment k counters",
+      "Delete: decrement k counters",
+      "Query: check all k counters > 0",
     ],
-    timeComplexity: "$O(k)$ per operation.",
-    spaceComplexity: "$O(m \\cdot c)$ where c is counter bit-width (typically 4).",
+    timeComplexity: "O(k) per operation",
+    spaceComplexity: "O(m * c) bits where c is counter width",
     correctness:
-      "Deletion is safe because decrementing reflects the removal of exactly one element's contribution to each counter.",
-    applications: ["Network flow counting", "Streaming data deduplication"],
+      "Same false positive analysis as Bloom filter. Counter overflow probability is negligible for 4-bit counters under normal load.",
+    applications: [
+      "Network duplicate detection with churn",
+      "Distributed caching",
+      "Set reconciliation",
+    ],
     limitations: [
-      "3-4x space of standard Bloom filter",
-      "Counter overflow (rare)",
-      "False positives remain",
+      "4x space of standard Bloom filter",
+      "Counter overflow can cause false negatives",
     ],
     faq: [
       {
-        q: "What happens if a counter overflows?",
-        a: "The counter saturates and should not be decremented further. With 4-bit counters this is extremely unlikely at normal loads.",
+        q: "Why not just rebuild the Bloom filter?",
+        a: "Rebuilding requires storing all elements. CBF supports deletion without storing the set.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Standard Bloom filter recap (1).",
-          "Counter extension and deletion (2).",
-          "Space trade-off analysis (2).",
-        ],
+        marks: 2,
+        outline: ["Counter-based extension of Bloom filter enabling deletion (2)"],
       },
     ],
   },
   references: [
     {
       citation:
-        "L. Fan et al., 'Summary Cache: A Scalable Wide-Area Web Cache Sharing Protocol,' IEEE/ACM Trans. Networking, 8(3), 2000.",
-      supports: "Counting Bloom filters for web cache sharing.",
+        "L. Fan, P. Cao, J. Almeida, A. Z. Broder, 'Summary Cache: A Scalable Wide-Area Web Cache Sharing Protocol,' IEEE/ACM Trans. Networking, 8(3):281-293, 2000.",
+      supports: "Introduced counting Bloom filters.",
     },
   ],
   review: {

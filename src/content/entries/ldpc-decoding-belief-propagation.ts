@@ -57,11 +57,9 @@ export const ldpcDecodingBeliefPropagationEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    worstClass: "n",
-    best: "$O(n)$",
-    average: "$O(n \\cdot T)$",
-    worst: "$O(n \\cdot T)$",
+    time: { best: "$O(n)$", average: "$O(n \\cdot T)$", worst: "$O(n \\cdot T)$" },
     space: "$O(n)$",
+    worstClass: "n",
   },
   properties: [],
   implementations: [
@@ -105,6 +103,7 @@ def ldpc_decode(H: list[list[int]], llr: list[float], max_iter: int = 50) -> lis
             [2.0, -1.0, 1.5, 0.5],
             10,
           ],
+          expected: [0, 1, 0, 1],
         },
       ],
     },

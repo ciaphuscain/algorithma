@@ -56,16 +56,11 @@ export const diameterOfTreeEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n)",
-    },
-    space: {
-      worst: "O(n)",
-    },
-  },
-  properties: {
+    time: { best: "O(n)", average: "O(n)", worst: "O(n)" },
+    space: "O(n)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -105,15 +100,11 @@ export const diameterOfTreeEntry: AlgorithmEntry = {
     return diameter`,
       tests: [
         {
-          input: {
-            adj: [[1, 2], [0, 3, 4], [0], [1], [1]],
-          },
+          args: [[[1, 2], [0, 3, 4], [0], [1], [1]]],
           expected: 3,
         },
         {
-          input: {
-            adj: [[1], [0]],
-          },
+          args: [[[1], [0]]],
           expected: 1,
         },
       ],
@@ -158,15 +149,11 @@ export const diameterOfTreeEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            adj: [[1, 2], [0, 3, 4], [0], [1], [1]],
-          },
+          args: [[[1, 2], [0, 3, 4], [0], [1], [1]]],
           expected: 3,
         },
         {
-          input: {
-            adj: [[1], [0]],
-          },
+          args: [[[1], [0]]],
           expected: 1,
         },
       ],

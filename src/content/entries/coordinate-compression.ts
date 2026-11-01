@@ -3,25 +3,30 @@ import type { AlgorithmEntry } from "../types";
 export const coordinateCompressionEntry: AlgorithmEntry = {
   slug: "coordinate-compression",
   name: "Coordinate Compression",
-  aliases: ["Value compression", "Rank mapping", "Discretization"],
+  aliases: ["Value Compression", "Discretization"],
   curriculum: [95],
   domain: "arrays-hashing",
   subcategory: "Further Array Techniques",
   difficulty: "intermediate",
   summary:
-    "Replace each value by its rank among the distinct values so that arbitrary (large, negative, sparse) coordinates become 0, 1, …, k − 1 and can index arrays or Fenwick trees. Sort a copy, remove duplicates, and binary-search each value's position: O(n log n).",
-  tags: ["coordinate compression", "rank", "discretization", "sorting", "binary search"],
-  prerequisites: ["Sorting", "Binary Search"],
-  related: ["fenwick-tree", "offline-distinct-queries", "sparse-table"],
+    "Maps a set of values to a smaller range [0, k) preserving their relative order, enabling the use of array-indexed data structures on sparse value ranges.",
+  tags: ["compression", "discretization", "sorting", "preprocessing"],
+  prerequisites: ["Sorting"],
+  related: ["segment-tree", "fenwick-tree"],
   problem: {
-    input: "An array of arbitrary integers.",
-    output: "An array of ranks 0, 1, …, k − 1 in the same relative order.",
+    input: "An array of n integers, possibly with values up to 10^9.",
+    output:
+      "A mapping from each value to its rank in [0, k) where k is the number of distinct values.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "A leaderboard does not show everyone's raw score; it shows their rank: 1st, 2nd, 3rd. Coordinate compression does the same for arbitrary numbers: it replaces them with their ranks, keeping the relative order but shrinking the value range to the smallest possible.",
+        text: "Many data structures like segment trees or BIT/Fenwick trees are indexed by value. If values are huge (up to 10^9) but few in number (say 10^5), we can sort the distinct values and replace each with its rank. This lets us use an array of size k instead of 10^9.",
+      },
+      {
+        kind: "p",
+        text: "The relative order is preserved: if a < b in the original array, rank(a) < rank(b). This is all that matters for problems about inversions, range queries, or order statistics.",
       },
     ],
     mechanics: [
@@ -29,39 +34,44 @@ export const coordinateCompressionEntry: AlgorithmEntry = {
         kind: "list",
         ordered: true,
         items: [
-          "Copy A and sort: U = sorted(A).",
-          "Remove adjacent duplicates: U lists the k distinct values in order.",
-          "For each A[i], binary-search for its position in U: that position is R[i], the rank.",
+          "Collect all values into a list.",
+          "Sort and deduplicate.",
+          "Assign rank 0, 1, 2, ... to each unique value.",
+          "Replace each original value with its rank.",
         ],
       },
       {
         kind: "p",
-        text: "**Worked example** (the first preset): A = [999, −40, 500, 999, 7, −40, 500]. Sorted: [−40, −40, 7, 500, 500, 999, 999]. After dedup: U = [−40, 7, 500, 999] (k = 4). Binary-searching each value: 999 → 3, −40 → 0, 500 → 2, 999 → 3, 7 → 1, −40 → 0, 500 → 2. Result: R = [3, 0, 2, 3, 1, 0, 2].",
+        text: "**Worked example**: [100, 3, 100, 50, 3] → sorted unique: [3, 50, 100] → ranks: {3:0, 50:1, 100:2} → compressed: [2, 0, 2, 1, 0].",
       },
     ],
     implementation: [
       {
         kind: "list",
         items: [
-          "A hash map from value → rank also works in O(n) expected time, but sorting is more common in competitive programming because it is simple and reliable.",
-          "The compressed ranks can then index a Fenwick tree, segment tree, or counting array.",
-          "Coordinate compression is a standard preprocessing step for problems with large value ranges: inversion counts, offline queries, and 2-D sweep lines.",
+          "In Python: sorted(set(arr)) then bisect or dict lookup.",
+          "In C++: sort, unique, erase, then lower_bound.",
+          "Time is dominated by sorting: O(n log n).",
         ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "**Cost.** Sorting the copy is O(n log n). Removing duplicates is O(n). Binary-searching n values is O(n log k) ≤ O(n log n). Total O(n log n). The tests compare the ranks with a brute-force computation (rank = count of distinct values smaller than A[i]) and verify that the output array matches.",
+        text: "**Time**: O(n log n) for sorting. **Space**: O(n) for the mapping.",
+      },
+      {
+        kind: "p",
+        text: "The compressed values are in [0, k) where k <= n, enabling O(k)-sized data structures.",
       },
     ],
     advanced: [
       {
         kind: "list",
         items: [
-          "In 2-D problems, compress both coordinates independently.",
-          "When the values are already small integers, compression is not needed.",
-          "Online coordinate compression is possible with balanced BSTs, inserting values and querying ranks in O(log n).",
+          "Used as preprocessing for offline segment tree / BIT problems with large value ranges.",
+          "In computational geometry, coordinate compression reduces the grid size for sweep line algorithms.",
+          "Can be combined with persistent data structures for online rank queries.",
         ],
       },
     ],
@@ -74,103 +84,92 @@ export const coordinateCompressionEntry: AlgorithmEntry = {
     },
     space: "O(n)",
     worstClass: "n log n",
+    note: "Dominated by the sort step.",
   },
   properties: [
     {
-      label: "Distinct values",
-      value: "k ≤ n",
+      label: "Order preserved",
+      value: "Yes",
     },
     {
-      label: "Rank range",
-      value: "0 to k − 1",
+      label: "Output range",
+      value: "[0, k) where k = distinct count",
+    },
+    {
+      label: "Reversible",
+      value: "Yes, with the mapping",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "compress",
+      code: `def compress(arr):
+    """Return compressed array with values replaced by their ranks."""
+    sorted_unique = sorted(set(arr))
+    rank = {v: i for i, v in enumerate(sorted_unique)}
+    return [rank[x] for x in arr]
 `,
-      tests: [{ args: [42], expected: 42 }],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [{ args: [42], expected: 42 }],
+      tests: [
+        {
+          args: [[100, 3, 100, 50, 3]],
+          expected: [2, 0, 2, 1, 0],
+        },
+        {
+          args: [[5, 5, 5]],
+          expected: [0, 0, 0],
+        },
+        {
+          args: [[3, 1, 2]],
+          expected: [2, 0, 1],
+        },
+      ],
     },
   ],
-  visualizer: "coordinate-compression",
+  visualizer: null,
   practice: [
     {
-      id: "cc-rank",
+      id: "cc-size",
       kind: "numeric",
-      prompt: "After compressing [50, 10, 30, 10], what is the rank of 50?",
-      answer: 2,
-      explanation: "Distinct sorted: [10, 30, 50]. Rank of 50 is 2.",
-      hints: ["Sort the distinct values and find the position."],
-      objective: "Mechanics",
-    },
-    {
-      id: "cc-why",
-      kind: "mcq",
-      prompt: "Why is coordinate compression useful?",
-      options: [
-        "It lets large or sparse values index arrays or trees of size k instead of max(A)",
-        "It sorts the array",
-        "It removes duplicates from the array",
-        "It compresses memory",
-      ],
-      answer: 0,
-      explanation: "After compression, values are 0..k−1, which can index arrays of size k.",
-      distractors: {
-        "1": "Sorting is a step, not the goal.",
-        "2": "Duplicates stay in the output.",
-        "3": "It does not compress memory; it enables array indexing.",
-      },
-      hints: ["What can you do with ranks 0..k−1?"],
-      objective: "Purpose",
+      prompt:
+        "After coordinate compression of [1000000, 5, 1000000, 7, 5, 42], what is the largest compressed value?",
+      answer: 3,
+      explanation:
+        "There are 4 distinct values: {5, 7, 42, 1000000}, so ranks are 0, 1, 2, 3. The largest is 3.",
+      hints: ["How many distinct values are there?"],
+      objective: "Apply coordinate compression",
     },
   ],
   exam: {
     definition:
-      "Coordinate compression maps n values to ranks 0..k−1 preserving relative order, where k is the number of distinct values.",
-    steps: [
-      "Sort a copy, remove duplicates → U.",
-      "For each value, binary-search its position in U.",
+      "Coordinate compression maps sparse values to a dense range [0, k) preserving relative order, enabling array-indexed data structures.",
+    steps: ["Collect values", "Sort and deduplicate", "Assign ranks", "Replace values with ranks"],
+    timeComplexity: "O(n log n)",
+    spaceComplexity: "O(n)",
+    correctness: "Sorting preserves relative order; ranks form a bijection on distinct values.",
+    applications: [
+      "Segment tree on large value ranges",
+      "Sweep line algorithms",
+      "Inversion counting",
     ],
-    timeComplexity: "$O(n \\log n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness:
-      "Each value maps to a unique rank; relative order is preserved because U is sorted.",
-    applications: ["Fenwick tree indexing", "Inversion counts", "2-D sweep lines"],
-    limitations: ["Adds O(n log n) preprocessing"],
+    limitations: ["Only preserves order, not distances"],
     faq: [
       {
-        q: "Can two different values get the same rank?",
-        a: "No; only equal values share a rank.",
+        q: "When is it needed?",
+        a: "When values are too large for direct array indexing but their count is manageable.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Sort and dedup (1).",
-          "Binary search (2).",
-          "Complexity (1).",
-          "Application (1).",
-        ],
+        marks: 2,
+        outline: ["Sort-and-rank technique for dense indexing (2)"],
       },
     ],
   },
   references: [
     {
-      citation: "A. Laaksonen, Guide to Competitive Programming, Springer, 2017.",
-      supports: "Coordinate compression techniques.",
+      citation: "S. Halim and F. Halim, Competitive Programming, 3rd ed., 2013, §2.2.",
+      supports: "Coordinate compression as a competitive programming technique.",
     },
   ],
   review: {

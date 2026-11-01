@@ -56,11 +56,9 @@ export const naiveStringMatchingEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    worstClass: "other",
-    best: "$O(n)$",
-    average: "$O(n)$",
-    worst: "$O(nm)$",
+    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(nm)$" },
     space: "$O(1)$",
+    worstClass: "other",
   },
   properties: [],
   implementations: [

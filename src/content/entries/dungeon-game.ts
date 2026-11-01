@@ -57,16 +57,11 @@ export const dungeonGameEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(m·n)",
-    },
-    space: {
-      worst: "O(n)",
-    },
-  },
-  properties: {
+    time: { best: "O(m·n)", average: "O(m·n)", worst: "O(m·n)" },
+    space: "O(n)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -85,19 +80,17 @@ export const dungeonGameEntry: AlgorithmEntry = {
     return dp[0][0]`,
       tests: [
         {
-          input: {
-            dungeon: [
+          args: [
+            [
               [-2, -3, 3],
               [-5, -10, 1],
               [10, 30, -5],
             ],
-          },
+          ],
           expected: 7,
         },
         {
-          input: {
-            dungeon: [[0]],
-          },
+          args: [[[0]]],
           expected: 1,
         },
       ],
@@ -120,19 +113,17 @@ export const dungeonGameEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            dungeon: [
+          args: [
+            [
               [-2, -3, 3],
               [-5, -10, 1],
               [10, 30, -5],
             ],
-          },
+          ],
           expected: 7,
         },
         {
-          input: {
-            dungeon: [[0]],
-          },
+          args: [[[0]]],
           expected: 1,
         },
       ],

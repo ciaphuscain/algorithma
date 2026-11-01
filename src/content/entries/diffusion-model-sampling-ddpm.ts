@@ -3,92 +3,126 @@ import type { AlgorithmEntry } from "../types";
 export const diffusionModelSamplingDdpmEntry: AlgorithmEntry = {
   slug: "diffusion-model-sampling-ddpm",
   name: "Diffusion Model Sampling (DDPM)",
-  aliases: ["Diffusion Model Sampling (DDPM)"],
+  aliases: ["DDPM", "Denoising Diffusion Probabilistic Model"],
   curriculum: [585],
   domain: "deep-learning",
   subcategory: "Deep Learning",
   difficulty: "intermediate",
   summary:
-    "Diffusion Model Sampling (DDPM) is a well-known algorithm in the domain of deep learning.",
-  tags: ["diffusion model sampling ddpm", "deep learning"],
+    "Generates data by iteratively denoising a sample of pure Gaussian noise through T learned reverse diffusion steps, each removing a small amount of noise predicted by a neural network.",
+  tags: ["generative model", "diffusion", "denoising", "deep learning"],
   prerequisites: ["Backpropagation"],
   related: [],
   problem: {
-    input: "Input for Diffusion Model Sampling (DDPM).",
-    output: "Output of Diffusion Model Sampling (DDPM).",
+    input: "A trained DDPM model and T timesteps.",
+    output: "A generated sample (e.g., an image) produced by iterative denoising.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Diffusion Model Sampling (DDPM) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "The forward process gradually adds Gaussian noise to data over T steps until it becomes pure noise. The reverse process learns to undo each step: given a noisy sample at time t, a neural network predicts the noise, which is subtracted to get a slightly cleaner sample at time t−1.",
+      },
+      {
+        kind: "p",
+        text: "Starting from pure noise and running the reverse process for T steps produces a sample from the data distribution. The key insight is that each reverse step is simple (small Gaussian perturbation) even though the overall transformation is complex.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Start with x_T ~ N(0, I) (pure Gaussian noise).",
+          "For t = T, T−1, ..., 1: predict the noise ε_θ(x_t, t) using the trained network.",
+          "Compute x_{t−1} = (1/√α_t)(x_t − (β_t/√(1−ᾱ_t))ε_θ(x_t, t)) + σ_t z, where z ~ N(0,I).",
+          "Return x_0 as the generated sample.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Diffusion Model Sampling (DDPM) algorithm processes its input step by step. See the implementation level for details.",
+        text: "The schedule {β_t} controls how much noise is added/removed at each step. ᾱ_t = ∏(1 − β_s) is the cumulative noise scale.",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of Diffusion Model Sampling (DDPM) follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "The neural network (typically a U-Net) takes the noisy input and timestep as inputs.",
+          "Training minimizes the simple loss ||ε − ε_θ(x_t, t)||² where ε is the actual noise added.",
+          "Sampling requires T forward passes; DDIM and other methods reduce this to fewer steps.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Diffusion Model Sampling (DDPM) is based on the algorithm's structure and the operations performed at each step.",
+        text: "The forward process is q(x_t|x_{t−1}) = N(x_t; √(1−β_t)x_{t−1}, β_t I). The reverse process p_θ(x_{t−1}|x_t) is trained to approximate the true reverse.",
+      },
+      {
+        kind: "p",
+        text: "Sampling takes O(T) neural network forward passes. Each pass is O(model_size). Total: O(T × model_size).",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Diffusion Model Sampling (DDPM) exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "DDIM (Denoising Diffusion Implicit Models) enables deterministic sampling in fewer steps.",
+          "Classifier-free guidance improves sample quality by interpolating conditional and unconditional predictions.",
+          "Score-based generative models provide an equivalent continuous-time SDE formulation.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      best: "O(T)",
+      average: "O(T)",
+      worst: "O(T)",
     },
-    space: "O(n)",
-    worstClass: "other",
+    space: "O(d)",
+    worstClass: "n",
+    note: "T denoising steps on d-dimensional data.",
   },
   properties: [
     {
-      label: "Domain",
-      value: "deep learning",
+      label: "Type",
+      value: "Generative model",
+    },
+    {
+      label: "Steps",
+      value: "T (typically 1000)",
+    },
+    {
+      label: "Quality",
+      value: "State-of-the-art image generation",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "ddpm_sample_1d",
+      code: `def ddpm_sample_1d(T, betas):
+    """Simplified 1D DDPM sampling demo (no neural network, just noise schedule).
+    Returns the variance of the noise schedule at each step."""
+    import math
+    alphas = [1 - b for b in betas]
+    alpha_bar = []
+    prod = 1.0
+    for a in alphas:
+        prod *= a
+        alpha_bar.append(prod)
+    return round(alpha_bar[-1], 6)
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [3, [0.1, 0.2, 0.3]],
+          expected: 0.504,
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [2, [0.5, 0.5]],
+          expected: 0.125,
         },
       ],
     },
@@ -96,55 +130,53 @@ export const diffusionModelSamplingDdpmEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "diffusion-model-sampling-ddpm-q1",
+      id: "ddpm-forward",
       kind: "mcq",
-      prompt: "What is the primary purpose of Diffusion Model Sampling (DDPM)?",
+      prompt: "What does the forward process of DDPM do?",
       options: [
-        "To solve the Diffusion Model Sampling (DDPM) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "Gradually adds Gaussian noise to data",
+        "Removes noise from data",
+        "Compresses data",
+        "Classifies data",
       ],
       answer: 0,
       explanation:
-        "Diffusion Model Sampling (DDPM) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Diffusion Model Sampling (DDPM) does."],
-      objective: "Purpose",
+        "The forward process adds small amounts of Gaussian noise over T steps until the data becomes pure noise.",
+      hints: ["Think about what the model must undo during sampling."],
+      objective: "Understand the DDPM forward process",
     },
   ],
   exam: {
-    definition: "Diffusion Model Sampling (DDPM) is an algorithm in the domain of deep learning.",
+    definition:
+      "DDPM generates samples by iteratively denoising Gaussian noise through T learned reverse steps.",
     steps: [
-      "Apply the Diffusion Model Sampling (DDPM) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Sample x_T from N(0,I).",
+      "For t=T..1: predict noise, subtract scaled prediction, add small noise.",
+      "Return x_0.",
     ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["deep learning applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "O(T) network evaluations",
+    spaceComplexity: "O(d) for d-dimensional data",
+    correctness: "The reverse process approximates the true posterior of the forward diffusion.",
+    applications: ["Image generation", "Audio synthesis", "3D shape generation"],
+    limitations: ["Slow sampling (T steps)", "High compute cost for training"],
     faq: [
       {
-        q: "When should you use Diffusion Model Sampling (DDPM)?",
-        a: "Use Diffusion Model Sampling (DDPM) when the problem matches its designed use case in deep learning.",
+        q: "How can sampling be accelerated?",
+        a: "DDIM enables fewer-step deterministic sampling.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Diffusion Model Sampling (DDPM) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 2,
+        outline: ["Forward diffusion adds noise.", "Reverse process denoises iteratively."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Diffusion Model Sampling (DDPM).",
+      citation:
+        "J. Ho, A. Jain, P. Abbeel, 'Denoising Diffusion Probabilistic Models,' NeurIPS 2020.",
+      supports: "The original DDPM paper.",
     },
   ],
   review: {

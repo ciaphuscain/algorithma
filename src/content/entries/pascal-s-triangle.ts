@@ -3,92 +3,118 @@ import type { AlgorithmEntry } from "../types";
 export const pascalSTriangleEntry: AlgorithmEntry = {
   slug: "pascal-s-triangle",
   name: "Pascal's Triangle",
-  aliases: ["Pascal's Triangle"],
+  aliases: ["Binomial Triangle"],
   curriculum: [379],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
   summary:
-    "Pascal's Triangle is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["pascal s triangle", "math"],
+    "Constructs the triangle of binomial coefficients row by row, where each entry is the sum of the two entries above it, enabling O(n²) computation of all C(n,k) for k ≤ n.",
+  tags: ["combinatorics", "binomial coefficients", "dynamic programming"],
   prerequisites: [],
-  related: [],
+  related: ["binomial-coefficient-dp", "catalan-numbers"],
   problem: {
-    input: "Input for Pascal's Triangle.",
-    output: "Output of Pascal's Triangle.",
+    input: "A non-negative integer n.",
+    output: "The first n+1 rows of Pascal's triangle.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Pascal's Triangle solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Pascal's triangle starts with a 1 at the top. Each subsequent row is built by adding adjacent pairs from the row above, with 1s at the edges. Row n contains the binomial coefficients C(n,0) through C(n,n).",
+      },
+      {
+        kind: "p",
+        text: "This simple addition rule avoids the factorials in the binomial formula, making it numerically stable and fast for computing many coefficients at once.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Row 0 = [1].",
+          "For each row i from 1 to n: row[i][0] = row[i][i] = 1, and row[i][j] = row[i−1][j−1] + row[i−1][j] for 0 < j < i.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Pascal's Triangle algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Example:** Rows 0–4: [1], [1,1], [1,2,1], [1,3,3,1], [1,4,6,4,1].",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of Pascal's Triangle follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "Only the previous row is needed, so space can be O(n) instead of O(n²).",
+          "For a single C(n,k), iterate from 1 to k: C = C * (n−i+1) / i.",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Pascal's Triangle is based on the algorithm's structure and the operations performed at each step.",
+        text: "$C(n,k) = C(n-1,k-1) + C(n-1,k)$ is Pascal's rule. Building row by row takes $O(n^2)$ time and $O(n)$ space (keeping only the current row).",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Pascal's Triangle exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Row n modulo a prime p has a fractal structure related to Sierpinski's triangle.",
+          "Lucas' theorem gives C(n,k) mod p from the base-p digits of n and k.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
+      best: "O(n^2)",
+      average: "O(n^2)",
+      worst: "O(n^2)",
     },
     space: "O(n)",
-    worstClass: "n",
+    worstClass: "n^2",
+    note: "To build all rows up to n. Single C(n,k) in O(k).",
   },
   properties: [
     {
-      label: "Domain",
-      value: "number theory and mathematics",
+      label: "Recurrence",
+      value: "$C(n,k) = C(n-1,k-1) + C(n-1,k)$",
+    },
+    {
+      label: "Symmetry",
+      value: "$C(n,k) = C(n, n-k)$",
+    },
+    {
+      label: "Row sum",
+      value: "$2^n$",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "pascals_triangle",
+      code: `def pascals_triangle(n):
+    """Return first n+1 rows of Pascal's triangle."""
+    rows = [[1]]
+    for i in range(1, n + 1):
+        prev = rows[-1]
+        row = [1]
+        for j in range(1, i):
+            row.append(prev[j - 1] + prev[j])
+        row.append(1)
+        rows.append(row)
+    return rows
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [0],
+          expected: [[1]],
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [4],
+          expected: [[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1]],
         },
       ],
     },
@@ -96,54 +122,44 @@ export const pascalSTriangleEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "pascal-s-triangle-q1",
+      id: "pascal-sum",
       kind: "mcq",
-      prompt: "What is the primary purpose of Pascal's Triangle?",
-      options: [
-        "To solve the Pascal's Triangle problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "What is the sum of all entries in row n of Pascal's triangle?",
+      options: ["2^n", "n!", "n^2", "n+1"],
       answer: 0,
-      explanation: "Pascal's Triangle is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Pascal's Triangle does."],
-      objective: "Purpose",
+      explanation: "Sum of row n = Σ C(n,k) = 2^n, because (1+1)^n = 2^n by the binomial theorem.",
+      hints: ["Evaluate (1+1)^n using the binomial theorem."],
+      objective: "Know row sum property",
     },
   ],
   exam: {
-    definition: "Pascal's Triangle is an algorithm in the domain of number theory and mathematics.",
-    steps: [
-      "Apply the Pascal's Triangle algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    definition:
+      "Pascal's triangle builds binomial coefficients row by row using C(n,k) = C(n−1,k−1) + C(n−1,k).",
+    steps: ["Start with [1].", "Each row: edges are 1, interior entries sum two above."],
+    timeComplexity: "$O(n^2)$ for all rows.",
+    spaceComplexity: "$O(n)$ keeping one row.",
+    correctness:
+      "Pascal's rule follows from the combinatorial identity: choosing k from n either includes or excludes the nth element.",
+    applications: ["Binomial coefficient computation", "Probability", "Polynomial expansion"],
+    limitations: ["O(n²) to build full triangle"],
     faq: [
       {
-        q: "When should you use Pascal's Triangle?",
-        a: "Use Pascal's Triangle when the problem matches its designed use case in number theory and mathematics.",
+        q: "Why avoid factorials?",
+        a: "Factorials grow rapidly and cause overflow; the addition rule keeps numbers smaller and is exact for integers.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Pascal's Triangle (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 2,
+        outline: ["Pascal's rule and row-by-row construction (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Pascal's Triangle.",
+      citation:
+        "R. L. Graham, D. E. Knuth, O. Patashnik, Concrete Mathematics, 2nd ed., Addison-Wesley, 1994, Ch. 5.",
+      supports: "Binomial coefficients and Pascal's triangle.",
     },
   ],
   review: {

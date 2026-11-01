@@ -56,16 +56,11 @@ export const optimalBinarySearchTreeEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n³)",
-    },
-    space: {
-      worst: "O(n²)",
-    },
-  },
-  properties: {
+    time: { best: "O(n³)", average: "O(n³)", worst: "O(n³)" },
+    space: "O(n²)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -87,15 +82,11 @@ export const optimalBinarySearchTreeEntry: AlgorithmEntry = {
     return dp[0][n - 1]`,
       tests: [
         {
-          input: {
-            freq: [34, 8, 50],
-          },
+          args: [[34, 8, 50]],
           expected: 142,
         },
         {
-          input: {
-            freq: [25, 20, 5, 20, 30],
-          },
+          args: [[25, 20, 5, 20, 30]],
           expected: 205,
         },
       ],
@@ -124,15 +115,11 @@ export const optimalBinarySearchTreeEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            freq: [34, 8, 50],
-          },
+          args: [[34, 8, 50]],
           expected: 142,
         },
         {
-          input: {
-            freq: [25, 20, 5, 20, 30],
-          },
+          args: [[25, 20, 5, 20, 30]],
           expected: 205,
         },
       ],

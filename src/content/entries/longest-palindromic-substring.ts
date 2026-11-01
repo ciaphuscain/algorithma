@@ -55,16 +55,11 @@ export const longestPalindromicSubstringEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n²)",
-    },
-    space: {
-      worst: "O(1)",
-    },
-  },
-  properties: {
+    time: { best: "O(n²)", average: "O(n²)", worst: "O(n²)" },
+    space: "O(1)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -84,21 +79,15 @@ export const longestPalindromicSubstringEntry: AlgorithmEntry = {
     return best`,
       tests: [
         {
-          input: {
-            s: "babad",
-          },
+          args: ["babad"],
           expected: 3,
         },
         {
-          input: {
-            s: "cbbd",
-          },
+          args: ["cbbd"],
           expected: 2,
         },
         {
-          input: {
-            s: "a",
-          },
+          args: ["a"],
           expected: 1,
         },
       ],
@@ -121,21 +110,15 @@ export const longestPalindromicSubstringEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            s: "babad",
-          },
+          args: ["babad"],
           expected: 3,
         },
         {
-          input: {
-            s: "cbbd",
-          },
+          args: ["cbbd"],
           expected: 2,
         },
         {
-          input: {
-            s: "a",
-          },
+          args: ["a"],
           expected: 1,
         },
       ],

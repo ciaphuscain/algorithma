@@ -55,11 +55,9 @@ export const asymmetricNumeralSystemsAnsEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    worstClass: "n",
-    best: "$O(n)$",
-    average: "$O(n)$",
-    worst: "$O(n)$",
+    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(n)$" },
     space: "$O(|\\Sigma|)$",
+    worstClass: "n",
   },
   properties: [],
   implementations: [
@@ -97,6 +95,7 @@ def rans_decode(x: int, length: int, freqs: list[int]) -> list[int]:
             [0, 0, 1, 0],
             [3, 1],
           ],
+          expected: 40,
         },
       ],
     },

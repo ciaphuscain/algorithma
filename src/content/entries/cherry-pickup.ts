@@ -56,16 +56,11 @@ export const cherryPickupEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: {
-      worst: "O(n³)",
-    },
-    space: {
-      worst: "O(n²)",
-    },
-  },
-  properties: {
+    time: { best: "O(n³)", average: "O(n³)", worst: "O(n³)" },
+    space: "O(n²)",
     worstClass: "other",
   },
+  properties: [],
   implementations: [
     {
       language: "python",
@@ -101,22 +96,22 @@ export const cherryPickupEntry: AlgorithmEntry = {
     return max(0, dp[n - 1][n - 1])`,
       tests: [
         {
-          input: {
-            grid: [
+          args: [
+            [
               [0, 1, -1],
               [1, 0, -1],
               [1, 1, 1],
             ],
-          },
+          ],
           expected: 5,
         },
         {
-          input: {
-            grid: [
+          args: [
+            [
               [1, 1],
               [1, 1],
             ],
-          },
+          ],
           expected: 4,
         },
       ],
@@ -156,22 +151,22 @@ export const cherryPickupEntry: AlgorithmEntry = {
 }`,
       tests: [
         {
-          input: {
-            grid: [
+          args: [
+            [
               [0, 1, -1],
               [1, 0, -1],
               [1, 1, 1],
             ],
-          },
+          ],
           expected: 5,
         },
         {
-          input: {
-            grid: [
+          args: [
+            [
               [1, 1],
               [1, 1],
             ],
-          },
+          ],
           expected: 4,
         },
       ],
