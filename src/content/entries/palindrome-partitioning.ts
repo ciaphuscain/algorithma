@@ -3,92 +3,157 @@ import type { AlgorithmEntry } from "../types";
 export const palindromePartitioningEntry: AlgorithmEntry = {
   slug: "palindrome-partitioning",
   name: "Palindrome Partitioning",
-  aliases: ["Palindrome Partitioning"],
+  aliases: ["Min Cut Palindrome"],
   curriculum: [288],
   domain: "dynamic-programming",
-  subcategory: "Dynamic Programming",
+  subcategory: "String DP",
   difficulty: "intermediate",
   summary:
-    "Palindrome Partitioning is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["palindrome partitioning", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+    "Find minimum cuts to partition a string into palindromes. Two DPs: one precomputes palindrome ranges, another computes min cuts.",
+  tags: ["palindrome", "partitioning", "dynamic programming"],
+  prerequisites: ["longest-palindromic-substring"],
+  related: ["longest-palindromic-substring"],
   problem: {
-    input: "Input for Palindrome Partitioning.",
-    output: "Output of Palindrome Partitioning.",
+    input: "A string s.",
+    output: "Minimum number of cuts to split s into palindromic substrings.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Palindrome Partitioning solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "If we know which substrings are palindromes, we can use DP: cuts[i] = min cuts to partition s[0..i].",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Palindrome Partitioning algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Precompute isPal[i][j] using expand-from-center or interval DP.",
+          "cuts[i] = min over j<i where isPal[j+1][i] of (cuts[j]+1), or 0 if isPal[0][i].",
+          "Return cuts[n-1].",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Palindrome Partitioning follows the pseudocode directly.",
+        text: "O(n^2) time and space.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Palindrome Partitioning is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(n^2)$, space $O(n^2)$ for palindrome table.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Palindrome Partitioning exist in the literature. See references for details.",
+        text: "Eertree (palindromic tree) can find all palindromic substrings in O(n) and help optimize.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
       worst: "O(n²)",
     },
-    space: "O(n)",
+    space: {
+      worst: "O(n²)",
+    },
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "dynamic programming",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "minCutPalindrome",
+      code: `def minCutPalindrome(s):
+    n = len(s)
+    if n <= 1:
+        return 0
+    pal = [[False] * n for _ in range(n)]
+    for i in range(n):
+        pal[i][i] = True
+    for i in range(n - 1):
+        pal[i][i + 1] = (s[i] == s[i + 1])
+    for length in range(3, n + 1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            pal[i][j] = (s[i] == s[j]) and pal[i + 1][j - 1]
+    cuts = list(range(n))
+    for i in range(n):
+        if pal[0][i]:
+            cuts[i] = 0
+        else:
+            for j in range(i):
+                if pal[j + 1][i]:
+                    cuts[i] = min(cuts[i], cuts[j] + 1)
+    return cuts[n - 1]`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            s: "aab",
+          },
+          expected: 1,
+        },
+        {
+          input: {
+            s: "a",
+          },
+          expected: 0,
+        },
+        {
+          input: {
+            s: "abcba",
+          },
+          expected: 0,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "minCutPalindrome",
+      code: `function minCutPalindrome(s) {
+  const n = s.length;
+  if (n <= 1) return 0;
+  const pal = Array.from({length: n}, () => new Array(n).fill(false));
+  for (let i = 0; i < n; i++) pal[i][i] = true;
+  for (let i = 0; i < n - 1; i++) pal[i][i+1] = s[i] === s[i+1];
+  for (let len = 3; len <= n; len++) {
+    for (let i = 0; i <= n - len; i++) {
+      const j = i + len - 1;
+      pal[i][j] = s[i] === s[j] && pal[i+1][j-1];
+    }
+  }
+  const cuts = Array.from({length: n}, (_, i) => i);
+  for (let i = 0; i < n; i++) {
+    if (pal[0][i]) { cuts[i] = 0; continue; }
+    for (let j = 0; j < i; j++) {
+      if (pal[j+1][i]) cuts[i] = Math.min(cuts[i], cuts[j] + 1);
+    }
+  }
+  return cuts[n - 1];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            s: "aab",
+          },
+          expected: 1,
+        },
+        {
+          input: {
+            s: "a",
+          },
+          expected: 0,
+        },
+        {
+          input: {
+            s: "abcba",
+          },
+          expected: 0,
         },
       ],
     },
@@ -96,54 +161,45 @@ export const palindromePartitioningEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "palindrome-partitioning-q1",
+      id: "pp-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Palindrome Partitioning?",
-      options: [
-        "To solve the Palindrome Partitioning problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "Min cuts for 'abacaba'?",
+      options: ["0", "1", "2", "3"],
       answer: 0,
-      explanation: "Palindrome Partitioning is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Palindrome Partitioning does."],
-      objective: "Purpose",
+      explanation: "'abacaba' is itself a palindrome, 0 cuts.",
+      hints: ["Check if whole string is palindrome."],
+      objective: "Computation",
     },
   ],
   exam: {
-    definition: "Palindrome Partitioning is an algorithm in the domain of dynamic programming.",
+    definition: "Minimum cuts to partition string into palindromes.",
     steps: [
-      "Apply the Palindrome Partitioning algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Precompute palindrome table.",
+      "cuts[i] = min(cuts[j]+1) where s[j+1..i] palindrome.",
+      "Return cuts[n-1].",
     ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "$O(n^2)$.",
+    spaceComplexity: "$O(n^2)$.",
+    correctness: "Tries all valid palindromic last segments.",
+    applications: ["text processing"],
+    limitations: ["quadratic"],
     faq: [
       {
-        q: "When should you use Palindrome Partitioning?",
-        a: "Use Palindrome Partitioning when the problem matches its designed use case in dynamic programming.",
+        q: "Why precompute palindromes?",
+        a: "Checking palindromes on-the-fly would add O(n) per check, making it O(n^3).",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Palindrome Partitioning (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Palindrome precomputation (2).", "DP recurrence (2).", "Complexity (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Palindrome Partitioning.",
+      citation: "LeetCode Problem 132: Palindrome Partitioning II.",
+      supports: "Min-cut palindrome partitioning.",
     },
   ],
   review: {

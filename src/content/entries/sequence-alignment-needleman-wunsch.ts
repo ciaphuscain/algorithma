@@ -2,93 +2,132 @@ import type { AlgorithmEntry } from "../types";
 
 export const sequenceAlignmentNeedlemanWunschEntry: AlgorithmEntry = {
   slug: "sequence-alignment-needleman-wunsch",
-  name: "Sequence Alignment (Needleman–Wunsch)",
-  aliases: ["Sequence Alignment (Needleman–Wunsch)"],
+  name: "Sequence Alignment (Needleman-Wunsch)",
+  aliases: ["Global Alignment", "Needleman-Wunsch"],
   curriculum: [278],
   domain: "dynamic-programming",
-  subcategory: "Dynamic Programming",
+  subcategory: "String DP",
   difficulty: "intermediate",
   summary:
-    "Sequence Alignment (Needleman–Wunsch) is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["sequence alignment needleman wunsch", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+    "Global sequence alignment using DP. Assigns scores for matches, mismatches, and gaps, finding the alignment that maximizes total score.",
+  tags: ["sequence alignment", "bioinformatics", "dynamic programming"],
+  prerequisites: ["edit-distance-levenshtein"],
+  related: ["damerau-levenshtein-distance", "longest-common-substring"],
   problem: {
-    input: "Input for Sequence Alignment (Needleman–Wunsch).",
-    output: "Output of Sequence Alignment (Needleman–Wunsch).",
+    input: "Two sequences and scoring parameters (match, mismatch, gap penalty).",
+    output: "Maximum alignment score.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Sequence Alignment (Needleman–Wunsch) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Align two sequences end-to-end, inserting gaps where needed. Score each column (match/mismatch/gap) and maximize the total.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Sequence Alignment (Needleman–Wunsch) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "dp[i][j] = max(dp[i-1][j-1] + score(a[i],b[j]), dp[i-1][j] + gap, dp[i][j-1] + gap).",
+          "dp[0][j] = j*gap, dp[i][0] = i*gap.",
+          "Return dp[m][n].",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Sequence Alignment (Needleman–Wunsch) follows the pseudocode directly.",
+        text: "Traceback from dp[m][n] reconstructs the optimal alignment.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Sequence Alignment (Needleman–Wunsch) is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(mn)$, space $O(mn)$ (or $O(n)$ without traceback).",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Sequence Alignment (Needleman–Wunsch) exist in the literature. See references for details.",
+        text: "Hirschberg's algorithm reduces space to O(n) while still recovering the alignment using divide-and-conquer.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      worst: "O(m·n)",
     },
-    space: "O(n)",
+    space: {
+      worst: "O(m·n)",
+    },
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "dynamic programming",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "needlemanWunsch",
+      code: `def needlemanWunsch(a, b, match=1, mismatch=-1, gap=-1):
+    m, n = len(a), len(b)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(m + 1):
+        dp[i][0] = i * gap
+    for j in range(n + 1):
+        dp[0][j] = j * gap
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            s = match if a[i-1] == b[j-1] else mismatch
+            dp[i][j] = max(dp[i-1][j-1] + s, dp[i-1][j] + gap, dp[i][j-1] + gap)
+    return dp[m][n]`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            a: "GATTACA",
+            b: "GCATGCU",
+          },
+          expected: 0,
+        },
+        {
+          input: {
+            a: "ABC",
+            b: "ABC",
+          },
+          expected: 3,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "needlemanWunsch",
+      code: `function needlemanWunsch(a, b, match = 1, mismatch = -1, gap = -1) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({length: m + 1}, () => new Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i * gap;
+  for (let j = 0; j <= n; j++) dp[0][j] = j * gap;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const s = a[i-1] === b[j-1] ? match : mismatch;
+      dp[i][j] = Math.max(dp[i-1][j-1] + s, dp[i-1][j] + gap, dp[i][j-1] + gap);
+    }
+  }
+  return dp[m][n];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            a: "GATTACA",
+            b: "GCATGCU",
+          },
+          expected: 0,
+        },
+        {
+          input: {
+            a: "ABC",
+            b: "ABC",
+          },
+          expected: 3,
         },
       ],
     },
@@ -96,56 +135,46 @@ export const sequenceAlignmentNeedlemanWunschEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "sequence-alignment-needleman-wunsch-q1",
+      id: "nw-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Sequence Alignment (Needleman–Wunsch)?",
-      options: [
-        "To solve the Sequence Alignment (Needleman–Wunsch) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "Needleman-Wunsch is for which type of alignment?",
+      options: ["Global", "Local", "Semi-global", "Multiple"],
       answer: 0,
-      explanation:
-        "Sequence Alignment (Needleman–Wunsch) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Sequence Alignment (Needleman–Wunsch) does."],
-      objective: "Purpose",
+      explanation: "NW aligns entire sequences end-to-end (global).",
+      hints: ["Local alignment is Smith-Waterman."],
+      objective: "Concept",
     },
   ],
   exam: {
-    definition:
-      "Sequence Alignment (Needleman–Wunsch) is an algorithm in the domain of dynamic programming.",
+    definition: "Optimal global alignment of two sequences.",
     steps: [
-      "Apply the Sequence Alignment (Needleman–Wunsch) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Init borders with gap penalties.",
+      "Fill dp with match/mismatch/gap.",
+      "Traceback for alignment.",
     ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "$O(mn)$.",
+    spaceComplexity: "$O(mn)$.",
+    correctness: "Optimal substructure: best alignment extends best sub-alignment.",
+    applications: ["bioinformatics", "plagiarism detection"],
+    limitations: ["quadratic for long sequences"],
     faq: [
       {
-        q: "When should you use Sequence Alignment (Needleman–Wunsch)?",
-        a: "Use Sequence Alignment (Needleman–Wunsch) when the problem matches its designed use case in dynamic programming.",
+        q: "NW vs Smith-Waterman?",
+        a: "NW is global (full sequences); SW is local (best subsequences).",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Sequence Alignment (Needleman–Wunsch) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Scoring scheme (1).", "Recurrence (2).", "Traceback (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Sequence Alignment (Needleman–Wunsch).",
+      citation:
+        "S. B. Needleman and C. D. Wunsch, A general method applicable to the search for similarities, 1970.",
+      supports: "Original paper.",
     },
   ],
   review: {

@@ -3,92 +3,118 @@ import type { AlgorithmEntry } from "../types";
 export const wildcardPatternMatchingEntry: AlgorithmEntry = {
   slug: "wildcard-pattern-matching",
   name: "Wildcard Pattern Matching",
-  aliases: ["Wildcard Pattern Matching"],
+  aliases: ["Glob Matching"],
   curriculum: [348],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "Pattern Matching",
   difficulty: "intermediate",
   summary:
-    "Wildcard Pattern Matching is a well-known algorithm in the domain of string processing.",
-  tags: ["wildcard pattern matching", "string"],
+    "Matches a string against a pattern with '?' (any single char) and '*' (any sequence) using DP or greedy backtracking.",
+  tags: ["wildcard", "pattern matching", "dynamic programming"],
   prerequisites: [],
-  related: [],
+  related: ["regular-expression-matching-dp"],
   problem: {
-    input: "Input for Wildcard Pattern Matching.",
-    output: "Output of Wildcard Pattern Matching.",
+    input: "A string s and pattern p with '?' and '*'.",
+    output: "Whether the entire string matches the pattern.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Wildcard Pattern Matching solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "'?' matches exactly one character, '*' matches any sequence (including empty). Build a DP table or use greedy matching with backtracking on '*'.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Wildcard Pattern Matching algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "DP: dp[i][j] = s[0..i-1] matches p[0..j-1].",
+          "If p[j-1] is '*': dp[i][j] = dp[i][j-1] (empty match) OR dp[i-1][j] (extend match).",
+          "If p[j-1] is '?' or matches s[i-1]: dp[i][j] = dp[i-1][j-1].",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Wildcard Pattern Matching follows the pseudocode directly.",
+        text: "Greedy approach: track the last '*' position and backtrack to it on mismatch. O(mn) worst case but often faster in practice.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Wildcard Pattern Matching is based on the algorithm's structure and the operations performed at each step.",
+        text: "DP is $O(mn)$ time and space. Greedy is $O(mn)$ worst case but $O(n)$ amortized for most patterns.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of Wildcard Pattern Matching exist in the literature. See references for details.",
+        text: "Wildcard matching is simpler than regex: '*' is independent (not tied to a preceding char) and '?' is exactly one char, not zero or one.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(n)$",
+    average: "$O(mn)$",
+    worst: "$O(mn)$",
+    space: "$O(mn)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "string processing",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "wildcard_pattern_matching",
+      code: `def is_match(s: str, p: str) -> bool:
+    m, n = len(s), len(p)
+    dp = [[False] * (n + 1) for _ in range(m + 1)]
+    dp[0][0] = True
+    for j in range(1, n + 1):
+        if p[j - 1] == "*":
+            dp[0][j] = dp[0][j - 1]
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if p[j - 1] == "*":
+                dp[i][j] = dp[i][j - 1] or dp[i - 1][j]
+            elif p[j - 1] == "?" or p[j - 1] == s[i - 1]:
+                dp[i][j] = dp[i - 1][j - 1]
+    return dp[m][n]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["adceb", "*a*b"],
+          expected: true,
+        },
+        {
+          args: ["acdcb", "a*c?b"],
+          expected: false,
+        },
+        {
+          args: ["", "*"],
+          expected: true,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "wildcardPatternMatching",
+      code: `function isMatch(s, p) {
+  const m = s.length, n = p.length;
+  const dp = Array.from({length: m+1}, () => new Array(n+1).fill(false));
+  dp[0][0] = true;
+  for (let j = 1; j <= n; j++) if (p[j-1] === "*") dp[0][j] = dp[0][j-1];
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) {
+    if (p[j-1] === "*") dp[i][j] = dp[i][j-1] || dp[i-1][j];
+    else if (p[j-1] === "?" || p[j-1] === s[i-1]) dp[i][j] = dp[i-1][j-1];
+  }
+  return dp[m][n];
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["adceb", "*a*b"],
+          expected: true,
         },
       ],
     },
@@ -96,55 +122,41 @@ export const wildcardPatternMatchingEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "wildcard-pattern-matching-q1",
+      id: "wc-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Wildcard Pattern Matching?",
-      options: [
-        "To solve the Wildcard Pattern Matching problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "Does '*' match the empty string?",
+      options: ["Yes", "No", "Only at the end", "Only at the start"],
       answer: 0,
-      explanation:
-        "Wildcard Pattern Matching is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Wildcard Pattern Matching does."],
-      objective: "Purpose",
+      explanation: "'*' matches any sequence including empty.",
+      hints: ["Zero length."],
+      objective: "Empty match",
     },
   ],
   exam: {
-    definition: "Wildcard Pattern Matching is an algorithm in the domain of string processing.",
-    steps: [
-      "Apply the Wildcard Pattern Matching algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "DP matching for '?' (one char) and '*' (any sequence).",
+    steps: ["dp[i][j] transitions based on *, ?, or character match."],
+    timeComplexity: "$O(mn)$.",
+    spaceComplexity: "$O(mn)$.",
+    correctness: "All subsequences explored.",
+    applications: ["File glob matching", "simplified search"],
+    limitations: ["O(mn) can be slow for very long strings"],
     faq: [
       {
-        q: "When should you use Wildcard Pattern Matching?",
-        a: "Use Wildcard Pattern Matching when the problem matches its designed use case in string processing.",
+        q: "How is * different from regex *?",
+        a: "Wildcard * matches any sequence independently; regex * means zero or more of the preceding character.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Wildcard Pattern Matching (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 3,
+        outline: ["DP recurrence (2).", "Difference from regex (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Wildcard Pattern Matching.",
+      citation: "LeetCode Problem 44, 'Wildcard Matching'.",
+      supports: "Classic formulation.",
     },
   ],
   review: {

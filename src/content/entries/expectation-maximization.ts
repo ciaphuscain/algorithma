@@ -8,50 +8,61 @@ export const expectationMaximizationEntry: AlgorithmEntry = {
   domain: "machine-learning",
   subcategory: "Machine Learning",
   difficulty: "intermediate",
-  summary: "Expectation–Maximization is a well-known algorithm in the domain of machine learning.",
-  tags: ["expectation maximization", "ml"],
+  summary:
+    "Iteratively estimates parameters of statistical models with latent variables by alternating between computing expected values (E-step) and maximizing likelihood (M-step).",
+  tags: ["expectation maximization", "machine learning"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Expectation–Maximization.",
-    output: "Output of Expectation–Maximization.",
+    input: "Observed data and a parametric model with latent variables.",
+    output: "Maximum likelihood parameter estimates.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Expectation–Maximization solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "EM alternates between guessing the hidden variables given current parameters (E-step) and optimizing parameters given the guesses (M-step). Each cycle increases the likelihood, converging to a local maximum.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Expectation–Maximization algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize parameters θ randomly.",
+          "E-step: compute expected value of latent variables given data and θ.",
+          "M-step: update θ to maximize expected log-likelihood.",
+          "Repeat until convergence.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Expectation–Maximization follows the pseudocode directly.",
+        text: "Monitor log-likelihood to check convergence. EM may converge to local maxima — run with multiple initializations.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Expectation–Maximization is based on the algorithm's structure and the operations performed at each step.",
+        text: "EM monotonically increases the log-likelihood $\\log p(X|\\theta)$ at each step. By Jensen's inequality, the E-step lower-bounds the log-likelihood, and the M-step maximizes this bound.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Expectation–Maximization exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Foundation for GMMs, HMMs, topic models.",
+          "K-means is a special case of EM with hard assignments.",
+          "Variational EM uses approximate posteriors for intractable E-steps.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
       best: "O(n)",
-      average: "O(n·d)",
+      average: "O(n·d·k)",
       worst: "O(n·d·k)",
     },
     space: "O(n)",
@@ -66,28 +77,70 @@ export const expectationMaximizationEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "em_coin",
+      code: `def em_coin(flips, n_iter=20):
+    """EM for two biased coins. flips: list of (n_heads, n_tails) per experiment.
+    Returns estimated probabilities [p_A, p_B]."""
+    p_a, p_b = 0.6, 0.4
+    for _ in range(n_iter):
+        a_heads, a_tails, b_heads, b_tails = 0, 0, 0, 0
+        for h, t in flips:
+            n = h + t
+            la = p_a**h * (1-p_a)**t
+            lb = p_b**h * (1-p_b)**t
+            wa = la / (la + lb) if (la + lb) > 0 else 0.5
+            wb = 1 - wa
+            a_heads += wa * h; a_tails += wa * t
+            b_heads += wb * h; b_tails += wb * t
+        p_a = a_heads / (a_heads + a_tails) if (a_heads + a_tails) > 0 else 0.5
+        p_b = b_heads / (b_heads + b_tails) if (b_heads + b_tails) > 0 else 0.5
+    return [round(p_a, 2), round(p_b, 2)]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [5, 5],
+              [9, 1],
+              [8, 2],
+              [4, 6],
+              [7, 3],
+            ],
+          ],
+          expected: [0.8, 0.52],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "emCoin",
+      code: `function emCoin(flips, nIter = 20) {
+  let pA = 0.6, pB = 0.4;
+  for (let i = 0; i < nIter; i++) {
+    let aH = 0, aT = 0, bH = 0, bT = 0;
+    for (const [h, t] of flips) {
+      const la = pA**h * (1-pA)**t, lb = pB**h * (1-pB)**t;
+      const wa = (la + lb) > 0 ? la / (la + lb) : 0.5;
+      aH += wa * h; aT += wa * t; bH += (1-wa) * h; bT += (1-wa) * t;
+    }
+    pA = aH / (aH + aT) || 0.5;
+    pB = bH / (bH + bT) || 0.5;
+  }
+  return [Math.round(pA * 100) / 100, Math.round(pB * 100) / 100];
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [5, 5],
+              [9, 1],
+              [8, 2],
+              [4, 6],
+              [7, 3],
+            ],
+          ],
+          expected: [0.8, 0.52],
         },
       ],
     },
@@ -97,36 +150,38 @@ export const expectationMaximizationEntry: AlgorithmEntry = {
     {
       id: "expectation-maximization-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Expectation–Maximization?",
+      prompt: "What does the E-step in EM compute?",
       options: [
-        "To solve the Expectation–Maximization problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "Expected values of latent variables given current parameters",
+        "The maximum likelihood estimate",
+        "The gradient of the loss",
+        "The prior distribution",
       ],
       answer: 0,
       explanation:
-        "Expectation–Maximization is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Expectation–Maximization does."],
-      objective: "Purpose",
+        "The E-step computes the posterior distribution (or expected sufficient statistics) of the latent variables.",
+      hints: ["Think about the algorithm's key property."],
+      objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Expectation–Maximization is an algorithm in the domain of machine learning.",
+    definition:
+      "Iteratively estimates parameters of statistical models with latent variables by alternating between computing expected values (E-step) and maximizing likelihood (M-step).",
     steps: [
-      "Apply the Expectation–Maximization algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Initialize parameters θ randomly.",
+      "E-step: compute expected value of latent variables given data and θ.",
+      "M-step: update θ to maximize expected log-likelihood.",
+      "Repeat until convergence.",
     ],
-    timeComplexity: "$O(n)$.",
+    timeComplexity: "$O(n·d·k)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["machine learning applications"],
+    applications: ["machine learning"],
     limitations: ["Specific to its problem domain"],
     faq: [
       {
         q: "When should you use Expectation–Maximization?",
-        a: "Use Expectation–Maximization when the problem matches its designed use case in machine learning.",
+        a: "Iteratively estimates parameters of statistical models with latent variables by alternating between computing expected values (E-step) and maximizing likelihood (M-step).",
       },
     ],
     answers: [

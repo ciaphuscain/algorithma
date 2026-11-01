@@ -2,93 +2,141 @@ import type { AlgorithmEntry } from "../types";
 
 export const longestCommonSubstringSuffixArrayMethodEntry: AlgorithmEntry = {
   slug: "longest-common-substring-suffix-array-method",
-  name: "Longest Common Substring (Suffix Array Method)",
-  aliases: ["Longest Common Substring (Suffix Array Method)"],
+  name: "Longest Common Substring (Suffix Array)",
+  aliases: ["LCS via SA+LCP"],
   curriculum: [344],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "Suffix Array Applications",
   difficulty: "intermediate",
   summary:
-    "Longest Common Substring (Suffix Array Method) is a well-known algorithm in the domain of string processing.",
-  tags: ["longest common substring suffix array method", "string"],
-  prerequisites: [],
-  related: [],
+    "Finds the longest common substring of two strings by building a combined suffix array with LCP array and finding the maximum LCP between suffixes from different strings.",
+  tags: ["suffix array", "LCP", "longest common substring"],
+  prerequisites: ["kasai-algorithm-lcp-array"],
+  related: ["longest-repeated-substring"],
   problem: {
-    input: "Input for Longest Common Substring (Suffix Array Method).",
-    output: "Output of Longest Common Substring (Suffix Array Method).",
+    input: "Two strings A and B.",
+    output: "The longest substring common to both.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Longest Common Substring (Suffix Array Method) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Concatenate A + '#' + B, build suffix array and LCP array. The answer is the largest LCP value between adjacent suffixes that come from different original strings.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Longest Common Substring (Suffix Array Method) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Concatenate: S = A + '#' + B + '$'.",
+          "Build suffix array and LCP array of S.",
+          "Scan LCP array: find max LCP[i] where SA[i] and SA[i-1] come from different strings.",
+          "Use position relative to '#' to determine which string a suffix belongs to.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Longest Common Substring (Suffix Array Method) follows the pseudocode directly.",
+        text: "A suffix starting at position < |A| is from A; one starting at position > |A| is from B.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Longest Common Substring (Suffix Array Method) is based on the algorithm's structure and the operations performed at each step.",
+        text: "$O(n)$ with linear SA and Kasai's LCP, where n = |A| + |B| + 2.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of Longest Common Substring (Suffix Array Method) exist in the literature. See references for details.",
+        text: "For k strings, use a generalized suffix array and sweep with a sliding window minimum over LCP values, requiring suffixes from all k strings in the window.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(n)$",
+    average: "$O(n)$",
+    worst: "$O(n)$",
+    space: "$O(n)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "string processing",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "lcs_suffix_array",
+      code: `def lcs_suffix_array(a: str, b: str) -> str:
+    s = a + "#" + b + "$"
+    n = len(s)
+    sa = sorted(range(n), key=lambda i: s[i:])
+    rank = [0] * n
+    for i in range(n):
+        rank[sa[i]] = i
+    lcp = [0] * n
+    k = 0
+    for i in range(n):
+        if rank[i] == 0:
+            k = 0
+            continue
+        j = sa[rank[i] - 1]
+        while i + k < n and j + k < n and s[i + k] == s[j + k]:
+            k += 1
+        lcp[rank[i]] = k
+        if k > 0:
+            k -= 1
+    best_len, best_pos = 0, 0
+    sep = len(a)
+    for i in range(1, n):
+        p1, p2 = sa[i - 1], sa[i]
+        from_a1 = p1 < sep
+        from_a2 = p2 < sep
+        if from_a1 != from_a2 and lcp[i] > best_len:
+            best_len = lcp[i]
+            best_pos = sa[i]
+    return s[best_pos:best_pos + best_len]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["abcde", "cdefg"],
+          expected: "cde",
+        },
+        {
+          args: ["abc", "xyz"],
+          expected: "",
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "lcsSuffixArray",
+      code: `function lcsSuffixArray(a, b) {
+  const s = a + "#" + b + "$", n = s.length;
+  const sa = [...Array(n).keys()].sort((x, y) => s.substring(x) < s.substring(y) ? -1 : 1);
+  const rank = new Array(n);
+  for (let i = 0; i < n; i++) rank[sa[i]] = i;
+  const lcp = new Array(n).fill(0);
+  let k = 0;
+  for (let i = 0; i < n; i++) {
+    if (rank[i] === 0) { k = 0; continue; }
+    const j = sa[rank[i] - 1];
+    while (i + k < n && j + k < n && s[i + k] === s[j + k]) k++;
+    lcp[rank[i]] = k;
+    if (k > 0) k--;
+  }
+  let bestLen = 0, bestPos = 0;
+  for (let i = 1; i < n; i++) {
+    const a1 = sa[i - 1] < a.length, a2 = sa[i] < a.length;
+    if (a1 !== a2 && lcp[i] > bestLen) { bestLen = lcp[i]; bestPos = sa[i]; }
+  }
+  return s.substring(bestPos, bestPos + bestLen);
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["abcde", "cdefg"],
+          expected: "cde",
         },
       ],
     },
@@ -96,56 +144,56 @@ export const longestCommonSubstringSuffixArrayMethodEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "longest-common-substring-suffix-array-method-q1",
+      id: "lcssa-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Longest Common Substring (Suffix Array Method)?",
+      prompt: "What separator is used between the two strings?",
       options: [
-        "To solve the Longest Common Substring (Suffix Array Method) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "A character not in either string",
+        "No separator needed",
+        "The null character",
+        "A space",
       ],
       answer: 0,
-      explanation:
-        "Longest Common Substring (Suffix Array Method) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Longest Common Substring (Suffix Array Method) does."],
-      objective: "Purpose",
+      explanation: "Using a unique separator prevents false LCP matches across the boundary.",
+      hints: ["Sentinel."],
+      objective: "Separator",
     },
   ],
   exam: {
-    definition:
-      "Longest Common Substring (Suffix Array Method) is an algorithm in the domain of string processing.",
+    definition: "LCS via concatenated suffix array and LCP scanning.",
     steps: [
-      "Apply the Longest Common Substring (Suffix Array Method) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Concatenate with separator.",
+      "Build SA and LCP.",
+      "Find max LCP across string boundary.",
     ],
-    timeComplexity: "$O(n)$.",
+    timeComplexity: "$O(n)$ with linear SA.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness:
+      "LCP between adjacent SA entries from different strings captures all common substrings.",
+    applications: ["Plagiarism detection", "DNA comparison"],
+    limitations: ["Requires linear SA construction for O(n) total"],
     faq: [
       {
-        q: "When should you use Longest Common Substring (Suffix Array Method)?",
-        a: "Use Longest Common Substring (Suffix Array Method) when the problem matches its designed use case in string processing.",
+        q: "Why not use DP?",
+        a: "DP is O(nm) in time and space; SA+LCP is O(n+m).",
       },
     ],
     answers: [
       {
-        marks: 5,
+        marks: 4,
         outline: [
-          "Define Longest Common Substring (Suffix Array Method) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Concatenation (1).",
+          "SA+LCP construction (1).",
+          "Scanning (1).",
+          "Complexity (1).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Longest Common Substring (Suffix Array Method).",
+      citation: "D. Gusfield, 'Algorithms on Strings, Trees, and Sequences', 1997.",
+      supports: "Suffix array applications.",
     },
   ],
   review: {

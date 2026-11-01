@@ -3,91 +3,129 @@ import type { AlgorithmEntry } from "../types";
 export const burstBalloonsEntry: AlgorithmEntry = {
   slug: "burst-balloons",
   name: "Burst Balloons",
-  aliases: ["Burst Balloons"],
+  aliases: ["Balloon Burst DP"],
   curriculum: [289],
   domain: "dynamic-programming",
-  subcategory: "Dynamic Programming",
+  subcategory: "Interval DP",
   difficulty: "intermediate",
-  summary: "Burst Balloons is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["burst balloons", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+  summary:
+    "Given n balloons with values, bursting balloon i earns nums[left]*nums[i]*nums[right]. Find the maximum coins by bursting all balloons. Interval DP on which balloon to burst last in each range.",
+  tags: ["interval DP", "dynamic programming", "balloons"],
+  prerequisites: ["matrix-chain-multiplication"],
+  related: ["merge-stones", "matrix-chain-multiplication"],
   problem: {
-    input: "Input for Burst Balloons.",
-    output: "Output of Burst Balloons.",
+    input: "Array of balloon values.",
+    output: "Maximum coins obtainable by bursting all balloons.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Burst Balloons solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Think in reverse: instead of which balloon to burst first, decide which to burst LAST in a range. The last balloon in range [l,r] sees the boundaries l-1 and r+1.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Burst Balloons algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Pad array with 1s at both ends.",
+          "dp[l][r] = max over k in [l,r] of: dp[l][k-1] + nums[l-1]*nums[k]*nums[r+1] + dp[k+1][r].",
+          "Return dp[1][n].",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Burst Balloons follows the pseudocode directly.",
+        text: "Iterate by interval length. O(n^3) time, O(n^2) space.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Burst Balloons is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(n^3)$, space $O(n^2)$. Similar structure to matrix chain multiplication.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Burst Balloons exist in the literature. See references for details.",
+        text: "The 'burst last' reversal transforms an order-dependent problem into interval DP with independent subproblems.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
+      worst: "O(n³)",
+    },
+    space: {
       worst: "O(n²)",
     },
-    space: "O(n)",
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "dynamic programming",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "maxCoins",
+      code: `def maxCoins(nums):
+    nums = [1] + nums + [1]
+    n = len(nums)
+    dp = [[0] * n for _ in range(n)]
+    for length in range(1, n - 1):
+        for l in range(1, n - length):
+            r = l + length - 1
+            for k in range(l, r + 1):
+                coins = nums[l - 1] * nums[k] * nums[r + 1]
+                coins += dp[l][k - 1] + dp[k + 1][r]
+                dp[l][r] = max(dp[l][r], coins)
+    return dp[1][n - 2]`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            nums: [3, 1, 5, 8],
+          },
+          expected: 167,
+        },
+        {
+          input: {
+            nums: [1, 5],
+          },
+          expected: 10,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "maxCoins",
+      code: `function maxCoins(nums) {
+  nums = [1, ...nums, 1];
+  const n = nums.length;
+  const dp = Array.from({length: n}, () => new Array(n).fill(0));
+  for (let len = 1; len < n - 1; len++) {
+    for (let l = 1; l < n - len; l++) {
+      const r = l + len - 1;
+      for (let k = l; k <= r; k++) {
+        const coins = nums[l - 1] * nums[k] * nums[r + 1] + dp[l][k - 1] + dp[k + 1][r];
+        dp[l][r] = Math.max(dp[l][r], coins);
+      }
+    }
+  }
+  return dp[1][n - 2];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            nums: [3, 1, 5, 8],
+          },
+          expected: 167,
+        },
+        {
+          input: {
+            nums: [1, 5],
+          },
+          expected: 10,
         },
       ],
     },
@@ -95,54 +133,41 @@ export const burstBalloonsEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "burst-balloons-q1",
+      id: "bb-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Burst Balloons?",
-      options: [
-        "To solve the Burst Balloons problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "Why think about the LAST balloon burst?",
+      options: ["Independent subproblems", "Greedy works", "Fewer states", "Simpler code"],
       answer: 0,
-      explanation: "Burst Balloons is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Burst Balloons does."],
-      objective: "Purpose",
+      explanation: "Bursting last means left/right subproblems are independent.",
+      hints: ["What does the last burst see?"],
+      objective: "Concept",
     },
   ],
   exam: {
-    definition: "Burst Balloons is an algorithm in the domain of dynamic programming.",
-    steps: [
-      "Apply the Burst Balloons algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Maximize coins from bursting all balloons (earn left*self*right).",
+    steps: ["Pad with 1s.", "Interval DP: pick last burst in range.", "dp[l][r] = max over k."],
+    timeComplexity: "$O(n^3)$.",
+    spaceComplexity: "$O(n^2)$.",
+    correctness: "Last-burst decomposition creates independent subproblems.",
+    applications: ["optimization", "interval scheduling"],
+    limitations: ["cubic time"],
     faq: [
       {
-        q: "When should you use Burst Balloons?",
-        a: "Use Burst Balloons when the problem matches its designed use case in dynamic programming.",
+        q: "Why pad with 1s?",
+        a: "Boundary balloons that never burst, simplifying edge cases.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Burst Balloons (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Padding (1).", "Interval DP recurrence (2).", "Correctness of last-burst (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Burst Balloons.",
+      citation: "LeetCode Problem 312: Burst Balloons.",
+      supports: "Interval DP.",
     },
   ],
   review: {

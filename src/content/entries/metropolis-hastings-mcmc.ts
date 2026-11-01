@@ -8,50 +8,63 @@ export const metropolisHastingsMcmcEntry: AlgorithmEntry = {
   domain: "machine-learning",
   subcategory: "Machine Learning",
   difficulty: "intermediate",
-  summary: "Metropolis–Hastings MCMC is a well-known algorithm in the domain of machine learning.",
-  tags: ["metropolis hastings mcmc", "ml"],
+  summary:
+    "Generates samples from a target probability distribution by constructing a Markov chain that converges to the target as its stationary distribution.",
+  tags: ["metropolis hastings mcmc", "machine learning"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Metropolis–Hastings MCMC.",
-    output: "Output of Metropolis–Hastings MCMC.",
+    input: "A target distribution p(x) (up to a normalizing constant) and a proposal distribution.",
+    output: "A sequence of samples approximately distributed according to p(x).",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Metropolis–Hastings MCMC solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Metropolis-Hastings explores a distribution by random walk: propose a new point, accept it if it's in a higher-probability region (or sometimes accept even in lower regions). Over time, the visited points form a representative sample.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Metropolis–Hastings MCMC algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Start at an arbitrary point x₀.",
+          "Propose a new point x' ~ q(x'|xₜ).",
+          "Compute acceptance ratio α = min(1, p(x')·q(xₜ|x') / (p(xₜ)·q(x'|xₜ))).",
+          "Accept x' with probability α (set xₜ₊₁ = x'), else stay (xₜ₊₁ = xₜ).",
+          "Repeat and collect samples after a burn-in period.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Metropolis–Hastings MCMC follows the pseudocode directly.",
+        text: "With a symmetric proposal (e.g., Gaussian random walk), q(x'|x) = q(x|x'), so α simplifies to min(1, p(x')/p(x)). Tuning the proposal scale is critical: too wide → many rejections, too narrow → slow exploration.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Metropolis–Hastings MCMC is based on the algorithm's structure and the operations performed at each step.",
+        text: "Metropolis-Hastings satisfies detailed balance: $p(x)q(x'|x)\\alpha(x \\to x') = p(x')q(x|x')\\alpha(x' \\to x)$, so the chain's stationary distribution is p. Convergence rate depends on mixing time, which is hard to bound in general.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Metropolis–Hastings MCMC exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "The Metropolis algorithm (1953) is the special case with symmetric proposals.",
+          "Gibbs sampling is a special case where each variable is sampled from its conditional.",
+          "Hamiltonian Monte Carlo uses gradient information for faster mixing.",
+          "Used for Bayesian inference, statistical physics, optimization.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
       best: "O(n)",
-      average: "O(n·d)",
+      average: "O(n·d·k)",
       worst: "O(n·d·k)",
     },
     space: "O(n)",
@@ -66,28 +79,52 @@ export const metropolisHastingsMcmcEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "metropolis",
+      code: `def metropolis(log_target, x0, sigma, n_samples, seed=42):
+    """Metropolis-Hastings with Gaussian proposal. Returns samples."""
+    import random, math
+    random.seed(seed)
+    x = x0
+    samples = []
+    for _ in range(n_samples):
+        x_prop = x + random.gauss(0, sigma)
+        log_alpha = log_target(x_prop) - log_target(x)
+        if math.log(random.random()) < log_alpha:
+            x = x_prop
+        samples.append(round(x, 2))
+    return samples
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["lambda x: -0.5*x*x", 0, 1.0, 5, 42],
+          expected: [0.04, 0.04, 0.38, -0.46, -0.46],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "metropolis",
+      code: `function metropolis(logTarget, x0, sigma, nSamples, seed = 42) {
+  function rng(s) { s = (s * 1103515245 + 12345) & 0x7fffffff; return s; }
+  let s = seed, x = x0;
+  const samples = [];
+  for (let i = 0; i < nSamples; i++) {
+    s = rng(s); const u1 = s / 0x7fffffff;
+    s = rng(s); const u2 = s / 0x7fffffff;
+    const z = Math.sqrt(-2*Math.log(u1||1e-10))*Math.cos(2*Math.PI*u2);
+    const xProp = x + sigma * z;
+    const logAlpha = logTarget(xProp) - logTarget(x);
+    s = rng(s); const u = s / 0x7fffffff;
+    if (Math.log(u||1e-10) < logAlpha) x = xProp;
+    samples.push(Math.round(x * 100) / 100);
+  }
+  return samples;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["x => -0.5*x*x", 0, 1.0, 3, 42],
+          expected: [-0.73, 0.09, 0.09],
         },
       ],
     },
@@ -97,36 +134,39 @@ export const metropolisHastingsMcmcEntry: AlgorithmEntry = {
     {
       id: "metropolis-hastings-mcmc-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Metropolis–Hastings MCMC?",
+      prompt: "What is the acceptance ratio in Metropolis-Hastings?",
       options: [
-        "To solve the Metropolis–Hastings MCMC problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "min(1, p(x')q(x|x') / p(x)q(x'|x))",
+        "Always 1",
+        "p(x')/p(x) always",
+        "The proposal probability",
       ],
       answer: 0,
       explanation:
-        "Metropolis–Hastings MCMC is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Metropolis–Hastings MCMC does."],
-      objective: "Purpose",
+        "The acceptance ratio balances the target density ratio with the proposal asymmetry to ensure detailed balance.",
+      hints: ["Think about the algorithm's key property."],
+      objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Metropolis–Hastings MCMC is an algorithm in the domain of machine learning.",
+    definition:
+      "Generates samples from a target probability distribution by constructing a Markov chain that converges to the target as its stationary distribution.",
     steps: [
-      "Apply the Metropolis–Hastings MCMC algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Start at an arbitrary point x₀.",
+      "Propose a new point x' ~ q(x'|xₜ).",
+      "Compute acceptance ratio α = min(1, p(x')·q(xₜ|x') / (p(xₜ)·q(x'|xₜ))).",
+      "Accept x' with probability α (set xₜ₊₁ = x'), else stay (xₜ₊₁ = xₜ).",
+      "Repeat and collect samples after a burn-in period.",
     ],
-    timeComplexity: "$O(n)$.",
+    timeComplexity: "$O(n·d·k)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["machine learning applications"],
+    applications: ["machine learning"],
     limitations: ["Specific to its problem domain"],
     faq: [
       {
         q: "When should you use Metropolis–Hastings MCMC?",
-        a: "Use Metropolis–Hastings MCMC when the problem matches its designed use case in machine learning.",
+        a: "Generates samples from a target probability distribution by constructing a Markov chain that converges to the target as its stationary distribution.",
       },
     ],
     answers: [

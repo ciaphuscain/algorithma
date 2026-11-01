@@ -3,91 +3,123 @@ import type { AlgorithmEntry } from "../types";
 export const moveToFrontTransformEntry: AlgorithmEntry = {
   slug: "move-to-front-transform",
   name: "Move-to-Front Transform",
-  aliases: ["Move-to-Front Transform"],
+  aliases: ["Move-to-Front Transform", "MTF"],
   curriculum: [336],
   domain: "compression",
-  subcategory: "Compression",
-  difficulty: "intermediate",
-  summary: "Move-to-Front Transform is a well-known algorithm in the domain of data compression.",
-  tags: ["move to front transform", "compression"],
+  subcategory: "Text Transform",
+  difficulty: "beginner",
+  summary:
+    "Transforms a sequence by replacing each symbol with its index in a dynamically maintained list, then moving that symbol to the front. Produces many small integers from data with locality.",
+  tags: ["MTF", "compression", "transform"],
   prerequisites: [],
-  related: [],
+  related: ["burrows-wheeler-transform-bwt", "run-length-encoding"],
   problem: {
-    input: "Input for Move-to-Front Transform.",
-    output: "Output of Move-to-Front Transform.",
+    input: "A sequence of symbols from a known alphabet.",
+    output: "A sequence of indices representing each symbol's position in the MTF list.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Move-to-Front Transform solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Keep a list of symbols. For each input symbol, output its current index in the list, then move it to the front. Repeated or recently-seen symbols get small indices (0 or near 0), which compress well with entropy coding.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Move-to-Front Transform algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize list to the alphabet in order.",
+          "For each input symbol: find its index, output the index, move the symbol to position 0.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Move-to-Front Transform follows the pseudocode directly.",
+        text: "Use a simple list. For small alphabets (256 bytes), linear search is acceptable.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Move-to-Front Transform is based on the algorithm's structure and the operations performed at each step.",
+        text: "$O(n \\cdot |\\Sigma|)$ time for an alphabet of size $|\\Sigma|$. After BWT, the output has many 0s and small values, ideal for entropy coding.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Move-to-Front Transform exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Part of the bzip2 pipeline: BWT → MTF → RLE → Huffman.",
+          "The inverse is straightforward: insert symbol at the given index, remove from current position.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
       best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
+      average: "O(n * σ)",
+      worst: "O(n * σ)",
     },
-    space: "O(n)",
+    space: "O(σ)",
     worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "data compression",
+      label: "Reversible",
+      value: "Yes",
+    },
+    {
+      label: "Used after",
+      value: "BWT",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "mtf_encode",
+      code: `def mtf_encode(s):
+    """Move-to-front encode a string of lowercase letters. Returns list of indices."""
+    alphabet = list("abcdefghijklmnopqrstuvwxyz$")
+    result = []
+    for c in s:
+        idx = alphabet.index(c)
+        result.append(idx)
+        alphabet.pop(idx)
+        alphabet.insert(0, c)
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["banana"],
+          expected: [1, 1, 14, 1, 1, 2],
+        },
+        {
+          args: ["aaa"],
+          expected: [0, 0, 0],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "mtfEncode",
+      code: `function mtfEncode(s) {
+  const alphabet = "abcdefghijklmnopqrstuvwxyz$".split("");
+  const result = [];
+  for (const c of s) {
+    const idx = alphabet.indexOf(c);
+    result.push(idx);
+    alphabet.splice(idx, 1);
+    alphabet.unshift(c);
+  }
+  return result;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["banana"],
+          expected: [1, 1, 14, 1, 1, 2],
         },
       ],
     },
@@ -95,54 +127,43 @@ export const moveToFrontTransformEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "move-to-front-transform-q1",
+      id: "mtf-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Move-to-Front Transform?",
-      options: [
-        "To solve the Move-to-Front Transform problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "After encoding 'aab', what is the MTF list state?",
+      options: ["b, a, c, d, ...", "a, b, c, d, ...", "b, c, a, d, ...", "a, c, b, d, ..."],
       answer: 0,
-      explanation: "Move-to-Front Transform is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Move-to-Front Transform does."],
-      objective: "Purpose",
+      explanation:
+        "After 'a': a moves to front (already there). After second 'a': same. After 'b': b moves to front.",
+      hints: ["Track the list step by step."],
+      objective: "List state",
     },
   ],
   exam: {
-    definition: "Move-to-Front Transform is an algorithm in the domain of data compression.",
-    steps: [
-      "Apply the Move-to-Front Transform algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["data compression applications"],
-    limitations: ["Specific to its problem domain"],
+    definition:
+      "MTF replaces each symbol with its current position in a dynamically reordered list.",
+    steps: ["Initialize alphabet list.", "For each symbol: output index, move to front."],
+    timeComplexity: "$O(n \\cdot |\\Sigma|)$.",
+    spaceComplexity: "$O(|\\Sigma|)$.",
+    correctness: "The inverse simply reverses each operation: look up by index, move to front.",
+    applications: ["bzip2 pipeline", "adaptive compression"],
+    limitations: ["O(n·σ) is slow for large alphabets without optimized data structures"],
     faq: [
       {
-        q: "When should you use Move-to-Front Transform?",
-        a: "Use Move-to-Front Transform when the problem matches its designed use case in data compression.",
+        q: "Why use MTF after BWT?",
+        a: "BWT groups similar characters; MTF converts these runs into sequences of small integers.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Move-to-Front Transform (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Algorithm description (2).", "Why small indices appear (2).", "Inverse (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Move-to-Front Transform.",
+      citation: "J. L. Bentley et al., 'A Locally Adaptive Data Compression Scheme', CACM, 1986.",
+      supports: "MTF analysis.",
     },
   ],
   review: {

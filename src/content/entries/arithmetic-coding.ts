@@ -3,146 +3,165 @@ import type { AlgorithmEntry } from "../types";
 export const arithmeticCodingEntry: AlgorithmEntry = {
   slug: "arithmetic-coding",
   name: "Arithmetic Coding",
-  aliases: ["Arithmetic Coding"],
+  aliases: ["Arithmetic Encoding"],
   curriculum: [540],
   domain: "compression",
-  subcategory: "Compression",
+  subcategory: "Entropy Coding",
   difficulty: "intermediate",
-  summary: "Arithmetic Coding is a well-known algorithm in the domain of data compression.",
-  tags: ["arithmetic coding", "compression"],
+  summary:
+    "Encodes an entire message as a single number in [0,1), achieving near-optimal compression by narrowing the interval according to symbol probabilities.",
+  tags: ["entropy coding", "compression", "interval"],
   prerequisites: [],
-  related: [],
+  related: ["huffman-tree", "asymmetric-numeral-systems-ans"],
   problem: {
-    input: "Input for Arithmetic Coding.",
-    output: "Output of Arithmetic Coding.",
+    input: "A message and symbol probabilities.",
+    output: "A number in [0,1) encoding the message.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Arithmetic Coding solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Divide [0,1) into sub-intervals proportional to symbol probabilities. For each symbol, narrow to its sub-interval. The final interval uniquely encodes the message.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Arithmetic Coding algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Start with interval [0, 1).",
+          "For each symbol:",
+          "  Divide current interval by symbol probabilities.",
+          "  Narrow to the sub-interval for the current symbol.",
+          "Output any number in the final interval.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Arithmetic Coding follows the pseudocode directly.",
+        text: "In practice, use integer arithmetic with scaling to avoid precision loss. Output bits as the interval narrows.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Arithmetic Coding is based on the algorithm's structure and the operations performed at each step.",
+        text: "Optimal: the code length approaches the entropy $H = -\\sum p_i \\log_2 p_i$, with at most 2 bits overhead for the entire message.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of Arithmetic Coding exist in the literature. See references for details.",
+        text: "Unlike Huffman coding which assigns whole bits per symbol, arithmetic coding can use fractional bits, achieving better compression for skewed distributions.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(n)$",
+    average: "$O(n)$",
+    worst: "$O(n)$",
+    space: "$O(|\\Sigma|)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "data compression",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "arithmetic_coding",
+      code: `def arithmetic_encode(message: str, probs: dict[str, tuple[float, float]]) -> float:
+    low, high = 0.0, 1.0
+    for ch in message:
+        rng = high - low
+        ch_low, ch_high = probs[ch]
+        high = low + rng * ch_high
+        low = low + rng * ch_low
+    return (low + high) / 2
+
+def arithmetic_decode(code: float, length: int, probs: dict[str, tuple[float, float]]) -> str:
+    result = []
+    for _ in range(length):
+        for ch, (ch_low, ch_high) in probs.items():
+            if ch_low <= code < ch_high:
+                result.append(ch)
+                rng = ch_high - ch_low
+                code = (code - ch_low) / rng
+                break
+    return "".join(result)
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            "aab",
+            {
+              a: [0.0, 0.6],
+              b: [0.6, 1.0],
+            },
+          ],
+          expected_range: [0.0, 1.0],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "arithmeticCoding",
+      code: `function arithmeticEncode(message, probs) {
+  let low = 0, high = 1;
+  for (const ch of message) {
+    const range = high - low;
+    const [cLow, cHigh] = probs[ch];
+    high = low + range * cHigh;
+    low = low + range * cLow;
+  }
+  return (low + high) / 2;
 }
 `,
-      tests: [
-        {
-          args: [42],
-          expected: 42,
-        },
-      ],
+      tests: [],
     },
   ],
   visualizer: null,
   practice: [
     {
-      id: "arithmetic-coding-q1",
+      id: "ac-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Arithmetic Coding?",
+      prompt: "What does arithmetic coding represent the message as?",
       options: [
-        "To solve the Arithmetic Coding problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "A single number in [0,1)",
+        "A binary tree",
+        "A sequence of codewords",
+        "A hash value",
       ],
       answer: 0,
-      explanation: "Arithmetic Coding is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Arithmetic Coding does."],
-      objective: "Purpose",
+      explanation: "The entire message maps to a narrowing interval in [0,1).",
+      hints: ["Interval."],
+      objective: "Representation",
     },
   ],
   exam: {
-    definition: "Arithmetic Coding is an algorithm in the domain of data compression.",
-    steps: [
-      "Apply the Arithmetic Coding algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
+    definition: "Encodes a message as a number by recursively narrowing a probability interval.",
+    steps: ["Start [0,1).", "Narrow interval per symbol.", "Output midpoint."],
     timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["data compression applications"],
-    limitations: ["Specific to its problem domain"],
+    spaceComplexity: "$O(|\\Sigma|)$.",
+    correctness: "Non-overlapping intervals ensure unique decodability.",
+    applications: ["JPEG", "H.264/H.265", "data compression"],
+    limitations: ["Patent issues historically; precision management in fixed-point"],
     faq: [
       {
-        q: "When should you use Arithmetic Coding?",
-        a: "Use Arithmetic Coding when the problem matches its designed use case in data compression.",
+        q: "Why better than Huffman?",
+        a: "Can use fractional bits per symbol, approaching entropy more closely.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Arithmetic Coding (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 4,
+        outline: ["Interval narrowing (2).", "Why near-optimal (1).", "vs Huffman (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Arithmetic Coding.",
+      citation:
+        "I. H. Witten, R. M. Neal, J. G. Cleary, 'Arithmetic coding for data compression', CACM, 1987.",
+      supports: "Classic tutorial.",
     },
   ],
   review: {

@@ -3,93 +3,126 @@ import type { AlgorithmEntry } from "../types";
 export const lz78Entry: AlgorithmEntry = {
   slug: "lz78",
   name: "LZ78",
-  aliases: ["LZ78"],
+  aliases: ["Lempel-Ziv 78", "LZ2"],
   curriculum: [537],
   domain: "compression",
-  subcategory: "Compression",
+  subcategory: "Dictionary Compression",
   difficulty: "intermediate",
-  summary: "LZ78 is a well-known algorithm in the domain of data compression.",
-  tags: ["lz78", "compression"],
+  summary:
+    "Builds a dictionary of phrases incrementally, encoding each new phrase as an existing dictionary index plus one new character.",
+  tags: ["compression", "dictionary", "phrase"],
   prerequisites: [],
-  related: [],
+  related: ["lz77", "lzw"],
   problem: {
-    input: "Input for LZ78.",
-    output: "Output of LZ78.",
+    input: "A byte stream.",
+    output: "Sequence of (dictionary_index, character) pairs.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "LZ78 solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Build a dictionary as you go. Each new entry extends an existing entry by one character. Output the index of the longest matching dictionary entry plus the next character.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The LZ78 algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Dictionary starts with entry 0 = empty string.",
+          "Read input, matching the longest dictionary entry.",
+          "Output (index_of_match, next_character).",
+          "Add the match + next_character as a new dictionary entry.",
+          "Continue from after the output characters.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of LZ78 follows the pseudocode directly.",
+        text: "Use a trie for the dictionary for O(1) per character matching. Dictionary grows unboundedly; in practice, reset or limit it.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of LZ78 is based on the algorithm's structure and the operations performed at each step.",
+        text: "Universal: asymptotically optimal for stationary ergodic sources. Number of phrases is $O(n / \\log n)$.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of LZ78 exist in the literature. See references for details.",
+        text: "LZ78 influenced LZW (dictionary initialized with single characters, outputs only indices). LZW was widely used in GIF and Unix compress.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(n)$",
+    average: "$O(n)$",
+    worst: "$O(n)$",
+    space: "$O(n)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "data compression",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "lz78",
+      code: `def lz78_compress(data: str) -> list[tuple[int, str]]:
+    dictionary: dict[str, int] = {"": 0}
+    tokens = []
+    current = ""
+    next_code = 1
+    for ch in data:
+        current += ch
+        if current not in dictionary:
+            prefix = current[:-1]
+            tokens.append((dictionary[prefix], ch))
+            dictionary[current] = next_code
+            next_code += 1
+            current = ""
+    if current:
+        tokens.append((dictionary[current], ""))
+    return tokens
+
+def lz78_decompress(tokens: list[tuple[int, str]]) -> str:
+    dictionary = {0: ""}
+    result = []
+    next_code = 1
+    for idx, ch in tokens:
+        phrase = dictionary[idx] + ch
+        result.append(phrase)
+        dictionary[next_code] = phrase
+        next_code += 1
+    return "".join(result)
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["aabaabaab"],
+          expected_type: "list",
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "lz78",
+      code: `function lz78Compress(data) {
+  const dict = {"": 0};
+  const tokens = [];
+  let current = "", nextCode = 1;
+  for (const ch of data) {
+    current += ch;
+    if (!(current in dict)) {
+      tokens.push([dict[current.slice(0, -1)], ch]);
+      dict[current] = nextCode++;
+      current = "";
+    }
+  }
+  if (current) tokens.push([dict[current], ""]);
+  return tokens;
 }
 `,
-      tests: [
-        {
-          args: [42],
-          expected: 42,
-        },
-      ],
+      tests: [],
     },
   ],
   visualizer: null,
@@ -97,48 +130,54 @@ export const lz78Entry: AlgorithmEntry = {
     {
       id: "lz78-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of LZ78?",
+      prompt: "LZ78 dictionary entries are built by:",
       options: [
-        "To solve the LZ78 problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "Extending existing entries by one character",
+        "Sliding a window",
+        "Sorting suffixes",
+        "Huffman tree",
       ],
       answer: 0,
-      explanation: "LZ78 is designed to solve its specific problem efficiently.",
-      hints: ["Think about what LZ78 does."],
-      objective: "Purpose",
+      explanation: "Each new entry is an existing entry plus one new character.",
+      hints: ["Incremental."],
+      objective: "Dictionary growth",
     },
   ],
   exam: {
-    definition: "LZ78 is an algorithm in the domain of data compression.",
+    definition: "Incremental dictionary compression outputting (index, character) pairs.",
     steps: [
-      "Apply the LZ78 algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Match longest dictionary entry.",
+      "Output (index, next char).",
+      "Add new entry to dictionary.",
     ],
-    timeComplexity: "$O(n)$.",
+    timeComplexity: "$O(n)$ with trie.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["data compression applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness: "Dictionary reconstruction during decompression mirrors compression.",
+    applications: ["Foundation for LZW", "theoretical compression"],
+    limitations: ["Dictionary grows unboundedly; needs reset strategy"],
     faq: [
       {
-        q: "When should you use LZ78?",
-        a: "Use LZ78 when the problem matches its designed use case in data compression.",
+        q: "LZ78 vs LZW?",
+        a: "LZW pre-initializes the dictionary and outputs only indices (no character).",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: ["Define LZ78 (1).", "Describe the algorithm (2).", "Analyze complexity (2)."],
+        marks: 4,
+        outline: [
+          "Token format (1).",
+          "Dictionary growth (1).",
+          "Universality (1).",
+          "vs LZ77/LZW (1).",
+        ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for LZ78.",
+      citation:
+        "J. Ziv and A. Lempel, 'Compression of Individual Sequences via Variable-Rate Coding', IEEE IT, 1978.",
+      supports: "Original paper.",
     },
   ],
   review: {

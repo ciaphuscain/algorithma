@@ -2,92 +2,124 @@ import type { AlgorithmEntry } from "../types";
 
 export const stringInterleavingDpEntry: AlgorithmEntry = {
   slug: "string-interleaving-dp",
-  name: "String Interleaving DP",
-  aliases: ["String Interleaving DP"],
+  name: "String Interleaving (DP)",
+  aliases: ["Interleaving String"],
   curriculum: [347],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "Dynamic Programming",
   difficulty: "intermediate",
-  summary: "String Interleaving DP is a well-known algorithm in the domain of string processing.",
-  tags: ["string interleaving dp", "string"],
+  summary: "Determines whether a string is an interleaving of two other strings using DP.",
+  tags: ["interleaving", "dynamic programming", "string"],
   prerequisites: [],
-  related: [],
+  related: ["regular-expression-matching-dp"],
   problem: {
-    input: "Input for String Interleaving DP.",
-    output: "Output of String Interleaving DP.",
+    input: "Strings s1, s2, s3.",
+    output: "Whether s3 is formed by interleaving s1 and s2.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "String Interleaving DP solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "s3 is an interleaving of s1 and s2 if we can split s3 into characters from s1 and s2, maintaining their relative order. Use dp[i][j] = whether s1[0..i-1] and s2[0..j-1] can form s3[0..i+j-1].",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The String Interleaving DP algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "If |s1|+|s2| != |s3|, return false.",
+          "dp[0][0] = true.",
+          "Fill first row: dp[0][j] = dp[0][j-1] AND s2[j-1]==s3[j-1].",
+          "Fill first col: dp[i][0] = dp[i-1][0] AND s1[i-1]==s3[i-1].",
+          "dp[i][j] = (dp[i-1][j] AND s1[i-1]==s3[i+j-1]) OR (dp[i][j-1] AND s2[j-1]==s3[i+j-1]).",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of String Interleaving DP follows the pseudocode directly.",
+        text: "Can optimize space to O(min(m,n)) using a single row.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of String Interleaving DP is based on the algorithm's structure and the operations performed at each step.",
+        text: "$O(mn)$ time and $O(mn)$ space, reducible to $O(\\min(m,n))$ space.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of String Interleaving DP exist in the literature. See references for details.",
+        text: "The problem is equivalent to finding a path in a grid from (0,0) to (m,n) where right moves consume s2 characters and down moves consume s1 characters.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(mn)$",
+    average: "$O(mn)$",
+    worst: "$O(mn)$",
+    space: "$O(mn)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "string processing",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "string_interleaving_dp",
+      code: `def is_interleave(s1: str, s2: str, s3: str) -> bool:
+    m, n = len(s1), len(s2)
+    if m + n != len(s3):
+        return False
+    dp = [[False] * (n + 1) for _ in range(m + 1)]
+    dp[0][0] = True
+    for j in range(1, n + 1):
+        dp[0][j] = dp[0][j - 1] and s2[j - 1] == s3[j - 1]
+    for i in range(1, m + 1):
+        dp[i][0] = dp[i - 1][0] and s1[i - 1] == s3[i - 1]
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            dp[i][j] = (dp[i - 1][j] and s1[i - 1] == s3[i + j - 1]) or                        (dp[i][j - 1] and s2[j - 1] == s3[i + j - 1])
+    return dp[m][n]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["aab", "axy", "aaxaby"],
+          expected: true,
+        },
+        {
+          args: ["ab", "cd", "acbd"],
+          expected: true,
+        },
+        {
+          args: ["ab", "cd", "abdc"],
+          expected: true,
+        },
+        {
+          args: ["ab", "cd", "adcb"],
+          expected: false,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "stringInterleavingDp",
+      code: `function isInterleave(s1, s2, s3) {
+  const m = s1.length, n = s2.length;
+  if (m + n !== s3.length) return false;
+  const dp = Array.from({length: m + 1}, () => new Array(n + 1).fill(false));
+  dp[0][0] = true;
+  for (let j = 1; j <= n; j++) dp[0][j] = dp[0][j-1] && s2[j-1] === s3[j-1];
+  for (let i = 1; i <= m; i++) dp[i][0] = dp[i-1][0] && s1[i-1] === s3[i-1];
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++)
+    dp[i][j] = (dp[i-1][j] && s1[i-1] === s3[i+j-1]) || (dp[i][j-1] && s2[j-1] === s3[i+j-1]);
+  return dp[m][n];
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["ab", "cd", "acbd"],
+          expected: true,
         },
       ],
     },
@@ -95,54 +127,41 @@ export const stringInterleavingDpEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "string-interleaving-dp-q1",
+      id: "si-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of String Interleaving DP?",
-      options: [
-        "To solve the String Interleaving DP problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "Is 'adcb' an interleaving of 'ab' and 'cd'?",
+      options: ["No", "Yes", "Only with repetition", "Depends on order"],
       answer: 0,
-      explanation: "String Interleaving DP is designed to solve its specific problem efficiently.",
-      hints: ["Think about what String Interleaving DP does."],
-      objective: "Purpose",
+      explanation: "'adcb' requires d before c, violating the order of 'cd'.",
+      hints: ["Track relative order."],
+      objective: "Order",
     },
   ],
   exam: {
-    definition: "String Interleaving DP is an algorithm in the domain of string processing.",
-    steps: [
-      "Apply the String Interleaving DP algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "DP to check if s3 interleaves s1 and s2 preserving character order.",
+    steps: ["Check lengths.", "Fill dp[i][j] using s1[i-1] or s2[j-1] matching s3[i+j-1]."],
+    timeComplexity: "$O(mn)$.",
+    spaceComplexity: "$O(mn)$, reducible to $O(n)$.",
+    correctness: "All valid interleavings explored via the 2D recurrence.",
+    applications: ["Merge validation", "version control merging"],
+    limitations: ["Exponential number of actual interleavings; DP only decides existence"],
     faq: [
       {
-        q: "When should you use String Interleaving DP?",
-        a: "Use String Interleaving DP when the problem matches its designed use case in string processing.",
+        q: "Can BFS solve this?",
+        a: "Yes, BFS on the (i,j) grid also works in O(mn).",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define String Interleaving DP (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 4,
+        outline: ["Recurrence (2).", "Base cases (1).", "Grid analogy (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for String Interleaving DP.",
+      citation: "LeetCode Problem 97, 'Interleaving String'.",
+      supports: "Classic formulation.",
     },
   ],
   review: {

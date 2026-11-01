@@ -2,93 +2,108 @@ import type { AlgorithmEntry } from "../types";
 
 export const fmIndexFullTextSearchEntry: AlgorithmEntry = {
   slug: "fm-index-full-text-search",
-  name: "FM-Index (Full-Text Search)",
-  aliases: ["FM-Index (Full-Text Search)"],
+  name: "FM-Index",
+  aliases: ["FM Index", "Full-text Minute-space Index"],
   curriculum: [350],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "Compressed Index",
   difficulty: "intermediate",
   summary:
-    "FM-Index (Full-Text Search) is a well-known algorithm in the domain of string processing.",
-  tags: ["fm index full text search", "string"],
-  prerequisites: [],
-  related: [],
+    "A compressed full-text index based on the Burrows-Wheeler Transform that supports O(m) pattern counting and O(m + occ) locate queries.",
+  tags: ["BWT", "compressed index", "rank query", "full-text search"],
+  prerequisites: ["burrows-wheeler-transform-bwt", "suffix-array-sa-is-linear-algorithm"],
+  related: ["lz77"],
   problem: {
-    input: "Input for FM-Index (Full-Text Search).",
-    output: "Output of FM-Index (Full-Text Search).",
+    input: "A text T (preprocessed into FM-index) and a pattern P.",
+    output: "Count or positions of P in T.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "FM-Index (Full-Text Search) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "The BWT of the text groups similar contexts. By counting character ranks in the BWT column, we can narrow the suffix array range matching a pattern, character by character from right to left.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The FM-Index (Full-Text Search) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Build the BWT and suffix array of T.",
+          "Precompute C[c] = number of characters < c, and Occ(c,i) = rank of c in BWT[0..i].",
+          "To count pattern P: maintain range [lo, hi) in the suffix array.",
+          "For each character P[i] from right to left: lo = C[c] + Occ(c, lo-1), hi = C[c] + Occ(c, hi-1).",
+          "Final range size = number of occurrences.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of FM-Index (Full-Text Search) follows the pseudocode directly.",
+        text: "The key operation is rank queries on the BWT column, which can be done in O(1) with wavelet trees or sampled tables.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of FM-Index (Full-Text Search) is based on the algorithm's structure and the operations performed at each step.",
+        text: "Counting takes $O(m)$ backward steps. Each step is O(1) with rank data structures. Space is $O(n \\cdot H_k)$ bits where $H_k$ is the k-th order entropy.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of FM-Index (Full-Text Search) exist in the literature. See references for details.",
+        text: "The FM-index achieves self-indexing: the text can be reconstructed from the index, so no separate storage needed. Combined with sampling, locate queries are $O(m + \\text{occ} \\cdot \\log^\\epsilon n)$.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(m)$",
+    average: "$O(m)$",
+    worst: "$O(m + \\text{occ})$",
+    space: "$O(n)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "string processing",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "fm_index",
+      code: `def build_fm_index(text: str):
+    text = text + "$"
+    n = len(text)
+    suffixes = sorted(range(n), key=lambda i: text[i:])
+    bwt = "".join(text[(s - 1) % n] for s in suffixes)
+    chars = sorted(set(text))
+    c_table = {}
+    count = 0
+    for ch in chars:
+        c_table[ch] = count
+        count += bwt.count(ch)
+    occ = {ch: [0] * (n + 1) for ch in chars}
+    for i in range(n):
+        for ch in chars:
+            occ[ch][i + 1] = occ[ch][i] + (1 if bwt[i] == ch else 0)
+    return {"bwt": bwt, "sa": suffixes, "c": c_table, "occ": occ}
+
+def fm_count(index, pattern: str) -> int:
+    lo, hi = 0, len(index["bwt"])
+    for c in reversed(pattern):
+        if c not in index["c"]:
+            return 0
+        lo = index["c"][c] + index["occ"][c][lo]
+        hi = index["c"][c] + index["occ"][c][hi]
+        if lo >= hi:
+            return 0
+    return hi - lo
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["banana", "ana"],
+          expected: 2,
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["banana", "xyz"],
+          expected: 0,
         },
       ],
     },
@@ -96,55 +111,46 @@ export const fmIndexFullTextSearchEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "fm-index-full-text-search-q1",
+      id: "fm-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of FM-Index (Full-Text Search)?",
-      options: [
-        "To solve the FM-Index (Full-Text Search) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "FM-index backward search processes the pattern in which direction?",
+      options: ["Right to left", "Left to right", "Middle outward", "Random order"],
       answer: 0,
-      explanation:
-        "FM-Index (Full-Text Search) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what FM-Index (Full-Text Search) does."],
-      objective: "Purpose",
+      explanation: "Each step reads one character from right to left, narrowing the SA range.",
+      hints: ["Backward."],
+      objective: "Direction",
     },
   ],
   exam: {
-    definition: "FM-Index (Full-Text Search) is an algorithm in the domain of string processing.",
+    definition: "A compressed full-text index using BWT and rank/select queries.",
     steps: [
-      "Apply the FM-Index (Full-Text Search) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Build BWT and SA.",
+      "Precompute C and Occ tables.",
+      "Backward search: narrow [lo,hi) per character.",
     ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "$O(m)$ to count, $O(m+occ)$ to locate.",
+    spaceComplexity: "$O(n H_k)$ bits compressed.",
+    correctness: "LF-mapping preserves suffix array order.",
+    applications: ["Bioinformatics read alignment", "compressed text search"],
+    limitations: ["Locate queries need sampled SA positions"],
     faq: [
       {
-        q: "When should you use FM-Index (Full-Text Search)?",
-        a: "Use FM-Index (Full-Text Search) when the problem matches its designed use case in string processing.",
+        q: "Why is it called 'Full-text Minute-space'?",
+        a: "It compresses the index to entropy-bounded space while supporting full-text queries.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define FM-Index (Full-Text Search) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["BWT construction (1).", "Backward search (2).", "Compression properties (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for FM-Index (Full-Text Search).",
+      citation:
+        "P. Ferragina and G. Manzini, 'Opportunistic data structures with applications', FOCS, 2000.",
+      supports: "Original FM-index paper.",
     },
   ],
   review: {

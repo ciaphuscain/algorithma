@@ -3,93 +3,133 @@ import type { AlgorithmEntry } from "../types";
 export const deflateEntry: AlgorithmEntry = {
   slug: "deflate",
   name: "DEFLATE",
-  aliases: ["DEFLATE"],
+  aliases: ["Deflate Compression"],
   curriculum: [539],
   domain: "compression",
-  subcategory: "Compression",
+  subcategory: "Lossless Compression",
   difficulty: "intermediate",
-  summary: "DEFLATE is a well-known algorithm in the domain of data compression.",
-  tags: ["deflate", "compression"],
-  prerequisites: [],
-  related: [],
+  summary:
+    "Combines LZ77 dictionary compression with Huffman coding. Used in gzip, PNG, and ZIP formats.",
+  tags: ["compression", "LZ77", "Huffman", "gzip"],
+  prerequisites: ["lz77", "huffman-tree"],
+  related: ["lzw"],
   problem: {
-    input: "Input for DEFLATE.",
-    output: "Output of DEFLATE.",
+    input: "A byte stream.",
+    output: "Compressed byte stream using LZ77 + Huffman.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "DEFLATE solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "First pass: find repeated sequences using LZ77 (replace with back-references). Second pass: encode the literals and back-references using Huffman codes for further compression.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The DEFLATE algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Divide input into blocks.",
+          "For each block, apply LZ77 to find matches.",
+          "Build Huffman trees for literal/length codes and distance codes.",
+          "Encode: literals as Huffman codes, matches as length+distance pairs.",
+          "Store the Huffman tree in the block header.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of DEFLATE follows the pseudocode directly.",
+        text: "Three block types: uncompressed (for incompressible data), fixed Huffman (predefined codes), dynamic Huffman (custom codes in header).",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of DEFLATE is based on the algorithm's structure and the operations performed at each step.",
+        text: "Compression ratio depends on data redundancy. Typically 60-70% reduction on text. Block-level adaptivity helps handle varying data characteristics.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of DEFLATE exist in the literature. See references for details.",
+        text: "DEFLATE's simplicity and effectiveness made it ubiquitous. Zstandard improves on it with ANS and larger windows, but DEFLATE remains the standard for compatibility.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(n)$",
+    average: "$O(n)$",
+    worst: "$O(n^2)$",
+    space: "$O(n)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "data compression",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "deflate",
+      code: `def simplified_deflate(data: str) -> list:
+    tokens = []
+    i = 0
+    window_size = 32
+    while i < len(data):
+        best_len, best_dist = 0, 0
+        start = max(0, i - window_size)
+        for j in range(start, i):
+            length = 0
+            while i + length < len(data) and data[j + length] == data[i + length] and length < 258:
+                length += 1
+            if length > best_len:
+                best_len = length
+                best_dist = i - j
+        if best_len >= 3:
+            tokens.append((best_dist, best_len))
+            i += best_len
+        else:
+            tokens.append(data[i])
+            i += 1
+    return tokens
+
+def simplified_inflate(tokens: list) -> str:
+    result = []
+    for t in tokens:
+        if isinstance(t, str):
+            result.append(t)
+        else:
+            dist, length = t
+            start = len(result) - dist
+            for j in range(length):
+                result.append(result[start + j])
+    return "".join(result)
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["abcabcabc"],
+          expected_type: "list",
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "deflate",
+      code: `function simplifiedDeflate(data) {
+  const tokens = [];
+  let i = 0;
+  while (i < data.length) {
+    let bestLen = 0, bestDist = 0;
+    const start = Math.max(0, i - 32);
+    for (let j = start; j < i; j++) {
+      let len = 0;
+      while (i + len < data.length && data[j + len] === data[i + len] && len < 258) len++;
+      if (len > bestLen) { bestLen = len; bestDist = i - j; }
+    }
+    if (bestLen >= 3) { tokens.push([bestDist, bestLen]); i += bestLen; }
+    else { tokens.push(data[i]); i++; }
+  }
+  return tokens;
 }
 `,
-      tests: [
-        {
-          args: [42],
-          expected: 42,
-        },
-      ],
+      tests: [],
     },
   ],
   visualizer: null,
@@ -97,48 +137,48 @@ export const deflateEntry: AlgorithmEntry = {
     {
       id: "deflate-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of DEFLATE?",
+      prompt: "DEFLATE combines which two techniques?",
       options: [
-        "To solve the DEFLATE problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "LZ77 and Huffman coding",
+        "BWT and MTF",
+        "LZW and arithmetic coding",
+        "RLE and Huffman",
       ],
       answer: 0,
-      explanation: "DEFLATE is designed to solve its specific problem efficiently.",
-      hints: ["Think about what DEFLATE does."],
-      objective: "Purpose",
+      explanation: "DEFLATE uses LZ77 for dictionary compression and Huffman for entropy coding.",
+      hints: ["Two-stage."],
+      objective: "Components",
     },
   ],
   exam: {
-    definition: "DEFLATE is an algorithm in the domain of data compression.",
+    definition: "Lossless compression combining LZ77 back-references with Huffman coding.",
     steps: [
-      "Apply the DEFLATE algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "LZ77 pass: find matches.",
+      "Huffman pass: encode literals and lengths.",
+      "Output block with Huffman tree header.",
     ],
-    timeComplexity: "$O(n)$.",
+    timeComplexity: "$O(n)$ to $O(n^2)$ depending on match strategy.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["data compression applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness: "Lossless: inflate reverses deflate exactly.",
+    applications: ["gzip", "PNG", "ZIP", "HTTP compression"],
+    limitations: ["32KB window limits long-range matches; newer formats use larger windows"],
     faq: [
       {
-        q: "When should you use DEFLATE?",
-        a: "Use DEFLATE when the problem matches its designed use case in data compression.",
+        q: "Why is DEFLATE still used?",
+        a: "Universal compatibility; standardized in RFC 1951.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: ["Define DEFLATE (1).", "Describe the algorithm (2).", "Analyze complexity (2)."],
+        marks: 4,
+        outline: ["LZ77 stage (1).", "Huffman stage (1).", "Block types (1).", "Applications (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for DEFLATE.",
+      citation: "P. Deutsch, 'DEFLATE Compressed Data Format Specification', RFC 1951, 1996.",
+      supports: "Standard.",
     },
   ],
   review: {

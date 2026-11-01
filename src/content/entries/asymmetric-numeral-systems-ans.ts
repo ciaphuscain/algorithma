@@ -3,149 +3,173 @@ import type { AlgorithmEntry } from "../types";
 export const asymmetricNumeralSystemsAnsEntry: AlgorithmEntry = {
   slug: "asymmetric-numeral-systems-ans",
   name: "Asymmetric Numeral Systems (ANS)",
-  aliases: ["Asymmetric Numeral Systems (ANS)"],
+  aliases: ["ANS", "rANS", "tANS"],
   curriculum: [541],
   domain: "compression",
-  subcategory: "Compression",
+  subcategory: "Entropy Coding",
   difficulty: "intermediate",
   summary:
-    "Asymmetric Numeral Systems (ANS) is a well-known algorithm in the domain of data compression.",
-  tags: ["asymmetric numeral systems ans", "compression"],
-  prerequisites: [],
-  related: [],
+    "A family of entropy coding methods that achieve near-optimal compression like arithmetic coding but with simpler, faster single-state encoding/decoding.",
+  tags: ["entropy coding", "compression", "ANS"],
+  prerequisites: ["arithmetic-coding"],
+  related: ["huffman-tree"],
   problem: {
-    input: "Input for Asymmetric Numeral Systems (ANS).",
-    output: "Output of Asymmetric Numeral Systems (ANS).",
+    input: "A message and symbol frequencies.",
+    output: "A compressed integer state encoding the message.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Asymmetric Numeral Systems (ANS) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Encode information into a single natural number. Each symbol either multiplies the state (for common symbols, adding few bits) or shifts it (for rare symbols, adding many bits).",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Asymmetric Numeral Systems (ANS) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "rANS: state x encodes symbol s as x' = (x // freq[s]) * total + cumul[s] + (x mod freq[s]).",
+          "Decode reverses: s = symbol at (x mod total), x' = (x // total) * freq[s] + (x mod total) - cumul[s].",
+          "Renormalize by streaming bits in/out to keep state in range.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Asymmetric Numeral Systems (ANS) follows the pseudocode directly.",
+        text: "tANS (tabled) precomputes a finite-state table for even faster encoding/decoding. rANS (range) is more flexible.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Asymmetric Numeral Systems (ANS) is based on the algorithm's structure and the operations performed at each step.",
+        text: "Achieves compression within 1 bit of entropy per symbol. Encoding and decoding are each $O(1)$ per symbol after table construction.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of Asymmetric Numeral Systems (ANS) exist in the literature. See references for details.",
+        text: "ANS combines the compression ratio of arithmetic coding with the speed of Huffman coding. Used in Zstandard (zstd), LZFSE, and JPEG XL.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(n)$",
+    average: "$O(n)$",
+    worst: "$O(n)$",
+    space: "$O(|\\Sigma|)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "data compression",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
+      entry: "ans",
+      code: `def rans_encode(message: list[int], freqs: list[int]) -> int:
+    total = sum(freqs)
+    cumul = [0] * (len(freqs) + 1)
+    for i in range(len(freqs)):
+        cumul[i + 1] = cumul[i] + freqs[i]
+    x = total
+    for s in reversed(message):
+        x = (x // freqs[s]) * total + cumul[s] + (x % freqs[s])
     return x
+
+def rans_decode(x: int, length: int, freqs: list[int]) -> list[int]:
+    total = sum(freqs)
+    cumul = [0] * (len(freqs) + 1)
+    for i in range(len(freqs)):
+        cumul[i + 1] = cumul[i] + freqs[i]
+    result = []
+    for _ in range(length):
+        slot = x % total
+        s = 0
+        while cumul[s + 1] <= slot:
+            s += 1
+        result.append(s)
+        x = (x // total) * freqs[s] + slot - cumul[s]
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [0, 0, 1, 0],
+            [3, 1],
+          ],
+          expected_type: "int",
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
+      entry: "ans",
+      code: `function ransEncode(message, freqs) {
+  const total = freqs.reduce((a, b) => a + b, 0);
+  const cumul = [0];
+  for (let i = 0; i < freqs.length; i++) cumul.push(cumul[i] + freqs[i]);
+  let x = total;
+  for (let i = message.length - 1; i >= 0; i--) {
+    const s = message[i];
+    x = Math.floor(x / freqs[s]) * total + cumul[s] + (x % freqs[s]);
+  }
   return x;
 }
 `,
-      tests: [
-        {
-          args: [42],
-          expected: 42,
-        },
-      ],
+      tests: [],
     },
   ],
   visualizer: null,
   practice: [
     {
-      id: "asymmetric-numeral-systems-ans-q1",
+      id: "ans-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Asymmetric Numeral Systems (ANS)?",
+      prompt: "ANS encodes a message into:",
       options: [
-        "To solve the Asymmetric Numeral Systems (ANS) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "A single integer state",
+        "A binary tree",
+        "A sequence of codewords",
+        "A floating-point interval",
       ],
       answer: 0,
-      explanation:
-        "Asymmetric Numeral Systems (ANS) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Asymmetric Numeral Systems (ANS) does."],
-      objective: "Purpose",
+      explanation: "ANS maintains a single state integer that encodes the entire message.",
+      hints: ["State."],
+      objective: "Representation",
     },
   ],
   exam: {
-    definition:
-      "Asymmetric Numeral Systems (ANS) is an algorithm in the domain of data compression.",
+    definition: "Entropy coding using a single integer state with near-optimal compression.",
     steps: [
-      "Apply the Asymmetric Numeral Systems (ANS) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Initialize state.",
+      "For each symbol, update state using frequency table.",
+      "Renormalize as needed.",
     ],
     timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["data compression applications"],
-    limitations: ["Specific to its problem domain"],
+    spaceComplexity: "$O(|\\Sigma|)$.",
+    correctness: "Bijection between messages and state values.",
+    applications: ["Zstandard", "LZFSE", "JPEG XL"],
+    limitations: ["Decode order is reverse of encode (LIFO)"],
     faq: [
       {
-        q: "When should you use Asymmetric Numeral Systems (ANS)?",
-        a: "Use Asymmetric Numeral Systems (ANS) when the problem matches its designed use case in data compression.",
+        q: "Why is ANS popular now?",
+        a: "It offers arithmetic-coding compression with Huffman-coding speed, and is patent-free.",
       },
     ],
     answers: [
       {
-        marks: 5,
+        marks: 4,
         outline: [
-          "Define Asymmetric Numeral Systems (ANS) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "rANS formula (2).",
+          "Comparison with arithmetic coding (1).",
+          "Applications (1).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Asymmetric Numeral Systems (ANS).",
+      citation: "J. Duda, 'Asymmetric numeral systems', arXiv:0902.0271, 2009.",
+      supports: "Original paper.",
     },
   ],
   review: {

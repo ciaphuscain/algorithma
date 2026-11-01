@@ -2,93 +2,125 @@ import type { AlgorithmEntry } from "../types";
 
 export const burrowsWheelerTransformBwtEntry: AlgorithmEntry = {
   slug: "burrows-wheeler-transform-bwt",
-  name: "Burrows–Wheeler Transform (BWT)",
-  aliases: ["Burrows–Wheeler Transform (BWT)"],
+  name: "Burrows-Wheeler Transform (BWT)",
+  aliases: ["Burrows-Wheeler Transform", "BWT"],
   curriculum: [335],
   domain: "compression",
-  subcategory: "Compression",
+  subcategory: "Text Transform",
   difficulty: "intermediate",
   summary:
-    "Burrows–Wheeler Transform (BWT) is a well-known algorithm in the domain of data compression.",
-  tags: ["burrows wheeler transform bwt", "compression"],
+    "A reversible text transformation that rearranges characters to group similar contexts together, making the output highly compressible by run-length encoding or move-to-front coding.",
+  tags: ["BWT", "text transform", "compression", "suffix array"],
   prerequisites: [],
-  related: [],
+  related: ["move-to-front-transform", "run-length-encoding", "suffix-array"],
   problem: {
-    input: "Input for Burrows–Wheeler Transform (BWT).",
-    output: "Output of Burrows–Wheeler Transform (BWT).",
+    input: "A string s with a unique end-of-string marker $.",
+    output: "The last column of the sorted rotation matrix.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Burrows–Wheeler Transform (BWT) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Write all rotations of the string, sort them, and take the last column. Characters that appear before similar contexts end up grouped together, creating runs that compress well.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Burrows–Wheeler Transform (BWT) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Append a sentinel character ($ or \\0, lexicographically smallest) if not present.",
+          "Generate all cyclic rotations of the string.",
+          "Sort the rotations lexicographically.",
+          "The BWT output is the last column of the sorted matrix.",
+          "Also output the row number where the original string appears.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Burrows–Wheeler Transform (BWT) follows the pseudocode directly.",
+        text: "The naive approach generates all rotations: O(n² log n). Using a suffix array, BWT can be computed in O(n) time.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Burrows–Wheeler Transform (BWT) is based on the algorithm's structure and the operations performed at each step.",
+        text: "The BWT is reversible: from the last column and the knowledge of which row is the original, we can reconstruct the string using the LF-mapping. Time O(n) for both transform and inverse.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Burrows–Wheeler Transform (BWT) exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Used in bzip2: BWT → MTF → RLE → Huffman/arithmetic coding.",
+          "The FM-index uses BWT for compressed full-text search.",
+          "SA-IS builds the suffix array (and thus BWT) in O(n) time.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
       best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
+      average: "O(n log n)",
+      worst: "O(n^2)",
     },
     space: "O(n)",
     worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "data compression",
+      label: "Reversible",
+      value: "Yes",
+    },
+    {
+      label: "Used in",
+      value: "bzip2, FM-index",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "bwt",
+      code: `def bwt(s):
+    """Burrows-Wheeler Transform. Returns (transformed string, original row index)."""
+    s = s + "$"
+    n = len(s)
+    rotations = sorted(s[i:] + s[:i] for i in range(n))
+    bwt_str = "".join(r[-1] for r in rotations)
+    idx = rotations.index(s)
+    return [bwt_str, idx]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["banana"],
+          expected: ["annb$aa", 4],
+        },
+        {
+          args: ["abracadabra"],
+          expected: ["ard$rcaaaabb", 3],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "bwt",
+      code: `function bwt(s) {
+  s = s + "$";
+  const n = s.length;
+  const rotations = [];
+  for (let i = 0; i < n; i++) rotations.push(s.slice(i) + s.slice(0, i));
+  rotations.sort();
+  const bwtStr = rotations.map(r => r[r.length - 1]).join("");
+  const idx = rotations.indexOf(s);
+  return [bwtStr, idx];
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["banana"],
+          expected: ["annb$aa", 4],
         },
       ],
     },
@@ -96,56 +128,53 @@ export const burrowsWheelerTransformBwtEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "burrows-wheeler-transform-bwt-q1",
+      id: "bwt-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Burrows–Wheeler Transform (BWT)?",
+      prompt: "What is the main purpose of BWT?",
       options: [
-        "To solve the Burrows–Wheeler Transform (BWT) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "To group similar characters together for better compression",
+        "To encrypt the text",
+        "To sort the text",
+        "To find patterns",
       ],
       answer: 0,
       explanation:
-        "Burrows–Wheeler Transform (BWT) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Burrows–Wheeler Transform (BWT) does."],
+        "BWT rearranges characters so that similar contexts (and thus similar characters) cluster together.",
+      hints: ["Think about what happens before compression."],
       objective: "Purpose",
     },
   ],
   exam: {
     definition:
-      "Burrows–Wheeler Transform (BWT) is an algorithm in the domain of data compression.",
-    steps: [
-      "Apply the Burrows–Wheeler Transform (BWT) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
+      "BWT sorts all cyclic rotations and takes the last column, grouping similar contexts.",
+    steps: ["Form all rotations.", "Sort lexicographically.", "Take last column."],
+    timeComplexity: "Naive $O(n^2 \\log n)$; with suffix array $O(n)$.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["data compression applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness: "The LF-mapping allows perfect reconstruction from the last column.",
+    applications: ["bzip2", "FM-index", "bioinformatics"],
+    limitations: ["Requires random access for inverse; streaming is harder"],
     faq: [
       {
-        q: "When should you use Burrows–Wheeler Transform (BWT)?",
-        a: "Use Burrows–Wheeler Transform (BWT) when the problem matches its designed use case in data compression.",
+        q: "How is BWT reversed?",
+        a: "Using the first column (sorted last column) and the LF-mapping to reconstruct each character.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Burrows–Wheeler Transform (BWT) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Rotation matrix concept (1).",
+          "Forward transform (2).",
+          "Inverse via LF-mapping (2).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Burrows–Wheeler Transform (BWT).",
+      citation:
+        "M. Burrows and D. J. Wheeler, 'A Block-Sorting Lossless Data Compression Algorithm', DEC SRC Research Report 124, 1994.",
+      supports: "Original paper.",
     },
   ],
   review: {

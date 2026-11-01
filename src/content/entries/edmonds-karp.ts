@@ -6,88 +6,180 @@ export const edmondsKarpEntry: AlgorithmEntry = {
   aliases: ["Edmonds-Karp"],
   curriculum: [234],
   domain: "graphs",
-  subcategory: "Graph Algorithms",
+  subcategory: "Network Flow",
   difficulty: "intermediate",
-  summary: "Edmonds-Karp is a well-known algorithm in the domain of graph algorithms.",
-  tags: ["edmonds karp", "graph"],
-  prerequisites: ["BFS", "DFS"],
-  related: [],
+  summary:
+    "A BFS-based implementation of Ford-Fulkerson that always uses shortest augmenting paths, guaranteeing O(VE²) worst-case time.",
+  tags: ["max flow", "BFS", "augmenting path", "network flow", "graph"],
+  prerequisites: ["BFS", "Ford-Fulkerson"],
+  related: ["ford-fulkerson", "dinic"],
   problem: {
-    input: "Input for Edmonds-Karp.",
-    output: "Output of Edmonds-Karp.",
+    input: "A directed graph with n vertices, edges with capacities, a source s and a sink t.",
+    output: "The maximum flow from s to t.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Edmonds-Karp solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Edmonds-Karp is Ford-Fulkerson with one rule: always use BFS to find the shortest augmenting path. This ensures the shortest-path distance never decreases, bounding augmentations to O(VE).",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Edmonds-Karp algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Build the residual graph as a capacity matrix.",
+          "BFS from s to t in the residual graph.",
+          "Trace the BFS path back to find the bottleneck.",
+          "Push bottleneck flow, updating residual capacities.",
+          "Repeat until BFS cannot reach t.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Edmonds-Karp follows the pseudocode directly.",
+        text: "BFS returns a parent array. Trace from t to s to find the path and its bottleneck. Update the capacity matrix along the path.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Edmonds-Karp is based on the algorithm's structure and the operations performed at each step.",
+        text: "After each augmentation, the BFS distance from s to any vertex does not decrease. Each edge becomes critical (bottleneck) at most $O(V)$ times, giving $O(VE)$ total augmentations, each costing $O(E)$: total $O(VE^2)$.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Edmonds-Karp exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Strictly polynomial, unlike DFS-based Ford-Fulkerson.",
+          "Dinic's algorithm improves to $O(V^2 E)$ with blocking flows.",
+          "For unit-capacity graphs, runs in $O(E\\sqrt{V})$.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(VE²)",
-      average: "O(VE²)",
-      worst: "O(VE²)",
+      best: "O(E)",
+      average: "O(V * E^2)",
+      worst: "O(V * E^2)",
     },
-    space: "O(V + E)",
+    space: "O(V^2)",
     worstClass: "other",
   },
   properties: [
     {
-      label: "Domain",
-      value: "graph algorithms",
+      label: "Path strategy",
+      value: "BFS (shortest augmenting path)",
+    },
+    {
+      label: "Polynomial",
+      value: "Yes, always",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "edmonds_karp",
+      code: `def edmonds_karp(n, edges, s, t):
+    from collections import deque
+    cap = [[0]*n for _ in range(n)]
+    for u, v, c in edges:
+        cap[u][v] += c
+    flow = 0
+    while True:
+        parent = [-1]*n
+        parent[s] = s
+        q = deque([s])
+        while q and parent[t] == -1:
+            u = q.popleft()
+            for v in range(n):
+                if parent[v] == -1 and cap[u][v] > 0:
+                    parent[v] = u
+                    q.append(v)
+        if parent[t] == -1:
+            break
+        aug = float('inf')
+        v = t
+        while v != s:
+            u = parent[v]
+            aug = min(aug, cap[u][v])
+            v = u
+        v = t
+        while v != s:
+            u = parent[v]
+            cap[u][v] -= aug
+            cap[v][u] += aug
+            v = u
+        flow += aug
+    return flow
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            4,
+            [
+              [0, 1, 10],
+              [0, 2, 10],
+              [1, 2, 2],
+              [1, 3, 6],
+              [2, 3, 10],
+            ],
+            0,
+            3,
+          ],
+          expected: 18,
+        },
+        {
+          args: [2, [[0, 1, 7]], 0, 1],
+          expected: 7,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "edmondsKarp",
+      code: `function edmondsKarp(n, edges, s, t) {
+  const cap = Array.from({length: n}, () => new Array(n).fill(0));
+  for (const [u, v, c] of edges) cap[u][v] += c;
+  let flow = 0;
+  while (true) {
+    const parent = new Array(n).fill(-1);
+    parent[s] = s;
+    const q = [s];
+    let qi = 0;
+    while (qi < q.length && parent[t] === -1) {
+      const u = q[qi++];
+      for (let v = 0; v < n; v++) {
+        if (parent[v] === -1 && cap[u][v] > 0) { parent[v] = u; q.push(v); }
+      }
+    }
+    if (parent[t] === -1) break;
+    let aug = Infinity;
+    for (let v = t; v !== s; v = parent[v]) aug = Math.min(aug, cap[parent[v]][v]);
+    for (let v = t; v !== s; v = parent[v]) { cap[parent[v]][v] -= aug; cap[v][parent[v]] += aug; }
+    flow += aug;
+  }
+  return flow;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            4,
+            [
+              [0, 1, 10],
+              [0, 2, 10],
+              [1, 2, 2],
+              [1, 3, 6],
+              [2, 3, 10],
+            ],
+            0,
+            3,
+          ],
+          expected: 18,
         },
       ],
     },
@@ -97,52 +189,55 @@ export const edmondsKarpEntry: AlgorithmEntry = {
     {
       id: "edmonds-karp-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Edmonds-Karp?",
+      prompt: "Why does Edmonds-Karp use BFS instead of DFS?",
       options: [
-        "To solve the Edmonds-Karp problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "BFS ensures shortest augmenting paths, giving polynomial time",
+        "BFS is always faster than DFS",
+        "DFS cannot find augmenting paths",
+        "BFS uses less memory",
       ],
       answer: 0,
-      explanation: "Edmonds-Karp is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Edmonds-Karp does."],
-      objective: "Purpose",
+      explanation:
+        "Shortest augmenting paths ensure the distance to any vertex never decreases, bounding the number of augmentations.",
+      hints: ["Think about the monotonicity property of BFS distances."],
+      objective: "BFS advantage",
     },
   ],
   exam: {
-    definition: "Edmonds-Karp is an algorithm in the domain of graph algorithms.",
+    definition:
+      "Edmonds-Karp uses BFS for augmenting paths in Ford-Fulkerson, guaranteeing O(VE²) time.",
     steps: [
-      "Apply the Edmonds-Karp algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "BFS to find shortest s→t path.",
+      "Push bottleneck flow.",
+      "Repeat until no path exists.",
     ],
-    timeComplexity: "$O(VE²)$.",
-    spaceComplexity: "$O(V + E)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["graph algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "$O(VE^2)$.",
+    spaceComplexity: "$O(V^2)$.",
+    correctness: "BFS distance monotonicity bounds augmentations to O(VE); each costs O(E).",
+    applications: ["maximum flow", "bipartite matching"],
+    limitations: ["Slower than Dinic's O(V²E)"],
     faq: [
       {
-        q: "When should you use Edmonds-Karp?",
-        a: "Use Edmonds-Karp when the problem matches its designed use case in graph algorithms.",
+        q: "How many augmentations at most?",
+        a: "O(VE), since each edge is critical at most O(V) times.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Edmonds-Karp (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Describe BFS augmentation loop (2).",
+          "Prove O(VE) augmentation bound (2).",
+          "Total time analysis (1).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Edmonds-Karp.",
+      citation:
+        "J. Edmonds and R. M. Karp, 'Theoretical Improvements in Algorithmic Efficiency for Network Flow Problems', JACM, 1972.",
+      supports: "Original paper.",
     },
   ],
   review: {

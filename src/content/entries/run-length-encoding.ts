@@ -3,48 +3,58 @@ import type { AlgorithmEntry } from "../types";
 export const runLengthEncodingEntry: AlgorithmEntry = {
   slug: "run-length-encoding",
   name: "Run-Length Encoding",
-  aliases: ["Run-Length Encoding"],
+  aliases: ["Run-Length Encoding", "RLE"],
   curriculum: [337],
   domain: "compression",
-  subcategory: "Compression",
-  difficulty: "intermediate",
-  summary: "Run-Length Encoding is a well-known algorithm in the domain of data compression.",
-  tags: ["run length encoding", "compression"],
+  subcategory: "Lossless Compression",
+  difficulty: "beginner",
+  summary:
+    "Compresses data by replacing consecutive runs of the same value with (value, count) pairs.",
+  tags: ["compression", "lossless", "run length", "RLE"],
   prerequisites: [],
-  related: [],
+  related: ["burrows-wheeler-transform-bwt", "move-to-front-transform"],
   problem: {
-    input: "Input for Run-Length Encoding.",
-    output: "Output of Run-Length Encoding.",
+    input: "A string or sequence of values.",
+    output: "A list of (value, count) pairs representing consecutive runs.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Run-Length Encoding solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "If you have 'AAABBBCC', instead of storing 8 characters, store 'A3B3C2' (6 characters). Works well when the input has long runs of repeated values.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Run-Length Encoding algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Scan left to right.",
+          "Count consecutive identical characters.",
+          "Output each character and its count.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Run-Length Encoding follows the pseudocode directly.",
+        text: "Simple linear scan. For decoding, expand each (value, count) pair back into the repeated characters.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Run-Length Encoding is based on the algorithm's structure and the operations performed at each step.",
+        text: "$O(n)$ time for both encoding and decoding. Best case: entire input is one character → O(1) output. Worst case: alternating characters → output is 2n (expansion).",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Run-Length Encoding exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Used as a post-processing step after BWT in bzip2.",
+          "Effective for bitmap images, fax transmission, and PCX format.",
+          "PackBits variant handles both runs and literal sequences.",
+        ],
       },
     ],
   },
@@ -59,35 +69,78 @@ export const runLengthEncodingEntry: AlgorithmEntry = {
   },
   properties: [
     {
-      label: "Domain",
-      value: "data compression",
+      label: "Type",
+      value: "Lossless",
+    },
+    {
+      label: "Best for",
+      value: "Data with long runs",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "rle_encode",
+      code: `def rle_encode(s):
+    """Run-length encode a string. Returns list of [char, count] pairs."""
+    if not s: return []
+    result = []
+    count = 1
+    for i in range(1, len(s)):
+        if s[i] == s[i-1]:
+            count += 1
+        else:
+            result.append([s[i-1], count])
+            count = 1
+    result.append([s[-1], count])
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["AAABBBCC"],
+          expected: [
+            ["A", 3],
+            ["B", 3],
+            ["C", 2],
+          ],
+        },
+        {
+          args: ["ABC"],
+          expected: [
+            ["A", 1],
+            ["B", 1],
+            ["C", 1],
+          ],
+        },
+        {
+          args: ["AAAAAA"],
+          expected: [["A", 6]],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "rleEncode",
+      code: `function rleEncode(s) {
+  if (!s) return [];
+  const result = [];
+  let count = 1;
+  for (let i = 1; i < s.length; i++) {
+    if (s[i] === s[i-1]) count++;
+    else { result.push([s[i-1], count]); count = 1; }
+  }
+  result.push([s[s.length-1], count]);
+  return result;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["AAABBBCC"],
+          expected: [
+            ["A", 3],
+            ["B", 3],
+            ["C", 2],
+          ],
         },
       ],
     },
@@ -95,54 +148,50 @@ export const runLengthEncodingEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "run-length-encoding-q1",
+      id: "rle-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Run-Length Encoding?",
+      prompt: "When does RLE expand the data instead of compressing it?",
       options: [
-        "To solve the Run-Length Encoding problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "When there are no consecutive repeated characters",
+        "Never",
+        "When the data is random",
+        "When the data is sorted",
       ],
       answer: 0,
-      explanation: "Run-Length Encoding is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Run-Length Encoding does."],
-      objective: "Purpose",
+      explanation: "With no runs, each character becomes (char, 1), doubling the output.",
+      hints: ["Think about alternating characters."],
+      objective: "Worst case",
     },
   ],
   exam: {
-    definition: "Run-Length Encoding is an algorithm in the domain of data compression.",
-    steps: [
-      "Apply the Run-Length Encoding algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
+    definition: "RLE replaces runs of identical values with (value, count) pairs.",
+    steps: ["Scan input.", "Count consecutive identical values.", "Output (value, count) pairs."],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["data compression applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness: "Every run is faithfully represented, and decoding is its exact inverse.",
+    applications: ["bitmap compression", "fax", "bzip2 post-BWT step"],
+    limitations: ["Can expand data with no runs"],
     faq: [
       {
-        q: "When should you use Run-Length Encoding?",
-        a: "Use Run-Length Encoding when the problem matches its designed use case in data compression.",
+        q: "Is RLE lossless?",
+        a: "Yes, the original data can be perfectly reconstructed.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Run-Length Encoding (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Define RLE (1).",
+          "Encode/decode algorithms (2).",
+          "Best/worst compression ratio (2).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Run-Length Encoding.",
+      citation: "D. Salomon, Data Compression: The Complete Reference, 4th ed., Springer, 2007.",
+      supports: "RLE chapter.",
     },
   ],
   review: {

@@ -3,92 +3,153 @@ import type { AlgorithmEntry } from "../types";
 export const palindromicTreeEertreeEntry: AlgorithmEntry = {
   slug: "palindromic-tree-eertree",
   name: "Palindromic Tree (Eertree)",
-  aliases: ["Palindromic Tree (Eertree)"],
+  aliases: ["Eertree", "Palindromic Automaton"],
   curriculum: [329],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "Palindrome Structures",
   difficulty: "intermediate",
   summary:
-    "Palindromic Tree (Eertree) is a well-known algorithm in the domain of string processing.",
-  tags: ["palindromic tree eertree", "string"],
+    "A tree structure containing all distinct palindromic substrings of a string, built online in O(n) time.",
+  tags: ["palindrome", "eertree", "online construction"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Palindromic Tree (Eertree).",
-    output: "Output of Palindromic Tree (Eertree).",
+    input: "A string S.",
+    output: "All distinct palindromic substrings and their counts.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Palindromic Tree (Eertree) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Each node represents a unique palindromic substring. Two root nodes represent palindromes of odd and even length. Suffix links connect each palindrome to its longest proper palindromic suffix.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Palindromic Tree (Eertree) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Two roots: imaginary root (length -1) and empty root (length 0).",
+          "For each new character:",
+          "  Follow suffix links from the last node until the character before the palindrome matches the new character.",
+          "  If the child edge exists, move there. Otherwise, create a new node.",
+          "  Set suffix link by following the parent's suffix link similarly.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Palindromic Tree (Eertree) follows the pseudocode directly.",
+        text: "Online construction processes characters one by one. At most n+2 nodes (n distinct non-empty palindromes + 2 roots).",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Palindromic Tree (Eertree) is based on the algorithm's structure and the operations performed at each step.",
+        text: "A string of length n has at most n+1 distinct palindromic substrings (including empty). Construction is amortized $O(n)$.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of Palindromic Tree (Eertree) exist in the literature. See references for details.",
+        text: "The palindromic tree enables counting occurrences of all palindromic substrings, finding the longest palindrome, and solving palindrome-based DP problems.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(n)$",
+    average: "$O(n)$",
+    worst: "$O(n)$",
+    space: "$O(n)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "string processing",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "palindromic_tree",
+      code: `class Node:
+    def __init__(self, length, suffix_link=0):
+        self.length = length
+        self.suffix_link = suffix_link
+        self.children: dict[str, int] = {}
+        self.count = 0
+
+def build_eertree(s: str) -> int:
+    nodes = [Node(-1, 0), Node(0, 0)]
+    nodes[0].suffix_link = 0
+    last = 1
+    for i, c in enumerate(s):
+        cur = last
+        while True:
+            cl = nodes[cur].length
+            if i - cl - 1 >= 0 and s[i - cl - 1] == c:
+                break
+            cur = nodes[cur].suffix_link
+        if c in nodes[cur].children:
+            last = nodes[cur].children[c]
+            nodes[last].count += 1
+            continue
+        new_len = nodes[cur].length + 2
+        q = nodes[cur].suffix_link
+        while True:
+            ql = nodes[q].length
+            if i - ql - 1 >= 0 and s[i - ql - 1] == c:
+                break
+            q = nodes[q].suffix_link
+        suf = nodes[q].children.get(c, 1)
+        new_node = Node(new_len, suf)
+        new_node.count = 1
+        nodes[cur].children[c] = len(nodes)
+        nodes.append(new_node)
+        last = len(nodes) - 1
+    return len(nodes) - 2
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["abba"],
+          expected: 4,
+        },
+        {
+          args: ["aaa"],
+          expected: 2,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "palindromicTree",
+      code: `function countDistinctPalindromes(s) {
+  const nodes = [{len: -1, suf: 0, ch: {}}, {len: 0, suf: 0, ch: {}}];
+  let last = 1;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    let cur = last;
+    while (true) {
+      const cl = nodes[cur].len;
+      if (i - cl - 1 >= 0 && s[i - cl - 1] === c) break;
+      cur = nodes[cur].suf;
+    }
+    if (c in nodes[cur].ch) { last = nodes[cur].ch[c]; continue; }
+    let q = nodes[cur].suf;
+    while (true) {
+      const ql = nodes[q].len;
+      if (i - ql - 1 >= 0 && s[i - ql - 1] === c) break;
+      q = nodes[q].suf;
+    }
+    const suf = nodes[q].ch[c] || 1;
+    const newNode = {len: nodes[cur].len + 2, suf, ch: {}};
+    nodes[cur].ch[c] = nodes.length;
+    nodes.push(newNode);
+    last = nodes.length - 1;
+  }
+  return nodes.length - 2;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["abba"],
+          expected: 4,
         },
       ],
     },
@@ -96,55 +157,46 @@ export const palindromicTreeEertreeEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "palindromic-tree-eertree-q1",
+      id: "eertree-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Palindromic Tree (Eertree)?",
-      options: [
-        "To solve the Palindromic Tree (Eertree) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "How many distinct palindromic substrings can a string of length n have?",
+      options: ["At most n+1", "n^2", "2^n", "n log n"],
       answer: 0,
-      explanation:
-        "Palindromic Tree (Eertree) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Palindromic Tree (Eertree) does."],
-      objective: "Purpose",
+      explanation: "Including the empty palindrome, at most n+1 distinct palindromic substrings.",
+      hints: ["Linear bound."],
+      objective: "Count",
     },
   ],
   exam: {
-    definition: "Palindromic Tree (Eertree) is an algorithm in the domain of string processing.",
+    definition: "A tree of all distinct palindromic substrings, built online in O(n).",
     steps: [
-      "Apply the Palindromic Tree (Eertree) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Two roots (length -1 and 0).",
+      "Extend by suffix link traversal.",
+      "Create new nodes for new palindromes.",
     ],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness: "Suffix links guarantee all palindromes are found.",
+    applications: ["Count distinct palindromes", "palindrome-based DP"],
+    limitations: ["Constant factor overhead from node structure"],
     faq: [
       {
-        q: "When should you use Palindromic Tree (Eertree)?",
-        a: "Use Palindromic Tree (Eertree) when the problem matches its designed use case in string processing.",
+        q: "Why two roots?",
+        a: "One for odd-length palindromes (starting from length -1), one for even-length (starting from length 0).",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Palindromic Tree (Eertree) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Structure (2).", "Construction (2).", "Applications (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Palindromic Tree (Eertree).",
+      citation:
+        "M. Rubinchik and A. Shur, 'EERTREE: An Efficient Data Structure for Processing Palindromes in Strings', 2015.",
+      supports: "Original paper.",
     },
   ],
   review: {

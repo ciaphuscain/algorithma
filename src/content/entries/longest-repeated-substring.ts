@@ -3,92 +3,134 @@ import type { AlgorithmEntry } from "../types";
 export const longestRepeatedSubstringEntry: AlgorithmEntry = {
   slug: "longest-repeated-substring",
   name: "Longest Repeated Substring",
-  aliases: ["Longest Repeated Substring"],
+  aliases: ["LRS"],
   curriculum: [343],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "Suffix Array Applications",
   difficulty: "intermediate",
   summary:
-    "Longest Repeated Substring is a well-known algorithm in the domain of string processing.",
-  tags: ["longest repeated substring", "string"],
-  prerequisites: [],
-  related: [],
+    "Finds the longest substring that appears at least twice using the suffix array and LCP array.",
+  tags: ["suffix array", "LCP", "repeated substring"],
+  prerequisites: ["kasai-algorithm-lcp-array"],
+  related: ["longest-common-substring-suffix-array-method"],
   problem: {
-    input: "Input for Longest Repeated Substring.",
-    output: "Output of Longest Repeated Substring.",
+    input: "A string S.",
+    output: "The longest substring occurring at least twice in S.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Longest Repeated Substring solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "The longest repeated substring corresponds to the maximum value in the LCP array, which measures the longest common prefix between consecutive suffixes in sorted order.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Longest Repeated Substring algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Build suffix array of S.",
+          "Compute LCP array using Kasai's algorithm.",
+          "Find the maximum value in the LCP array.",
+          "The corresponding prefix of that suffix is the answer.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Longest Repeated Substring follows the pseudocode directly.",
+        text: "Simply scan the LCP array for its maximum and extract the substring.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Longest Repeated Substring is based on the algorithm's structure and the operations performed at each step.",
+        text: "$O(n)$ with linear SA construction and Kasai's algorithm.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of Longest Repeated Substring exist in the literature. See references for details.",
+        text: "For the k-th longest repeated substring or repeated substrings with at least k occurrences, combine LCP with stack-based range queries.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(n)$",
+    average: "$O(n)$",
+    worst: "$O(n)$",
+    space: "$O(n)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "string processing",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "longest_repeated_substring",
+      code: `def longest_repeated_substring(s: str) -> str:
+    n = len(s)
+    if n == 0:
+        return ""
+    sa = sorted(range(n), key=lambda i: s[i:])
+    rank = [0] * n
+    for i in range(n):
+        rank[sa[i]] = i
+    lcp = [0] * n
+    k = 0
+    for i in range(n):
+        if rank[i] == 0:
+            k = 0
+            continue
+        j = sa[rank[i] - 1]
+        while i + k < n and j + k < n and s[i + k] == s[j + k]:
+            k += 1
+        lcp[rank[i]] = k
+        if k > 0:
+            k -= 1
+    max_lcp = max(lcp) if lcp else 0
+    if max_lcp == 0:
+        return ""
+    idx = lcp.index(max_lcp)
+    return s[sa[idx]:sa[idx] + max_lcp]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["banana"],
+          expected: "ana",
+        },
+        {
+          args: ["abcd"],
+          expected: "",
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "longestRepeatedSubstring",
+      code: `function longestRepeatedSubstring(s) {
+  const n = s.length;
+  if (n === 0) return "";
+  const sa = [...Array(n).keys()].sort((a, b) => s.substring(a) < s.substring(b) ? -1 : 1);
+  const rank = new Array(n);
+  for (let i = 0; i < n; i++) rank[sa[i]] = i;
+  const lcp = new Array(n).fill(0);
+  let k = 0;
+  for (let i = 0; i < n; i++) {
+    if (rank[i] === 0) { k = 0; continue; }
+    const j = sa[rank[i] - 1];
+    while (i + k < n && j + k < n && s[i + k] === s[j + k]) k++;
+    lcp[rank[i]] = k;
+    if (k > 0) k--;
+  }
+  let maxLcp = 0, idx = 0;
+  for (let i = 0; i < n; i++) if (lcp[i] > maxLcp) { maxLcp = lcp[i]; idx = i; }
+  return maxLcp === 0 ? "" : s.substring(sa[idx], sa[idx] + maxLcp);
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["banana"],
+          expected: "ana",
         },
       ],
     },
@@ -96,55 +138,43 @@ export const longestRepeatedSubstringEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "longest-repeated-substring-q1",
+      id: "lrs-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Longest Repeated Substring?",
-      options: [
-        "To solve the Longest Repeated Substring problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "LRS is found by taking the maximum of which array?",
+      options: ["LCP array", "Suffix array", "Z-array", "Rank array"],
       answer: 0,
       explanation:
-        "Longest Repeated Substring is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Longest Repeated Substring does."],
-      objective: "Purpose",
+        "The LCP array stores lengths of common prefixes between adjacent sorted suffixes.",
+      hints: ["Adjacent suffixes."],
+      objective: "Array",
     },
   ],
   exam: {
-    definition: "Longest Repeated Substring is an algorithm in the domain of string processing.",
-    steps: [
-      "Apply the Longest Repeated Substring algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
+    definition: "The longest substring occurring at least twice, found via max(LCP).",
+    steps: ["Build SA.", "Compute LCP via Kasai.", "max(LCP) gives the length."],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness: "Any repeated substring appears as a common prefix of two suffixes.",
+    applications: ["Data compression", "DNA analysis"],
+    limitations: ["Need SA+LCP infrastructure"],
     faq: [
       {
-        q: "When should you use Longest Repeated Substring?",
-        a: "Use Longest Repeated Substring when the problem matches its designed use case in string processing.",
+        q: "What if we want at least k repeats?",
+        a: "Slide a window of size k over the LCP array and find the max of window minimums.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Longest Repeated Substring (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 3,
+        outline: ["SA+LCP (1).", "Max LCP (1).", "Applications (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Longest Repeated Substring.",
+      citation:
+        "T. Kasai et al., 'Linear-Time Longest-Common-Prefix Computation in Suffix Arrays', CPM, 2001.",
+      supports: "LCP applications.",
     },
   ],
   review: {

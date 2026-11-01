@@ -3,91 +3,158 @@ import type { AlgorithmEntry } from "../types";
 export const groupKnapsackEntry: AlgorithmEntry = {
   slug: "group-knapsack",
   name: "Group Knapsack",
-  aliases: ["Group Knapsack"],
+  aliases: ["Grouped Knapsack", "Multiple-Choice Knapsack"],
   curriculum: [265],
   domain: "dynamic-programming",
-  subcategory: "Dynamic Programming",
+  subcategory: "Knapsack Variants",
   difficulty: "intermediate",
-  summary: "Group Knapsack is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["group knapsack", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+  summary:
+    "Items are divided into groups; pick at most one item from each group to maximize value within a weight limit.",
+  tags: ["knapsack", "dynamic programming", "group"],
+  prerequisites: ["0-1-knapsack"],
+  related: ["unbounded-knapsack", "multiple-knapsack"],
   problem: {
-    input: "Input for Group Knapsack.",
-    output: "Output of Group Knapsack.",
+    input: "Groups of items (each with weight and value), and a capacity W.",
+    output: "Maximum value choosing at most one item per group.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Group Knapsack solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Each group is like a single decision: pick one item from the group or skip it entirely. Process groups sequentially.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Group Knapsack algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Create dp[0..W] = 0.",
+          "For each group g: iterate w from W down to 0, for each item in g try picking it.",
+          "Return dp[W].",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Group Knapsack follows the pseudocode directly.",
+        text: "Reverse iteration on capacity (like 0/1 knapsack) ensures each group contributes at most once.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Group Knapsack is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(W \\cdot \\sum |g_i|)$, space $O(W)$.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Group Knapsack exist in the literature. See references for details.",
+        text: "Equivalent to a multi-dimensional choice model. LP relaxation gives tight bounds for branch-and-bound.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      worst: "O(W·N)",
     },
-    space: "O(n)",
+    space: {
+      worst: "O(W)",
+    },
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "dynamic programming",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "groupKnapsack",
+      code: `def groupKnapsack(groups, capacity):
+    dp = [0] * (capacity + 1)
+    for group in groups:
+        new_dp = dp[:]
+        for weight, value in group:
+            for w in range(weight, capacity + 1):
+                new_dp[w] = max(new_dp[w], dp[w - weight] + value)
+        dp = new_dp
+    return dp[capacity]`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            groups: [
+              [
+                [2, 10],
+                [3, 15],
+              ],
+              [
+                [4, 20],
+                [5, 25],
+              ],
+            ],
+            capacity: 7,
+          },
+          expected: 35,
+        },
+        {
+          input: {
+            groups: [
+              [
+                [1, 5],
+                [2, 8],
+              ],
+              [[3, 12]],
+            ],
+            capacity: 4,
+          },
+          expected: 17,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "groupKnapsack",
+      code: `function groupKnapsack(groups, capacity) {
+  let dp = new Array(capacity + 1).fill(0);
+  for (const group of groups) {
+    const newDp = [...dp];
+    for (const [weight, value] of group) {
+      for (let w = weight; w <= capacity; w++) {
+        newDp[w] = Math.max(newDp[w], dp[w - weight] + value);
+      }
+    }
+    dp = newDp;
+  }
+  return dp[capacity];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            groups: [
+              [
+                [2, 10],
+                [3, 15],
+              ],
+              [
+                [4, 20],
+                [5, 25],
+              ],
+            ],
+            capacity: 7,
+          },
+          expected: 35,
+        },
+        {
+          input: {
+            groups: [
+              [
+                [1, 5],
+                [2, 8],
+              ],
+              [[3, 12]],
+            ],
+            capacity: 4,
+          },
+          expected: 17,
         },
       ],
     },
@@ -95,54 +162,41 @@ export const groupKnapsackEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "group-knapsack-q1",
+      id: "gk-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Group Knapsack?",
-      options: [
-        "To solve the Group Knapsack problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "How does group knapsack differ from 0/1?",
+      options: ["At most one item per group", "Unlimited items", "No weight limit", "Greedy"],
       answer: 0,
-      explanation: "Group Knapsack is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Group Knapsack does."],
-      objective: "Purpose",
+      explanation: "Group knapsack restricts picks to one per group.",
+      hints: ["Think about the constraint per group."],
+      objective: "Concept",
     },
   ],
   exam: {
-    definition: "Group Knapsack is an algorithm in the domain of dynamic programming.",
-    steps: [
-      "Apply the Group Knapsack algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Pick at most one item from each group to maximize value under capacity.",
+    steps: ["dp array init.", "For each group copy dp, try items.", "Merge best."],
+    timeComplexity: "$O(W \\cdot N)$.",
+    spaceComplexity: "$O(W)$.",
+    correctness: "Copying dp before group processing ensures at most one pick per group.",
+    applications: ["menu selection", "resource allocation"],
+    limitations: ["pseudo-polynomial"],
     faq: [
       {
-        q: "When should you use Group Knapsack?",
-        a: "Use Group Knapsack when the problem matches its designed use case in dynamic programming.",
+        q: "Why copy dp?",
+        a: "To ensure only one item from each group is selected.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Group Knapsack (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Define dp copy technique (2).", "Recurrence (1).", "Correctness (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Group Knapsack.",
+      citation: "S. Martello and P. Toth, Knapsack Problems, Wiley, 1990.",
+      supports: "Group knapsack formulation.",
     },
   ],
   review: {

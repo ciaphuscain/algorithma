@@ -3,92 +3,126 @@ import type { AlgorithmEntry } from "../types";
 export const shortestCommonSupersequenceEntry: AlgorithmEntry = {
   slug: "shortest-common-supersequence",
   name: "Shortest Common Supersequence",
-  aliases: ["Shortest Common Supersequence"],
+  aliases: ["SCS"],
   curriculum: [275],
   domain: "dynamic-programming",
-  subcategory: "Dynamic Programming",
+  subcategory: "String DP",
   difficulty: "intermediate",
   summary:
-    "Shortest Common Supersequence is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["shortest common supersequence", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+    "Find the shortest string that has both input strings as subsequences. Length = m + n - LCS(a,b).",
+  tags: ["supersequence", "LCS", "dynamic programming"],
+  prerequisites: ["longest-common-subsequence"],
+  related: ["longest-common-substring"],
   problem: {
-    input: "Input for Shortest Common Supersequence.",
-    output: "Output of Shortest Common Supersequence.",
+    input: "Two strings a and b.",
+    output: "Length of the shortest common supersequence.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Shortest Common Supersequence solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "The SCS merges both strings, sharing their LCS. So SCS length = |a| + |b| - LCS(a,b).",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Shortest Common Supersequence algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Compute LCS length via standard DP.",
+          "SCS length = m + n - lcs_length.",
+          "Traceback through LCS DP to construct the actual SCS.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Shortest Common Supersequence follows the pseudocode directly.",
+        text: "LCS DP is O(mn). Traceback merges characters following the DP table.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Shortest Common Supersequence is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(mn)$, space $O(mn)$.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Shortest Common Supersequence exist in the literature. See references for details.",
+        text: "Hirschberg can reduce space to O(min(m,n)) for length only. Constructing the string needs O(mn) or divide-and-conquer.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      worst: "O(m·n)",
     },
-    space: "O(n)",
+    space: {
+      worst: "O(m·n)",
+    },
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "dynamic programming",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "shortestCommonSupersequence",
+      code: `def shortestCommonSupersequence(a, b):
+    m, n = len(a), len(b)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if a[i-1] == b[j-1]:
+                dp[i][j] = dp[i-1][j-1] + 1
+            else:
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+    return m + n - dp[m][n]`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            a: "abac",
+            b: "cab",
+          },
+          expected: 5,
+        },
+        {
+          input: {
+            a: "abc",
+            b: "abc",
+          },
+          expected: 3,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "shortestCommonSupersequence",
+      code: `function shortestCommonSupersequence(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({length: m + 1}, () => new Array(n + 1).fill(0));
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] + 1 : Math.max(dp[i-1][j], dp[i][j-1]);
+    }
+  }
+  return m + n - dp[m][n];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            a: "abac",
+            b: "cab",
+          },
+          expected: 5,
+        },
+        {
+          input: {
+            a: "abc",
+            b: "abc",
+          },
+          expected: 3,
         },
       ],
     },
@@ -96,56 +130,41 @@ export const shortestCommonSupersequenceEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "shortest-common-supersequence-q1",
+      id: "scs-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Shortest Common Supersequence?",
-      options: [
-        "To solve the Shortest Common Supersequence problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "SCS('abc','adc')=?",
+      options: ["4", "5", "3", "6"],
       answer: 0,
-      explanation:
-        "Shortest Common Supersequence is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Shortest Common Supersequence does."],
-      objective: "Purpose",
+      explanation: "LCS='ac'(len 2), SCS=3+3-2=4.",
+      hints: ["SCS = m + n - LCS."],
+      objective: "Computation",
     },
   ],
   exam: {
-    definition:
-      "Shortest Common Supersequence is an algorithm in the domain of dynamic programming.",
-    steps: [
-      "Apply the Shortest Common Supersequence algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Shortest string having both inputs as subsequences.",
+    steps: ["Compute LCS.", "SCS = m + n - LCS.", "Traceback for actual string."],
+    timeComplexity: "$O(mn)$.",
+    spaceComplexity: "$O(mn)$.",
+    correctness: "SCS shares the LCS and fills remaining characters.",
+    applications: ["data compression", "bioinformatics"],
+    limitations: ["quadratic time/space"],
     faq: [
       {
-        q: "When should you use Shortest Common Supersequence?",
-        a: "Use Shortest Common Supersequence when the problem matches its designed use case in dynamic programming.",
+        q: "Relation to LCS?",
+        a: "SCS length = m + n - LCS length.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Shortest Common Supersequence (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["LCS reduction (2).", "Formula (1).", "Traceback (2)."],
       },
     ],
   },
   references: [
     {
       citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Shortest Common Supersequence.",
+      supports: "LCS-based SCS.",
     },
   ],
   review: {

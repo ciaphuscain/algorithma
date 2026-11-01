@@ -6,88 +6,169 @@ export const pathCompressionEntry: AlgorithmEntry = {
   aliases: ["Path Compression"],
   curriculum: [223],
   domain: "graphs",
-  subcategory: "Graph Algorithms",
-  difficulty: "intermediate",
-  summary: "Path Compression is a well-known algorithm in the domain of graph algorithms.",
-  tags: ["path compression", "graph"],
-  prerequisites: ["BFS", "DFS"],
-  related: [],
+  subcategory: "Union-Find",
+  difficulty: "beginner",
+  summary:
+    "An optimization for Union-Find that flattens the tree structure during Find operations by making every visited node point directly to the root, achieving nearly O(1) amortized time.",
+  tags: ["union-find", "disjoint set", "path compression", "graph"],
+  prerequisites: ["Union-Find"],
+  related: ["union-find", "connected-components"],
   problem: {
-    input: "Input for Path Compression.",
-    output: "Output of Path Compression.",
+    input: "A sequence of union and find operations on n elements.",
+    output: "For each find, the representative (root) of the element's set.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Path Compression solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "In Union-Find, the Find operation walks up parent pointers to the root. Path compression makes every node on that path point directly to the root, so future Finds are almost instant.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Path Compression algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Find(x): follow parent pointers from x to the root r.",
+          "Walk the path again, setting each node's parent to r (path compression).",
+          "Return r.",
+          "Union(x, y): find roots of x and y; if different, make one the child of the other (by rank or size).",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Path Compression follows the pseudocode directly.",
+        text: "Path compression can be done recursively (one-pass) or iteratively (two-pass). Combined with union by rank, the amortized time per operation is $O(\\alpha(n))$.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Path Compression is based on the algorithm's structure and the operations performed at each step.",
+        text: "With union by rank and path compression, any sequence of $m$ operations on $n$ elements takes $O(m \\cdot \\alpha(n))$ time, where $\\alpha$ is the inverse Ackermann function — effectively constant for all practical inputs ($\\alpha(n) \\le 4$ for $n \\le 2^{2^{2^{65536}}}$).",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Path Compression exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Path splitting and path halving are simpler alternatives with the same amortized bound.",
+          "Without path compression, union by rank alone gives O(log n) per operation.",
+          "Path compression alone (without union by rank) gives O(log n) amortized.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(V + E)",
-      average: "O(V + E)",
-      worst: "O(V + E)",
+      best: "O(1)",
+      average: "O(α(n))",
+      worst: "O(α(n))",
     },
-    space: "O(V + E)",
+    space: "O(n)",
     worstClass: "n + m",
   },
   properties: [
     {
-      label: "Domain",
-      value: "graph algorithms",
+      label: "Amortized cost",
+      value: "O(α(n)) per operation",
+    },
+    {
+      label: "Combined with",
+      value: "Union by rank for optimal performance",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "path_compression_uf",
+      code: `def path_compression_uf(n, ops):
+    """ops = list of ["find", x] or ["union", x, y]. Returns list of find results."""
+    parent = list(range(n))
+    rank = [0] * n
+    def find(x):
+        if parent[x] != x:
+            parent[x] = find(parent[x])
+        return parent[x]
+    def union(x, y):
+        rx, ry = find(x), find(y)
+        if rx == ry: return
+        if rank[rx] < rank[ry]: rx, ry = ry, rx
+        parent[ry] = rx
+        if rank[rx] == rank[ry]: rank[rx] += 1
+    results = []
+    for op in ops:
+        if op[0] == "find":
+            results.append(find(op[1]))
+        else:
+            union(op[1], op[2])
+    return results
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            5,
+            [
+              ["union", 0, 1],
+              ["union", 2, 3],
+              ["union", 1, 3],
+              ["find", 0],
+              ["find", 3],
+            ],
+          ],
+          expected: [0, 0],
+        },
+        {
+          args: [
+            3,
+            [
+              ["find", 0],
+              ["find", 1],
+              ["find", 2],
+            ],
+          ],
+          expected: [0, 1, 2],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "pathCompressionUf",
+      code: `function pathCompressionUf(n, ops) {
+  const parent = Array.from({length: n}, (_, i) => i);
+  const rank = new Array(n).fill(0);
+  function find(x) {
+    if (parent[x] !== x) parent[x] = find(parent[x]);
+    return parent[x];
+  }
+  function union(x, y) {
+    let rx = find(x), ry = find(y);
+    if (rx === ry) return;
+    if (rank[rx] < rank[ry]) { const t = rx; rx = ry; ry = t; }
+    parent[ry] = rx;
+    if (rank[rx] === rank[ry]) rank[rx]++;
+  }
+  const results = [];
+  for (const op of ops) {
+    if (op[0] === "find") results.push(find(op[1]));
+    else union(op[1], op[2]);
+  }
+  return results;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            5,
+            [
+              ["union", 0, 1],
+              ["union", 2, 3],
+              ["union", 1, 3],
+              ["find", 0],
+              ["find", 3],
+            ],
+          ],
+          expected: [0, 0],
         },
       ],
     },
@@ -97,52 +178,56 @@ export const pathCompressionEntry: AlgorithmEntry = {
     {
       id: "path-compression-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Path Compression?",
+      prompt: "What does path compression do during a Find operation?",
       options: [
-        "To solve the Path Compression problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "Makes every node on the find path point directly to the root",
+        "Splits the path into two halves",
+        "Increases the rank of the root",
+        "Merges two trees",
       ],
       answer: 0,
-      explanation: "Path Compression is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Path Compression does."],
-      objective: "Purpose",
+      explanation:
+        "Path compression flattens the tree by making every visited node a direct child of the root, speeding up future finds.",
+      hints: ["Think about what happens to intermediate nodes on the find path."],
+      objective: "Path compression",
     },
   ],
   exam: {
-    definition: "Path Compression is an algorithm in the domain of graph algorithms.",
+    definition:
+      "Path compression is a Union-Find optimization that makes every node on the find path point directly to the root.",
     steps: [
-      "Apply the Path Compression algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Find root by following parent pointers.",
+      "Set every visited node's parent to the root.",
+      "Combined with union by rank, gives O(α(n)) amortized.",
     ],
-    timeComplexity: "$O(V + E)$.",
-    spaceComplexity: "$O(V + E)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["graph algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "$O(\\alpha(n))$ amortized per operation.",
+    spaceComplexity: "$O(n)$.",
+    correctness:
+      "Path compression preserves set membership (all nodes still belong to the same root) while reducing tree height.",
+    applications: ["Kruskal's algorithm", "connected components", "equivalence classes"],
+    limitations: ["Not persistent without additional data structures"],
     faq: [
       {
-        q: "When should you use Path Compression?",
-        a: "Use Path Compression when the problem matches its designed use case in graph algorithms.",
+        q: "What is α(n)?",
+        a: "The inverse Ackermann function, which grows so slowly that α(n) ≤ 4 for any practical input size.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Path Compression (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Describe Union-Find (1).",
+          "Explain path compression (2).",
+          "State amortized bound with proof sketch (2).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Path Compression.",
+      citation:
+        "R. E. Tarjan, 'Efficiency of a Good but Not Linear Set Union Algorithm', JACM, 1975.",
+      supports: "Original amortized analysis.",
     },
   ],
   review: {

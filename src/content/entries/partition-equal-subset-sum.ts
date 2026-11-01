@@ -3,92 +3,137 @@ import type { AlgorithmEntry } from "../types";
 export const partitionEqualSubsetSumEntry: AlgorithmEntry = {
   slug: "partition-equal-subset-sum",
   name: "Partition Equal Subset Sum",
-  aliases: ["Partition Equal Subset Sum"],
+  aliases: ["Equal Partition", "Subset Sum Partition"],
   curriculum: [287],
   domain: "dynamic-programming",
-  subcategory: "Dynamic Programming",
+  subcategory: "Knapsack Variants",
   difficulty: "intermediate",
   summary:
-    "Partition Equal Subset Sum is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["partition equal subset sum", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+    "Determine if an array can be partitioned into two subsets with equal sum. Reduces to subset-sum for target = totalSum/2.",
+  tags: ["partition", "subset sum", "dynamic programming"],
+  prerequisites: ["0-1-knapsack"],
+  related: ["coin-change-ways"],
   problem: {
-    input: "Input for Partition Equal Subset Sum.",
-    output: "Output of Partition Equal Subset Sum.",
+    input: "An array of positive integers.",
+    output: "True if the array can be split into two subsets with equal sum.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Partition Equal Subset Sum solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "If total sum is odd, impossible. Otherwise, find a subset summing to half the total — a classic 0/1 knapsack / subset-sum problem.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Partition Equal Subset Sum algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Compute total. If odd, return false.",
+          "Target = total/2. Use boolean dp[0..target].",
+          "dp[0] = true. For each num, update dp right-to-left.",
+          "Return dp[target].",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Partition Equal Subset Sum follows the pseudocode directly.",
+        text: "Bitset optimization can speed this up with word-parallel operations.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Partition Equal Subset Sum is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(n \\cdot S)$ where S = sum/2, space $O(S)$.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Partition Equal Subset Sum exist in the literature. See references for details.",
+        text: "NP-complete in general but pseudo-polynomial. Meet-in-the-middle gives $O(2^{n/2})$ for small n.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      worst: "O(n·S)",
     },
-    space: "O(n)",
+    space: {
+      worst: "O(S)",
+    },
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "dynamic programming",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "canPartition",
+      code: `def canPartition(nums):
+    total = sum(nums)
+    if total % 2 != 0:
+        return False
+    target = total // 2
+    dp = [False] * (target + 1)
+    dp[0] = True
+    for num in nums:
+        for s in range(target, num - 1, -1):
+            dp[s] = dp[s] or dp[s - num]
+    return dp[target]`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            nums: [1, 5, 11, 5],
+          },
+          expected: true,
+        },
+        {
+          input: {
+            nums: [1, 2, 3, 5],
+          },
+          expected: false,
+        },
+        {
+          input: {
+            nums: [1, 1],
+          },
+          expected: true,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "canPartition",
+      code: `function canPartition(nums) {
+  const total = nums.reduce((a, b) => a + b, 0);
+  if (total % 2 !== 0) return false;
+  const target = total / 2;
+  const dp = new Array(target + 1).fill(false);
+  dp[0] = true;
+  for (const num of nums) {
+    for (let s = target; s >= num; s--) dp[s] = dp[s] || dp[s - num];
+  }
+  return dp[target];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            nums: [1, 5, 11, 5],
+          },
+          expected: true,
+        },
+        {
+          input: {
+            nums: [1, 2, 3, 5],
+          },
+          expected: false,
+        },
+        {
+          input: {
+            nums: [1, 1],
+          },
+          expected: true,
         },
       ],
     },
@@ -96,55 +141,41 @@ export const partitionEqualSubsetSumEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "partition-equal-subset-sum-q1",
+      id: "pes-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Partition Equal Subset Sum?",
-      options: [
-        "To solve the Partition Equal Subset Sum problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "nums=[3,3,3,3,3]. Can partition?",
+      options: ["False", "True"],
       answer: 0,
-      explanation:
-        "Partition Equal Subset Sum is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Partition Equal Subset Sum does."],
-      objective: "Purpose",
+      explanation: "Sum is 15 (odd), so no equal partition.",
+      hints: ["Check if sum is even first."],
+      objective: "Computation",
     },
   ],
   exam: {
-    definition: "Partition Equal Subset Sum is an algorithm in the domain of dynamic programming.",
-    steps: [
-      "Apply the Partition Equal Subset Sum algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Check if array splits into two subsets of equal sum.",
+    steps: ["Check sum parity.", "target = sum/2.", "Subset-sum DP.", "Return dp[target]."],
+    timeComplexity: "$O(n \\cdot S)$.",
+    spaceComplexity: "$O(S)$.",
+    correctness: "Reduces to subset sum; 0/1 knapsack correctness applies.",
+    applications: ["load balancing", "fair division"],
+    limitations: ["pseudo-polynomial"],
     faq: [
       {
-        q: "When should you use Partition Equal Subset Sum?",
-        a: "Use Partition Equal Subset Sum when the problem matches its designed use case in dynamic programming.",
+        q: "Why check parity first?",
+        a: "Odd total can never be split into two equal integer sums.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Partition Equal Subset Sum (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Parity check (1).", "Reduction to subset sum (2).", "DP recurrence (2)."],
       },
     ],
   },
   references: [
     {
       citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Partition Equal Subset Sum.",
+      supports: "Subset sum.",
     },
   ],
   review: {

@@ -2,93 +2,138 @@ import type { AlgorithmEntry } from "../types";
 
 export const boothSAlgorithmLexicographicallyMinimumRotationEntry: AlgorithmEntry = {
   slug: "booth-s-algorithm-lexicographically-minimum-rotation",
-  name: "Booth's Algorithm (Lexicographically Minimum Rotation)",
-  aliases: ["Booth's Algorithm (Lexicographically Minimum Rotation)"],
+  name: "Booth's Algorithm",
+  aliases: ["Lexicographically Minimum Rotation"],
   curriculum: [341],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "String Rotation",
   difficulty: "intermediate",
   summary:
-    "Booth's Algorithm (Lexicographically Minimum Rotation) is a well-known algorithm in the domain of string processing.",
-  tags: ["booth s algorithm lexicographically minimum rotation", "string"],
-  prerequisites: [],
-  related: [],
+    "Finds the lexicographically smallest rotation of a string in O(n) time using a modified failure function.",
+  tags: ["rotation", "lexicographic", "failure function"],
+  prerequisites: ["failure-function"],
+  related: ["lyndon-factorization-duval-s-algorithm"],
   problem: {
-    input: "Input for Booth's Algorithm (Lexicographically Minimum Rotation).",
-    output: "Output of Booth's Algorithm (Lexicographically Minimum Rotation).",
+    input: "A string S.",
+    output: "The starting index of the lexicographically smallest rotation of S.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Booth's Algorithm (Lexicographically Minimum Rotation) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Concatenate the string with itself to make all rotations substrings. Use a modified failure function to track the best rotation seen so far.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Booth's Algorithm (Lexicographically Minimum Rotation) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Set f = [-1]*2n, k=0.",
+          "For j=1..2n-1:",
+          "  Let i = f[j-1-k].",
+          "  While i != -1 and s[j%n] != s[(k+i+1)%n]:",
+          "    If s[j%n] < s[(k+i+1)%n], k = j-i-1.",
+          "    i = f[i].",
+          "  If i==-1 and s[j%n] != s[(k+i+1)%n]:",
+          "    If s[j%n] < s[(k+i+1)%n], k = j.",
+          "    f[j-k] = -1.",
+          "  Else: f[j-k] = i+1.",
+          "Return k.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Booth's Algorithm (Lexicographically Minimum Rotation) follows the pseudocode directly.",
+        text: "Conceptually similar to KMP's failure function but updates the candidate rotation index when a smaller character is found.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Booth's Algorithm (Lexicographically Minimum Rotation) is based on the algorithm's structure and the operations performed at each step.",
+        text: "$O(n)$ time since each comparison either advances j or reduces i, similar to KMP analysis.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of Booth's Algorithm (Lexicographically Minimum Rotation) exist in the literature. See references for details.",
+        text: "Booth's algorithm is useful for canonical forms: two strings are rotations of each other if and only if their Booth-normalized forms are identical.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(n)$",
+    average: "$O(n)$",
+    worst: "$O(n)$",
+    space: "$O(n)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "string processing",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "booths_algorithm",
+      code: `def least_rotation(s: str) -> int:
+    s2 = s + s
+    n = len(s)
+    f = [-1] * (2 * n)
+    k = 0
+    for j in range(1, 2 * n):
+        sj = s2[j]
+        i = f[j - 1 - k]
+        while i != -1 and sj != s2[k + i + 1]:
+            if sj < s2[k + i + 1]:
+                k = j - i - 1
+            i = f[i]
+        if i == -1 and sj != s2[k + i + 1]:
+            if sj < s2[k + i + 1]:
+                k = j
+            f[j - k] = -1
+        else:
+            f[j - k] = i + 1
+    return k
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["bca"],
+          expected: 1,
+        },
+        {
+          args: ["cba"],
+          expected: 2,
+        },
+        {
+          args: ["aab"],
+          expected: 2,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "boothsAlgorithm",
+      code: `function leastRotation(s) {
+  const s2 = s + s, n = s.length;
+  const f = new Array(2 * n).fill(-1);
+  let k = 0;
+  for (let j = 1; j < 2 * n; j++) {
+    let i = f[j - 1 - k];
+    while (i !== -1 && s2[j] !== s2[k + i + 1]) {
+      if (s2[j] < s2[k + i + 1]) k = j - i - 1;
+      i = f[i];
+    }
+    if (i === -1 && s2[j] !== s2[k + i + 1]) {
+      if (s2[j] < s2[k + i + 1]) k = j;
+      f[j - k] = -1;
+    } else f[j - k] = i + 1;
+  }
+  return k;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["bca"],
+          expected: 1,
         },
       ],
     },
@@ -96,57 +141,41 @@ export const boothSAlgorithmLexicographicallyMinimumRotationEntry: AlgorithmEntr
   visualizer: null,
   practice: [
     {
-      id: "booth-s-algorithm-lexicographically-minimum-rotation-q1",
+      id: "booth-q1",
       kind: "mcq",
-      prompt:
-        "What is the primary purpose of Booth's Algorithm (Lexicographically Minimum Rotation)?",
-      options: [
-        "To solve the Booth's Algorithm (Lexicographically Minimum Rotation) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "Booth's algorithm is based on which technique?",
+      options: ["Modified failure function", "Suffix array", "Hashing", "Dynamic programming"],
       answer: 0,
-      explanation:
-        "Booth's Algorithm (Lexicographically Minimum Rotation) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Booth's Algorithm (Lexicographically Minimum Rotation) does."],
-      objective: "Purpose",
+      explanation: "It modifies the KMP failure function to track the smallest rotation.",
+      hints: ["Think KMP."],
+      objective: "Basis",
     },
   ],
   exam: {
-    definition:
-      "Booth's Algorithm (Lexicographically Minimum Rotation) is an algorithm in the domain of string processing.",
-    steps: [
-      "Apply the Booth's Algorithm (Lexicographically Minimum Rotation) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
+    definition: "Finds the starting index of the lexicographically smallest rotation in O(n).",
+    steps: ["Concatenate s+s.", "Run modified failure function tracking candidate k."],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness: "The failure function ensures all rotations are compared.",
+    applications: ["Canonical string forms", "necklace problems"],
+    limitations: ["Requires O(n) extra space for failure array"],
     faq: [
       {
-        q: "When should you use Booth's Algorithm (Lexicographically Minimum Rotation)?",
-        a: "Use Booth's Algorithm (Lexicographically Minimum Rotation) when the problem matches its designed use case in string processing.",
+        q: "How to check if two strings are rotations?",
+        a: "Compare their Booth-normalized forms.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Booth's Algorithm (Lexicographically Minimum Rotation) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 4,
+        outline: ["Algorithm (2).", "Complexity proof (1).", "Application (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Booth's Algorithm (Lexicographically Minimum Rotation).",
+      citation: "K. S. Booth, 'Lexicographically least circular substrings', IPL, 1980.",
+      supports: "Original paper.",
     },
   ],
   review: {

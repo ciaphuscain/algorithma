@@ -3,92 +3,132 @@ import type { AlgorithmEntry } from "../types";
 export const matrixChainEntry: AlgorithmEntry = {
   slug: "matrix-chain-multiplication",
   name: "Matrix Chain Multiplication",
-  aliases: ["Matrix Chain Multiplication"],
+  aliases: ["MCM", "Matrix Chain Order"],
   curriculum: [279],
   domain: "dynamic-programming",
-  subcategory: "Matrix DP",
+  subcategory: "Interval DP",
   difficulty: "intermediate",
   summary:
-    "Find the optimal parenthesization of a matrix chain product to minimize scalar multiplications. dp[i][j] = min over k of (dp[i][k] + dp[k+1][j] + p_i * p_{k+1} * p_{j+1}).",
-  tags: ["matrix chain", "DP", "interval DP"],
-  prerequisites: ["Dynamic Programming basics"],
-  related: ["unique-paths", "minimum-path-sum"],
+    "Find the optimal parenthesization of a chain of matrices to minimize scalar multiplications. Classic interval DP: dp[i][j] = min over split k of dp[i][k] + dp[k+1][j] + cost.",
+  tags: ["matrix chain", "interval DP", "dynamic programming"],
+  prerequisites: [],
+  related: ["burst-balloons", "optimal-binary-search-tree"],
   problem: {
-    input: "Input for Matrix Chain Multiplication.",
-    output: "Output of Matrix Chain Multiplication.",
+    input: "Array p where matrix i has dimensions p[i-1] × p[i].",
+    output: "Minimum number of scalar multiplications.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Find the optimal parenthesization of a matrix chain product to minimize scalar multiplications. dp[i][j] = min over k of (dp[i][k] + dp[k+1][j] + p_i * p_{k+1} * p_{j+1}).",
+        text: "Matrix multiplication is associative but order affects cost. (A×B)×C vs A×(B×C) can differ dramatically.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Matrix Chain Multiplication algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "dp[i][j] = minimum cost to multiply matrices i through j.",
+          "For length 1: dp[i][i] = 0.",
+          "dp[i][j] = min over k in [i, j-1] of dp[i][k] + dp[k+1][j] + p[i-1]*p[k]*p[j].",
+          "Return dp[1][n-1].",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Matrix Chain Multiplication follows the pseudocode directly.",
+        text: "Fill by increasing interval length. O(n^3) time, O(n^2) space.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Matrix Chain Multiplication is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(n^3)$, space $O(n^2)$. Hu-Shing algorithm achieves $O(n \\log n)$ but is complex.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Matrix Chain Multiplication exist in the literature. See references for details.",
+        text: "Knuth's optimization can reduce to $O(n^2)$ when the cost function satisfies the quadrangle inequality.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "varies",
-      average: "varies",
-      worst: "varies",
+      worst: "O(n³)",
     },
-    space: "varies",
+    space: {
+      worst: "O(n²)",
+    },
+  },
+  properties: {
     worstClass: "n^3",
   },
-  properties: [
-    {
-      label: "Category",
-      value: "Matrix DP",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "matrixChainOrder",
+      code: `def matrixChainOrder(p):
+    n = len(p) - 1
+    if n <= 0:
+        return 0
+    dp = [[0] * n for _ in range(n)]
+    for length in range(2, n + 1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            dp[i][j] = float('inf')
+            for k in range(i, j):
+                cost = dp[i][k] + dp[k+1][j] + p[i] * p[k+1] * p[j+1]
+                dp[i][j] = min(dp[i][j], cost)
+    return dp[0][n-1]`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            p: [10, 20, 30, 40, 30],
+          },
+          expected: 30000,
+        },
+        {
+          input: {
+            p: [40, 20, 30, 10, 30],
+          },
+          expected: 26000,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "matrixChainOrder",
+      code: `function matrixChainOrder(p) {
+  const n = p.length - 1;
+  if (n <= 0) return 0;
+  const dp = Array.from({length: n}, () => new Array(n).fill(0));
+  for (let len = 2; len <= n; len++) {
+    for (let i = 0; i <= n - len; i++) {
+      const j = i + len - 1;
+      dp[i][j] = Infinity;
+      for (let k = i; k < j; k++) {
+        const cost = dp[i][k] + dp[k+1][j] + p[i] * p[k+1] * p[j+1];
+        dp[i][j] = Math.min(dp[i][j], cost);
+      }
+    }
+  }
+  return dp[0][n-1];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            p: [10, 20, 30, 40, 30],
+          },
+          expected: 30000,
+        },
+        {
+          input: {
+            p: [40, 20, 30, 10, 30],
+          },
+          expected: 26000,
         },
       ],
     },
@@ -96,53 +136,42 @@ export const matrixChainEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "matrix-chain-multiplication-q1",
+      id: "mcm-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Matrix Chain Multiplication?",
-      options: [
-        "Find the optimal parenthesization of a matrix chain product ...",
-        "Sorting an array",
-        "Finding shortest paths",
-        "Compressing data",
-      ],
+      prompt: "p=[10,30,5,60]. Optimal cost?",
+      options: ["4500", "9000", "27000", "18000"],
       answer: 0,
-      explanation:
-        "Matrix Chain Multiplication: Find the optimal parenthesization of a matrix chain product to minimize scalar multiplications. dp[i][j] = min over k of (dp[i][k] + dp[k+1][j] + p_i * p_{k+1} * p_{j+1}).",
-      hints: ["Think about what problem Matrix Chain Multiplication solves."],
-      objective: "Matrix Chain Multiplication",
+      explanation: "(A1×A2)×A3: 10*30*5 + 10*5*60 = 1500+3000=4500.",
+      hints: ["Try both split points."],
+      objective: "Computation",
     },
   ],
   exam: {
-    definition:
-      "Find the optimal parenthesization of a matrix chain product to minimize scalar multiplications. dp[i][j] = min over k of (dp[i][k] + dp[k+1][j] + p_i * p_{k+1} * p_{j+1}).",
-    steps: ["Apply the Matrix Chain Multiplication algorithm to the input."],
-    timeComplexity: "See complexity section.",
-    spaceComplexity: "See complexity section.",
+    definition: "Minimize scalar multiplications for a matrix chain.",
+    steps: ["dp[i][i]=0.", "Enumerate splits k.", "dp[i][j] = min cost over k."],
+    timeComplexity: "$O(n^3)$.",
+    spaceComplexity: "$O(n^2)$.",
     correctness:
-      "The Matrix Chain Multiplication algorithm is correct because it systematically processes all cases.",
-    applications: ["Matrix DP"],
-    limitations: ["See advanced section for limitations."],
+      "Optimal substructure: best parenthesization splits into best sub-parenthesizations.",
+    applications: ["compiler optimization", "query planning"],
+    limitations: ["cubic time"],
     faq: [
       {
-        q: "When should you use Matrix Chain Multiplication?",
-        a: "Use Matrix Chain Multiplication when the problem matches its design: Find the optimal parenthesization of a matrix chain product to minimize scalar multiplications. dp[i",
+        q: "Why not just multiply left to right?",
+        a: "Different orderings can differ by orders of magnitude in cost.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Matrix Chain Multiplication (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Interval DP setup (2).", "Recurrence (2).", "Complexity (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. Cormen et al., Introduction to Algorithms, 4th ed.",
-      supports: "General reference for Matrix Chain Multiplication.",
+      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
+      supports: "Matrix chain multiplication.",
     },
   ],
   review: {

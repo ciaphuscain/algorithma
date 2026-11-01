@@ -2,93 +2,134 @@ import type { AlgorithmEntry } from "../types";
 
 export const fractionalKnapsackGreedyDpComparisonEntry: AlgorithmEntry = {
   slug: "fractional-knapsack-greedy-dp-comparison",
-  name: "Fractional Knapsack (Greedy + DP comparison)",
-  aliases: ["Fractional Knapsack (Greedy + DP comparison)"],
+  name: "Fractional Knapsack (Greedy vs DP)",
+  aliases: ["Continuous Knapsack"],
   curriculum: [263],
   domain: "dynamic-programming",
-  subcategory: "Dynamic Programming",
+  subcategory: "Knapsack Variants",
   difficulty: "intermediate",
   summary:
-    "Fractional Knapsack (Greedy + DP comparison) is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["fractional knapsack greedy dp comparison", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+    "Fractional knapsack allows taking fractions of items. Greedy by value/weight ratio is optimal. Compared with 0/1 knapsack DP.",
+  tags: ["knapsack", "greedy", "dynamic programming", "comparison"],
+  prerequisites: ["0-1-knapsack"],
+  related: ["unbounded-knapsack"],
   problem: {
-    input: "Input for Fractional Knapsack (Greedy + DP comparison).",
-    output: "Output of Fractional Knapsack (Greedy + DP comparison).",
+    input: "Item weights and values, and a capacity W. Items can be split.",
+    output: "Maximum total value (may include fractional items).",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Fractional Knapsack (Greedy + DP comparison) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "When you can take fractions, always pick the highest value-per-weight first. This greedy approach is provably optimal for the continuous case.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Fractional Knapsack (Greedy + DP comparison) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Sort items by value/weight ratio descending.",
+          "Take items greedily; if an item doesn't fully fit, take the fraction that does.",
+          "Return total value.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Fractional Knapsack (Greedy + DP comparison) follows the pseudocode directly.",
+        text: "O(n log n) for sorting. A single pass after sorting computes the answer.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Fractional Knapsack (Greedy + DP comparison) is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(n \\log n)$, space $O(n)$. The greedy solution is an upper bound for 0/1 knapsack.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Fractional Knapsack (Greedy + DP comparison) exist in the literature. See references for details.",
+        text: "The fractional solution provides a relaxation bound used in branch-and-bound for 0/1 knapsack.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      worst: "O(n log n)",
     },
-    space: "O(n)",
+    space: {
+      worst: "O(n)",
+    },
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "dynamic programming",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "fractionalKnapsack",
+      code: `def fractionalKnapsack(weights, values, capacity):
+    items = sorted(range(len(weights)), key=lambda i: values[i] / weights[i], reverse=True)
+    total = 0.0
+    remaining = capacity
+    for i in items:
+        if remaining <= 0:
+            break
+        take = min(weights[i], remaining)
+        total += take * (values[i] / weights[i])
+        remaining -= take
+    return total`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            weights: [10, 20, 30],
+            values: [60, 100, 120],
+            capacity: 50,
+          },
+          expected: 240.0,
+        },
+        {
+          input: {
+            weights: [5, 10],
+            values: [50, 60],
+            capacity: 15,
+          },
+          expected: 110.0,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "fractionalKnapsack",
+      code: `function fractionalKnapsack(weights, values, capacity) {
+  const items = Array.from({length: weights.length}, (_, i) => i);
+  items.sort((a, b) => values[b] / weights[b] - values[a] / weights[a]);
+  let total = 0, remaining = capacity;
+  for (const i of items) {
+    if (remaining <= 0) break;
+    const take = Math.min(weights[i], remaining);
+    total += take * (values[i] / weights[i]);
+    remaining -= take;
+  }
+  return total;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            weights: [10, 20, 30],
+            values: [60, 100, 120],
+            capacity: 50,
+          },
+          expected: 240.0,
+        },
+        {
+          input: {
+            weights: [5, 10],
+            values: [50, 60],
+            capacity: 15,
+          },
+          expected: 110.0,
         },
       ],
     },
@@ -96,48 +137,39 @@ export const fractionalKnapsackGreedyDpComparisonEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "fractional-knapsack-greedy-dp-comparison-q1",
+      id: "fk-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Fractional Knapsack (Greedy + DP comparison)?",
-      options: [
-        "To solve the Fractional Knapsack (Greedy + DP comparison) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "Why is greedy optimal for fractional knapsack?",
+      options: ["Items are divisible", "Items are sorted", "DP is too slow", "Weights are equal"],
       answer: 0,
       explanation:
-        "Fractional Knapsack (Greedy + DP comparison) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Fractional Knapsack (Greedy + DP comparison) does."],
-      objective: "Purpose",
+        "Divisibility means taking the best ratio greedily never blocks a better choice.",
+      hints: ["Think about what splitting allows."],
+      objective: "Concept",
     },
   ],
   exam: {
-    definition:
-      "Fractional Knapsack (Greedy + DP comparison) is an algorithm in the domain of dynamic programming.",
-    steps: [
-      "Apply the Fractional Knapsack (Greedy + DP comparison) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n²)$.",
+    definition: "Maximize value by taking fractions of items under weight limit.",
+    steps: ["Sort by value/weight.", "Greedily take items.", "Fraction of last item if needed."],
+    timeComplexity: "$O(n \\log n)$.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness:
+      "Exchange argument: swapping any choice with higher-ratio fraction improves or maintains value.",
+    applications: ["resource allocation", "scheduling"],
+    limitations: ["items must be divisible"],
     faq: [
       {
-        q: "When should you use Fractional Knapsack (Greedy + DP comparison)?",
-        a: "Use Fractional Knapsack (Greedy + DP comparison) when the problem matches its designed use case in dynamic programming.",
+        q: "Why doesn't greedy work for 0/1?",
+        a: "Indivisibility creates dependencies between choices.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Fractional Knapsack (Greedy + DP comparison) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Greedy algorithm (2).",
+          "Correctness via exchange argument (2).",
+          "Comparison with 0/1 (1).",
         ],
       },
     ],
@@ -145,7 +177,7 @@ export const fractionalKnapsackGreedyDpComparisonEntry: AlgorithmEntry = {
   references: [
     {
       citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Fractional Knapsack (Greedy + DP comparison).",
+      supports: "Greedy algorithms.",
     },
   ],
   review: {

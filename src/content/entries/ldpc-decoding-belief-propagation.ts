@@ -3,149 +3,189 @@ import type { AlgorithmEntry } from "../types";
 export const ldpcDecodingBeliefPropagationEntry: AlgorithmEntry = {
   slug: "ldpc-decoding-belief-propagation",
   name: "LDPC Decoding (Belief Propagation)",
-  aliases: ["LDPC Decoding (Belief Propagation)"],
+  aliases: ["LDPC BP Decoding", "Sum-Product Algorithm"],
   curriculum: [544],
   domain: "compression",
-  subcategory: "Compression",
+  subcategory: "Error-Correcting Codes",
   difficulty: "intermediate",
   summary:
-    "LDPC Decoding (Belief Propagation) is a well-known algorithm in the domain of data compression.",
-  tags: ["ldpc decoding belief propagation", "compression"],
-  prerequisites: [],
-  related: [],
+    "Decodes Low-Density Parity-Check codes using iterative message passing on the factor graph (belief propagation).",
+  tags: ["LDPC", "belief propagation", "error correction", "factor graph"],
+  prerequisites: ["belief-propagation"],
+  related: ["viterbi-decoding"],
   problem: {
-    input: "Input for LDPC Decoding (Belief Propagation).",
-    output: "Output of LDPC Decoding (Belief Propagation).",
+    input: "A received noisy codeword and LDPC parity-check matrix.",
+    output: "The most likely transmitted codeword.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "LDPC Decoding (Belief Propagation) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "LDPC codes are defined by a sparse parity-check matrix H. Decoding passes probability messages between variable nodes (bits) and check nodes (parity constraints) on the Tanner graph until convergence.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The LDPC Decoding (Belief Propagation) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize variable-to-check messages from channel probabilities.",
+          "Check-to-variable update: each check node computes the probability its parity is satisfied.",
+          "Variable-to-check update: each variable node combines messages from all other check nodes.",
+          "Repeat until convergence or max iterations.",
+          "Make hard decisions from final beliefs.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of LDPC Decoding (Belief Propagation) follows the pseudocode directly.",
+        text: "Use log-likelihood ratios (LLR) for numerical stability. The min-sum algorithm approximates the full sum-product for faster computation.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of LDPC Decoding (Belief Propagation) is based on the algorithm's structure and the operations performed at each step.",
+        text: "For a code with n bits and m checks, each iteration is $O(n \\cdot d_v)$ where $d_v$ is the average variable node degree. Typically 10-50 iterations suffice.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of LDPC Decoding (Belief Propagation) exist in the literature. See references for details.",
+        text: "LDPC codes with BP decoding approach Shannon capacity on AWGN channels. Density evolution predicts the threshold noise level.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(n)$",
+    average: "$O(n \\cdot T)$",
+    worst: "$O(n \\cdot T)$",
+    space: "$O(n)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "data compression",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "ldpc_bp",
+      code: `import math
+
+def ldpc_decode(H: list[list[int]], llr: list[float], max_iter: int = 50) -> list[int]:
+    m, n = len(H), len(H[0])
+    check_to_var = [[0.0] * n for _ in range(m)]
+    for iteration in range(max_iter):
+        var_to_check = [[0.0] * n for _ in range(m)]
+        for j in range(n):
+            total = llr[j] + sum(check_to_var[i][j] for i in range(m) if H[i][j])
+            for i in range(m):
+                if H[i][j]:
+                    var_to_check[i][j] = total - check_to_var[i][j]
+        for i in range(m):
+            for j in range(n):
+                if H[i][j]:
+                    product = 1.0
+                    for jj in range(n):
+                        if jj != j and H[i][jj]:
+                            val = var_to_check[i][jj]
+                            product *= math.tanh(val / 2) if abs(val) > 1e-10 else 0.0
+                    check_to_var[i][j] = 2 * math.atanh(max(-0.9999, min(0.9999, product)))
+        beliefs = [llr[j] + sum(check_to_var[i][j] for i in range(m) if H[i][j]) for j in range(n)]
+        decoded = [0 if b >= 0 else 1 for b in beliefs]
+        if all(sum(decoded[j] * H[i][j] for j in range(n)) % 2 == 0 for i in range(m)):
+            return decoded
+    return [0 if b >= 0 else 1 for b in beliefs]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [1, 1, 0, 1],
+              [0, 1, 1, 1],
+            ],
+            [2.0, -1.0, 1.5, 0.5],
+            10,
+          ],
+          expected_type: "list",
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "ldpcBp",
+      code: `function ldpcDecode(H, llr, maxIter = 50) {
+  const m = H.length, n = H[0].length;
+  const c2v = Array.from({length: m}, () => new Array(n).fill(0));
+  for (let iter = 0; iter < maxIter; iter++) {
+    const v2c = Array.from({length: m}, () => new Array(n).fill(0));
+    for (let j = 0; j < n; j++) {
+      let total = llr[j];
+      for (let i = 0; i < m; i++) if (H[i][j]) total += c2v[i][j];
+      for (let i = 0; i < m; i++) if (H[i][j]) v2c[i][j] = total - c2v[i][j];
+    }
+    for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) if (H[i][j]) {
+      let prod = 1;
+      for (let jj = 0; jj < n; jj++) if (jj !== j && H[i][jj]) prod *= Math.tanh(v2c[i][jj] / 2);
+      c2v[i][j] = 2 * Math.atanh(Math.max(-0.9999, Math.min(0.9999, prod)));
+    }
+    const beliefs = llr.map((l, j) => { let s = l; for (let i = 0; i < m; i++) if (H[i][j]) s += c2v[i][j]; return s; });
+    const decoded = beliefs.map(b => b >= 0 ? 0 : 1);
+    if (H.every((row, i) => row.reduce((s, h, j) => s + decoded[j] * h, 0) % 2 === 0)) return decoded;
+  }
+  return llr.map(b => b >= 0 ? 0 : 1);
 }
 `,
-      tests: [
-        {
-          args: [42],
-          expected: 42,
-        },
-      ],
+      tests: [],
     },
   ],
   visualizer: null,
   practice: [
     {
-      id: "ldpc-decoding-belief-propagation-q1",
+      id: "ldpc-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of LDPC Decoding (Belief Propagation)?",
-      options: [
-        "To solve the LDPC Decoding (Belief Propagation) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "LDPC decoding uses which graphical model?",
+      options: ["Tanner graph / factor graph", "Binary tree", "Hash table", "Suffix tree"],
       answer: 0,
-      explanation:
-        "LDPC Decoding (Belief Propagation) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what LDPC Decoding (Belief Propagation) does."],
-      objective: "Purpose",
+      explanation: "Messages pass between variable and check nodes on the Tanner graph.",
+      hints: ["Factor graph."],
+      objective: "Graph",
     },
   ],
   exam: {
-    definition:
-      "LDPC Decoding (Belief Propagation) is an algorithm in the domain of data compression.",
+    definition: "Iterative belief propagation decoding on LDPC code's Tanner graph.",
     steps: [
-      "Apply the LDPC Decoding (Belief Propagation) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Initialize from channel LLRs.",
+      "Variable-to-check messages.",
+      "Check-to-variable messages.",
+      "Iterate until convergence.",
     ],
-    timeComplexity: "$O(n)$.",
+    timeComplexity: "$O(n \\cdot T)$ for T iterations.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["data compression applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness:
+      "Converges to MAP estimate on tree-structured graphs; approximate on loopy graphs.",
+    applications: ["5G NR", "DVB-S2", "WiFi (802.11n)"],
+    limitations: ["May not converge on short cycles; sub-optimal on loopy graphs"],
     faq: [
       {
-        q: "When should you use LDPC Decoding (Belief Propagation)?",
-        a: "Use LDPC Decoding (Belief Propagation) when the problem matches its designed use case in data compression.",
+        q: "Min-sum vs sum-product?",
+        a: "Min-sum approximates tanh with min for speed, losing ~0.2dB.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define LDPC Decoding (Belief Propagation) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Tanner graph (1).",
+          "Message passing rules (2).",
+          "Convergence (1).",
+          "Applications (1).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for LDPC Decoding (Belief Propagation).",
+      citation: "R. G. Gallager, 'Low-Density Parity-Check Codes', MIT Press, 1963.",
+      supports: "Foundation of LDPC codes.",
     },
   ],
   review: {

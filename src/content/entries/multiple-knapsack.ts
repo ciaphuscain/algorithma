@@ -3,91 +3,141 @@ import type { AlgorithmEntry } from "../types";
 export const multipleKnapsackEntry: AlgorithmEntry = {
   slug: "multiple-knapsack",
   name: "Multiple Knapsack",
-  aliases: ["Multiple Knapsack"],
+  aliases: ["Bounded Knapsack"],
   curriculum: [264],
   domain: "dynamic-programming",
-  subcategory: "Dynamic Programming",
+  subcategory: "Knapsack Variants",
   difficulty: "intermediate",
-  summary: "Multiple Knapsack is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["multiple knapsack", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+  summary:
+    "Each item has a limited number of copies. Binary splitting converts bounded copies into a 0/1 knapsack on O(n log C) virtual items.",
+  tags: ["knapsack", "dynamic programming", "bounded"],
+  prerequisites: ["0-1-knapsack"],
+  related: ["unbounded-knapsack", "group-knapsack"],
   problem: {
-    input: "Input for Multiple Knapsack.",
-    output: "Output of Multiple Knapsack.",
+    input: "Items with weight, value, and count limit; capacity W.",
+    output: "Maximum value using at most count[i] copies of item i.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Multiple Knapsack solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Binary splitting: represent count c as 1+2+4+...+(remainder). Each group becomes a 0/1 item.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Multiple Knapsack algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "For each item with count c, create virtual items of sizes 1, 2, 4, ..., 2^k, remainder.",
+          "Run 0/1 knapsack on virtual items.",
+          "Return dp[W].",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Multiple Knapsack follows the pseudocode directly.",
+        text: "This reduces O(n·C·W) naive approach to O(n·log(C)·W).",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Multiple Knapsack is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(W \\cdot n \\log C_{\\max})$, space $O(W)$.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Multiple Knapsack exist in the literature. See references for details.",
+        text: "Monotone-queue optimization achieves O(nW) by processing each item's multiples in a sliding window.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      worst: "O(W·n·logC)",
     },
-    space: "O(n)",
+    space: {
+      worst: "O(W)",
+    },
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "dynamic programming",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "multipleKnapsack",
+      code: `def multipleKnapsack(weights, values, counts, capacity):
+    dp = [0] * (capacity + 1)
+    for i in range(len(weights)):
+        c = counts[i]
+        k = 1
+        while c > 0:
+            take = min(k, c)
+            tw, tv = weights[i] * take, values[i] * take
+            for w in range(capacity, tw - 1, -1):
+                dp[w] = max(dp[w], dp[w - tw] + tv)
+            c -= take
+            k *= 2
+    return dp[capacity]`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            weights: [2, 3],
+            values: [5, 8],
+            counts: [3, 2],
+            capacity: 10,
+          },
+          expected: 25,
+        },
+        {
+          input: {
+            weights: [1, 2, 3],
+            values: [2, 5, 8],
+            counts: [3, 2, 1],
+            capacity: 7,
+          },
+          expected: 18,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "multipleKnapsack",
+      code: `function multipleKnapsack(weights, values, counts, capacity) {
+  const dp = new Array(capacity + 1).fill(0);
+  for (let i = 0; i < weights.length; i++) {
+    let c = counts[i], k = 1;
+    while (c > 0) {
+      const take = Math.min(k, c);
+      const tw = weights[i] * take, tv = values[i] * take;
+      for (let w = capacity; w >= tw; w--) dp[w] = Math.max(dp[w], dp[w - tw] + tv);
+      c -= take;
+      k *= 2;
+    }
+  }
+  return dp[capacity];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            weights: [2, 3],
+            values: [5, 8],
+            counts: [3, 2],
+            capacity: 10,
+          },
+          expected: 25,
+        },
+        {
+          input: {
+            weights: [1, 2, 3],
+            values: [2, 5, 8],
+            counts: [3, 2, 1],
+            capacity: 7,
+          },
+          expected: 18,
         },
       ],
     },
@@ -95,54 +145,41 @@ export const multipleKnapsackEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "multiple-knapsack-q1",
+      id: "mk-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Multiple Knapsack?",
-      options: [
-        "To solve the Multiple Knapsack problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "Binary splitting of count=7 gives groups of sizes?",
+      options: ["1,2,4", "1,2,3,1", "1,6", "7"],
       answer: 0,
-      explanation: "Multiple Knapsack is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Multiple Knapsack does."],
-      objective: "Purpose",
+      explanation: "7 = 1+2+4.",
+      hints: ["Powers of 2 up to the count."],
+      objective: "Concept",
     },
   ],
   exam: {
-    definition: "Multiple Knapsack is an algorithm in the domain of dynamic programming.",
-    steps: [
-      "Apply the Multiple Knapsack algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Knapsack where each item has a bounded number of copies.",
+    steps: ["Binary-split each item.", "Run 0/1 knapsack on virtual items.", "Return dp[W]."],
+    timeComplexity: "$O(W \\cdot n \\log C)$.",
+    spaceComplexity: "$O(W)$.",
+    correctness: "Binary splitting can represent any count from 0 to c.",
+    applications: ["inventory optimization", "resource planning"],
+    limitations: ["pseudo-polynomial"],
     faq: [
       {
-        q: "When should you use Multiple Knapsack?",
-        a: "Use Multiple Knapsack when the problem matches its designed use case in dynamic programming.",
+        q: "Why binary splitting?",
+        a: "Any integer 0..c can be formed by subsets of {1,2,4,...,r}; this reduces item count from c to log c.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Multiple Knapsack (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Binary splitting (2).", "0/1 knapsack on virtual items (1).", "Complexity (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Multiple Knapsack.",
+      citation: "S. Martello and P. Toth, Knapsack Problems, Wiley, 1990.",
+      supports: "Bounded knapsack.",
     },
   ],
   review: {

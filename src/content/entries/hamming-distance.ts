@@ -6,45 +6,53 @@ export const hammingDistanceEntry: AlgorithmEntry = {
   aliases: ["Hamming Distance"],
   curriculum: [332],
   domain: "strings",
-  subcategory: "String Algorithms",
-  difficulty: "intermediate",
-  summary: "Hamming Distance is a well-known algorithm in the domain of string processing.",
-  tags: ["hamming distance", "string"],
+  subcategory: "String Metrics",
+  difficulty: "beginner",
+  summary: "Counts the number of positions where two equal-length strings differ.",
+  tags: ["hamming distance", "string distance", "error detection"],
   prerequisites: [],
-  related: [],
+  related: ["edit-distance", "jaro-similarity"],
   problem: {
-    input: "Input for Hamming Distance.",
-    output: "Output of Hamming Distance.",
+    input: "Two strings of equal length.",
+    output: "The number of positions where they differ.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Hamming Distance solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Simply count mismatches position by position. Hamming distance tells you the minimum number of character substitutions to transform one string into the other.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Hamming Distance algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Compare characters at each position.",
+          "Count the number of positions where they differ.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Hamming Distance follows the pseudocode directly.",
+        text: "A one-line implementation: zip the two strings and count pairs where characters differ.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Hamming Distance is based on the algorithm's structure and the operations performed at each step.",
+        text: "$O(n)$ time, $O(1)$ space. The Hamming distance is a metric: satisfies non-negativity, identity, symmetry, and triangle inequality.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Hamming Distance exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "For binary strings, Hamming distance equals the popcount of XOR.",
+          "Used in error-correcting codes: a code with minimum Hamming distance d can detect d-1 errors and correct ⌊(d-1)/2⌋ errors.",
+          "Hamming weight is the distance from the zero string.",
+        ],
       },
     ],
   },
@@ -54,40 +62,61 @@ export const hammingDistanceEntry: AlgorithmEntry = {
       average: "O(n)",
       worst: "O(n)",
     },
-    space: "O(n)",
+    space: "O(1)",
     worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "string processing",
+      label: "Metric",
+      value: "Yes",
+    },
+    {
+      label: "Requires",
+      value: "Equal-length strings",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "hamming_distance",
+      code: `def hamming_distance(a, b):
+    if len(a) != len(b):
+        raise ValueError("Strings must be equal length")
+    return sum(x != y for x, y in zip(a, b))
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["karolin", "kathrin"],
+          expected: 3,
+        },
+        {
+          args: ["1011101", "1001001"],
+          expected: 2,
+        },
+        {
+          args: ["abc", "abc"],
+          expected: 0,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "hammingDistance",
+      code: `function hammingDistance(a, b) {
+  if (a.length !== b.length) throw new Error("Strings must be equal length");
+  let d = 0;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) d++;
+  return d;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["karolin", "kathrin"],
+          expected: 3,
+        },
+        {
+          args: ["abc", "abc"],
+          expected: 0,
         },
       ],
     },
@@ -95,54 +124,42 @@ export const hammingDistanceEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "hamming-distance-q1",
+      id: "hamming-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Hamming Distance?",
-      options: [
-        "To solve the Hamming Distance problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "What is the Hamming distance between '1011' and '1100'?",
+      options: ["3", "2", "4", "1"],
       answer: 0,
-      explanation: "Hamming Distance is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Hamming Distance does."],
-      objective: "Purpose",
+      explanation: "Positions 1, 2, 3 differ: 0≠1, 1≠0, 1≠0.",
+      hints: ["Compare each position."],
+      objective: "Calculation",
     },
   ],
   exam: {
-    definition: "Hamming Distance is an algorithm in the domain of string processing.",
-    steps: [
-      "Apply the Hamming Distance algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
+    definition: "Hamming distance counts mismatches between equal-length strings.",
+    steps: ["Compare each position.", "Count differences."],
     timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    spaceComplexity: "$O(1)$.",
+    correctness: "Every position is checked exactly once.",
+    applications: ["error-correcting codes", "DNA comparison", "binary similarity"],
+    limitations: ["Only works on equal-length strings"],
     faq: [
       {
-        q: "When should you use Hamming Distance?",
-        a: "Use Hamming Distance when the problem matches its designed use case in string processing.",
+        q: "How does it relate to error correction?",
+        a: "A code with minimum distance d can correct ⌊(d-1)/2⌋ errors.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Hamming Distance (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Define (1).", "Metric properties (2).", "Error correction connection (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Hamming Distance.",
+      citation:
+        "R. W. Hamming, 'Error Detecting and Error Correcting Codes', Bell System Technical Journal, 1950.",
+      supports: "Original paper.",
     },
   ],
   review: {

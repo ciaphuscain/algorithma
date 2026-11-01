@@ -3,92 +3,131 @@ import type { AlgorithmEntry } from "../types";
 export const lexicographicRankAlgorithmEntry: AlgorithmEntry = {
   slug: "lexicographic-rank-algorithm",
   name: "Lexicographic Rank Algorithm",
-  aliases: ["Lexicographic Rank Algorithm"],
+  aliases: ["Permutation Rank"],
   curriculum: [346],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "Combinatorics",
   difficulty: "intermediate",
   summary:
-    "Lexicographic Rank Algorithm is a well-known algorithm in the domain of string processing.",
-  tags: ["lexicographic rank algorithm", "string"],
+    "Computes the rank (position) of a string among all its sorted permutations using factorial number system.",
+  tags: ["permutation", "rank", "factorial", "combinatorics"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Lexicographic Rank Algorithm.",
-    output: "Output of Lexicographic Rank Algorithm.",
+    input: "A string S.",
+    output: "The 1-based rank of S among all sorted permutations of its characters.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Lexicographic Rank Algorithm solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "For each position, count how many unused characters are smaller than the current one. Multiply by the number of permutations of the remaining characters.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Lexicographic Rank Algorithm algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "For i=0..n-1:",
+          "  Count characters in remaining pool smaller than S[i].",
+          "  rank += count * (n-i-1)! / product of remaining duplicate factorials.",
+          "Return rank + 1.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Lexicographic Rank Algorithm follows the pseudocode directly.",
+        text: "Handle duplicates by dividing by the factorial of each character's remaining count.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Lexicographic Rank Algorithm is based on the algorithm's structure and the operations performed at each step.",
+        text: "With distinct characters: $\\text{rank} = \\sum_{i} c_i \\cdot (n-i-1)!$ where $c_i$ is the count of smaller remaining characters.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of Lexicographic Rank Algorithm exist in the literature. See references for details.",
+        text: "This is essentially converting to the factorial number system. The inverse operation reconstructs the permutation from its rank.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(n^2)$",
+    average: "$O(n^2)$",
+    worst: "$O(n^2)$",
+    space: "$O(n)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "string processing",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "lexicographic_rank",
+      code: `from math import factorial
+from collections import Counter
+
+def lex_rank(s: str) -> int:
+    n = len(s)
+    rank = 0
+    freq = Counter(s)
+    for i in range(n):
+        smaller = sum(v for k, v in freq.items() if k < s[i])
+        perms = factorial(n - i - 1)
+        for v in freq.values():
+            perms //= factorial(v)
+        rank += smaller * perms
+        freq[s[i]] -= 1
+        if freq[s[i]] == 0:
+            del freq[s[i]]
+    return rank + 1
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["abc"],
+          expected: 1,
+        },
+        {
+          args: ["bac"],
+          expected: 3,
+        },
+        {
+          args: ["cba"],
+          expected: 6,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "lexicographicRank",
+      code: `function factorial(n) { let r = 1; for (let i = 2; i <= n; i++) r *= i; return r; }
+function lexRank(s) {
+  const n = s.length, freq = {};
+  for (const c of s) freq[c] = (freq[c] || 0) + 1;
+  let rank = 0;
+  for (let i = 0; i < n; i++) {
+    let smaller = 0;
+    for (const k in freq) if (k < s[i]) smaller += freq[k];
+    let perms = factorial(n - i - 1);
+    for (const v of Object.values(freq)) perms /= factorial(v);
+    rank += smaller * perms;
+    freq[s[i]]--;
+    if (freq[s[i]] === 0) delete freq[s[i]];
+  }
+  return rank + 1;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["abc"],
+          expected: 1,
+        },
+        {
+          args: ["cba"],
+          expected: 6,
         },
       ],
     },
@@ -96,55 +135,41 @@ export const lexicographicRankAlgorithmEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "lexicographic-rank-algorithm-q1",
+      id: "lr-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Lexicographic Rank Algorithm?",
-      options: [
-        "To solve the Lexicographic Rank Algorithm problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "What is the rank of 'bca' among permutations of {a,b,c}?",
+      options: ["4", "3", "5", "2"],
       answer: 0,
-      explanation:
-        "Lexicographic Rank Algorithm is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Lexicographic Rank Algorithm does."],
-      objective: "Purpose",
+      explanation: "abc=1, acb=2, bac=3, bca=4.",
+      hints: ["List them."],
+      objective: "Rank",
     },
   ],
   exam: {
-    definition: "Lexicographic Rank Algorithm is an algorithm in the domain of string processing.",
-    steps: [
-      "Apply the Lexicographic Rank Algorithm algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
+    definition: "Computes the 1-based rank of a permutation among all sorted permutations.",
+    steps: ["For each position: count smaller characters, multiply by remaining permutations."],
+    timeComplexity: "$O(n^2)$.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness: "Factorial number system bijection.",
+    applications: ["Combinatorial enumeration", "hashing permutations"],
+    limitations: ["Factorial overflow for long strings without big integers"],
     faq: [
       {
-        q: "When should you use Lexicographic Rank Algorithm?",
-        a: "Use Lexicographic Rank Algorithm when the problem matches its designed use case in string processing.",
+        q: "How to handle duplicates?",
+        a: "Divide by factorial of each character's frequency.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Lexicographic Rank Algorithm (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 3,
+        outline: ["Formula (1).", "Duplicate handling (1).", "Example (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Lexicographic Rank Algorithm.",
+      citation: "D. Knuth, TAOCP Volume 4A, Section 7.2.1.2.",
+      supports: "Permutation ranking.",
     },
   ],
   review: {

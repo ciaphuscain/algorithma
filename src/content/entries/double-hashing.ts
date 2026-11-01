@@ -6,45 +6,54 @@ export const doubleHashingEntry: AlgorithmEntry = {
   aliases: ["Double Hashing"],
   curriculum: [312],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "Hashing",
   difficulty: "intermediate",
-  summary: "Double Hashing is a well-known algorithm in the domain of string processing.",
-  tags: ["double hashing", "string"],
-  prerequisites: [],
-  related: [],
+  summary:
+    "Uses two independent hash functions for string comparison to dramatically reduce the probability of hash collisions.",
+  tags: ["double hashing", "rolling hash", "collision", "string hashing"],
+  prerequisites: ["Polynomial Rolling Hash"],
+  related: ["polynomial-rolling-hash", "rabin-fingerprint"],
   problem: {
-    input: "Input for Double Hashing.",
-    output: "Output of Double Hashing.",
+    input: "Two strings a and b.",
+    output: "Whether they are likely equal, using two independent hash functions.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Double Hashing solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "One hash has collision probability ~1/M. Two independent hashes have collision probability ~1/(M₁·M₂), making false positives extremely rare.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Double Hashing algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Compute hash₁(s) using base B₁, mod M₁.",
+          "Compute hash₂(s) using base B₂, mod M₂.",
+          "Two strings match only if both hashes agree.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Double Hashing follows the pseudocode directly.",
+        text: "Choose different (base, modulus) pairs. Good choices: B₁=31, M₁=10⁹+7 and B₂=37, M₂=10⁹+9.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Double Hashing is based on the algorithm's structure and the operations performed at each step.",
+        text: "If each hash has collision probability $1/M$, two independent hashes have probability $1/(M_1 \\cdot M_2) \\approx 10^{-18}$.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Double Hashing exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Essential for competitive programming to avoid anti-hash tests.",
+          "Can be extended to triple hashing for even lower collision rates.",
+        ],
       },
     ],
   },
@@ -59,35 +68,52 @@ export const doubleHashingEntry: AlgorithmEntry = {
   },
   properties: [
     {
-      label: "Domain",
-      value: "string processing",
+      label: "Collision probability",
+      value: "~1/(M₁·M₂)",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "double_hash",
+      code: `def double_hash(s):
+    """Return a pair of hashes for string s using two different bases and mods."""
+    h1, h2 = 0, 0
+    B1, M1 = 31, 10**9 + 7
+    B2, M2 = 37, 10**9 + 9
+    for c in s:
+        h1 = (h1 * B1 + ord(c)) % M1
+        h2 = (h2 * B2 + ord(c)) % M2
+    return [h1, h2]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["abc"],
+          expected: [96354, 137846],
+        },
+        {
+          args: [""],
+          expected: [0, 0],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "doubleHash",
+      code: `function doubleHash(s) {
+  let h1 = 0, h2 = 0;
+  const B1 = 31, M1 = 1e9 + 7, B2 = 37, M2 = 1e9 + 9;
+  for (let i = 0; i < s.length; i++) {
+    h1 = (h1 * B1 + s.charCodeAt(i)) % M1;
+    h2 = (h2 * B2 + s.charCodeAt(i)) % M2;
+  }
+  return [h1, h2];
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["abc"],
+          expected: [96354, 137846],
         },
       ],
     },
@@ -95,46 +121,43 @@ export const doubleHashingEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "double-hashing-q1",
+      id: "double-hash-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Double Hashing?",
+      prompt: "Why use two hash functions instead of one?",
       options: [
-        "To solve the Double Hashing problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "To reduce collision probability from 1/M to 1/(M₁·M₂)",
+        "To make hashing faster",
+        "To use less memory",
+        "One hash is not enough for any comparison",
       ],
       answer: 0,
-      explanation: "Double Hashing is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Double Hashing does."],
+      explanation: "Two independent hashes make collisions exponentially less likely.",
+      hints: ["Think about independence."],
       objective: "Purpose",
     },
   ],
   exam: {
-    definition: "Double Hashing is an algorithm in the domain of string processing.",
-    steps: [
-      "Apply the Double Hashing algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
+    definition:
+      "Double hashing uses two independent hash functions to make false positives extremely rare.",
+    steps: ["Compute hash with (B₁, M₁).", "Compute hash with (B₂, M₂).", "Compare both."],
     timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    spaceComplexity: "$O(1)$ extra.",
+    correctness: "Collision probability ≈ 1/(M₁·M₂).",
+    applications: ["string matching", "competitive programming", "data deduplication"],
+    limitations: ["Still not a proof of equality; just extremely high confidence"],
     faq: [
       {
-        q: "When should you use Double Hashing?",
-        a: "Use Double Hashing when the problem matches its designed use case in string processing.",
+        q: "What bases and mods to choose?",
+        a: "Use different primes, e.g., (31, 10⁹+7) and (37, 10⁹+9).",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Double Hashing (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Two hash functions (1).",
+          "Collision probability analysis (2).",
+          "Applications (2).",
         ],
       },
     ],
@@ -142,7 +165,7 @@ export const doubleHashingEntry: AlgorithmEntry = {
   references: [
     {
       citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Double Hashing.",
+      supports: "Hashing.",
     },
   ],
   review: {

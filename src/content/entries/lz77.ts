@@ -3,93 +3,126 @@ import type { AlgorithmEntry } from "../types";
 export const lz77Entry: AlgorithmEntry = {
   slug: "lz77",
   name: "LZ77",
-  aliases: ["LZ77"],
+  aliases: ["Lempel-Ziv 77", "LZ1"],
   curriculum: [536],
   domain: "compression",
-  subcategory: "Compression",
+  subcategory: "Dictionary Compression",
   difficulty: "intermediate",
-  summary: "LZ77 is a well-known algorithm in the domain of data compression.",
-  tags: ["lz77", "compression"],
+  summary:
+    "Compresses data by replacing repeated sequences with back-references (offset, length) to a sliding window of previously seen data.",
+  tags: ["compression", "sliding window", "dictionary"],
   prerequisites: [],
-  related: [],
+  related: ["lz78", "lzw", "deflate"],
   problem: {
-    input: "Input for LZ77.",
-    output: "Output of LZ77.",
+    input: "A byte stream.",
+    output: "Sequence of (offset, length, next_char) triples.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "LZ77 solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Maintain a sliding window of recent data. When the current position matches something in the window, output a back-reference instead of the raw bytes.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The LZ77 algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Search window: the last W bytes already processed.",
+          "Look-ahead buffer: next L bytes to encode.",
+          "Find longest match of look-ahead in the window.",
+          "Output (offset, length, next_char).",
+          "Advance by length+1 positions.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of LZ77 follows the pseudocode directly.",
+        text: "Naive search is O(WL) per step. In practice, hash chains or suffix trees speed up matching.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of LZ77 is based on the algorithm's structure and the operations performed at each step.",
+        text: "Compression ratio depends on data redundancy. Larger windows find more matches but increase search time.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of LZ77 exist in the literature. See references for details.",
+        text: "LZ77 is universal: it asymptotically achieves the entropy rate for stationary ergodic sources. DEFLATE, gzip, and zlib are all based on LZ77.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(n)$",
+    average: "$O(n)$",
+    worst: "$O(n \\cdot W)$",
+    space: "$O(W)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "data compression",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "lz77",
+      code: `def lz77_compress(data: str, window_size: int = 20) -> list[tuple[int, int, str]]:
+    i = 0
+    tokens = []
+    while i < len(data):
+        best_offset, best_length = 0, 0
+        start = max(0, i - window_size)
+        for j in range(start, i):
+            length = 0
+            while i + length < len(data) and data[j + length] == data[i + length] and length < 255:
+                length += 1
+            if length > best_length:
+                best_length = length
+                best_offset = i - j
+        next_char = data[i + best_length] if i + best_length < len(data) else ""
+        tokens.append((best_offset, best_length, next_char))
+        i += best_length + 1
+    return tokens
+
+def lz77_decompress(tokens: list[tuple[int, int, str]]) -> str:
+    result = []
+    for offset, length, char in tokens:
+        start = len(result) - offset
+        for j in range(length):
+            result.append(result[start + j])
+        if char:
+            result.append(char)
+    return "".join(result)
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["aabcabc"],
+          expected_type: "list",
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "lz77",
+      code: `function lz77Compress(data, windowSize = 20) {
+  const tokens = [];
+  let i = 0;
+  while (i < data.length) {
+    let bestOff = 0, bestLen = 0;
+    for (let j = Math.max(0, i - windowSize); j < i; j++) {
+      let len = 0;
+      while (i + len < data.length && data[j + len] === data[i + len]) len++;
+      if (len > bestLen) { bestLen = len; bestOff = i - j; }
+    }
+    tokens.push([bestOff, bestLen, i + bestLen < data.length ? data[i + bestLen] : ""]);
+    i += bestLen + 1;
+  }
+  return tokens;
 }
 `,
-      tests: [
-        {
-          args: [42],
-          expected: 42,
-        },
-      ],
+      tests: [],
     },
   ],
   visualizer: null,
@@ -97,48 +130,50 @@ export const lz77Entry: AlgorithmEntry = {
     {
       id: "lz77-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of LZ77?",
+      prompt: "LZ77 replaces repeated sequences with:",
       options: [
-        "To solve the LZ77 problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "Back-references (offset, length)",
+        "Variable-length codes",
+        "Dictionary indices",
+        "Frequency tables",
       ],
       answer: 0,
-      explanation: "LZ77 is designed to solve its specific problem efficiently.",
-      hints: ["Think about what LZ77 does."],
-      objective: "Purpose",
+      explanation: "LZ77 uses sliding window back-references.",
+      hints: ["Window."],
+      objective: "Token type",
     },
   ],
   exam: {
-    definition: "LZ77 is an algorithm in the domain of data compression.",
-    steps: [
-      "Apply the LZ77 algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["data compression applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Sliding window compression using (offset, length, next) triples.",
+    steps: ["Search window for longest match.", "Output back-reference.", "Advance."],
+    timeComplexity: "$O(nW)$ naive.",
+    spaceComplexity: "$O(W)$.",
+    correctness: "Lossless: decompression replays references exactly.",
+    applications: ["gzip", "DEFLATE", "7-zip"],
+    limitations: ["Window size limits long-range matches"],
     faq: [
       {
-        q: "When should you use LZ77?",
-        a: "Use LZ77 when the problem matches its designed use case in data compression.",
+        q: "LZ77 vs LZ78?",
+        a: "LZ77 uses sliding window; LZ78 builds an explicit dictionary.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: ["Define LZ77 (1).", "Describe the algorithm (2).", "Analyze complexity (2)."],
+        marks: 4,
+        outline: [
+          "Token format (1).",
+          "Window search (1).",
+          "Universality (1).",
+          "Applications (1).",
+        ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for LZ77.",
+      citation:
+        "A. Lempel and J. Ziv, 'A Universal Algorithm for Sequential Data Compression', IEEE IT, 1977.",
+      supports: "Original paper.",
     },
   ],
   review: {

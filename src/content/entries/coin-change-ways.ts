@@ -3,92 +3,135 @@ import type { AlgorithmEntry } from "../types";
 export const coinChangeWaysEntry: AlgorithmEntry = {
   slug: "coin-change-ways",
   name: "Coin Change (Number of Ways)",
-  aliases: ["Coin Change (Number of Ways)"],
+  aliases: ["Coin Change 2", "Count Change"],
   curriculum: [267],
   domain: "dynamic-programming",
-  subcategory: "Coin Problems",
+  subcategory: "Knapsack Variants",
   difficulty: "intermediate",
   summary:
-    "Count the number of ways to make change for an amount using given denominations. Process coins in order: dp[a] += dp[a - coin]. The outer loop over coins avoids counting permutations.",
-  tags: ["coin change", "DP", "counting"],
-  prerequisites: ["Coin Change (Minimum Coins)"],
+    "Count the number of distinct ways to make change for a given amount using given denominations. Iterate coins in outer loop to avoid counting permutations.",
+  tags: ["coin change", "counting", "dynamic programming"],
+  prerequisites: ["coin-change-min"],
   related: ["coin-change-min", "unbounded-knapsack"],
   problem: {
-    input: "Input for Coin Change (Number of Ways).",
-    output: "Output of Coin Change (Number of Ways).",
+    input: "An array of coin denominations and a target amount.",
+    output: "The number of distinct combinations of coins that sum to the target.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Count the number of ways to make change for an amount using given denominations. Process coins in order: dp[a] += dp[a - coin]. The outer loop over coins avoids counting permutations.",
+        text: "Unlike minimum coins, here we count combinations. Iterating coins in the outer loop ensures each combination is counted once (order doesn't matter).",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Coin Change (Number of Ways) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Create dp[0..amount], set dp[0]=1.",
+          "For each coin c: for a from c to amount, dp[a] += dp[a-c].",
+          "Return dp[amount].",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Coin Change (Number of Ways) follows the pseudocode directly.",
+        text: "The outer-coin-inner-amount order avoids double-counting permutations like (1,2) and (2,1).",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Coin Change (Number of Ways) is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(n \\cdot k)$, space $O(n)$.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Coin Change (Number of Ways) exist in the literature. See references for details.",
+        text: "Generating functions: the answer is the coefficient of $x^{\\text{amount}}$ in $\\prod_c \\frac{1}{1-x^c}$.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "varies",
-      average: "varies",
-      worst: "varies",
+      worst: "O(n·k)",
     },
-    space: "varies",
+    space: {
+      worst: "O(n)",
+    },
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Category",
-      value: "Coin Problems",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "coinChangeWays",
+      code: `def coinChangeWays(coins, amount):
+    dp = [0] * (amount + 1)
+    dp[0] = 1
+    for c in coins:
+        for a in range(c, amount + 1):
+            dp[a] += dp[a - c]
+    return dp[amount]`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            coins: [1, 2, 5],
+            amount: 5,
+          },
+          expected: 4,
+        },
+        {
+          input: {
+            coins: [2],
+            amount: 3,
+          },
+          expected: 0,
+        },
+        {
+          input: {
+            coins: [1],
+            amount: 0,
+          },
+          expected: 1,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "coinChangeWays",
+      code: `function coinChangeWays(coins, amount) {
+  const dp = new Array(amount + 1).fill(0);
+  dp[0] = 1;
+  for (const c of coins) {
+    for (let a = c; a <= amount; a++) dp[a] += dp[a - c];
+  }
+  return dp[amount];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            coins: [1, 2, 5],
+            amount: 5,
+          },
+          expected: 4,
+        },
+        {
+          input: {
+            coins: [2],
+            amount: 3,
+          },
+          expected: 0,
+        },
+        {
+          input: {
+            coins: [1],
+            amount: 0,
+          },
+          expected: 1,
         },
       ],
     },
@@ -96,53 +139,41 @@ export const coinChangeWaysEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "coin-change-ways-q1",
+      id: "ccw-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Coin Change (Number of Ways)?",
-      options: [
-        "Count the number of ways to make change for an amount using ...",
-        "Sorting an array",
-        "Finding shortest paths",
-        "Compressing data",
-      ],
+      prompt: "coins=[1,2,3], amount=4. How many ways?",
+      options: ["4", "3", "5", "7"],
       answer: 0,
-      explanation:
-        "Coin Change (Number of Ways): Count the number of ways to make change for an amount using given denominations. Process coins in order: dp[a] += dp[a - coin]. The outer loop over coins avoids counting permutations.",
-      hints: ["Think about what problem Coin Change (Number of Ways) solves."],
-      objective: "Coin Change (Number of Ways)",
+      explanation: "{1111, 112, 13, 22} = 4 ways.",
+      hints: ["List all combinations."],
+      objective: "Computation",
     },
   ],
   exam: {
-    definition:
-      "Count the number of ways to make change for an amount using given denominations. Process coins in order: dp[a] += dp[a - coin]. The outer loop over coins avoids counting permutations.",
-    steps: ["Apply the Coin Change (Number of Ways) algorithm to the input."],
-    timeComplexity: "See complexity section.",
-    spaceComplexity: "See complexity section.",
-    correctness:
-      "The Coin Change (Number of Ways) algorithm is correct because it systematically processes all cases.",
-    applications: ["Coin Problems"],
-    limitations: ["See advanced section for limitations."],
+    definition: "Count distinct combinations of coins summing to target.",
+    steps: ["dp[0]=1.", "Outer loop: coins. Inner: amounts.", "dp[a] += dp[a-c]."],
+    timeComplexity: "$O(n \\cdot k)$.",
+    spaceComplexity: "$O(n)$.",
+    correctness: "Coin-outer order partitions solutions by largest coin used.",
+    applications: ["combinatorics", "financial systems"],
+    limitations: ["pseudo-polynomial"],
     faq: [
       {
-        q: "When should you use Coin Change (Number of Ways)?",
-        a: "Use Coin Change (Number of Ways) when the problem matches its design: Count the number of ways to make change for an amount using given denominations. Process coins in or",
+        q: "Why outer loop on coins?",
+        a: "To count combinations not permutations.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Coin Change (Number of Ways) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Define dp (1).", "Loop order explanation (2).", "Correctness (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. Cormen et al., Introduction to Algorithms, 4th ed.",
-      supports: "General reference for Coin Change (Number of Ways).",
+      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
+      supports: "DP counting.",
     },
   ],
   review: {

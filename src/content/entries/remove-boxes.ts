@@ -3,91 +3,142 @@ import type { AlgorithmEntry } from "../types";
 export const removeBoxesEntry: AlgorithmEntry = {
   slug: "remove-boxes",
   name: "Remove Boxes",
-  aliases: ["Remove Boxes"],
+  aliases: ["Remove Boxes DP"],
   curriculum: [292],
   domain: "dynamic-programming",
-  subcategory: "Dynamic Programming",
+  subcategory: "Interval DP",
   difficulty: "intermediate",
-  summary: "Remove Boxes is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["remove boxes", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+  summary:
+    "Remove boxes to maximize points. Removing k consecutive same-color boxes earns k² points. 3D interval DP: dp[l][r][k] where k extra same-color boxes are attached to boxes[l].",
+  tags: ["interval DP", "3D DP", "dynamic programming"],
+  prerequisites: ["burst-balloons"],
+  related: ["burst-balloons"],
   problem: {
-    input: "Input for Remove Boxes.",
-    output: "Output of Remove Boxes.",
+    input: "Array of box colors.",
+    output: "Maximum points from removing all boxes.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Remove Boxes solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Removing same-color boxes together earns more (k²). The key insight: track how many same-color boxes are waiting to merge with the leftmost box of a range.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Remove Boxes algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "dp[l][r][k] = max points from boxes[l..r] with k extra copies of boxes[l] attached to the left.",
+          "Option 1: remove boxes[l] with the k extras: (k+1)² + dp[l+1][r][0].",
+          "Option 2: find m in (l,r] where boxes[m]==boxes[l], merge: dp[l+1][m-1][0] + dp[m][r][k+1].",
+          "Return dp[0][n-1][0].",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Remove Boxes follows the pseudocode directly.",
+        text: "Memoization is more natural than bottom-up for this 3D state.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Remove Boxes is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(n^4)$, space $O(n^3)$.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Remove Boxes exist in the literature. See references for details.",
+        text: "One of the hardest interval DP problems. The extra dimension k captures the 'delayed merging' insight.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      worst: "O(n⁴)",
     },
-    space: "O(n)",
+    space: {
+      worst: "O(n³)",
+    },
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "dynamic programming",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "removeBoxes",
+      code: `def removeBoxes(boxes):
+    n = len(boxes)
+    memo = {}
+    def dp(l, r, k):
+        if l > r:
+            return 0
+        key = (l, r, k)
+        if key in memo:
+            return memo[key]
+        while l < r and boxes[l] == boxes[l + 1]:
+            l += 1
+            k += 1
+        res = (k + 1) * (k + 1) + dp(l + 1, r, 0)
+        for m in range(l + 1, r + 1):
+            if boxes[m] == boxes[l]:
+                res = max(res, dp(l + 1, m - 1, 0) + dp(m, r, k + 1))
+        memo[key] = res
+        return res
+    return dp(0, n - 1, 0)`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            boxes: [1, 3, 2, 2, 2, 3, 4, 3, 1],
+          },
+          expected: 23,
+        },
+        {
+          input: {
+            boxes: [1, 1, 1],
+          },
+          expected: 9,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "removeBoxes",
+      code: `function removeBoxes(boxes) {
+  const n = boxes.length;
+  const memo = new Map();
+  function dp(l, r, k) {
+    if (l > r) return 0;
+    const key = l * 10000 + r * 100 + k;
+    if (memo.has(key)) return memo.get(key);
+    let ll = l, kk = k;
+    while (ll < r && boxes[ll] === boxes[ll + 1]) { ll++; kk++; }
+    let res = (kk + 1) * (kk + 1) + dp(ll + 1, r, 0);
+    for (let m = ll + 1; m <= r; m++) {
+      if (boxes[m] === boxes[ll]) {
+        res = Math.max(res, dp(ll + 1, m - 1, 0) + dp(m, r, kk + 1));
+      }
+    }
+    memo.set(key, res);
+    return res;
+  }
+  return dp(0, n - 1, 0);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            boxes: [1, 3, 2, 2, 2, 3, 4, 3, 1],
+          },
+          expected: 23,
+        },
+        {
+          input: {
+            boxes: [1, 1, 1],
+          },
+          expected: 9,
         },
       ],
     },
@@ -95,54 +146,45 @@ export const removeBoxesEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "remove-boxes-q1",
+      id: "rb-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Remove Boxes?",
-      options: [
-        "To solve the Remove Boxes problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "boxes=[1,1]. Max points?",
+      options: ["4", "2", "1", "3"],
       answer: 0,
-      explanation: "Remove Boxes is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Remove Boxes does."],
-      objective: "Purpose",
+      explanation: "Remove both together: 2²=4.",
+      hints: ["Same color boxes merge."],
+      objective: "Computation",
     },
   ],
   exam: {
-    definition: "Remove Boxes is an algorithm in the domain of dynamic programming.",
+    definition: "Maximize points removing boxes (k same-color → k² points).",
     steps: [
-      "Apply the Remove Boxes algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "dp[l][r][k] with k extra same-color attached.",
+      "Remove left group or merge with later same color.",
+      "Return dp[0][n-1][0].",
     ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "$O(n^4)$.",
+    spaceComplexity: "$O(n^3)$.",
+    correctness: "The k parameter captures delayed merging of same-color boxes.",
+    applications: ["puzzle games"],
+    limitations: ["O(n^4) limits to small n"],
     faq: [
       {
-        q: "When should you use Remove Boxes?",
-        a: "Use Remove Boxes when the problem matches its designed use case in dynamic programming.",
+        q: "Why 3D?",
+        a: "Need to track how many same-color boxes from outside the range will merge with boxes[l].",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Remove Boxes (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["3D state explanation (2).", "Two choices (2).", "Complexity (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Remove Boxes.",
+      citation: "LeetCode Problem 546: Remove Boxes.",
+      supports: "3D interval DP.",
     },
   ],
   review: {

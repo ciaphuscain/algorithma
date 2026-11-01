@@ -3,91 +3,160 @@ import type { AlgorithmEntry } from "../types";
 export const mergeStonesEntry: AlgorithmEntry = {
   slug: "merge-stones",
   name: "Merge Stones",
-  aliases: ["Merge Stones"],
+  aliases: ["Merge K Piles of Stones", "Stone Merge"],
   curriculum: [291],
   domain: "dynamic-programming",
-  subcategory: "Dynamic Programming",
+  subcategory: "Interval DP",
   difficulty: "intermediate",
-  summary: "Merge Stones is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["merge stones", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+  summary:
+    "Merge consecutive stone piles into groups of k at a time. Cost = sum of merged piles. Minimize total cost. Interval DP with step size k-1.",
+  tags: ["interval DP", "merge", "dynamic programming"],
+  prerequisites: ["matrix-chain-multiplication"],
+  related: ["burst-balloons", "matrix-chain-multiplication"],
   problem: {
-    input: "Input for Merge Stones.",
-    output: "Output of Merge Stones.",
+    input: "Array of stone pile sizes and integer k.",
+    output:
+      "Minimum cost to merge all into one pile (merging k consecutive at a time), or -1 if impossible.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Merge Stones solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Each merge reduces pile count by k-1. Need (n-1) % (k-1) == 0 for it to be possible. Interval DP like matrix chain but with step k-1.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Merge Stones algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Check feasibility: (n-1) % (k-1) must be 0.",
+          "dp[i][j] = min cost to optimally merge piles i..j.",
+          "Split at k-1 intervals. If (j-i) % (k-1) == 0, add prefix sum cost.",
+          "Return dp[0][n-1].",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Merge Stones follows the pseudocode directly.",
+        text: "Prefix sums for range costs. O(n^3/k) with step optimization.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Merge Stones is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(n^3 / k)$, space $O(n^2)$.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Merge Stones exist in the literature. See references for details.",
+        text: "For k=2 this is the classic stone-merge problem solvable in O(n^3) or O(n^2) with Knuth optimization.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
+      worst: "O(n³)",
+    },
+    space: {
       worst: "O(n²)",
     },
-    space: "O(n)",
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "dynamic programming",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "mergeStones",
+      code: `def mergeStones(stones, k):
+    n = len(stones)
+    if n == 1:
+        return 0
+    if (n - 1) % (k - 1) != 0:
+        return -1
+    prefix = [0] * (n + 1)
+    for i in range(n):
+        prefix[i + 1] = prefix[i] + stones[i]
+    dp = [[0] * n for _ in range(n)]
+    for length in range(k, n + 1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            dp[i][j] = float('inf')
+            for mid in range(i, j, k - 1):
+                dp[i][j] = min(dp[i][j], dp[i][mid] + dp[mid + 1][j])
+            if (length - 1) % (k - 1) == 0:
+                dp[i][j] += prefix[j + 1] - prefix[i]
+    return dp[0][n - 1]`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            stones: [3, 2, 4, 1],
+            k: 2,
+          },
+          expected: 20,
+        },
+        {
+          input: {
+            stones: [3, 2, 4, 1],
+            k: 3,
+          },
+          expected: -1,
+        },
+        {
+          input: {
+            stones: [3, 5, 1, 2, 6],
+            k: 3,
+          },
+          expected: 25,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "mergeStones",
+      code: `function mergeStones(stones, k) {
+  const n = stones.length;
+  if (n === 1) return 0;
+  if ((n - 1) % (k - 1) !== 0) return -1;
+  const prefix = new Array(n + 1).fill(0);
+  for (let i = 0; i < n; i++) prefix[i + 1] = prefix[i] + stones[i];
+  const dp = Array.from({length: n}, () => new Array(n).fill(0));
+  for (let len = k; len <= n; len++) {
+    for (let i = 0; i <= n - len; i++) {
+      const j = i + len - 1;
+      dp[i][j] = Infinity;
+      for (let mid = i; mid < j; mid += k - 1) {
+        dp[i][j] = Math.min(dp[i][j], dp[i][mid] + dp[mid + 1][j]);
+      }
+      if ((len - 1) % (k - 1) === 0) dp[i][j] += prefix[j + 1] - prefix[i];
+    }
+  }
+  return dp[0][n - 1];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            stones: [3, 2, 4, 1],
+            k: 2,
+          },
+          expected: 20,
+        },
+        {
+          input: {
+            stones: [3, 2, 4, 1],
+            k: 3,
+          },
+          expected: -1,
+        },
+        {
+          input: {
+            stones: [3, 5, 1, 2, 6],
+            k: 3,
+          },
+          expected: 25,
         },
       ],
     },
@@ -95,54 +164,45 @@ export const mergeStonesEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "merge-stones-q1",
+      id: "ms-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Merge Stones?",
-      options: [
-        "To solve the Merge Stones problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "stones=[1,2,3], k=2. Min cost?",
+      options: ["9", "8", "6", "12"],
       answer: 0,
-      explanation: "Merge Stones is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Merge Stones does."],
-      objective: "Purpose",
+      explanation: "Merge (1,2)→3 cost 3, then (3,3)→6 cost 6. Total 9.",
+      hints: ["Try different merge orders."],
+      objective: "Computation",
     },
   ],
   exam: {
-    definition: "Merge Stones is an algorithm in the domain of dynamic programming.",
-    steps: [
-      "Apply the Merge Stones algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Minimize cost to merge stone piles k at a time.",
+    steps: ["Check feasibility.", "Interval DP with step k-1.", "Add range sum when mergeable."],
+    timeComplexity: "$O(n^3)$.",
+    spaceComplexity: "$O(n^2)$.",
+    correctness: "Optimal substructure with k-pile merge constraint.",
+    applications: ["resource merging", "Huffman-like coding"],
+    limitations: ["cubic for general k"],
     faq: [
       {
-        q: "When should you use Merge Stones?",
-        a: "Use Merge Stones when the problem matches its designed use case in dynamic programming.",
+        q: "Why (n-1)%(k-1)==0?",
+        a: "Each merge of k piles reduces count by k-1; to reach 1 pile from n need exact divisibility.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Merge Stones (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Feasibility check (1).",
+          "Interval DP with k-1 step (2).",
+          "Prefix sum optimization (2).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Merge Stones.",
+      citation: "LeetCode Problem 1000: Minimum Cost to Merge Stones.",
+      supports: "K-way merge DP.",
     },
   ],
   review: {

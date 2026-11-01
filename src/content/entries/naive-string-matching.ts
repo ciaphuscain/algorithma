@@ -3,92 +3,108 @@ import type { AlgorithmEntry } from "../types";
 export const naiveStringMatchingEntry: AlgorithmEntry = {
   slug: "naive-string-matching",
   name: "Naive String Matching",
-  aliases: ["Naive String Matching"],
+  aliases: ["Brute-Force String Search"],
   curriculum: [301],
   domain: "strings",
-  subcategory: "String Matching",
+  subcategory: "Pattern Matching",
   difficulty: "beginner",
   summary:
-    "Check every position in the text as a potential match start. For each position, compare characters one by one. O(nm) worst case but simple and fast for short patterns.",
-  tags: ["string matching", "brute force", "pattern"],
-  prerequisites: ["Arrays", "Strings"],
-  related: ["kmp", "z-algorithm"],
+    "Checks every possible alignment of the pattern against the text, comparing character by character.",
+  tags: ["pattern matching", "brute force", "string search"],
+  prerequisites: [],
+  related: ["kmp", "boyer-moore"],
   problem: {
-    input: "Input for Naive String Matching.",
-    output: "Output of Naive String Matching.",
+    input: "A text string T and pattern P.",
+    output: "All positions where P occurs in T.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Check every position in the text as a potential match start. For each position, compare characters one by one. O(nm) worst case but simple and fast for short patterns.",
+        text: "Slide the pattern over the text one position at a time. At each position, compare all characters of the pattern.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Naive String Matching algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "For each starting position i from 0 to n-m:",
+          "  Compare T[i..i+m-1] with P[0..m-1].",
+          "  If all match, record i.",
+          "  Otherwise, move to i+1.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Naive String Matching follows the pseudocode directly.",
+        text: "Two nested loops: the outer loop over text positions, the inner loop over pattern characters.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Naive String Matching is based on the algorithm's structure and the operations performed at each step.",
+        text: "Worst case: $O((n-m+1) \\cdot m)$, e.g., text 'aaa...a' and pattern 'aa...ab'. Best case $O(n)$ when first character mismatches everywhere.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of Naive String Matching exist in the literature. See references for details.",
+        text: "Despite poor worst-case performance, naive search is competitive on random text because mismatches happen quickly on average, giving expected $O(n)$ with random patterns.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "varies",
-      average: "varies",
-      worst: "varies",
-    },
-    space: "varies",
     worstClass: "other",
+    best: "$O(n)$",
+    average: "$O(n)$",
+    worst: "$O(nm)$",
+    space: "$O(1)$",
   },
-  properties: [
-    {
-      label: "Category",
-      value: "String Matching",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "naive_string_matching",
+      code: `def naive_search(text: str, pattern: str) -> list[int]:
+    n, m = len(text), len(pattern)
+    result = []
+    for i in range(n - m + 1):
+        if text[i:i + m] == pattern:
+            result.append(i)
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["abcabcabc", "abc"],
+          expected: [0, 3, 6],
+        },
+        {
+          args: ["aaaa", "aa"],
+          expected: [0, 1, 2],
+        },
+        {
+          args: ["hello", "xyz"],
+          expected: [],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "naiveStringMatching",
+      code: `function naiveSearch(text, pattern) {
+  const result = [];
+  for (let i = 0; i <= text.length - pattern.length; i++) {
+    if (text.substring(i, i + pattern.length) === pattern) result.push(i);
+  }
+  return result;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["abcabcabc", "abc"],
+          expected: [0, 3, 6],
         },
       ],
     },
@@ -96,53 +112,45 @@ export const naiveStringMatchingEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "naive-string-matching-q1",
+      id: "nsm-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Naive String Matching?",
-      options: [
-        "Check every position in the text as a potential match start....",
-        "Sorting an array",
-        "Finding shortest paths",
-        "Compressing data",
-      ],
+      prompt: "What is the worst-case time for naive matching?",
+      options: ["O(nm)", "O(n+m)", "O(n log m)", "O(m)"],
       answer: 0,
-      explanation:
-        "Naive String Matching: Check every position in the text as a potential match start. For each position, compare characters one by one. O(nm) worst case but simple and fast for short patterns.",
-      hints: ["Think about what problem Naive String Matching solves."],
-      objective: "Naive String Matching",
+      explanation: "Each of the n-m+1 positions can require m comparisons.",
+      hints: ["Think about all a's text."],
+      objective: "Worst case",
     },
   ],
   exam: {
-    definition:
-      "Check every position in the text as a potential match start. For each position, compare characters one by one. O(nm) worst case but simple and fast for short patterns.",
-    steps: ["Apply the Naive String Matching algorithm to the input."],
-    timeComplexity: "See complexity section.",
-    spaceComplexity: "See complexity section.",
-    correctness:
-      "The Naive String Matching algorithm is correct because it systematically processes all cases.",
-    applications: ["String Matching"],
-    limitations: ["See advanced section for limitations."],
+    definition: "Naive string matching slides the pattern over every text position.",
+    steps: ["For i=0..n-m: compare text[i..i+m-1] with pattern."],
+    timeComplexity: "$O(nm)$ worst, $O(n)$ best.",
+    spaceComplexity: "$O(1)$ extra.",
+    correctness: "Every possible alignment is checked.",
+    applications: ["Small inputs", "baseline benchmark"],
+    limitations: ["Quadratic worst case on repetitive text"],
     faq: [
       {
-        q: "When should you use Naive String Matching?",
-        a: "Use Naive String Matching when the problem matches its design: Check every position in the text as a potential match start. For each position, compare characters o",
+        q: "When is naive search good enough?",
+        a: "For short patterns or natural-language text where mismatches happen early.",
       },
     ],
     answers: [
       {
-        marks: 5,
+        marks: 3,
         outline: [
-          "Define Naive String Matching (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Algorithm description (1).",
+          "Complexity analysis (1).",
+          "When it is acceptable (1).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. Cormen et al., Introduction to Algorithms, 4th ed.",
-      supports: "General reference for Naive String Matching.",
+      citation: "CLRS, Chapter 32.1, 'The naive string-matching algorithm'.",
+      supports: "Foundation.",
     },
   ],
   review: {

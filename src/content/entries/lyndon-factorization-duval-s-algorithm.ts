@@ -3,92 +3,121 @@ import type { AlgorithmEntry } from "../types";
 export const lyndonFactorizationDuvalSAlgorithmEntry: AlgorithmEntry = {
   slug: "lyndon-factorization-duval-s-algorithm",
   name: "Lyndon Factorization (Duval's Algorithm)",
-  aliases: ["Lyndon Factorization (Duval's Algorithm)"],
+  aliases: ["Duval's Algorithm", "Chen-Fox-Lyndon"],
   curriculum: [342],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "String Decomposition",
   difficulty: "intermediate",
   summary:
-    "Lyndon Factorization (Duval's Algorithm) is a well-known algorithm in the domain of string processing.",
-  tags: ["lyndon factorization duval s algorithm", "string"],
-  prerequisites: [],
+    "Decomposes a string into a non-increasing sequence of Lyndon words in O(n) time. A Lyndon word is a string strictly smaller than all its rotations.",
+  tags: ["Lyndon word", "factorization", "string decomposition"],
+  prerequisites: ["booth-s-algorithm-lexicographically-minimum-rotation"],
   related: [],
   problem: {
-    input: "Input for Lyndon Factorization (Duval's Algorithm).",
-    output: "Output of Lyndon Factorization (Duval's Algorithm).",
+    input: "A string S.",
+    output:
+      "The Lyndon factorization: S = w1 w2 ... wk where each wi is a Lyndon word and w1 >= w2 >= ... >= wk.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Lyndon Factorization (Duval's Algorithm) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "A Lyndon word is lexicographically strictly smaller than all its proper rotations. Every string has a unique factorization into non-increasing Lyndon words.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Lyndon Factorization (Duval's Algorithm) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Start with i=0.",
+          "Try to extend the current Lyndon factor using indices j,k.",
+          "If s[k]<s[j]: a Lyndon factor of length j-i found. Output, advance i.",
+          "If s[k]>s[j]: the whole segment i..k is one Lyndon word. Reset j=i, k=i+1.",
+          "If s[k]==s[j]: advance both j and k.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Lyndon Factorization (Duval's Algorithm) follows the pseudocode directly.",
+        text: "Duval's algorithm uses three pointers (i,j,k) and runs in a single pass.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Lyndon Factorization (Duval's Algorithm) is based on the algorithm's structure and the operations performed at each step.",
+        text: "$O(n)$ time: each character is visited at most three times across the pointer advances.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of Lyndon Factorization (Duval's Algorithm) exist in the literature. See references for details.",
+        text: "Lyndon factorization connects to suffix arrays: the suffixes of each Lyndon factor appear consecutively in the suffix array.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(n)$",
+    average: "$O(n)$",
+    worst: "$O(n)$",
+    space: "$O(1)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "string processing",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "lyndon_factorization",
+      code: `def duval(s: str) -> list[str]:
+    n = len(s)
+    factorization = []
+    i = 0
+    while i < n:
+        j, k = i, i + 1
+        while k < n and s[j] <= s[k]:
+            if s[j] < s[k]:
+                j = i
+            else:
+                j += 1
+            k += 1
+        while i <= j:
+            factorization.append(s[i:i + k - j])
+            i += k - j
+    return factorization
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["abbaabba"],
+          expected: ["abb", "aabb", "a"],
+        },
+        {
+          args: ["cba"],
+          expected: ["c", "b", "a"],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "lyndonFactorization",
+      code: `function duval(s) {
+  const n = s.length, result = [];
+  let i = 0;
+  while (i < n) {
+    let j = i, k = i + 1;
+    while (k < n && s[j] <= s[k]) {
+      if (s[j] < s[k]) j = i; else j++;
+      k++;
+    }
+    while (i <= j) { result.push(s.substring(i, i + k - j)); i += k - j; }
+  }
+  return result;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["cba"],
+          expected: ["c", "b", "a"],
         },
       ],
     },
@@ -96,56 +125,41 @@ export const lyndonFactorizationDuvalSAlgorithmEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "lyndon-factorization-duval-s-algorithm-q1",
+      id: "lyn-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Lyndon Factorization (Duval's Algorithm)?",
-      options: [
-        "To solve the Lyndon Factorization (Duval's Algorithm) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "Which is a Lyndon word?",
+      options: ["abc", "aba", "ba", "aa"],
       answer: 0,
-      explanation:
-        "Lyndon Factorization (Duval's Algorithm) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Lyndon Factorization (Duval's Algorithm) does."],
-      objective: "Purpose",
+      explanation: "'abc' < all its rotations ('bca', 'cab').",
+      hints: ["Strictly smallest rotation."],
+      objective: "Definition",
     },
   ],
   exam: {
-    definition:
-      "Lyndon Factorization (Duval's Algorithm) is an algorithm in the domain of string processing.",
-    steps: [
-      "Apply the Lyndon Factorization (Duval's Algorithm) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
+    definition: "Unique factorization into non-increasing Lyndon words.",
+    steps: ["Duval's three-pointer scan.", "Output factors of length k-j when s[k]<s[j]."],
     timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    spaceComplexity: "$O(1)$ extra.",
+    correctness: "Chen-Fox-Lyndon theorem guarantees uniqueness.",
+    applications: ["Suffix array construction", "minimum rotation via Lyndon"],
+    limitations: ["Theoretical; direct applications are niche"],
     faq: [
       {
-        q: "When should you use Lyndon Factorization (Duval's Algorithm)?",
-        a: "Use Lyndon Factorization (Duval's Algorithm) when the problem matches its designed use case in string processing.",
+        q: "How many Lyndon factors can there be?",
+        a: "At most n (one per character for non-increasing strings like 'cba').",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Lyndon Factorization (Duval's Algorithm) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 4,
+        outline: ["Lyndon word definition (1).", "Duval algorithm (2).", "Uniqueness theorem (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Lyndon Factorization (Duval's Algorithm).",
+      citation: "J. P. Duval, 'Factorizing words over an ordered alphabet', J. Algorithms, 1983.",
+      supports: "Original algorithm.",
     },
   ],
   review: {

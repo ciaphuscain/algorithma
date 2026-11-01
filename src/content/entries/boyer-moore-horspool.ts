@@ -2,92 +2,131 @@ import type { AlgorithmEntry } from "../types";
 
 export const boyerMooreHorspoolEntry: AlgorithmEntry = {
   slug: "boyer-moore-horspool",
-  name: "Boyer–Moore–Horspool",
-  aliases: ["Boyer–Moore–Horspool"],
+  name: "Boyer-Moore-Horspool",
+  aliases: ["Boyer-Moore-Horspool", "Horspool"],
   curriculum: [305],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "Pattern Matching",
   difficulty: "intermediate",
-  summary: "Boyer–Moore–Horspool is a well-known algorithm in the domain of string processing.",
-  tags: ["boyer moore horspool", "string"],
-  prerequisites: [],
-  related: [],
+  summary:
+    "A simplified Boyer-Moore variant that uses only the bad-character shift based on the text character aligned with the end of the pattern.",
+  tags: ["pattern matching", "string search", "horspool"],
+  prerequisites: ["Boyer-Moore"],
+  related: ["boyer-moore", "sunday-algorithm"],
   problem: {
-    input: "Input for Boyer–Moore–Horspool.",
-    output: "Output of Boyer–Moore–Horspool.",
+    input: "A text string and a pattern string.",
+    output: "All starting positions where the pattern occurs in the text.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Boyer–Moore–Horspool solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Like Boyer-Moore but simpler: on any mismatch (or after a full match), shift based on the text character aligned with the **last** position of the pattern. This one rule is enough for excellent average-case performance.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Boyer–Moore–Horspool algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Build a shift table: for each character c, the shift is m minus the position of c's last occurrence in pattern[0..m-2] (m if c doesn't appear).",
+          "Align pattern at position 0. Compare right to left.",
+          "On mismatch or match, shift using the character at text[s + m - 1].",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Boyer–Moore–Horspool follows the pseudocode directly.",
+        text: "The shift table maps each character to m minus its rightmost position in the first m-1 characters of the pattern. Characters not in the pattern shift by m.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Boyer–Moore–Horspool is based on the algorithm's structure and the operations performed at each step.",
+        text: "Average case $O(n/m)$ for random text (sublinear). Worst case $O(nm)$, e.g., pattern 'aa' in text 'aaa...a'.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Boyer–Moore–Horspool exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Often faster than full Boyer-Moore in practice due to simpler preprocessing.",
+          "The Sunday algorithm looks at text[s + m] (one past the window) for even better shifts.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
+      best: "O(n/m)",
       average: "O(n)",
-      worst: "O(n)",
+      worst: "O(n * m)",
     },
-    space: "O(n)",
+    space: "O(σ)",
     worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "string processing",
+      label: "Simplification of",
+      value: "Boyer-Moore (bad-character only)",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "horspool",
+      code: `def horspool(text, pattern):
+    n, m = len(text), len(pattern)
+    if m == 0 or m > n: return []
+    shift = {}
+    for i in range(m - 1):
+        shift[pattern[i]] = m - 1 - i
+    results = []
+    s = 0
+    while s <= n - m:
+        j = m - 1
+        while j >= 0 and text[s + j] == pattern[j]:
+            j -= 1
+        if j < 0:
+            results.append(s)
+        s += shift.get(text[s + m - 1], m)
+    return results
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["ABCABDABC", "ABC"],
+          expected: [0, 6],
+        },
+        {
+          args: ["aaaa", "aa"],
+          expected: [0, 1, 2],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "horspool",
+      code: `function horspool(text, pattern) {
+  const n = text.length, m = pattern.length;
+  if (m === 0 || m > n) return [];
+  const shift = {};
+  for (let i = 0; i < m - 1; i++) shift[pattern[i]] = m - 1 - i;
+  const results = [];
+  let s = 0;
+  while (s <= n - m) {
+    let j = m - 1;
+    while (j >= 0 && text[s + j] === pattern[j]) j--;
+    if (j < 0) results.push(s);
+    s += shift[text[s + m - 1]] ?? m;
+  }
+  return results;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["ABCABDABC", "ABC"],
+          expected: [0, 6],
         },
       ],
     },
@@ -95,54 +134,56 @@ export const boyerMooreHorspoolEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "boyer-moore-horspool-q1",
+      id: "horspool-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Boyer–Moore–Horspool?",
+      prompt: "How does Horspool differ from full Boyer-Moore?",
       options: [
-        "To solve the Boyer–Moore–Horspool problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "It uses only the bad-character rule based on the last aligned character",
+        "It scans left to right",
+        "It uses the good-suffix rule only",
+        "It has better worst case",
       ],
       answer: 0,
-      explanation: "Boyer–Moore–Horspool is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Boyer–Moore–Horspool does."],
-      objective: "Purpose",
+      explanation: "Horspool simplifies Boyer-Moore to just one shift rule.",
+      hints: ["Think about which heuristic is dropped."],
+      objective: "Difference",
     },
   ],
   exam: {
-    definition: "Boyer–Moore–Horspool is an algorithm in the domain of string processing.",
+    definition:
+      "Horspool simplifies Boyer-Moore by using only the bad-character shift based on the text character at the pattern's last position.",
     steps: [
-      "Apply the Boyer–Moore–Horspool algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Build shift table from pattern.",
+      "Compare right-to-left.",
+      "Shift using character at end of window.",
     ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "Average $O(n/m)$, worst $O(nm)$.",
+    spaceComplexity: "$O(\\sigma)$.",
+    correctness: "The shift never skips a valid alignment.",
+    applications: ["practical string search"],
+    limitations: ["O(nm) worst case"],
     faq: [
       {
-        q: "When should you use Boyer–Moore–Horspool?",
-        a: "Use Boyer–Moore–Horspool when the problem matches its designed use case in string processing.",
+        q: "Why is Horspool often faster than KMP?",
+        a: "It achieves sublinear average time O(n/m) by skipping characters.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Boyer–Moore–Horspool (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Describe the shift table (2).",
+          "Algorithm loop (2).",
+          "Average-case analysis (1).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Boyer–Moore–Horspool.",
+      citation:
+        "R. N. Horspool, 'Practical Fast Searching in Strings', Software: Practice and Experience, 1980.",
+      supports: "Original paper.",
     },
   ],
   review: {

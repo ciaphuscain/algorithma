@@ -2,92 +2,167 @@ import type { AlgorithmEntry } from "../types";
 
 export const treeMatchingDpEntry: AlgorithmEntry = {
   slug: "tree-matching-dp",
-  name: "Tree Matching DP",
-  aliases: ["Tree Matching DP"],
+  name: "Tree Matching (DP)",
+  aliases: ["Maximum Matching on Tree"],
   curriculum: [295],
   domain: "dynamic-programming",
-  subcategory: "Dynamic Programming",
+  subcategory: "Tree DP",
   difficulty: "intermediate",
-  summary: "Tree Matching DP is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["tree matching dp", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+  summary:
+    "Find a maximum matching (set of non-adjacent edges) in a tree. dp[v][0] = unmatched, dp[v][1] = matched to some child.",
+  tags: ["tree DP", "matching", "dynamic programming"],
+  prerequisites: ["maximum-independent-set-on-tree"],
+  related: ["maximum-independent-set-on-tree"],
   problem: {
-    input: "Input for Tree Matching DP.",
-    output: "Output of Tree Matching DP.",
+    input: "A tree as adjacency list.",
+    output: "Size of maximum matching.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Tree Matching DP solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "At each node, decide whether to match it with one of its children. If matched, that child can't be matched elsewhere.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Tree Matching DP algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "dp[v][0] = v unmatched = sum of max(dp[c][0], dp[c][1]) for children c.",
+          "dp[v][1] = v matched to some child = max over c of (dp[c][0] + 1 + sum of max(dp[c'][0], dp[c'][1]) for c'≠c).",
+          "Answer = max(dp[root][0], dp[root][1]).",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Tree Matching DP follows the pseudocode directly.",
+        text: "Simplify: dp[v][1] = dp[v][0] + max over c of (1 + dp[c][0] - max(dp[c][0], dp[c][1])).",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Tree Matching DP is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(n)$, space $O(n)$.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Tree Matching DP exist in the literature. See references for details.",
+        text: "On general graphs, maximum matching requires Edmonds' blossom algorithm in O(V^3).",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      worst: "O(n)",
     },
-    space: "O(n)",
+    space: {
+      worst: "O(n)",
+    },
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "dynamic programming",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "treeMatching",
+      code: `def treeMatching(adj):
+    n = len(adj)
+    if n <= 1:
+        return 0
+    dp0 = [0] * n
+    dp1 = [0] * n
+    visited = [False] * n
+    parent = [-1] * n
+    stack = [(0, False)]
+    visited[0] = True
+    while stack:
+        node, processed = stack.pop()
+        if processed:
+            s = 0
+            best_gain = -1
+            for nb in adj[node]:
+                if nb != parent[node]:
+                    s += max(dp0[nb], dp1[nb])
+                    gain = 1 + dp0[nb] - max(dp0[nb], dp1[nb])
+                    if gain > best_gain:
+                        best_gain = gain
+            dp0[node] = s
+            dp1[node] = s + max(0, best_gain) if best_gain >= 0 else s
+        else:
+            stack.append((node, True))
+            for nb in adj[node]:
+                if not visited[nb]:
+                    visited[nb] = True
+                    parent[nb] = node
+                    stack.append((nb, False))
+    return max(dp0[0], dp1[0])`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            adj: [[1, 2], [0, 3, 4], [0], [1], [1]],
+          },
+          expected: 2,
+        },
+        {
+          input: {
+            adj: [[1], [0]],
+          },
+          expected: 1,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "treeMatching",
+      code: `function treeMatching(adj) {
+  const n = adj.length;
+  if (n <= 1) return 0;
+  const dp0 = new Array(n).fill(0), dp1 = new Array(n).fill(0);
+  const visited = new Array(n).fill(false), parent = new Array(n).fill(-1);
+  const stack = [[0, false]];
+  visited[0] = true;
+  while (stack.length) {
+    const [node, processed] = stack.pop();
+    if (processed) {
+      let s = 0, bestGain = -1;
+      for (const nb of adj[node]) {
+        if (nb !== parent[node]) {
+          s += Math.max(dp0[nb], dp1[nb]);
+          const gain = 1 + dp0[nb] - Math.max(dp0[nb], dp1[nb]);
+          if (gain > bestGain) bestGain = gain;
+        }
+      }
+      dp0[node] = s;
+      dp1[node] = bestGain >= 0 ? s + bestGain : s;
+    } else {
+      stack.push([node, true]);
+      for (const nb of adj[node]) {
+        if (!visited[nb]) {
+          visited[nb] = true;
+          parent[nb] = node;
+          stack.push([nb, false]);
+        }
+      }
+    }
+  }
+  return Math.max(dp0[0], dp1[0]);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            adj: [[1, 2], [0, 3, 4], [0], [1], [1]],
+          },
+          expected: 2,
+        },
+        {
+          input: {
+            adj: [[1], [0]],
+          },
+          expected: 1,
         },
       ],
     },
@@ -95,54 +170,41 @@ export const treeMatchingDpEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "tree-matching-dp-q1",
+      id: "tm-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Tree Matching DP?",
-      options: [
-        "To solve the Tree Matching DP problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "Path 0-1-2-3. Max matching?",
+      options: ["2", "1", "3", "0"],
       answer: 0,
-      explanation: "Tree Matching DP is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Tree Matching DP does."],
-      objective: "Purpose",
+      explanation: "Match edges (0,1) and (2,3): 2 edges.",
+      hints: ["Non-adjacent edges."],
+      objective: "Computation",
     },
   ],
   exam: {
-    definition: "Tree Matching DP is an algorithm in the domain of dynamic programming.",
-    steps: [
-      "Apply the Tree Matching DP algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n²)$.",
+    definition: "Maximum set of non-adjacent edges in a tree.",
+    steps: ["dp[v][0] = v unmatched.", "dp[v][1] = v matched to best child.", "Post-order DFS."],
+    timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness: "Match/unmatch decomposition covers all matchings.",
+    applications: ["pairing problems", "network design"],
+    limitations: ["trees only"],
     faq: [
       {
-        q: "When should you use Tree Matching DP?",
-        a: "Use Tree Matching DP when the problem matches its designed use case in dynamic programming.",
+        q: "Why gain-based formulation?",
+        a: "Avoids recomputing sums for each candidate child.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Tree Matching DP (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["DP states (2).", "Gain optimization (1).", "Complexity (2)."],
       },
     ],
   },
   references: [
     {
       citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Tree Matching DP.",
+      supports: "Tree matching.",
     },
   ],
   review: {

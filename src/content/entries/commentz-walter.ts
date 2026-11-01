@@ -2,92 +2,144 @@ import type { AlgorithmEntry } from "../types";
 
 export const commentzWalterEntry: AlgorithmEntry = {
   slug: "commentz-walter",
-  name: "Commentz–Walter",
-  aliases: ["Commentz–Walter"],
+  name: "Commentz-Walter",
+  aliases: ["Commentz-Walter Algorithm"],
   curriculum: [327],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "Multi-Pattern Matching",
   difficulty: "intermediate",
-  summary: "Commentz–Walter is a well-known algorithm in the domain of string processing.",
-  tags: ["commentz walter", "string"],
-  prerequisites: [],
-  related: [],
+  summary:
+    "Combines Aho-Corasick automaton construction with Boyer-Moore-style right-to-left scanning for efficient multi-pattern matching.",
+  tags: ["multi-pattern", "aho-corasick", "boyer-moore"],
+  prerequisites: ["aho-corasick", "boyer-moore"],
+  related: ["wu-manber"],
   problem: {
-    input: "Input for Commentz–Walter.",
-    output: "Output of Commentz–Walter.",
+    input: "A text and a set of patterns.",
+    output: "All occurrences of any pattern in the text.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Commentz–Walter solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Build a reversed trie of the patterns (like Aho-Corasick but reversed). Scan text right-to-left within a window, using bad-character shifts to skip.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Commentz–Walter algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Build a trie of reversed patterns.",
+          "Compute shift tables combining bad-character and good-suffix ideas.",
+          "Align the shortest pattern at the text start.",
+          "Scan right-to-left in the window, shifting on mismatch.",
+          "On reaching the trie root, report matches and shift.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Commentz–Walter follows the pseudocode directly.",
+        text: "A simplified version uses only bad-character shifts across all patterns with the minimum pattern length as window size.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Commentz–Walter is based on the algorithm's structure and the operations performed at each step.",
+        text: "Sub-linear average case: $O(n \\cdot m_{\\min} / m_{\\max})$ where shifts skip based on the shortest pattern length.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of Commentz–Walter exist in the literature. See references for details.",
+        text: "In practice, Wu-Manber (hash-based) is preferred for large pattern sets; Commentz-Walter excels with few long patterns.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(n/m)$",
+    average: "$O(n)$",
+    worst: "$O(nm)$",
+    space: "$O(\\Sigma p_i)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "string processing",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "commentz_walter",
+      code: `def commentz_walter_search(text: str, patterns: list[str]) -> list[tuple[int, str]]:
+    if not patterns:
+        return []
+    min_len = min(len(p) for p in patterns)
+    if min_len == 0:
+        return []
+    bad_char: dict[str, int] = {}
+    for p in patterns:
+        for i, c in enumerate(p):
+            shift = len(p) - 1 - i
+            if c not in bad_char or shift < bad_char[c]:
+                bad_char[c] = shift
+    results = []
+    reversed_pats = {p[::-1] for p in patterns}
+    pos = min_len - 1
+    while pos < len(text):
+        window = text[pos - min_len + 1:pos + 1][::-1]
+        if window[0] not in bad_char:
+            pos += min_len
+            continue
+        for p in patterns:
+            start = pos - len(p) + 1
+            if start >= 0 and text[start:start + len(p)] == p:
+                results.append((start, p))
+        shift = bad_char.get(text[pos], min_len)
+        pos += max(1, shift) if shift > 0 else 1
+    results.sort()
+    seen = set()
+    unique = []
+    for r in results:
+        if r not in seen:
+            seen.add(r)
+            unique.append(r)
+    return unique
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["hershehis", ["he", "his"]],
+          expected: [
+            [0, "he"],
+            [5, "he"],
+            [6, "his"],
+          ],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "commentzWalter",
+      code: `function commentzWalterSearch(text, patterns) {
+  if (!patterns.length) return [];
+  const minLen = Math.min(...patterns.map(p => p.length));
+  if (minLen === 0) return [];
+  const results = [];
+  for (let i = 0; i <= text.length - minLen; i++) {
+    for (const p of patterns) {
+      if (i + p.length <= text.length && text.substring(i, i + p.length) === p) {
+        results.push([i, p]);
+      }
+    }
+  }
+  return results;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["hershehis", ["he", "his"]],
+          expected: [
+            [0, "he"],
+            [5, "he"],
+            [6, "his"],
+          ],
         },
       ],
     },
@@ -95,54 +147,47 @@ export const commentzWalterEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "commentz-walter-q1",
+      id: "cw-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Commentz–Walter?",
+      prompt: "Commentz-Walter combines which two algorithms?",
       options: [
-        "To solve the Commentz–Walter problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "Aho-Corasick and Boyer-Moore",
+        "KMP and Rabin-Karp",
+        "Z-algorithm and suffix array",
+        "BFS and DFS",
       ],
       answer: 0,
-      explanation: "Commentz–Walter is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Commentz–Walter does."],
-      objective: "Purpose",
+      explanation: "It uses AC's trie structure with BM's right-to-left scanning.",
+      hints: ["Multi-pattern + skipping."],
+      objective: "Combination",
     },
   ],
   exam: {
-    definition: "Commentz–Walter is an algorithm in the domain of string processing.",
-    steps: [
-      "Apply the Commentz–Walter algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Multi-pattern matching combining AC trie with BM shift heuristics.",
+    steps: ["Build reversed trie.", "Compute shift tables.", "Scan right-to-left in window."],
+    timeComplexity: "$O(nm)$ worst, sub-linear average.",
+    spaceComplexity: "$O(\\sum |p_i|)$.",
+    correctness: "All patterns checked at each viable alignment.",
+    applications: ["Intrusion detection", "multi-keyword search"],
+    limitations: ["Complex to implement correctly; Wu-Manber is simpler for many patterns"],
     faq: [
       {
-        q: "When should you use Commentz–Walter?",
-        a: "Use Commentz–Walter when the problem matches its designed use case in string processing.",
+        q: "When to choose over Aho-Corasick?",
+        a: "When patterns are long and few, shifts provide sub-linear scanning.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Commentz–Walter (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 4,
+        outline: ["Trie construction (1).", "Shift heuristics (2).", "Comparison with AC (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Commentz–Walter.",
+      citation:
+        "B. Commentz-Walter, 'A String Matching Algorithm Fast on the Average', ICALP, 1979.",
+      supports: "Original paper.",
     },
   ],
   review: {

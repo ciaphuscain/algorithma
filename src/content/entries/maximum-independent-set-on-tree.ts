@@ -2,93 +2,165 @@ import type { AlgorithmEntry } from "../types";
 
 export const maximumIndependentSetOnTreeEntry: AlgorithmEntry = {
   slug: "maximum-independent-set-on-tree",
-  name: "Maximum Independent Set on Tree",
-  aliases: ["Maximum Independent Set on Tree"],
+  name: "Maximum Independent Set on a Tree",
+  aliases: ["Tree MIS", "Maximum Weight Independent Set Tree"],
   curriculum: [294],
   domain: "dynamic-programming",
-  subcategory: "Dynamic Programming",
+  subcategory: "Tree DP",
   difficulty: "intermediate",
   summary:
-    "Maximum Independent Set on Tree is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["maximum independent set on tree", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+    "Find a largest set of non-adjacent vertices in a tree. dp[v][0] = sum of max(dp[c][0], dp[c][1]); dp[v][1] = 1 + sum(dp[c][0]).",
+  tags: ["tree DP", "independent set", "dynamic programming"],
+  prerequisites: ["house-robber"],
+  related: ["house-robber", "tree-matching-dp"],
   problem: {
-    input: "Input for Maximum Independent Set on Tree.",
-    output: "Output of Maximum Independent Set on Tree.",
+    input: "A tree as adjacency list.",
+    output: "Size of the maximum independent set.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Maximum Independent Set on Tree solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Like House Robber on a tree: if we include a node, we can't include its children. DP on include/exclude per node.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Maximum Independent Set on Tree algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Root the tree at any node.",
+          "dp[v][0] (exclude v) = sum over children c of max(dp[c][0], dp[c][1]).",
+          "dp[v][1] (include v) = 1 + sum over children c of dp[c][0].",
+          "Answer = max(dp[root][0], dp[root][1]).",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Maximum Independent Set on Tree follows the pseudocode directly.",
+        text: "Post-order DFS. O(n) time and space.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Maximum Independent Set on Tree is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(n)$, space $O(n)$.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Maximum Independent Set on Tree exist in the literature. See references for details.",
+        text: "MIS is NP-hard on general graphs but polynomial on trees due to the DP decomposition.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      worst: "O(n)",
     },
-    space: "O(n)",
+    space: {
+      worst: "O(n)",
+    },
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "dynamic programming",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "maxIndependentSet",
+      code: `def maxIndependentSet(adj):
+    n = len(adj)
+    if n == 0:
+        return 0
+    dp0 = [0] * n
+    dp1 = [0] * n
+    visited = [False] * n
+    parent = [-1] * n
+    stack = [(0, False)]
+    visited[0] = True
+    while stack:
+        node, processed = stack.pop()
+        if processed:
+            exc = 0
+            inc = 1
+            for nb in adj[node]:
+                if nb != parent[node]:
+                    exc += max(dp0[nb], dp1[nb])
+                    inc += dp0[nb]
+            dp0[node] = exc
+            dp1[node] = inc
+        else:
+            stack.append((node, True))
+            for nb in adj[node]:
+                if not visited[nb]:
+                    visited[nb] = True
+                    parent[nb] = node
+                    stack.append((nb, False))
+    return max(dp0[0], dp1[0])`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            adj: [[1, 2], [0, 3, 4], [0], [1], [1]],
+          },
+          expected: 3,
+        },
+        {
+          input: {
+            adj: [[1], [0, 2], [1]],
+          },
+          expected: 2,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "maxIndependentSet",
+      code: `function maxIndependentSet(adj) {
+  const n = adj.length;
+  if (n === 0) return 0;
+  const dp0 = new Array(n).fill(0), dp1 = new Array(n).fill(0);
+  const visited = new Array(n).fill(false), parent = new Array(n).fill(-1);
+  const stack = [[0, false]];
+  visited[0] = true;
+  while (stack.length) {
+    const [node, processed] = stack.pop();
+    if (processed) {
+      let exc = 0, inc = 1;
+      for (const nb of adj[node]) {
+        if (nb !== parent[node]) {
+          exc += Math.max(dp0[nb], dp1[nb]);
+          inc += dp0[nb];
+        }
+      }
+      dp0[node] = exc;
+      dp1[node] = inc;
+    } else {
+      stack.push([node, true]);
+      for (const nb of adj[node]) {
+        if (!visited[nb]) {
+          visited[nb] = true;
+          parent[nb] = node;
+          stack.push([nb, false]);
+        }
+      }
+    }
+  }
+  return Math.max(dp0[0], dp1[0]);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            adj: [[1, 2], [0, 3, 4], [0], [1], [1]],
+          },
+          expected: 3,
+        },
+        {
+          input: {
+            adj: [[1], [0, 2], [1]],
+          },
+          expected: 2,
         },
       ],
     },
@@ -96,56 +168,41 @@ export const maximumIndependentSetOnTreeEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "maximum-independent-set-on-tree-q1",
+      id: "mis-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Maximum Independent Set on Tree?",
-      options: [
-        "To solve the Maximum Independent Set on Tree problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "Path graph 0-1-2-3. MIS size?",
+      options: ["2", "3", "1", "4"],
       answer: 0,
-      explanation:
-        "Maximum Independent Set on Tree is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Maximum Independent Set on Tree does."],
-      objective: "Purpose",
+      explanation: "Pick nodes 0 and 2, or 1 and 3: size 2.",
+      hints: ["No adjacent nodes."],
+      objective: "Computation",
     },
   ],
   exam: {
-    definition:
-      "Maximum Independent Set on Tree is an algorithm in the domain of dynamic programming.",
-    steps: [
-      "Apply the Maximum Independent Set on Tree algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n²)$.",
+    definition: "Largest set of non-adjacent vertices in a tree.",
+    steps: ["Root tree.", "dp[v][0] = exclude, dp[v][1] = include.", "Post-order DFS."],
+    timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness: "Include/exclude decomposition covers all independent sets.",
+    applications: ["network security", "scheduling"],
+    limitations: ["trees only for polynomial time"],
     faq: [
       {
-        q: "When should you use Maximum Independent Set on Tree?",
-        a: "Use Maximum Independent Set on Tree when the problem matches its designed use case in dynamic programming.",
+        q: "Why is this easy on trees but NP-hard on general graphs?",
+        a: "Trees have no cycles, enabling clean DP decomposition.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Maximum Independent Set on Tree (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Include/exclude DP (2).", "Recurrence (2).", "Complexity (1)."],
       },
     ],
   },
   references: [
     {
       citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Maximum Independent Set on Tree.",
+      supports: "Tree DP.",
     },
   ],
   review: {

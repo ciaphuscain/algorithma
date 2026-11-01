@@ -6,88 +6,176 @@ export const pcaEntry: AlgorithmEntry = {
   aliases: ["PCA"],
   curriculum: [570],
   domain: "machine-learning",
-  subcategory: "Machine Learning",
+  subcategory: "Dimensionality Reduction",
   difficulty: "intermediate",
-  summary: "PCA is a well-known algorithm in the domain of machine learning.",
-  tags: ["pca", "ml"],
+  summary:
+    "Finds the directions of maximum variance in high-dimensional data and projects it onto a lower-dimensional subspace.",
+  tags: ["PCA", "principal component analysis", "dimensionality reduction", "machine learning"],
   prerequisites: [],
-  related: [],
+  related: ["singular-value-decomposition"],
   problem: {
-    input: "Input for PCA.",
-    output: "Output of PCA.",
+    input: "An n×d data matrix X and target dimension k ≤ d.",
+    output: "The projected n×k matrix and the k principal components (eigenvectors).",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "PCA solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "PCA finds the axes along which the data varies most. Imagine a cloud of 3D points that looks flat — PCA finds the 2D plane that captures the most spread. It does this by computing eigenvectors of the covariance matrix.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The PCA algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Center the data by subtracting the mean of each feature.",
+          "Compute the covariance matrix C = XᵀX / (n-1).",
+          "Find the eigenvalues and eigenvectors of C.",
+          "Sort eigenvectors by eigenvalue (largest first).",
+          "Project: X_reduced = X · V_k (top k eigenvectors).",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of PCA follows the pseudocode directly.",
+        text: "For large d, use SVD instead of explicit eigendecomposition. Centering is essential — PCA on uncentered data finds directions from the origin, not from the data center.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of PCA is based on the algorithm's structure and the operations performed at each step.",
+        text: "PCA maximizes variance captured: the top k eigenvectors of the covariance matrix span the subspace that minimizes reconstruction error in the L2 sense. Time: $O(nd^2 + d^3)$ for eigendecomposition, or $O(ndk)$ with truncated SVD.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of PCA exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "**Kernel PCA** handles nonlinear structure via the kernel trick.",
+          "**Incremental PCA** processes data in batches for large datasets.",
+          "Explained variance ratio tells how much information each component captures.",
+          "PCA is equivalent to truncated SVD on centered data.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(nd²)",
-      average: "O(nd²)",
-      worst: "O(nd²)",
+      best: "O(n * d * k)",
+      average: "O(n * d^2 + d^3)",
+      worst: "O(n * d^2 + d^3)",
     },
-    space: "O(nd)",
-    worstClass: "other",
+    space: "O(n * d)",
+    worstClass: "n^2",
   },
   properties: [
     {
-      label: "Domain",
-      value: "machine learning",
+      label: "Type",
+      value: "Linear dimensionality reduction",
+    },
+    {
+      label: "Unsupervised",
+      value: "Yes",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "pca",
+      code: `def pca(X, k):
+    """Reduce n×d matrix X to n×k. Returns projected data."""
+    n = len(X)
+    d = len(X[0])
+    # Center
+    mean = [sum(X[i][j] for i in range(n)) / n for j in range(d)]
+    Xc = [[X[i][j] - mean[j] for j in range(d)] for i in range(n)]
+    # Covariance (simplified: use XᵀX)
+    cov = [[0]*d for _ in range(d)]
+    for i in range(n):
+        for a in range(d):
+            for b in range(d):
+                cov[a][b] += Xc[i][a] * Xc[i][b]
+    for a in range(d):
+        for b in range(d):
+            cov[a][b] /= (n - 1) if n > 1 else 1
+    # Power iteration for top k eigenvectors (simplified)
+    import math
+    vecs = []
+    for _ in range(k):
+        v = [1.0 if j == len(vecs) else 0.0 for j in range(d)]
+        for __ in range(100):
+            nv = [sum(cov[i][j] * v[j] for j in range(d)) for i in range(d)]
+            # Remove projection onto previous eigenvectors
+            for prev in vecs:
+                dot = sum(nv[j] * prev[j] for j in range(d))
+                nv = [nv[j] - dot * prev[j] for j in range(d)]
+            norm = math.sqrt(sum(x*x for x in nv)) or 1
+            v = [x / norm for x in nv]
+        vecs.append(v)
+    # Project
+    result = []
+    for i in range(n):
+        row = [round(sum(Xc[i][j] * vecs[c][j] for j in range(d)), 4) for c in range(k)]
+        result.append(row)
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [1, 2],
+              [3, 4],
+              [5, 6],
+            ],
+            1,
+          ],
+          expected: [[-2.8284], [0.0], [2.8284]],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "pca",
+      code: `function pca(X, k) {
+  const n = X.length, d = X[0].length;
+  const mean = Array(d).fill(0);
+  for (const row of X) for (let j = 0; j < d; j++) mean[j] += row[j] / n;
+  const Xc = X.map(row => row.map((v, j) => v - mean[j]));
+  const cov = Array.from({length: d}, () => Array(d).fill(0));
+  for (const row of Xc)
+    for (let a = 0; a < d; a++)
+      for (let b = 0; b < d; b++) cov[a][b] += row[a] * row[b] / (n > 1 ? n - 1 : 1);
+  const vecs = [];
+  for (let vi = 0; vi < k; vi++) {
+    let v = Array(d).fill(0); v[vi] = 1;
+    for (let it = 0; it < 100; it++) {
+      let nv = cov.map(row => row.reduce((s, c, j) => s + c * v[j], 0));
+      for (const prev of vecs) {
+        const dot = nv.reduce((s, x, j) => s + x * prev[j], 0);
+        nv = nv.map((x, j) => x - dot * prev[j]);
+      }
+      const norm = Math.sqrt(nv.reduce((s, x) => s + x * x, 0)) || 1;
+      v = nv.map(x => x / norm);
+    }
+    vecs.push(v);
+  }
+  return Xc.map(row => vecs.map(vec =>
+    Math.round(row.reduce((s, v, j) => s + v * vec[j], 0) * 10000) / 10000));
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [1, 2],
+              [3, 4],
+              [5, 6],
+            ],
+            1,
+          ],
+          expected: [[-2.8284], [0.0], [2.8284]],
         },
       ],
     },
@@ -97,35 +185,39 @@ export const pcaEntry: AlgorithmEntry = {
     {
       id: "pca-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of PCA?",
+      prompt: "What does PCA maximize?",
       options: [
-        "To solve the PCA problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "Variance captured in the projected subspace",
+        "The number of dimensions",
+        "Classification accuracy",
+        "The distance between points",
       ],
       answer: 0,
-      explanation: "PCA is designed to solve its specific problem efficiently.",
-      hints: ["Think about what PCA does."],
-      objective: "Purpose",
+      explanation:
+        "PCA finds directions that maximize variance in the data, preserving as much information as possible in fewer dimensions.",
+      hints: ["Think about the algorithm's key property."],
+      objective: "Understanding",
     },
   ],
   exam: {
-    definition: "PCA is an algorithm in the domain of machine learning.",
+    definition:
+      "Finds the directions of maximum variance in high-dimensional data and projects it onto a lower-dimensional subspace.",
     steps: [
-      "Apply the PCA algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Center the data by subtracting the mean of each feature.",
+      "Compute the covariance matrix C = XᵀX / (n-1).",
+      "Find the eigenvalues and eigenvectors of C.",
+      "Sort eigenvectors by eigenvalue (largest first).",
+      "Project: X_reduced = X · V_k (top k eigenvectors).",
     ],
-    timeComplexity: "$O(nd²)$.",
-    spaceComplexity: "$O(nd)$.",
+    timeComplexity: "$O(n * d^2 + d^3)$.",
+    spaceComplexity: "$O(n * d)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["machine learning applications"],
+    applications: ["machine learning"],
     limitations: ["Specific to its problem domain"],
     faq: [
       {
         q: "When should you use PCA?",
-        a: "Use PCA when the problem matches its designed use case in machine learning.",
+        a: "Finds the directions of maximum variance in high-dimensional data and projects it onto a lower-dimensional subspace.",
       },
     ],
     answers: [

@@ -6,45 +6,60 @@ export const connectedComponentsEntry: AlgorithmEntry = {
   aliases: ["Connected Components"],
   curriculum: [224],
   domain: "graphs",
-  subcategory: "Graph Algorithms",
-  difficulty: "intermediate",
-  summary: "Connected Components is a well-known algorithm in the domain of graph algorithms.",
-  tags: ["connected components", "graph"],
+  subcategory: "Graph Traversal",
+  difficulty: "beginner",
+  summary:
+    "Finds all connected components in an undirected graph by running BFS or DFS from each unvisited vertex, assigning a component label to every vertex.",
+  tags: ["connected components", "BFS", "DFS", "graph traversal", "graph"],
   prerequisites: ["BFS", "DFS"],
-  related: [],
+  related: ["union-find", "kosaraju"],
   problem: {
-    input: "Input for Connected Components.",
-    output: "Output of Connected Components.",
+    input: "An undirected graph with n vertices (0-indexed) and a list of edges.",
+    output:
+      "A list of component labels, one per vertex, where vertices in the same component share the same label.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Connected Components solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Pick any unvisited vertex and explore everything reachable from it — that is one connected component. Repeat for remaining unvisited vertices until every vertex has a label.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize all vertices as unvisited. Set component counter to 0.",
+          "For each unvisited vertex v: run DFS/BFS from v, labelling all reachable vertices with the current component number, then increment the counter.",
+          "Return the label array.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Connected Components algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Example.** Edges: 0–1, 1–2, 3–4. Result: vertices 0,1,2 get label 0; vertices 3,4 get label 1.",
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Connected Components follows the pseudocode directly.",
+        text: "Use an iterative DFS with a stack to avoid recursion-depth issues on large graphs. The component array doubles as the visited marker (−1 = unvisited).",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Connected Components is based on the algorithm's structure and the operations performed at each step.",
+        text: "Each vertex and edge is processed exactly once across all DFS/BFS calls, giving $O(V + E)$ time and $O(V + E)$ space (adjacency list plus labels).",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Connected Components exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "For directed graphs, use Kosaraju's or Tarjan's algorithm for strongly connected components.",
+          "Union-Find is an alternative that supports dynamic edge insertions.",
+          "Parallel BFS can find components on distributed graphs.",
+        ],
       },
     ],
   },
@@ -59,35 +74,95 @@ export const connectedComponentsEntry: AlgorithmEntry = {
   },
   properties: [
     {
-      label: "Domain",
-      value: "graph algorithms",
+      label: "Graph type",
+      value: "Undirected",
+    },
+    {
+      label: "Approach",
+      value: "DFS or BFS from each unvisited vertex",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "connected_components",
+      code: `def connected_components(n, edges):
+    adj = [[] for _ in range(n)]
+    for u, v in edges:
+        adj[u].append(v)
+        adj[v].append(u)
+    comp = [-1] * n
+    c = 0
+    for i in range(n):
+        if comp[i] == -1:
+            stack = [i]
+            comp[i] = c
+            while stack:
+                u = stack.pop()
+                for v in adj[u]:
+                    if comp[v] == -1:
+                        comp[v] = c
+                        stack.append(v)
+            c += 1
+    return comp
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            5,
+            [
+              [0, 1],
+              [1, 2],
+              [3, 4],
+            ],
+          ],
+          expected: [0, 0, 0, 1, 1],
+        },
+        {
+          args: [3, []],
+          expected: [0, 1, 2],
+        },
+        {
+          args: [1, []],
+          expected: [0],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "connectedComponents",
+      code: `function connectedComponents(n, edges) {
+  const adj = Array.from({length: n}, () => []);
+  for (const [u, v] of edges) { adj[u].push(v); adj[v].push(u); }
+  const comp = new Array(n).fill(-1);
+  let c = 0;
+  for (let i = 0; i < n; i++) {
+    if (comp[i] === -1) {
+      const stack = [i];
+      comp[i] = c;
+      while (stack.length) {
+        const u = stack.pop();
+        for (const v of adj[u]) {
+          if (comp[v] === -1) { comp[v] = c; stack.push(v); }
+        }
+      }
+      c++;
+    }
+  }
+  return comp;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            5,
+            [
+              [0, 1],
+              [1, 2],
+              [3, 4],
+            ],
+          ],
+          expected: [0, 0, 0, 1, 1],
         },
       ],
     },
@@ -97,44 +172,41 @@ export const connectedComponentsEntry: AlgorithmEntry = {
     {
       id: "connected-components-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Connected Components?",
-      options: [
-        "To solve the Connected Components problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "What is the time complexity of finding connected components?",
+      options: ["O(V + E)", "O(V * E)", "O(V^2)", "O(E log V)"],
       answer: 0,
-      explanation: "Connected Components is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Connected Components does."],
-      objective: "Purpose",
+      explanation: "Each vertex and edge is visited exactly once across all traversals.",
+      hints: ["Consider how many times each edge is examined."],
+      objective: "Time complexity",
     },
   ],
   exam: {
-    definition: "Connected Components is an algorithm in the domain of graph algorithms.",
+    definition:
+      "Connected components partition an undirected graph into maximal sets of vertices where every pair is connected by a path.",
     steps: [
-      "Apply the Connected Components algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "For each unvisited vertex, run DFS/BFS to find its component.",
+      "Label all reachable vertices with the same component ID.",
+      "Increment the component counter.",
     ],
     timeComplexity: "$O(V + E)$.",
     spaceComplexity: "$O(V + E)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["graph algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness:
+      "BFS/DFS visits exactly the connected component of its start vertex; iterating over all vertices covers every component.",
+    applications: ["network analysis", "image processing (flood fill)", "social network clusters"],
+    limitations: ["Only for undirected graphs; use SCC algorithms for directed graphs"],
     faq: [
       {
-        q: "When should you use Connected Components?",
-        a: "Use Connected Components when the problem matches its designed use case in graph algorithms.",
+        q: "Can Union-Find also find components?",
+        a: "Yes: process each edge with Union, then vertices sharing a root are in the same component.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Connected Components (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Define connected component (1).",
+          "DFS/BFS exploration loop (2).",
+          "Prove O(V+E) time (2).",
         ],
       },
     ],
@@ -142,7 +214,7 @@ export const connectedComponentsEntry: AlgorithmEntry = {
   references: [
     {
       citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Connected Components.",
+      supports: "Chapter 22: Elementary Graph Algorithms.",
     },
   ],
   review: {

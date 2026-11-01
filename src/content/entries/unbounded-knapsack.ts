@@ -3,92 +3,126 @@ import type { AlgorithmEntry } from "../types";
 export const unboundedKnapsackEntry: AlgorithmEntry = {
   slug: "unbounded-knapsack",
   name: "Unbounded Knapsack",
-  aliases: ["Unbounded Knapsack"],
+  aliases: ["Complete Knapsack"],
   curriculum: [262],
   domain: "dynamic-programming",
-  subcategory: "Knapsack Family",
+  subcategory: "Knapsack Variants",
   difficulty: "intermediate",
   summary:
-    "Like 0/1 knapsack but each item can be used unlimited times. dp[w] = max over items of (dp[w - weight_i] + value_i). A single 1D array suffices since items are reusable.",
-  tags: ["knapsack", "DP", "unbounded"],
-  prerequisites: ["0/1 Knapsack"],
-  related: ["knapsack", "coin-change-min"],
+    "Maximize total value selecting items with unlimited copies, given a weight capacity. dp[w] = max(dp[w], dp[w-wt[i]] + val[i]).",
+  tags: ["knapsack", "dynamic programming", "unbounded"],
+  prerequisites: ["0-1-knapsack"],
+  related: ["coin-change-min", "multiple-knapsack", "group-knapsack"],
   problem: {
-    input: "Input for Unbounded Knapsack.",
-    output: "Output of Unbounded Knapsack.",
+    input: "Item weights and values, and a capacity W.",
+    output: "Maximum total value achievable without exceeding capacity (items may be reused).",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Like 0/1 knapsack but each item can be used unlimited times. dp[w] = max over items of (dp[w - weight_i] + value_i). A single 1D array suffices since items are reusable.",
+        text: "Unlike 0/1 knapsack, each item can be picked multiple times. We scan capacities left-to-right so picks accumulate.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Unbounded Knapsack algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Create dp[0..W] = 0.",
+          "For each capacity w from 1 to W: for each item i, if wt[i] <= w, dp[w] = max(dp[w], dp[w-wt[i]]+val[i]).",
+          "Return dp[W].",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Unbounded Knapsack follows the pseudocode directly.",
+        text: "Single 1-D array suffices because we read from smaller indices (already updated this round, allowing reuse).",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Unbounded Knapsack is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(n \\cdot W)$, space $O(W)$.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Unbounded Knapsack exist in the literature. See references for details.",
+        text: "The fractional relaxation (value/weight ratio) gives an upper bound for branch-and-bound approaches.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "varies",
-      average: "varies",
-      worst: "varies",
+      worst: "O(n·W)",
     },
-    space: "varies",
+    space: {
+      worst: "O(W)",
+    },
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Category",
-      value: "Knapsack Family",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "unboundedKnapsack",
+      code: `def unboundedKnapsack(weights, values, capacity):
+    dp = [0] * (capacity + 1)
+    for w in range(1, capacity + 1):
+        for i in range(len(weights)):
+            if weights[i] <= w:
+                dp[w] = max(dp[w], dp[w - weights[i]] + values[i])
+    return dp[capacity]`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            weights: [1, 3, 4, 5],
+            values: [10, 40, 50, 70],
+            capacity: 8,
+          },
+          expected: 110,
+        },
+        {
+          input: {
+            weights: [2, 3],
+            values: [5, 8],
+            capacity: 7,
+          },
+          expected: 21,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "unboundedKnapsack",
+      code: `function unboundedKnapsack(weights, values, capacity) {
+  const dp = new Array(capacity + 1).fill(0);
+  for (let w = 1; w <= capacity; w++) {
+    for (let i = 0; i < weights.length; i++) {
+      if (weights[i] <= w) dp[w] = Math.max(dp[w], dp[w - weights[i]] + values[i]);
+    }
+  }
+  return dp[capacity];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            weights: [1, 3, 4, 5],
+            values: [10, 40, 50, 70],
+            capacity: 8,
+          },
+          expected: 110,
+        },
+        {
+          input: {
+            weights: [2, 3],
+            values: [5, 8],
+            capacity: 7,
+          },
+          expected: 21,
         },
       ],
     },
@@ -96,53 +130,41 @@ export const unboundedKnapsackEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "unbounded-knapsack-q1",
+      id: "uk-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Unbounded Knapsack?",
-      options: [
-        "Like 0/1 knapsack but each item can be used unlimited times....",
-        "Sorting an array",
-        "Finding shortest paths",
-        "Compressing data",
-      ],
+      prompt: "weights=[1,2], values=[5,8], capacity=4. Max value?",
+      options: ["20", "21", "16", "18"],
       answer: 0,
-      explanation:
-        "Unbounded Knapsack: Like 0/1 knapsack but each item can be used unlimited times. dp[w] = max over items of (dp[w - weight_i] + value_i). A single 1D array suffices since items are reusable.",
-      hints: ["Think about what problem Unbounded Knapsack solves."],
-      objective: "Unbounded Knapsack",
+      explanation: "4 copies of item 0: 4*5=20.",
+      hints: ["Try all items at each capacity."],
+      objective: "Computation",
     },
   ],
   exam: {
-    definition:
-      "Like 0/1 knapsack but each item can be used unlimited times. dp[w] = max over items of (dp[w - weight_i] + value_i). A single 1D array suffices since items are reusable.",
-    steps: ["Apply the Unbounded Knapsack algorithm to the input."],
-    timeComplexity: "See complexity section.",
-    spaceComplexity: "See complexity section.",
-    correctness:
-      "The Unbounded Knapsack algorithm is correct because it systematically processes all cases.",
-    applications: ["Knapsack Family"],
-    limitations: ["See advanced section for limitations."],
+    definition: "Maximize value with unlimited item copies under a weight limit.",
+    steps: ["dp[0]=0.", "For w=1..W, try every item.", "dp[w]=max(dp[w], dp[w-wt[i]]+val[i])."],
+    timeComplexity: "$O(n \\cdot W)$.",
+    spaceComplexity: "$O(W)$.",
+    correctness: "Left-to-right scan allows reuse; optimal substructure holds.",
+    applications: ["resource allocation", "cutting stock"],
+    limitations: ["pseudo-polynomial"],
     faq: [
       {
-        q: "When should you use Unbounded Knapsack?",
-        a: "Use Unbounded Knapsack when the problem matches its design: Like 0/1 knapsack but each item can be used unlimited times. dp[w] = max over items of (dp[w - weigh",
+        q: "Difference from 0/1 knapsack?",
+        a: "0/1 uses reverse iteration to prevent reuse; unbounded uses forward iteration.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Unbounded Knapsack (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Define dp (1).", "Recurrence + loop direction (2).", "Correctness (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. Cormen et al., Introduction to Algorithms, 4th ed.",
-      supports: "General reference for Unbounded Knapsack.",
+      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
+      supports: "Unbounded knapsack.",
     },
   ],
   review: {

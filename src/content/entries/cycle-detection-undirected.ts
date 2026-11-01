@@ -6,46 +6,62 @@ export const cycleDetectionUndirectedEntry: AlgorithmEntry = {
   aliases: ["Cycle Detection (Undirected)"],
   curriculum: [230],
   domain: "graphs",
-  subcategory: "Graph Algorithms",
-  difficulty: "intermediate",
+  subcategory: "Graph Traversal",
+  difficulty: "beginner",
   summary:
-    "Cycle Detection (Undirected) is a well-known algorithm in the domain of graph algorithms.",
-  tags: ["cycle detection undirected", "graph"],
-  prerequisites: ["BFS", "DFS"],
-  related: [],
+    "Detects whether an undirected graph contains a cycle using DFS: a back edge to an already-visited vertex (other than the parent) indicates a cycle.",
+  tags: ["cycle detection", "undirected graph", "DFS", "graph"],
+  prerequisites: ["DFS"],
+  related: ["cycle-detection-directed", "union-find"],
   problem: {
-    input: "Input for Cycle Detection (Undirected).",
-    output: "Output of Cycle Detection (Undirected).",
+    input: "An undirected graph with n vertices and a list of edges.",
+    output: "True if the graph contains a cycle, false otherwise.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Cycle Detection (Undirected) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Run DFS and track each vertex's parent. If DFS reaches a vertex that is already visited and is not the current vertex's parent, we have found a cycle — there are two distinct paths between those vertices.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Cycle Detection (Undirected) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Build an adjacency list. Mark all vertices unvisited.",
+          "For each unvisited vertex, start a DFS.",
+          "During DFS from vertex u (parent p): for each neighbour v, if v is visited and v ≠ p, a cycle exists. If v is unvisited, recurse with parent = u.",
+          "If no back edge is found across all components, the graph is acyclic (a forest).",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Cycle Detection (Undirected) follows the pseudocode directly.",
+        text: "Use iterative DFS with an explicit stack storing (vertex, parent) pairs to avoid recursion limits.",
+      },
+      {
+        kind: "callout",
+        tone: "warn",
+        text: "Multi-edges between the same pair of vertices form a cycle. Track edge indices or count occurrences if multi-edges are possible.",
+        title: "Multi-edges",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Cycle Detection (Undirected) is based on the algorithm's structure and the operations performed at each step.",
+        text: "An undirected graph on $V$ vertices is acyclic if and only if it has at most $V - 1$ edges (per component). DFS visits each vertex and edge once: $O(V + E)$.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Cycle Detection (Undirected) exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Union-Find can also detect cycles: if two vertices of an edge are already in the same set, adding the edge creates a cycle.",
+          "For directed graphs, cycle detection requires tracking vertices in the current DFS path (the recursion stack), not just visited status.",
+          "The cycle space of a graph has dimension $E - V + C$ where $C$ is the number of components.",
+        ],
       },
     ],
   },
@@ -60,35 +76,114 @@ export const cycleDetectionUndirectedEntry: AlgorithmEntry = {
   },
   properties: [
     {
-      label: "Domain",
-      value: "graph algorithms",
+      label: "Graph type",
+      value: "Undirected",
+    },
+    {
+      label: "Approach",
+      value: "DFS back-edge detection",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "has_cycle_undirected",
+      code: `def has_cycle_undirected(n, edges):
+    adj = [[] for _ in range(n)]
+    for u, v in edges:
+        adj[u].append(v)
+        adj[v].append(u)
+    visited = [False] * n
+    for start in range(n):
+        if visited[start]:
+            continue
+        stack = [(start, -1)]
+        visited[start] = True
+        while stack:
+            u, parent = stack.pop()
+            for v in adj[u]:
+                if not visited[v]:
+                    visited[v] = True
+                    stack.append((v, u))
+                elif v != parent:
+                    return True
+    return False
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            4,
+            [
+              [0, 1],
+              [1, 2],
+              [2, 0],
+              [2, 3],
+            ],
+          ],
+          expected: true,
+        },
+        {
+          args: [
+            4,
+            [
+              [0, 1],
+              [1, 2],
+              [2, 3],
+            ],
+          ],
+          expected: false,
+        },
+        {
+          args: [1, []],
+          expected: false,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "hasCycleUndirected",
+      code: `function hasCycleUndirected(n, edges) {
+  const adj = Array.from({length: n}, () => []);
+  for (const [u, v] of edges) { adj[u].push(v); adj[v].push(u); }
+  const visited = new Array(n).fill(false);
+  for (let s = 0; s < n; s++) {
+    if (visited[s]) continue;
+    const stack = [[s, -1]];
+    visited[s] = true;
+    while (stack.length) {
+      const [u, parent] = stack.pop();
+      for (const v of adj[u]) {
+        if (!visited[v]) { visited[v] = true; stack.push([v, u]); }
+        else if (v !== parent) return true;
+      }
+    }
+  }
+  return false;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            4,
+            [
+              [0, 1],
+              [1, 2],
+              [2, 0],
+              [2, 3],
+            ],
+          ],
+          expected: true,
+        },
+        {
+          args: [
+            4,
+            [
+              [0, 1],
+              [1, 2],
+              [2, 3],
+            ],
+          ],
+          expected: false,
         },
       ],
     },
@@ -98,45 +193,47 @@ export const cycleDetectionUndirectedEntry: AlgorithmEntry = {
     {
       id: "cycle-detection-undirected-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Cycle Detection (Undirected)?",
+      prompt: "In undirected cycle detection via DFS, what indicates a cycle?",
       options: [
-        "To solve the Cycle Detection (Undirected) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "A visited neighbour that is not the parent of the current vertex",
+        "Any visited neighbour",
+        "A vertex with no unvisited neighbours",
+        "An edge to a vertex in a different component",
       ],
       answer: 0,
       explanation:
-        "Cycle Detection (Undirected) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Cycle Detection (Undirected) does."],
-      objective: "Purpose",
+        "In an undirected graph, the edge back to the parent is not a back edge. A visited non-parent neighbour means a second path exists, forming a cycle.",
+      hints: ["Think about why the parent check is necessary."],
+      objective: "Back-edge detection",
     },
   ],
   exam: {
-    definition: "Cycle Detection (Undirected) is an algorithm in the domain of graph algorithms.",
+    definition:
+      "Cycle detection in an undirected graph finds whether any cycle exists by checking for back edges during DFS.",
     steps: [
-      "Apply the Cycle Detection (Undirected) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Run DFS tracking parent of each vertex.",
+      "If a visited non-parent neighbour is found, report cycle.",
+      "If DFS completes without finding one, the graph is acyclic.",
     ],
     timeComplexity: "$O(V + E)$.",
     spaceComplexity: "$O(V + E)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["graph algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness:
+      "A back edge (to a visited non-parent) proves two vertex-disjoint paths exist, forming a cycle.",
+    applications: ["detecting redundant connections", "checking if a graph is a tree/forest"],
+    limitations: ["Does not work for directed graphs without tracking recursion stack"],
     faq: [
       {
-        q: "When should you use Cycle Detection (Undirected)?",
-        a: "Use Cycle Detection (Undirected) when the problem matches its designed use case in graph algorithms.",
+        q: "Why exclude the parent?",
+        a: "In an undirected graph, every edge u-v appears in both adjacency lists; the edge back to the parent is not a back edge.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Cycle Detection (Undirected) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Define cycle in undirected graph (1).",
+          "DFS with parent tracking (2).",
+          "Prove correctness and O(V+E) time (2).",
         ],
       },
     ],
@@ -144,7 +241,7 @@ export const cycleDetectionUndirectedEntry: AlgorithmEntry = {
   references: [
     {
       citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Cycle Detection (Undirected).",
+      supports: "Chapter 22.",
     },
   ],
   review: {

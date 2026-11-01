@@ -3,92 +3,125 @@ import type { AlgorithmEntry } from "../types";
 export const regularExpressionMatchingDpEntry: AlgorithmEntry = {
   slug: "regular-expression-matching-dp",
   name: "Regular Expression Matching (DP)",
-  aliases: ["Regular Expression Matching (DP)"],
+  aliases: ["Regex Matching DP"],
   curriculum: [349],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "Pattern Matching",
   difficulty: "intermediate",
   summary:
-    "Regular Expression Matching (DP) is a well-known algorithm in the domain of string processing.",
-  tags: ["regular expression matching dp", "string"],
+    "Matches a string against a pattern with '.' (any char) and '*' (zero or more of preceding) using dynamic programming.",
+  tags: ["regex", "dynamic programming", "pattern matching"],
   prerequisites: [],
-  related: [],
+  related: ["wildcard-pattern-matching"],
   problem: {
-    input: "Input for Regular Expression Matching (DP).",
-    output: "Output of Regular Expression Matching (DP).",
+    input: "A string s and pattern p with '.' and '*'.",
+    output: "Whether s fully matches p.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Regular Expression Matching (DP) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Build a 2D table where dp[i][j] = true if s[0..i-1] matches p[0..j-1]. Handle '*' by considering zero or more repetitions of the preceding character.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Regular Expression Matching (DP) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "dp[0][0] = true.",
+          "First row: dp[0][j] = true if p[j-1]=='*' and dp[0][j-2].",
+          "For each cell: if p[j-1]=='*':",
+          "  dp[i][j] = dp[i][j-2] (zero occurrences)",
+          "  OR (s[i-1] matches p[j-2]) AND dp[i-1][j] (one more occurrence).",
+          "Otherwise: dp[i][j] = dp[i-1][j-1] AND (s[i-1] matches p[j-1]).",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Regular Expression Matching (DP) follows the pseudocode directly.",
+        text: "'.' matches any single character. '*' means zero or more of the character before it.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Regular Expression Matching (DP) is based on the algorithm's structure and the operations performed at each step.",
+        text: "$O(mn)$ time and space where m=|s|, n=|p|.",
       },
     ],
-    advanced: [
+    deeper: [
       {
         kind: "p",
-        text: "Variants and extensions of Regular Expression Matching (DP) exist in the literature. See references for details.",
+        text: "This DP handles the specific regex subset of '.', '*'. Full regex matching (with '+', '?', character classes) requires NFA-based approaches like Thompson's construction.",
       },
     ],
   },
   complexity: {
-    time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
-    },
-    space: "O(n)",
     worstClass: "n",
+    best: "$O(mn)$",
+    average: "$O(mn)$",
+    worst: "$O(mn)$",
+    space: "$O(mn)$",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "string processing",
-    },
-  ],
+  properties: [],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "regex_matching_dp",
+      code: `def is_match(s: str, p: str) -> bool:
+    m, n = len(s), len(p)
+    dp = [[False] * (n + 1) for _ in range(m + 1)]
+    dp[0][0] = True
+    for j in range(1, n + 1):
+        if p[j - 1] == "*" and j >= 2:
+            dp[0][j] = dp[0][j - 2]
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if p[j - 1] == "*":
+                dp[i][j] = dp[i][j - 2]
+                if p[j - 2] == "." or p[j - 2] == s[i - 1]:
+                    dp[i][j] = dp[i][j] or dp[i - 1][j]
+            elif p[j - 1] == "." or p[j - 1] == s[i - 1]:
+                dp[i][j] = dp[i - 1][j - 1]
+    return dp[m][n]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["aa", "a*"],
+          expected: true,
+        },
+        {
+          args: ["ab", ".*"],
+          expected: true,
+        },
+        {
+          args: ["ab", "a"],
+          expected: false,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "regexMatchingDp",
+      code: `function isMatch(s, p) {
+  const m = s.length, n = p.length;
+  const dp = Array.from({length: m + 1}, () => new Array(n + 1).fill(false));
+  dp[0][0] = true;
+  for (let j = 1; j <= n; j++) if (p[j-1] === "*" && j >= 2) dp[0][j] = dp[0][j-2];
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) {
+    if (p[j-1] === "*") {
+      dp[i][j] = dp[i][j-2];
+      if (p[j-2] === "." || p[j-2] === s[i-1]) dp[i][j] = dp[i][j] || dp[i-1][j];
+    } else if (p[j-1] === "." || p[j-1] === s[i-1]) dp[i][j] = dp[i-1][j-1];
+  }
+  return dp[m][n];
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["aa", "a*"],
+          expected: true,
         },
       ],
     },
@@ -96,56 +129,45 @@ export const regularExpressionMatchingDpEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "regular-expression-matching-dp-q1",
+      id: "regex-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Regular Expression Matching (DP)?",
-      options: [
-        "To solve the Regular Expression Matching (DP) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "Does 'a*' match the empty string?",
+      options: ["Yes", "No", "Only with '.'", "Depends on implementation"],
       answer: 0,
-      explanation:
-        "Regular Expression Matching (DP) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Regular Expression Matching (DP) does."],
-      objective: "Purpose",
+      explanation: "'*' means zero or more, so 'a*' matches zero 'a's.",
+      hints: ["Zero matches."],
+      objective: "Zero match",
     },
   ],
   exam: {
-    definition:
-      "Regular Expression Matching (DP) is an algorithm in the domain of string processing.",
+    definition: "DP matching for patterns with '.' (any char) and '*' (zero or more).",
     steps: [
-      "Apply the Regular Expression Matching (DP) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Build dp[m+1][n+1] table.",
+      "Handle '*' as zero or more.",
+      "'. ' matches any character.",
     ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "$O(mn)$.",
+    spaceComplexity: "$O(mn)$.",
+    correctness: "All subproblems considered via recurrence.",
+    applications: ["Text editors", "simplified regex engines"],
+    limitations: ["Only handles '.' and '*'; no character classes or alternation"],
     faq: [
       {
-        q: "When should you use Regular Expression Matching (DP)?",
-        a: "Use Regular Expression Matching (DP) when the problem matches its designed use case in string processing.",
+        q: "How does this relate to Thompson NFA?",
+        a: "This DP is specific to '.' and '*'; Thompson handles full regex.",
       },
     ],
     answers: [
       {
-        marks: 5,
-        outline: [
-          "Define Regular Expression Matching (DP) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        marks: 4,
+        outline: ["Recurrence (2).", "Base cases (1).", "Complexity (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Regular Expression Matching (DP).",
+      citation: "LeetCode Problem 10, 'Regular Expression Matching'.",
+      supports: "Classic formulation.",
     },
   ],
   review: {

@@ -9,50 +9,64 @@ export const hiddenMarkovModelsForwardBackwardEntry: AlgorithmEntry = {
   subcategory: "Machine Learning",
   difficulty: "intermediate",
   summary:
-    "Hidden Markov Models (Forward–Backward) is a well-known algorithm in the domain of machine learning.",
-  tags: ["hidden markov models forward backward", "ml"],
+    "Computes the probability of an observation sequence and infers hidden states using the forward-backward algorithm on a Hidden Markov Model.",
+  tags: ["hidden markov models forward backward", "machine learning"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Hidden Markov Models (Forward–Backward).",
-    output: "Output of Hidden Markov Models (Forward–Backward).",
+    input:
+      "HMM parameters (transition, emission, initial probabilities) and an observation sequence.",
+    output:
+      "Probability of the observation sequence; posterior probabilities of hidden states at each time step.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Hidden Markov Models (Forward–Backward) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "An HMM has hidden states that generate observable outputs. The forward-backward algorithm computes the likelihood of observations by summing over all possible hidden state sequences, using dynamic programming in both directions.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Hidden Markov Models (Forward–Backward) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Forward pass: α(t,s) = P(observations 1..t, state at t = s).",
+          "For each time step, α(t,s) = Σ_s' α(t-1,s') · P(s'→s) · P(obs_t|s).",
+          "Backward pass: β(t,s) = P(observations t+1..T | state at t = s).",
+          "Combine: P(state_t = s | observations) ∝ α(t,s) · β(t,s).",
+          "Total probability = Σ_s α(T,s).",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Hidden Markov Models (Forward–Backward) follows the pseudocode directly.",
+        text: "Use log-space arithmetic to prevent underflow. The Baum-Welch algorithm (EM for HMMs) uses forward-backward to learn parameters.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Hidden Markov Models (Forward–Backward) is based on the algorithm's structure and the operations performed at each step.",
+        text: "Forward pass: $O(T \\cdot S^2)$ where T is sequence length and S is number of states. Same for backward. Total: $O(T \\cdot S^2)$. Viterbi algorithm finds the most likely state sequence in the same time.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Hidden Markov Models (Forward–Backward) exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "**Viterbi algorithm** finds the single most likely state sequence (vs. forward-backward's marginals).",
+          "**Baum-Welch** (EM) learns HMM parameters from unlabeled sequences.",
+          "Used in speech recognition, bioinformatics (gene prediction), NLP (POS tagging).",
+          "Modern alternatives: CRFs for discriminative tasks, transformers for sequence modeling.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
       best: "O(n)",
-      average: "O(n·d)",
+      average: "O(n·d·k)",
       worst: "O(n·d·k)",
     },
     space: "O(n)",
@@ -67,28 +81,68 @@ export const hiddenMarkovModelsForwardBackwardEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "forward",
+      code: `def forward(trans, emit, init, obs):
+    """Forward algorithm. Returns total log-probability and alpha matrix.
+    trans[i][j] = P(j|i), emit[s][o] = P(o|s), init[s] = P(s at t=0)."""
+    import math
+    S = len(trans)
+    T = len(obs)
+    alpha = [[0]*S for _ in range(T)]
+    for s in range(S):
+        alpha[0][s] = init[s] * emit[s][obs[0]]
+    for t in range(1, T):
+        for s in range(S):
+            alpha[t][s] = sum(alpha[t-1][s2] * trans[s2][s] for s2 in range(S)) * emit[s][obs[t]]
+    total = sum(alpha[T-1])
+    return round(total, 6)
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [0.7, 0.3],
+              [0.4, 0.6],
+            ],
+            [
+              [0.5, 0.5],
+              [0.1, 0.9],
+            ],
+            [0.6, 0.4],
+            [0, 1, 1],
+          ],
+          expected: 0.1316,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "forward",
+      code: `function forward(trans, emit, init, obs) {
+  const S = trans.length, T = obs.length;
+  const alpha = Array.from({length: T}, () => new Array(S).fill(0));
+  for (let s = 0; s < S; s++) alpha[0][s] = init[s] * emit[s][obs[0]];
+  for (let t = 1; t < T; t++)
+    for (let s = 0; s < S; s++)
+      alpha[t][s] = trans.reduce((sum, _, s2) => sum + alpha[t-1][s2] * trans[s2][s], 0) * emit[s][obs[t]];
+  return Math.round(alpha[T-1].reduce((a, b) => a + b, 0) * 1000000) / 1000000;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [0.7, 0.3],
+              [0.4, 0.6],
+            ],
+            [
+              [0.5, 0.5],
+              [0.1, 0.9],
+            ],
+            [0.6, 0.4],
+            [0, 1, 1],
+          ],
+          expected: 0.1316,
         },
       ],
     },
@@ -98,37 +152,39 @@ export const hiddenMarkovModelsForwardBackwardEntry: AlgorithmEntry = {
     {
       id: "hidden-markov-models-forward-backward-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Hidden Markov Models (Forward–Backward)?",
+      prompt: "What does the forward algorithm compute?",
       options: [
-        "To solve the Hidden Markov Models (Forward–Backward) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "P(observations 1..t, state at t = s) for all t and s",
+        "The most likely state sequence",
+        "The transition probabilities",
+        "The emission probabilities",
       ],
       answer: 0,
       explanation:
-        "Hidden Markov Models (Forward–Backward) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Hidden Markov Models (Forward–Backward) does."],
-      objective: "Purpose",
+        "The forward variable α(t,s) gives the joint probability of seeing observations 1..t and being in state s at time t.",
+      hints: ["Think about the algorithm's key property."],
+      objective: "Understanding",
     },
   ],
   exam: {
     definition:
-      "Hidden Markov Models (Forward–Backward) is an algorithm in the domain of machine learning.",
+      "Computes the probability of an observation sequence and infers hidden states using the forward-backward algorithm on a Hidden Markov Model.",
     steps: [
-      "Apply the Hidden Markov Models (Forward–Backward) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Forward pass: α(t,s) = P(observations 1..t, state at t = s).",
+      "For each time step, α(t,s) = Σ_s' α(t-1,s') · P(s'→s) · P(obs_t|s).",
+      "Backward pass: β(t,s) = P(observations t+1..T | state at t = s).",
+      "Combine: P(state_t = s | observations) ∝ α(t,s) · β(t,s).",
+      "Total probability = Σ_s α(T,s).",
     ],
-    timeComplexity: "$O(n)$.",
+    timeComplexity: "$O(n·d·k)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["machine learning applications"],
+    applications: ["machine learning"],
     limitations: ["Specific to its problem domain"],
     faq: [
       {
         q: "When should you use Hidden Markov Models (Forward–Backward)?",
-        a: "Use Hidden Markov Models (Forward–Backward) when the problem matches its designed use case in machine learning.",
+        a: "Computes the probability of an observation sequence and infers hidden states using the forward-backward algorithm on a Hidden Markov Model.",
       },
     ],
     answers: [

@@ -6,45 +6,55 @@ export const rabinFingerprintEntry: AlgorithmEntry = {
   aliases: ["Rabin Fingerprint"],
   curriculum: [313],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "Hashing",
   difficulty: "intermediate",
-  summary: "Rabin Fingerprint is a well-known algorithm in the domain of string processing.",
-  tags: ["rabin fingerprint", "string"],
-  prerequisites: [],
-  related: [],
+  summary:
+    "A fingerprinting scheme based on polynomial evaluation over a finite field (GF(2)), using irreducible polynomials for high-quality hash distribution.",
+  tags: ["fingerprint", "Rabin", "polynomial", "hashing"],
+  prerequisites: ["Polynomial Rolling Hash"],
+  related: ["polynomial-rolling-hash", "double-hashing"],
   problem: {
-    input: "Input for Rabin Fingerprint.",
-    output: "Output of Rabin Fingerprint.",
+    input: "A byte string.",
+    output: "A fingerprint (hash value) of the string.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Rabin Fingerprint solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Rabin fingerprints treat the input as coefficients of a polynomial over GF(2) and compute the remainder when divided by a random irreducible polynomial. This gives provably low collision probability.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Rabin Fingerprint algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Choose a random irreducible polynomial p(x) of degree k over GF(2).",
+          "Treat the input as a polynomial m(x) over GF(2).",
+          "The fingerprint is m(x) mod p(x).",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Rabin Fingerprint follows the pseudocode directly.",
+        text: "In practice, this is computed using XOR and shift operations, similar to CRC. A simpler approach: use a polynomial rolling hash with a prime modulus as an approximation.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Rabin Fingerprint is based on the algorithm's structure and the operations performed at each step.",
+        text: "For an irreducible polynomial of degree $k$, two distinct strings of length $n$ have collision probability at most $n/2^k$. The fingerprint is $k$ bits long.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Rabin Fingerprint exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Used in the original Rabin-Karp algorithm.",
+          "Rabin fingerprints have the nice property of being polynomial: f(ab) can be computed from f(a) and f(b).",
+          "Used in content-defined chunking (e.g., rsync, LBFS).",
+        ],
       },
     ],
   },
@@ -54,40 +64,55 @@ export const rabinFingerprintEntry: AlgorithmEntry = {
       average: "O(n)",
       worst: "O(n)",
     },
-    space: "O(n)",
+    space: "O(1)",
     worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "string processing",
+      label: "Based on",
+      value: "Polynomial division over GF(2)",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "rabin_fingerprint",
+      code: `def rabin_fingerprint(data, mod=None):
+    """Simple Rabin-style fingerprint using polynomial hashing."""
+    if mod is None:
+        mod = (1 << 61) - 1  # Mersenne prime
+    B = 256
+    h = 0
+    for byte in data:
+        h = (h * B + byte) % mod
+    return h
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[104, 101, 108, 108, 111]],
+          expected: 448378203247,
+        },
+        {
+          args: [[1, 2, 3], 1000003],
+          expected: 66051,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "rabinFingerprint",
+      code: `function rabinFingerprint(data, mod) {
+  if (!mod) mod = 1000000007;
+  const B = 256;
+  let h = 0;
+  for (const byte of data) h = (h * B + byte) % mod;
+  return h;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[1, 2, 3], 1000003],
+          expected: 66051,
         },
       ],
     },
@@ -95,54 +120,53 @@ export const rabinFingerprintEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "rabin-fingerprint-q1",
+      id: "rabin-fp-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Rabin Fingerprint?",
+      prompt:
+        "What makes Rabin fingerprints mathematically stronger than simple polynomial hashing?",
       options: [
-        "To solve the Rabin Fingerprint problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "They use irreducible polynomials over GF(2) with provable collision bounds",
+        "They use larger numbers",
+        "They are faster",
+        "They use more memory",
       ],
       answer: 0,
-      explanation: "Rabin Fingerprint is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Rabin Fingerprint does."],
-      objective: "Purpose",
+      explanation:
+        "Division by an irreducible polynomial gives provable collision probability n/2^k.",
+      hints: ["Think about the field."],
+      objective: "Strength",
     },
   ],
   exam: {
-    definition: "Rabin Fingerprint is an algorithm in the domain of string processing.",
+    definition:
+      "Rabin fingerprint: polynomial remainder over GF(2) using an irreducible polynomial.",
     steps: [
-      "Apply the Rabin Fingerprint algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Treat input as polynomial over GF(2).",
+      "Divide by irreducible polynomial p(x).",
+      "Remainder is the fingerprint.",
     ],
     timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    spaceComplexity: "$O(1)$.",
+    correctness: "Collision probability ≤ n/2^k for k-bit fingerprints.",
+    applications: ["Rabin-Karp", "content-defined chunking", "deduplication"],
+    limitations: ["GF(2) arithmetic less intuitive than integer hashing"],
     faq: [
       {
-        q: "When should you use Rabin Fingerprint?",
-        a: "Use Rabin Fingerprint when the problem matches its designed use case in string processing.",
+        q: "How is it used in rsync?",
+        a: "Content-defined chunking uses Rabin fingerprints to find split points that are content-dependent, not position-dependent.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Rabin Fingerprint (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["GF(2) polynomial division (2).", "Collision bound (2).", "Applications (1)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Rabin Fingerprint.",
+      citation: "M. O. Rabin, 'Fingerprinting by Random Polynomials', Tech Report, Harvard, 1981.",
+      supports: "Original paper.",
     },
   ],
   review: {

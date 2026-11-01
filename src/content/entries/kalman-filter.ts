@@ -8,50 +8,64 @@ export const kalmanFilterEntry: AlgorithmEntry = {
   domain: "machine-learning",
   subcategory: "Machine Learning",
   difficulty: "intermediate",
-  summary: "Kalman Filter is a well-known algorithm in the domain of machine learning.",
-  tags: ["kalman filter", "ml"],
+  summary:
+    "Estimates the state of a linear dynamical system from noisy measurements by combining prediction and observation updates using Gaussian distributions.",
+  tags: ["kalman filter", "machine learning"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Kalman Filter.",
-    output: "Output of Kalman Filter.",
+    input:
+      "A linear state-space model (transition, observation matrices, noise covariances) and a sequence of observations.",
+    output: "Filtered state estimates and their uncertainties at each time step.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Kalman Filter solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "The Kalman filter is like a smart averaging: it predicts the next state, then corrects that prediction using the actual measurement. It optimally combines uncertain predictions with uncertain measurements by weighting them by their respective confidences.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Kalman Filter algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Predict: x̂ₜ|ₜ₋₁ = F·x̂ₜ₋₁ and P = F·Pₜ₋₁·Fᵀ + Q.",
+          "Compute Kalman gain: K = P·Hᵀ·(H·P·Hᵀ + R)⁻¹.",
+          "Update: x̂ₜ = x̂ₜ|ₜ₋₁ + K·(zₜ - H·x̂ₜ|ₜ₋₁).",
+          "Update covariance: Pₜ = (I - K·H)·P.",
+          "Repeat for each observation.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Kalman Filter follows the pseudocode directly.",
+        text: "For scalar systems (1D), the filter simplifies to a few multiplications per step. The Kalman gain K determines how much to trust the measurement vs. the prediction.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Kalman Filter is based on the algorithm's structure and the operations performed at each step.",
+        text: "The Kalman filter is the optimal estimator for linear Gaussian systems: it minimizes mean squared error. Each step is $O(d^3)$ where d is the state dimension (due to matrix operations). The extended Kalman filter (EKF) linearizes nonlinear systems.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Kalman Filter exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "**Extended Kalman Filter** handles nonlinear dynamics via local linearization.",
+          "**Unscented Kalman Filter** uses sigma points for better nonlinear approximation.",
+          "**Particle filter** handles arbitrary nonlinear/non-Gaussian systems.",
+          "Used in GPS, robotics (SLAM), finance (tracking hidden states), aerospace (navigation).",
+        ],
       },
     ],
   },
   complexity: {
     time: {
       best: "O(n)",
-      average: "O(n·d)",
+      average: "O(n·d·k)",
       worst: "O(n·d·k)",
     },
     space: "O(n)",
@@ -66,28 +80,47 @@ export const kalmanFilterEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "kalman_1d",
+      code: `def kalman_1d(measurements, F=1, H=1, Q=0.1, R=1, x0=0, P0=1):
+    """1D Kalman filter. Returns filtered state estimates."""
+    x, P = x0, P0
+    results = []
+    for z in measurements:
+        # Predict
+        x_pred = F * x
+        P_pred = F * P * F + Q
+        # Update
+        K = P_pred * H / (H * P_pred * H + R)
+        x = x_pred + K * (z - H * x_pred)
+        P = (1 - K * H) * P_pred
+        results.append(round(x, 4))
+    return results
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[1, 2, 3]],
+          expected: [0.5, 1.2105, 2.0288],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "kalman1d",
+      code: `function kalman1d(measurements, F=1, H=1, Q=0.1, R=1, x0=0, P0=1) {
+  let x = x0, P = P0;
+  return measurements.map(z => {
+    const xPred = F * x, PPred = F * P * F + Q;
+    const K = PPred * H / (H * PPred * H + R);
+    x = xPred + K * (z - H * xPred);
+    P = (1 - K * H) * PPred;
+    return Math.round(x * 10000) / 10000;
+  });
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[1, 2, 3]],
+          expected: [0.5, 1.2105, 2.0288],
         },
       ],
     },
@@ -97,35 +130,39 @@ export const kalmanFilterEntry: AlgorithmEntry = {
     {
       id: "kalman-filter-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Kalman Filter?",
+      prompt: "What does the Kalman gain K control?",
       options: [
-        "To solve the Kalman Filter problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "How much to trust the measurement vs. the prediction",
+        "The speed of convergence",
+        "The number of iterations",
+        "The state dimension",
       ],
       answer: 0,
-      explanation: "Kalman Filter is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Kalman Filter does."],
-      objective: "Purpose",
+      explanation:
+        "When K is large, the filter trusts the measurement more; when small, it trusts the prediction more.",
+      hints: ["Think about the algorithm's key property."],
+      objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Kalman Filter is an algorithm in the domain of machine learning.",
+    definition:
+      "Estimates the state of a linear dynamical system from noisy measurements by combining prediction and observation updates using Gaussian distributions.",
     steps: [
-      "Apply the Kalman Filter algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Predict: x̂ₜ|ₜ₋₁ = F·x̂ₜ₋₁ and P = F·Pₜ₋₁·Fᵀ + Q.",
+      "Compute Kalman gain: K = P·Hᵀ·(H·P·Hᵀ + R)⁻¹.",
+      "Update: x̂ₜ = x̂ₜ|ₜ₋₁ + K·(zₜ - H·x̂ₜ|ₜ₋₁).",
+      "Update covariance: Pₜ = (I - K·H)·P.",
+      "Repeat for each observation.",
     ],
-    timeComplexity: "$O(n)$.",
+    timeComplexity: "$O(n·d·k)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["machine learning applications"],
+    applications: ["machine learning"],
     limitations: ["Specific to its problem domain"],
     faq: [
       {
         q: "When should you use Kalman Filter?",
-        a: "Use Kalman Filter when the problem matches its designed use case in machine learning.",
+        a: "Estimates the state of a linear dynamical system from noisy measurements by combining prediction and observation updates using Gaussian distributions.",
       },
     ],
     answers: [

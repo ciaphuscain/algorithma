@@ -3,92 +3,140 @@ import type { AlgorithmEntry } from "../types";
 export const longestPalindromicSubstringEntry: AlgorithmEntry = {
   slug: "longest-palindromic-substring",
   name: "Longest Palindromic Substring",
-  aliases: ["Longest Palindromic Substring"],
+  aliases: ["LPS Substring", "Manacher"],
   curriculum: [274],
   domain: "dynamic-programming",
-  subcategory: "Dynamic Programming",
+  subcategory: "String DP",
   difficulty: "intermediate",
   summary:
-    "Longest Palindromic Substring is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["longest palindromic substring", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+    "Find the longest contiguous palindrome in a string. Expand-around-center gives O(n^2); Manacher's algorithm achieves O(n).",
+  tags: ["palindrome", "string", "dynamic programming"],
+  prerequisites: [],
+  related: ["longest-palindromic-subsequence"],
   problem: {
-    input: "Input for Longest Palindromic Substring.",
-    output: "Output of Longest Palindromic Substring.",
+    input: "A string s.",
+    output: "Length of the longest palindromic substring.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Longest Palindromic Substring solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Every palindrome has a center (or center pair). Expanding outward from each center finds the longest palindrome there.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Longest Palindromic Substring algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "For each index i (and each pair i,i+1), expand while characters match.",
+          "Track the longest palindrome found.",
+          "Return its length.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Longest Palindromic Substring follows the pseudocode directly.",
+        text: "Expand-around-center: O(n^2) time, O(1) space. Simple and practical.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Longest Palindromic Substring is based on the algorithm's structure and the operations performed at each step.",
+        text: "Expand: $O(n^2)$ time, $O(1)$ space. Manacher's: $O(n)$ time, $O(n)$ space.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Longest Palindromic Substring exist in the literature. See references for details.",
+        text: "Manacher's algorithm uses previously computed palindrome radii to skip redundant comparisons, achieving linear time.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
       worst: "O(n²)",
     },
-    space: "O(n)",
+    space: {
+      worst: "O(1)",
+    },
+  },
+  properties: {
     worstClass: "other",
   },
-  properties: [
-    {
-      label: "Domain",
-      value: "dynamic programming",
-    },
-  ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
-`,
+      entry: "longestPalindromicSubstring",
+      code: `def longestPalindromicSubstring(s):
+    n = len(s)
+    if n == 0:
+        return 0
+    best = 1
+    def expand(l, r):
+        while l >= 0 and r < n and s[l] == s[r]:
+            l -= 1
+            r += 1
+        return r - l - 1
+    for i in range(n):
+        best = max(best, expand(i, i), expand(i, i + 1))
+    return best`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            s: "babad",
+          },
+          expected: 3,
+        },
+        {
+          input: {
+            s: "cbbd",
+          },
+          expected: 2,
+        },
+        {
+          input: {
+            s: "a",
+          },
+          expected: 1,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "longestPalindromicSubstring",
+      code: `function longestPalindromicSubstring(s) {
+  const n = s.length;
+  if (n === 0) return 0;
+  let best = 1;
+  function expand(l, r) {
+    while (l >= 0 && r < n && s[l] === s[r]) { l--; r++; }
+    return r - l - 1;
+  }
+  for (let i = 0; i < n; i++) {
+    best = Math.max(best, expand(i, i), expand(i, i + 1));
+  }
+  return best;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          input: {
+            s: "babad",
+          },
+          expected: 3,
+        },
+        {
+          input: {
+            s: "cbbd",
+          },
+          expected: 2,
+        },
+        {
+          input: {
+            s: "a",
+          },
+          expected: 1,
         },
       ],
     },
@@ -96,56 +144,42 @@ export const longestPalindromicSubstringEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "longest-palindromic-substring-q1",
+      id: "lpsub-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Longest Palindromic Substring?",
-      options: [
-        "To solve the Longest Palindromic Substring problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "Longest palindromic substring of 'racecar'?",
+      options: ["7", "5", "3", "1"],
       answer: 0,
-      explanation:
-        "Longest Palindromic Substring is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Longest Palindromic Substring does."],
-      objective: "Purpose",
+      explanation: "'racecar' itself is a palindrome of length 7.",
+      hints: ["Check the whole string."],
+      objective: "Computation",
     },
   ],
   exam: {
-    definition:
-      "Longest Palindromic Substring is an algorithm in the domain of dynamic programming.",
-    steps: [
-      "Apply the Longest Palindromic Substring algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Find longest contiguous palindrome in a string.",
+    steps: ["Try each center.", "Expand while matching.", "Track longest."],
+    timeComplexity: "$O(n^2)$ expand, $O(n)$ Manacher.",
+    spaceComplexity: "$O(1)$ expand.",
+    correctness: "Every palindrome has a center; we try all centers.",
+    applications: ["text analysis", "bioinformatics"],
+    limitations: ["O(n^2) for expand approach"],
     faq: [
       {
-        q: "When should you use Longest Palindromic Substring?",
-        a: "Use Longest Palindromic Substring when the problem matches its designed use case in dynamic programming.",
+        q: "Substring vs subsequence?",
+        a: "Substring is contiguous; subsequence allows gaps.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Longest Palindromic Substring (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Center expansion (2).", "Odd and even cases (1).", "Manacher overview (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Longest Palindromic Substring.",
+      citation:
+        "G. Manacher, A New Linear-Time 'On-Line' Algorithm for Finding the Smallest Initial Palindrome, 1975.",
+      supports: "Linear palindrome algorithm.",
     },
   ],
   review: {

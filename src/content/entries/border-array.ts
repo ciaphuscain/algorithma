@@ -6,45 +6,54 @@ export const borderArrayEntry: AlgorithmEntry = {
   aliases: ["Border Array"],
   curriculum: [310],
   domain: "strings",
-  subcategory: "String Algorithms",
+  subcategory: "String Analysis",
   difficulty: "intermediate",
-  summary: "Border Array is a well-known algorithm in the domain of string processing.",
-  tags: ["border array", "string"],
-  prerequisites: [],
-  related: [],
+  summary:
+    "The border array is identical to the KMP failure/prefix function: for each position, it gives the length of the longest proper prefix that equals a suffix.",
+  tags: ["border", "prefix function", "KMP", "string"],
+  prerequisites: ["Failure Function"],
+  related: ["failure-function", "kmp"],
   problem: {
-    input: "Input for Border Array.",
-    output: "Output of Border Array.",
+    input: "A string s.",
+    output: "Border array B where B[i] = length of longest border of s[0..i].",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Border Array solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "A 'border' of a string is a proper prefix that is also a suffix. The border array records the longest border for each prefix of the string. This is the same as the KMP prefix/failure function.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Border Array algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Set B[0] = 0.",
+          "For each position i > 0, find the longest border by extending the previous border or falling back.",
+          "The algorithm is identical to the failure function computation.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Border Array follows the pseudocode directly.",
+        text: "Same algorithm as the failure function. The terminology 'border' is common in European literature; 'failure function' or 'prefix function' in American literature.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Border Array is based on the algorithm's structure and the operations performed at each step.",
+        text: "$O(n)$ time and $O(n)$ space. The amortized analysis is the same as the failure function.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Border Array exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "All borders of a position can be enumerated by following the chain: i, B[i], B[B[i]], ...",
+          "The shortest period of s[0..i] is (i+1) - B[i].",
+        ],
       },
     ],
   },
@@ -59,35 +68,55 @@ export const borderArrayEntry: AlgorithmEntry = {
   },
   properties: [
     {
-      label: "Domain",
-      value: "string processing",
+      label: "Same as",
+      value: "KMP failure/prefix function",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "border_array",
+      code: `def border_array(s):
+    n = len(s)
+    b = [0] * n
+    k = 0
+    for i in range(1, n):
+        while k > 0 and s[k] != s[i]:
+            k = b[k - 1]
+        if s[k] == s[i]:
+            k += 1
+        b[i] = k
+    return b
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["abacabab"],
+          expected: [0, 0, 1, 0, 1, 2, 3, 2],
+        },
+        {
+          args: ["aaa"],
+          expected: [0, 1, 2],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "borderArray",
+      code: `function borderArray(s) {
+  const n = s.length, b = new Array(n).fill(0);
+  let k = 0;
+  for (let i = 1; i < n; i++) {
+    while (k > 0 && s[k] !== s[i]) k = b[k - 1];
+    if (s[k] === s[i]) k++;
+    b[i] = k;
+  }
+  return b;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["abacabab"],
+          expected: [0, 0, 1, 0, 1, 2, 3, 2],
         },
       ],
     },
@@ -97,52 +126,45 @@ export const borderArrayEntry: AlgorithmEntry = {
     {
       id: "border-array-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Border Array?",
+      prompt: "What is a 'border' of a string?",
       options: [
-        "To solve the Border Array problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "A proper prefix that is also a suffix",
+        "The first character",
+        "The longest substring",
+        "A repeated character",
       ],
       answer: 0,
-      explanation: "Border Array is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Border Array does."],
-      objective: "Purpose",
+      explanation: "A border is both a proper prefix and a suffix of the string.",
+      hints: ["Think prefix AND suffix."],
+      objective: "Definition",
     },
   ],
   exam: {
-    definition: "Border Array is an algorithm in the domain of string processing.",
-    steps: [
-      "Apply the Border Array algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
+    definition:
+      "The border array gives the longest proper-prefix-equals-suffix length for each prefix.",
+    steps: ["Compute like KMP failure function."],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["string processing applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness: "Same as failure function.",
+    applications: ["KMP", "string periods", "pattern counting"],
+    limitations: ["Same as failure function"],
     faq: [
       {
-        q: "When should you use Border Array?",
-        a: "Use Border Array when the problem matches its designed use case in string processing.",
+        q: "Is it different from the failure function?",
+        a: "No, they are the same computation with different names.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define Border Array (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
-        ],
+        outline: ["Define border (1).", "Algorithm (2).", "Applications (2)."],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Border Array.",
+      citation: "M. Crochemore and W. Rytter, Jewels of Stringology, World Scientific, 2002.",
+      supports: "Border array theory.",
     },
   ],
   review: {
