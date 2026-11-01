@@ -3,29 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const minimumPathSumEntry: AlgorithmEntry = {
   slug: "minimum-path-sum",
   name: "Minimum Path Sum",
-  aliases: [
-    "Minimum Path Sum",
-    "Grid minimum cost path",
-  ],
-  curriculum: [
-    280,
-  ],
+  aliases: ["Minimum Path Sum", "Grid minimum cost path"],
+  curriculum: [280],
   domain: "dynamic-programming",
   subcategory: "Grid DP",
   difficulty: "beginner",
-  summary: "Finds the path from top-left to bottom-right of a grid that minimizes the sum of values along the path, moving only right or down.",
-  tags: [
-    "grid",
-    "minimum path",
-    "dynamic programming",
-  ],
-  prerequisites: [
-    "Unique Paths",
-  ],
-  related: [
-    "unique-paths",
-    "dungeon-game",
-  ],
+  summary:
+    "Finds the path from top-left to bottom-right of a grid that minimizes the sum of values along the path, moving only right or down.",
+  tags: ["grid", "minimum path", "dynamic programming"],
+  prerequisites: ["Unique Paths"],
+  related: ["unique-paths", "dungeon-game"],
   problem: {
     input: "A 2D grid of non-negative integers.",
     output: "Minimum sum path from (0,0) to (m-1,n-1).",
@@ -111,21 +98,9 @@ export const minimumPathSumEntry: AlgorithmEntry = {
         {
           args: [
             [
-              [
-                1,
-                3,
-                1,
-              ],
-              [
-                1,
-                5,
-                1,
-              ],
-              [
-                4,
-                2,
-                1,
-              ],
+              [1, 3, 1],
+              [1, 5, 1],
+              [4, 2, 1],
             ],
           ],
           expected: 7,
@@ -133,14 +108,8 @@ export const minimumPathSumEntry: AlgorithmEntry = {
         {
           args: [
             [
-              [
-                1,
-                2,
-              ],
-              [
-                3,
-                4,
-              ],
+              [1, 2],
+              [3, 4],
             ],
           ],
           expected: 7,
@@ -166,21 +135,9 @@ export const minimumPathSumEntry: AlgorithmEntry = {
         {
           args: [
             [
-              [
-                1,
-                3,
-                1,
-              ],
-              [
-                1,
-                5,
-                1,
-              ],
-              [
-                4,
-                2,
-                1,
-              ],
+              [1, 3, 1],
+              [1, 5, 1],
+              [4, 2, 1],
             ],
           ],
           expected: 7,
@@ -194,17 +151,10 @@ export const minimumPathSumEntry: AlgorithmEntry = {
       id: "min-path-sum-q1",
       kind: "mcq",
       prompt: "For grid [[1,2,3],[4,5,6]], what is the minimum path sum?",
-      options: [
-        "12",
-        "15",
-        "14",
-        "10",
-      ],
+      options: ["12", "15", "14", "10"],
       answer: 0,
       explanation: "Path: 1→2→3→6 = 12.",
-      hints: [
-        "Only move right or down.",
-      ],
+      hints: ["Only move right or down."],
       objective: "Computation",
     },
   ],
@@ -217,14 +167,10 @@ export const minimumPathSumEntry: AlgorithmEntry = {
     ],
     timeComplexity: "$O(mn)$.",
     spaceComplexity: "$O(n)$.",
-    correctness: "Optimal substructure: best path to (i,j) comes from the better of (i-1,j) and (i,j-1).",
-    applications: [
-      "image processing",
-      "cost optimization",
-    ],
-    limitations: [
-      "Only right and down moves",
-    ],
+    correctness:
+      "Optimal substructure: best path to (i,j) comes from the better of (i-1,j) and (i,j-1).",
+    applications: ["image processing", "cost optimization"],
+    limitations: ["Only right and down moves"],
     faq: [
       {
         q: "Can we modify the grid in-place?",
@@ -234,11 +180,7 @@ export const minimumPathSumEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define recurrence (1).",
-          "Show DP solution (2).",
-          "Space optimization (2).",
-        ],
+        outline: ["Define recurrence (1).", "Show DP solution (2).", "Space optimization (2)."],
       },
     ],
   },

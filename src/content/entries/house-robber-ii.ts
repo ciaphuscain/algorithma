@@ -3,32 +3,20 @@ import type { AlgorithmEntry } from "../types";
 export const houseRobberIiEntry: AlgorithmEntry = {
   slug: "house-robber-ii",
   name: "House Robber II",
-  aliases: [
-    "House Robber II",
-    "Circular house robber",
-  ],
-  curriculum: [
-    260,
-  ],
+  aliases: ["House Robber II", "Circular house robber"],
+  curriculum: [260],
   domain: "dynamic-programming",
   subcategory: "Classic DP",
   difficulty: "intermediate",
-  summary: "Extension of House Robber where houses are arranged in a circle: the first and last houses are adjacent, so both cannot be robbed.",
-  tags: [
-    "house robber",
-    "dynamic programming",
-    "circular",
-    "non-adjacent",
-  ],
-  prerequisites: [
-    "House Robber",
-  ],
-  related: [
-    "house-robber",
-  ],
+  summary:
+    "Extension of House Robber where houses are arranged in a circle: the first and last houses are adjacent, so both cannot be robbed.",
+  tags: ["house robber", "dynamic programming", "circular", "non-adjacent"],
+  prerequisites: ["House Robber"],
+  related: ["house-robber"],
   problem: {
     input: "An array of non-negative integers in circular arrangement.",
-    output: "Maximum amount robbed without robbing two adjacent houses (including first-last pair).",
+    output:
+      "Maximum amount robbed without robbing two adjacent houses (including first-last pair).",
   },
   levels: {
     intuition: [
@@ -101,32 +89,15 @@ export const houseRobberIiEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            [
-              2,
-              3,
-              2,
-            ],
-          ],
+          args: [[2, 3, 2]],
           expected: 3,
         },
         {
-          args: [
-            [
-              1,
-              2,
-              3,
-              1,
-            ],
-          ],
+          args: [[1, 2, 3, 1]],
           expected: 4,
         },
         {
-          args: [
-            [
-              5,
-            ],
-          ],
+          args: [[5]],
           expected: 5,
         },
       ],
@@ -146,24 +117,11 @@ export const houseRobberIiEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            [
-              2,
-              3,
-              2,
-            ],
-          ],
+          args: [[2, 3, 2]],
           expected: 3,
         },
         {
-          args: [
-            [
-              1,
-              2,
-              3,
-              1,
-            ],
-          ],
+          args: [[1, 2, 3, 1]],
           expected: 4,
         },
       ],
@@ -183,28 +141,19 @@ export const houseRobberIiEntry: AlgorithmEntry = {
       ],
       answer: 0,
       explanation: "In a circle, the first and last are adjacent, so at most one can be included.",
-      hints: [
-        "Think about what constraint the circle adds.",
-      ],
+      hints: ["Think about what constraint the circle adds."],
       objective: "Insight",
     },
   ],
   exam: {
     definition: "Max non-adjacent sum in a circular array.",
-    steps: [
-      "Solve linear version on nums[1..n-1].",
-      "Solve on nums[0..n-2].",
-      "Return max.",
-    ],
+    steps: ["Solve linear version on nums[1..n-1].", "Solve on nums[0..n-2].", "Return max."],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(1)$.",
-    correctness: "Either house 0 is not robbed (first case) or house n-1 is not (second case). One must hold.",
-    applications: [
-      "circular scheduling",
-    ],
-    limitations: [
-      "Only handles pairs of adjacent constraints",
-    ],
+    correctness:
+      "Either house 0 is not robbed (first case) or house n-1 is not (second case). One must hold.",
+    applications: ["circular scheduling"],
+    limitations: ["Only handles pairs of adjacent constraints"],
     faq: [
       {
         q: "Why not just run House Robber directly?",

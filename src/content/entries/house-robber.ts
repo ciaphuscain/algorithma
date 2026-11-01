@@ -3,30 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const houseRobberEntry: AlgorithmEntry = {
   slug: "house-robber",
   name: "House Robber",
-  aliases: [
-    "House Robber",
-    "Maximum non-adjacent sum",
-  ],
-  curriculum: [
-    259,
-  ],
+  aliases: ["House Robber", "Maximum non-adjacent sum"],
+  curriculum: [259],
   domain: "dynamic-programming",
   subcategory: "Classic DP",
   difficulty: "beginner",
-  summary: "Finds the maximum sum of non-adjacent elements in an array, modeling a robber who cannot rob two adjacent houses.",
-  tags: [
-    "house robber",
-    "dynamic programming",
-    "non-adjacent",
-    "maximum sum",
-  ],
-  prerequisites: [
-    "Climbing Stairs",
-  ],
-  related: [
-    "house-robber-ii",
-    "maximum-independent-set-on-tree",
-  ],
+  summary:
+    "Finds the maximum sum of non-adjacent elements in an array, modeling a robber who cannot rob two adjacent houses.",
+  tags: ["house robber", "dynamic programming", "non-adjacent", "maximum sum"],
+  prerequisites: ["Climbing Stairs"],
+  related: ["house-robber-ii", "maximum-independent-set-on-tree"],
   problem: {
     input: "An array of non-negative integers representing money in each house.",
     output: "Maximum amount that can be robbed without robbing two adjacent houses.",
@@ -103,40 +89,19 @@ export const houseRobberEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            [
-              1,
-              2,
-              3,
-              1,
-            ],
-          ],
+          args: [[1, 2, 3, 1]],
           expected: 4,
         },
         {
-          args: [
-            [
-              2,
-              7,
-              9,
-              3,
-              1,
-            ],
-          ],
+          args: [[2, 7, 9, 3, 1]],
           expected: 12,
         },
         {
-          args: [
-            [],
-          ],
+          args: [[]],
           expected: 0,
         },
         {
-          args: [
-            [
-              5,
-            ],
-          ],
+          args: [[5]],
           expected: 5,
         },
       ],
@@ -152,26 +117,11 @@ export const houseRobberEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            [
-              1,
-              2,
-              3,
-              1,
-            ],
-          ],
+          args: [[1, 2, 3, 1]],
           expected: 4,
         },
         {
-          args: [
-            [
-              2,
-              7,
-              9,
-              3,
-              1,
-            ],
-          ],
+          args: [[2, 7, 9, 3, 1]],
           expected: 12,
         },
       ],
@@ -183,17 +133,10 @@ export const houseRobberEntry: AlgorithmEntry = {
       id: "house-robber-q1",
       kind: "mcq",
       prompt: "For houses [2, 7, 9, 3, 1], what is the maximum?",
-      options: [
-        "12",
-        "11",
-        "16",
-        "10",
-      ],
+      options: ["12", "11", "16", "10"],
       answer: 0,
       explanation: "Rob houses 0, 2, 4: 2+9+1=12.",
-      hints: [
-        "You cannot rob adjacent houses.",
-      ],
+      hints: ["You cannot rob adjacent houses."],
       objective: "Computation",
     },
   ],
@@ -206,14 +149,10 @@ export const houseRobberEntry: AlgorithmEntry = {
     ],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(1)$.",
-    correctness: "Optimal substructure: best up to house i either includes i (needs best up to i-2) or excludes it (best up to i-1).",
-    applications: [
-      "scheduling",
-      "resource allocation",
-    ],
-    limitations: [
-      "Only linear (not circular) arrangement",
-    ],
+    correctness:
+      "Optimal substructure: best up to house i either includes i (needs best up to i-2) or excludes it (best up to i-1).",
+    applications: ["scheduling", "resource allocation"],
+    limitations: ["Only linear (not circular) arrangement"],
     faq: [
       {
         q: "How does this differ from House Robber II?",

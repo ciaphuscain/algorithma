@@ -3,28 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const fibonacciDpEntry: AlgorithmEntry = {
   slug: "fibonacci-dp",
   name: "Fibonacci Numbers (DP)",
-  aliases: [
-    "Fibonacci DP",
-    "Fibonacci sequence",
-  ],
-  curriculum: [
-    256,
-  ],
+  aliases: ["Fibonacci DP", "Fibonacci sequence"],
+  curriculum: [256],
   domain: "dynamic-programming",
   subcategory: "Classic DP",
   difficulty: "beginner",
-  summary: "Computes the n-th Fibonacci number using dynamic programming in O(n) time and O(1) space, avoiding the exponential blowup of naive recursion.",
-  tags: [
-    "fibonacci",
-    "dynamic programming",
-    "memoization",
-    "tabulation",
-  ],
+  summary:
+    "Computes the n-th Fibonacci number using dynamic programming in O(n) time and O(1) space, avoiding the exponential blowup of naive recursion.",
+  tags: ["fibonacci", "dynamic programming", "memoization", "tabulation"],
   prerequisites: [],
-  related: [
-    "climbing-stairs",
-    "memoization-tabulation",
-  ],
+  related: ["climbing-stairs", "memoization-tabulation"],
   problem: {
     input: "A non-negative integer n.",
     output: "The n-th Fibonacci number F(n), where F(0)=0, F(1)=1, F(n)=F(n-1)+F(n-2).",
@@ -48,30 +36,8 @@ export const fibonacciDpEntry: AlgorithmEntry = {
       },
       {
         kind: "table",
-        head: [
-          "i",
-          "0",
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-        ],
-        rows: [
-          [
-            "F(i)",
-            "0",
-            "1",
-            "1",
-            "2",
-            "3",
-            "5",
-            "8",
-            "13",
-          ],
-        ],
+        head: ["i", "0", "1", "2", "3", "4", "5", "6", "7"],
+        rows: [["F(i)", "0", "1", "1", "2", "3", "5", "8", "13"]],
       },
     ],
     implementation: [
@@ -134,27 +100,19 @@ export const fibonacciDpEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            0,
-          ],
+          args: [0],
           expected: 0,
         },
         {
-          args: [
-            1,
-          ],
+          args: [1],
           expected: 1,
         },
         {
-          args: [
-            10,
-          ],
+          args: [10],
           expected: 55,
         },
         {
-          args: [
-            20,
-          ],
+          args: [20],
           expected: 6765,
         },
       ],
@@ -171,21 +129,15 @@ export const fibonacciDpEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            0,
-          ],
+          args: [0],
           expected: 0,
         },
         {
-          args: [
-            10,
-          ],
+          args: [10],
           expected: 55,
         },
         {
-          args: [
-            20,
-          ],
+          args: [20],
           expected: 6765,
         },
       ],
@@ -197,38 +149,23 @@ export const fibonacciDpEntry: AlgorithmEntry = {
       id: "fibonacci-dp-q1",
       kind: "mcq",
       prompt: "What is the time complexity of computing F(n) with naive recursion?",
-      options: [
-        "O(2^n)",
-        "O(n)",
-        "O(n^2)",
-        "O(log n)",
-      ],
+      options: ["O(2^n)", "O(n)", "O(n^2)", "O(log n)"],
       answer: 0,
-      explanation: "Naive recursion has exponential time because it recomputes the same subproblems.",
-      hints: [
-        "Draw the recursion tree for F(5).",
-      ],
+      explanation:
+        "Naive recursion has exponential time because it recomputes the same subproblems.",
+      hints: ["Draw the recursion tree for F(5)."],
       objective: "Time complexity",
     },
   ],
   exam: {
-    definition: "Fibonacci DP computes F(n) iteratively in O(n) time by building up from F(0) and F(1).",
-    steps: [
-      "Set a=0, b=1.",
-      "Loop from 2 to n, updating a,b = b, a+b.",
-      "Return b.",
-    ],
+    definition:
+      "Fibonacci DP computes F(n) iteratively in O(n) time by building up from F(0) and F(1).",
+    steps: ["Set a=0, b=1.", "Loop from 2 to n, updating a,b = b, a+b.", "Return b."],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(1)$ with two variables.",
     correctness: "Each iteration correctly computes F(i) = F(i-1) + F(i-2) bottom-up.",
-    applications: [
-      "algorithm analysis",
-      "combinatorics",
-      "nature patterns",
-    ],
-    limitations: [
-      "Large F(n) values require big integers",
-    ],
+    applications: ["algorithm analysis", "combinatorics", "nature patterns"],
+    limitations: ["Large F(n) values require big integers"],
     faq: [
       {
         q: "Can we do better than O(n)?",

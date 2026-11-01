@@ -3,30 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const uniquePathsEntry: AlgorithmEntry = {
   slug: "unique-paths",
   name: "Unique Paths",
-  aliases: [
-    "Unique Paths",
-    "Grid paths",
-  ],
-  curriculum: [
-    281,
-  ],
+  aliases: ["Unique Paths", "Grid paths"],
+  curriculum: [281],
   domain: "dynamic-programming",
   subcategory: "Grid DP",
   difficulty: "beginner",
-  summary: "Counts the number of unique paths from the top-left to the bottom-right of an m×n grid, moving only right or down.",
-  tags: [
-    "grid",
-    "paths",
-    "dynamic programming",
-    "combinatorics",
-  ],
-  prerequisites: [
-    "Climbing Stairs",
-  ],
-  related: [
-    "unique-paths-ii",
-    "minimum-path-sum",
-  ],
+  summary:
+    "Counts the number of unique paths from the top-left to the bottom-right of an m×n grid, moving only right or down.",
+  tags: ["grid", "paths", "dynamic programming", "combinatorics"],
+  prerequisites: ["Climbing Stairs"],
+  related: ["unique-paths-ii", "minimum-path-sum"],
   problem: {
     input: "Two integers m and n (grid dimensions).",
     output: "Number of unique paths from (0,0) to (m-1,n-1).",
@@ -101,24 +87,15 @@ export const uniquePathsEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            3,
-            7,
-          ],
+          args: [3, 7],
           expected: 28,
         },
         {
-          args: [
-            3,
-            2,
-          ],
+          args: [3, 2],
           expected: 3,
         },
         {
-          args: [
-            1,
-            1,
-          ],
+          args: [1, 1],
           expected: 1,
         },
       ],
@@ -135,17 +112,11 @@ export const uniquePathsEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            3,
-            7,
-          ],
+          args: [3, 7],
           expected: 28,
         },
         {
-          args: [
-            3,
-            2,
-          ],
+          args: [3, 2],
           expected: 3,
         },
       ],
@@ -157,17 +128,10 @@ export const uniquePathsEntry: AlgorithmEntry = {
       id: "unique-paths-q1",
       kind: "mcq",
       prompt: "How many unique paths in a 3×3 grid?",
-      options: [
-        "6",
-        "4",
-        "9",
-        "8",
-      ],
+      options: ["6", "4", "9", "8"],
       answer: 0,
       explanation: "C(4,2) = 6. Need 2 downs and 2 rights in any order.",
-      hints: [
-        "Count: RRDD, RDRD, RDDR, DRRD, DRDR, DDRR.",
-      ],
+      hints: ["Count: RRDD, RDRD, RDDR, DRRD, DRDR, DDRR."],
       objective: "Counting",
     },
   ],
@@ -181,13 +145,8 @@ export const uniquePathsEntry: AlgorithmEntry = {
     timeComplexity: "$O(mn)$.",
     spaceComplexity: "$O(n)$ with rolling array.",
     correctness: "Each cell's path count is the sum of paths from above and from the left.",
-    applications: [
-      "combinatorics",
-      "lattice paths",
-    ],
-    limitations: [
-      "No obstacles",
-    ],
+    applications: ["combinatorics", "lattice paths"],
+    limitations: ["No obstacles"],
     faq: [
       {
         q: "Can this be computed without DP?",

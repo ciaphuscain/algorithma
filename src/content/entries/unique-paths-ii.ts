@@ -3,30 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const uniquePathsIiEntry: AlgorithmEntry = {
   slug: "unique-paths-ii",
   name: "Unique Paths II",
-  aliases: [
-    "Unique Paths II",
-    "Grid paths with obstacles",
-  ],
-  curriculum: [
-    282,
-  ],
+  aliases: ["Unique Paths II", "Grid paths with obstacles"],
+  curriculum: [282],
   domain: "dynamic-programming",
   subcategory: "Grid DP",
   difficulty: "intermediate",
-  summary: "Counts unique paths in a grid with obstacles. Cells marked as obstacles cannot be traversed.",
-  tags: [
-    "grid",
-    "paths",
-    "obstacles",
-    "dynamic programming",
-  ],
-  prerequisites: [
-    "Unique Paths",
-  ],
-  related: [
-    "unique-paths",
-    "minimum-path-sum",
-  ],
+  summary:
+    "Counts unique paths in a grid with obstacles. Cells marked as obstacles cannot be traversed.",
+  tags: ["grid", "paths", "obstacles", "dynamic programming"],
+  prerequisites: ["Unique Paths"],
+  related: ["unique-paths", "minimum-path-sum"],
   problem: {
     input: "A 2D grid where 0 = free, 1 = obstacle.",
     output: "Number of unique paths from top-left to bottom-right avoiding obstacles.",
@@ -109,21 +95,9 @@ export const uniquePathsIiEntry: AlgorithmEntry = {
         {
           args: [
             [
-              [
-                0,
-                0,
-                0,
-              ],
-              [
-                0,
-                1,
-                0,
-              ],
-              [
-                0,
-                0,
-                0,
-              ],
+              [0, 0, 0],
+              [0, 1, 0],
+              [0, 0, 0],
             ],
           ],
           expected: 2,
@@ -131,27 +105,14 @@ export const uniquePathsIiEntry: AlgorithmEntry = {
         {
           args: [
             [
-              [
-                0,
-                1,
-              ],
-              [
-                0,
-                0,
-              ],
+              [0, 1],
+              [0, 0],
             ],
           ],
           expected: 1,
         },
         {
-          args: [
-            [
-              [
-                1,
-                0,
-              ],
-            ],
-          ],
+          args: [[[1, 0]]],
           expected: 0,
         },
       ],
@@ -176,21 +137,9 @@ export const uniquePathsIiEntry: AlgorithmEntry = {
         {
           args: [
             [
-              [
-                0,
-                0,
-                0,
-              ],
-              [
-                0,
-                1,
-                0,
-              ],
-              [
-                0,
-                0,
-                0,
-              ],
+              [0, 0, 0],
+              [0, 1, 0],
+              [0, 0, 0],
             ],
           ],
           expected: 2,
@@ -204,17 +153,10 @@ export const uniquePathsIiEntry: AlgorithmEntry = {
       id: "unique-paths-ii-q1",
       kind: "mcq",
       prompt: "If the start cell is an obstacle, what is the answer?",
-      options: [
-        "0",
-        "1",
-        "-1",
-        "Undefined",
-      ],
+      options: ["0", "1", "-1", "Undefined"],
       answer: 0,
       explanation: "No path can begin from an obstacle.",
-      hints: [
-        "Think about what happens at (0,0).",
-      ],
+      hints: ["Think about what happens at (0,0)."],
       objective: "Edge case",
     },
   ],
@@ -228,13 +170,8 @@ export const uniquePathsIiEntry: AlgorithmEntry = {
     timeComplexity: "$O(mn)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "Obstacles contribute 0, correctly blocking all paths through them.",
-    applications: [
-      "robotics path planning",
-      "maze solving",
-    ],
-    limitations: [
-      "Only right and down moves",
-    ],
+    applications: ["robotics path planning", "maze solving"],
+    limitations: ["Only right and down moves"],
     faq: [
       {
         q: "How to handle multiple obstacles?",
@@ -244,11 +181,7 @@ export const uniquePathsIiEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 5,
-        outline: [
-          "Obstacle handling (1).",
-          "DP recurrence (2).",
-          "Space optimization (2).",
-        ],
+        outline: ["Obstacle handling (1).", "DP recurrence (2).", "Space optimization (2)."],
       },
     ],
   },

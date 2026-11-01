@@ -3,29 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const climbingStairsEntry: AlgorithmEntry = {
   slug: "climbing-stairs",
   name: "Climbing Stairs",
-  aliases: [
-    "Climbing Stairs",
-    "Staircase problem",
-  ],
-  curriculum: [
-    257,
-  ],
+  aliases: ["Climbing Stairs", "Staircase problem"],
+  curriculum: [257],
   domain: "dynamic-programming",
   subcategory: "Classic DP",
   difficulty: "beginner",
-  summary: "Counts the number of distinct ways to climb n stairs taking 1 or 2 steps at a time, equivalent to computing Fibonacci numbers.",
-  tags: [
-    "climbing stairs",
-    "dynamic programming",
-    "fibonacci",
-  ],
-  prerequisites: [
-    "Fibonacci Numbers (DP)",
-  ],
-  related: [
-    "fibonacci-dp",
-    "min-cost-climbing-stairs",
-  ],
+  summary:
+    "Counts the number of distinct ways to climb n stairs taking 1 or 2 steps at a time, equivalent to computing Fibonacci numbers.",
+  tags: ["climbing stairs", "dynamic programming", "fibonacci"],
+  prerequisites: ["Fibonacci Numbers (DP)"],
+  related: ["fibonacci-dp", "min-cost-climbing-stairs"],
   problem: {
     input: "A positive integer n (number of stairs).",
     output: "The number of distinct ways to reach the top.",
@@ -50,24 +37,8 @@ export const climbingStairsEntry: AlgorithmEntry = {
       },
       {
         kind: "table",
-        head: [
-          "n",
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-        ],
-        rows: [
-          [
-            "ways",
-            "1",
-            "2",
-            "3",
-            "5",
-            "8",
-          ],
-        ],
+        head: ["n", "1", "2", "3", "4", "5"],
+        rows: [["ways", "1", "2", "3", "5", "8"]],
       },
     ],
     implementation: [
@@ -121,33 +92,23 @@ export const climbingStairsEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            1,
-          ],
+          args: [1],
           expected: 1,
         },
         {
-          args: [
-            2,
-          ],
+          args: [2],
           expected: 2,
         },
         {
-          args: [
-            3,
-          ],
+          args: [3],
           expected: 3,
         },
         {
-          args: [
-            5,
-          ],
+          args: [5],
           expected: 8,
         },
         {
-          args: [
-            10,
-          ],
+          args: [10],
           expected: 89,
         },
       ],
@@ -164,21 +125,15 @@ export const climbingStairsEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            1,
-          ],
+          args: [1],
           expected: 1,
         },
         {
-          args: [
-            5,
-          ],
+          args: [5],
           expected: 8,
         },
         {
-          args: [
-            10,
-          ],
+          args: [10],
           expected: 89,
         },
       ],
@@ -190,17 +145,10 @@ export const climbingStairsEntry: AlgorithmEntry = {
       id: "climbing-stairs-q1",
       kind: "mcq",
       prompt: "How many ways to climb 4 stairs?",
-      options: [
-        "5",
-        "4",
-        "8",
-        "3",
-      ],
+      options: ["5", "4", "8", "3"],
       answer: 0,
       explanation: "ways(4) = ways(3) + ways(2) = 3 + 2 = 5.",
-      hints: [
-        "Build from ways(1)=1, ways(2)=2.",
-      ],
+      hints: ["Build from ways(1)=1, ways(2)=2."],
       objective: "Counting",
     },
   ],
@@ -214,13 +162,8 @@ export const climbingStairsEntry: AlgorithmEntry = {
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(1)$.",
     correctness: "Each step can be reached from exactly the previous one or two steps.",
-    applications: [
-      "combinatorics",
-      "tiling problems",
-    ],
-    limitations: [
-      "Exponential growth of answer",
-    ],
+    applications: ["combinatorics", "tiling problems"],
+    limitations: ["Exponential growth of answer"],
     faq: [
       {
         q: "Why is this Fibonacci?",

@@ -3,28 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const longestCommonSubstringEntry: AlgorithmEntry = {
   slug: "longest-common-substring",
   name: "Longest Common Substring",
-  aliases: [
-    "Longest Common Substring",
-    "LCSubstring",
-  ],
-  curriculum: [
-    272,
-  ],
+  aliases: ["Longest Common Substring", "LCSubstring"],
+  curriculum: [272],
   domain: "dynamic-programming",
   subcategory: "String DP",
   difficulty: "intermediate",
-  summary: "Finds the length of the longest contiguous substring common to two strings using a 2D DP table.",
-  tags: [
-    "substring",
-    "string",
-    "dynamic programming",
-  ],
-  prerequisites: [
-    "Edit Distance",
-  ],
-  related: [
-    "lcs",
-  ],
+  summary:
+    "Finds the length of the longest contiguous substring common to two strings using a 2D DP table.",
+  tags: ["substring", "string", "dynamic programming"],
+  prerequisites: ["Edit Distance"],
+  related: ["lcs"],
   problem: {
     input: "Two strings s1 and s2.",
     output: "Length of their longest common substring.",
@@ -110,24 +98,15 @@ export const longestCommonSubstringEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            "abcde",
-            "abfce",
-          ],
+          args: ["abcde", "abfce"],
           expected: 2,
         },
         {
-          args: [
-            "abc",
-            "abc",
-          ],
+          args: ["abc", "abc"],
           expected: 3,
         },
         {
-          args: [
-            "abc",
-            "def",
-          ],
+          args: ["abc", "def"],
           expected: 0,
         },
       ],
@@ -153,17 +132,11 @@ export const longestCommonSubstringEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            "abcde",
-            "abfce",
-          ],
+          args: ["abcde", "abfce"],
           expected: 2,
         },
         {
-          args: [
-            "abc",
-            "abc",
-          ],
+          args: ["abc", "abc"],
           expected: 3,
         },
       ],
@@ -175,36 +148,21 @@ export const longestCommonSubstringEntry: AlgorithmEntry = {
       id: "lc-substr-q1",
       kind: "mcq",
       prompt: "What is the longest common substring of 'abcxyz' and 'xyzabc'?",
-      options: [
-        "3",
-        "6",
-        "0",
-        "1",
-      ],
+      options: ["3", "6", "0", "1"],
       answer: 0,
       explanation: "'abc' and 'xyz' are both length 3.",
-      hints: [
-        "Look for 'abc' or 'xyz' in both strings.",
-      ],
+      hints: ["Look for 'abc' or 'xyz' in both strings."],
       objective: "Computation",
     },
   ],
   exam: {
     definition: "Find longest contiguous substring common to two strings.",
-    steps: [
-      "dp[i][j] = dp[i-1][j-1]+1 if chars match, else 0.",
-      "Track max.",
-    ],
+    steps: ["dp[i][j] = dp[i-1][j-1]+1 if chars match, else 0.", "Track max."],
     timeComplexity: "$O(mn)$.",
     spaceComplexity: "$O(\\min(m,n))$.",
     correctness: "dp[i][j] correctly represents the longest common suffix ending at positions i,j.",
-    applications: [
-      "plagiarism detection",
-      "DNA analysis",
-    ],
-    limitations: [
-      "O(mn) time for long strings",
-    ],
+    applications: ["plagiarism detection", "DNA analysis"],
+    limitations: ["O(mn) time for long strings"],
     faq: [
       {
         q: "How is this different from LCS?",

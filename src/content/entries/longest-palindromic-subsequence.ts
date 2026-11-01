@@ -3,30 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const longestPalindromicSubsequenceEntry: AlgorithmEntry = {
   slug: "longest-palindromic-subsequence",
   name: "Longest Palindromic Subsequence",
-  aliases: [
-    "Longest Palindromic Subsequence",
-    "LPS",
-  ],
-  curriculum: [
-    273,
-  ],
+  aliases: ["Longest Palindromic Subsequence", "LPS"],
+  curriculum: [273],
   domain: "dynamic-programming",
   subcategory: "String DP",
   difficulty: "intermediate",
-  summary: "Finds the length of the longest subsequence of a string that reads the same forwards and backwards.",
-  tags: [
-    "palindrome",
-    "subsequence",
-    "dynamic programming",
-    "string",
-  ],
-  prerequisites: [
-    "LCS",
-  ],
-  related: [
-    "longest-palindromic-substring",
-    "lcs",
-  ],
+  summary:
+    "Finds the length of the longest subsequence of a string that reads the same forwards and backwards.",
+  tags: ["palindrome", "subsequence", "dynamic programming", "string"],
+  prerequisites: ["LCS"],
+  related: ["longest-palindromic-substring", "lcs"],
   problem: {
     input: "A string s.",
     output: "Length of the longest palindromic subsequence.",
@@ -114,21 +100,15 @@ export const longestPalindromicSubsequenceEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            "bbbab",
-          ],
+          args: ["bbbab"],
           expected: 4,
         },
         {
-          args: [
-            "cbbd",
-          ],
+          args: ["cbbd"],
           expected: 2,
         },
         {
-          args: [
-            "a",
-          ],
+          args: ["a"],
           expected: 1,
         },
       ],
@@ -152,15 +132,11 @@ export const longestPalindromicSubsequenceEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            "bbbab",
-          ],
+          args: ["bbbab"],
           expected: 4,
         },
         {
-          args: [
-            "cbbd",
-          ],
+          args: ["cbbd"],
           expected: 2,
         },
       ],
@@ -172,17 +148,10 @@ export const longestPalindromicSubsequenceEntry: AlgorithmEntry = {
       id: "lps-q1",
       kind: "mcq",
       prompt: "What is the LPS length of 'character'?",
-      options: [
-        "5",
-        "3",
-        "4",
-        "6",
-      ],
+      options: ["5", "3", "4", "6"],
       answer: 0,
       explanation: "The LPS is 'carac' (length 5).",
-      hints: [
-        "A subsequence can skip characters.",
-      ],
+      hints: ["A subsequence can skip characters."],
       objective: "Computation",
     },
   ],
@@ -196,13 +165,8 @@ export const longestPalindromicSubsequenceEntry: AlgorithmEntry = {
     timeComplexity: "$O(n^2)$.",
     spaceComplexity: "$O(n^2)$.",
     correctness: "Matching endpoints extend the inner LPS by 2; mismatches try both exclusions.",
-    applications: [
-      "bioinformatics",
-      "text analysis",
-    ],
-    limitations: [
-      "O(n^2) for long strings",
-    ],
+    applications: ["bioinformatics", "text analysis"],
+    limitations: ["O(n^2) for long strings"],
     faq: [
       {
         q: "How is this different from longest palindromic substring?",
@@ -212,11 +176,7 @@ export const longestPalindromicSubsequenceEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define interval DP (1).",
-          "Recurrence (2).",
-          "LCS equivalence (2).",
-        ],
+        outline: ["Define interval DP (1).", "Recurrence (2).", "LCS equivalence (2)."],
       },
     ],
   },

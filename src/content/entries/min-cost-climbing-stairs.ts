@@ -3,28 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const minCostClimbingStairsEntry: AlgorithmEntry = {
   slug: "min-cost-climbing-stairs",
   name: "Min Cost Climbing Stairs",
-  aliases: [
-    "Min Cost Climbing Stairs",
-  ],
-  curriculum: [
-    258,
-  ],
+  aliases: ["Min Cost Climbing Stairs"],
+  curriculum: [258],
   domain: "dynamic-programming",
   subcategory: "Classic DP",
   difficulty: "beginner",
-  summary: "Finds the minimum cost to reach the top of stairs where each step has a cost, and you can climb 1 or 2 steps at a time.",
-  tags: [
-    "climbing stairs",
-    "dynamic programming",
-    "minimum cost",
-  ],
-  prerequisites: [
-    "Climbing Stairs",
-  ],
-  related: [
-    "climbing-stairs",
-    "minimum-path-sum",
-  ],
+  summary:
+    "Finds the minimum cost to reach the top of stairs where each step has a cost, and you can climb 1 or 2 steps at a time.",
+  tags: ["climbing stairs", "dynamic programming", "minimum cost"],
+  prerequisites: ["Climbing Stairs"],
+  related: ["climbing-stairs", "minimum-path-sum"],
   problem: {
     input: "An array cost where cost[i] is the cost of step i.",
     output: "Minimum cost to reach past the last step (you can start from step 0 or 1).",
@@ -103,30 +91,11 @@ export const minCostClimbingStairsEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            [
-              10,
-              15,
-              20,
-            ],
-          ],
+          args: [[10, 15, 20]],
           expected: 15,
         },
         {
-          args: [
-            [
-              1,
-              100,
-              1,
-              1,
-              1,
-              100,
-              1,
-              1,
-              100,
-              1,
-            ],
-          ],
+          args: [[1, 100, 1, 1, 1, 100, 1, 1, 100, 1]],
           expected: 6,
         },
       ],
@@ -144,13 +113,7 @@ export const minCostClimbingStairsEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            [
-              10,
-              15,
-              20,
-            ],
-          ],
+          args: [[10, 15, 20]],
           expected: 15,
         },
       ],
@@ -162,17 +125,10 @@ export const minCostClimbingStairsEntry: AlgorithmEntry = {
       id: "min-cost-stairs-q1",
       kind: "mcq",
       prompt: "For cost = [10, 15, 20], what is the minimum cost?",
-      options: [
-        "15",
-        "10",
-        "25",
-        "30",
-      ],
+      options: ["15", "10", "25", "30"],
       answer: 0,
       explanation: "Start at step 1 (cost 15), jump to the top.",
-      hints: [
-        "You can start from step 0 or 1.",
-      ],
+      hints: ["You can start from step 0 or 1."],
       objective: "Computation",
     },
   ],
@@ -185,14 +141,10 @@ export const minCostClimbingStairsEntry: AlgorithmEntry = {
     ],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(1)$.",
-    correctness: "Optimal substructure: min cost to reach step i uses min cost to reach i-1 or i-2.",
-    applications: [
-      "resource optimization",
-      "path planning",
-    ],
-    limitations: [
-      "Only 1 or 2 step jumps",
-    ],
+    correctness:
+      "Optimal substructure: min cost to reach step i uses min cost to reach i-1 or i-2.",
+    applications: ["resource optimization", "path planning"],
+    limitations: ["Only 1 or 2 step jumps"],
     faq: [
       {
         q: "Why min of last two?",
@@ -202,11 +154,7 @@ export const minCostClimbingStairsEntry: AlgorithmEntry = {
     answers: [
       {
         marks: 5,
-        outline: [
-          "Define recurrence (1).",
-          "Show iteration (2).",
-          "Prove optimality (2).",
-        ],
+        outline: ["Define recurrence (1).", "Show iteration (2).", "Prove optimality (2)."],
       },
     ],
   },
