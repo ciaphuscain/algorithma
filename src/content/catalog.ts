@@ -211,6 +211,340 @@ import { bTreeEntry } from "./entries/b-tree";
 import { bPlusTreeEntry } from "./entries/b-plus-tree";
 import { bStarTreeEntry } from "./entries/b-star-tree";
 
+import { twoSatViaSccEntry } from "./entries/2-sat-via-scc";
+import { adamOptimizerEntry } from "./entries/adam-optimizer";
+import { aesEncryptionEntry } from "./entries/aes-encryption";
+import { aksPrimalityTestEntry } from "./entries/aks-primality-test";
+import { aliensTrickLagrangianRelaxationWqsBinarySearchEntry } from "./entries/aliens-trick-lagrangian-relaxation-wqs-binary-search";
+import { alphaBetaPruningEntry } from "./entries/alpha-beta-pruning";
+import { andrewSMonotoneChainEntry } from "./entries/andrew-s-monotone-chain";
+import { antColonyOptimizationEntry } from "./entries/ant-colony-optimization";
+import { ariesRecoveryEntry } from "./entries/aries-recovery";
+import { arithmeticCodingEntry } from "./entries/arithmetic-coding";
+import { asymmetricNumeralSystemsAnsEntry } from "./entries/asymmetric-numeral-systems-ans";
+import { backpropagationEntry } from "./entries/backpropagation";
+import { ballTreeEntry } from "./entries/ball-tree";
+import { bbrCongestionControlEntry } from "./entries/bbr-congestion-control";
+import { beamSearchEntry } from "./entries/beam-search";
+import { beliefPropagationEntry } from "./entries/belief-propagation";
+import { bentleyOttmannAlgorithmEntry } from "./entries/bentley-ottmann-algorithm";
+import { berlekampMasseyEntry } from "./entries/berlekamp-massey";
+import { bidirectionalDijkstraEntry } from "./entries/bidirectional-dijkstra";
+import { binaryGcdSteinSAlgorithmEntry } from "./entries/binary-gcd-stein-s-algorithm";
+import { binomialCoefficientDpEntry } from "./entries/binomial-coefficient-dp";
+import { bipartiteMatchingViaFlowEntry } from "./entries/bipartite-matching-via-flow";
+import { bisectionMethodEntry } from "./entries/bisection-method";
+import { bitonicSortEntry } from "./entries/bitonic-sort";
+import { bloomJoinEntry } from "./entries/bloom-join";
+import { blossomAlgorithmEntry } from "./entries/blossom-algorithm";
+import { boothSAlgorithmLexicographicallyMinimumRotationEntry } from "./entries/booth-s-algorithm-lexicographically-minimum-rotation";
+import { borVkaSAlgorithmEntry } from "./entries/bor-vka-s-algorithm";
+import { borderArrayEntry } from "./entries/border-array";
+import { boyerMooreEntry } from "./entries/boyer-moore";
+import { boyerMooreHorspoolEntry } from "./entries/boyer-moore-horspool";
+import { branchAndBoundEntry } from "./entries/branch-and-bound";
+import { branchAndCutEntry } from "./entries/branch-and-cut";
+import { brokenProfileDpEntry } from "./entries/broken-profile-dp";
+import { bufferReplacementClockAlgorithmEntry } from "./entries/buffer-replacement-clock-algorithm";
+import { bullyLeaderElectionAlgorithmEntry } from "./entries/bully-leader-election-algorithm";
+import { burrowsWheelerTransformBwtEntry } from "./entries/burrows-wheeler-transform-bwt";
+import { burstBalloonsEntry } from "./entries/burst-balloons";
+import { calendarQueueEntry } from "./entries/calendar-queue";
+import { catalanNumbersEntry } from "./entries/catalan-numbers";
+import { cdqDivideAndConquerEntry } from "./entries/cdq-divide-and-conquer";
+import { centroidDecompositionEntry } from "./entries/centroid-decomposition";
+import { chacha20Entry } from "./entries/chacha20";
+import { chandyLamportSnapshotAlgorithmEntry } from "./entries/chandy-lamport-snapshot-algorithm";
+import { cherryPickupEntry } from "./entries/cherry-pickup";
+import { choleskyDecompositionEntry } from "./entries/cholesky-decomposition";
+import { chordDhtEntry } from "./entries/chord-dht";
+import { christofidesAlgorithmApproximateTspEntry } from "./entries/christofides-algorithm-approximate-tsp";
+import { chromaticPolynomialExactColoringEntry } from "./entries/chromatic-polynomial-exact-coloring";
+import { cityhashEntry } from "./entries/cityhash";
+import { commentzWalterEntry } from "./entries/commentz-walter";
+import { concurrentSkipListEntry } from "./entries/concurrent-skip-list";
+import { conjugateGradientEntry } from "./entries/conjugate-gradient";
+import { connectedComponentsEntry } from "./entries/connected-components";
+import { convexPolygonIntersectionEntry } from "./entries/convex-polygon-intersection";
+import { costBasedQueryOptimizationSelingerEntry } from "./entries/cost-based-query-optimization-selinger";
+import { coverTreeEntry } from "./entries/cover-tree";
+import { crc32Entry } from "./entries/crc32";
+import { crdtsGCounterOrSetRgaEntry } from "./entries/crdts-g-counter-or-set-rga";
+import { cycleDetectionDirectedEntry } from "./entries/cycle-detection-directed";
+import { cycleDetectionUndirectedEntry } from "./entries/cycle-detection-undirected";
+import { damerauLevenshteinDistanceEntry } from "./entries/damerau-levenshtein-distance";
+import { decisionTreeLearningId3C45CartEntry } from "./entries/decision-tree-learning-id3-c4-5-cart";
+import { deflateEntry } from "./entries/deflate";
+import { delaunayTriangulationEntry } from "./entries/delaunay-triangulation";
+import { derangementsEntry } from "./entries/derangements";
+import { desEntry } from "./entries/des";
+import { determinantComputationEntry } from "./entries/determinant-computation";
+import { dfaConstructionEntry } from "./entries/dfa-construction";
+import { dialSAlgorithmEntry } from "./entries/dial-s-algorithm";
+import { diameterOfTreeEntry } from "./entries/diameter-of-tree";
+import { diffieHellmanKeyExchangeEntry } from "./entries/diffie-hellman-key-exchange";
+import { diffusionModelSamplingDdpmEntry } from "./entries/diffusion-model-sampling-ddpm";
+import { directedAcyclicWordGraphDawgEntry } from "./entries/directed-acyclic-word-graph-dawg";
+import { distanceBetweenTwoPointsEntry } from "./entries/distance-between-two-points";
+import { distanceFromPointToLineEntry } from "./entries/distance-from-point-to-line";
+import { divideAndConquerDpOptimizationEntry } from "./entries/divide-and-conquer-dp-optimization";
+import { dixonSFactorizationEntry } from "./entries/dixon-s-factorization";
+import { dominatorTreeLengauerTarjanEntry } from "./entries/dominator-tree-lengauer-tarjan";
+import { doubleHashingEntry } from "./entries/double-hashing";
+import { dpOnBrokenLinesConnectivityDpEntry } from "./entries/dp-on-broken-lines-connectivity-dp";
+import { dsaturEntry } from "./entries/dsatur";
+import { dungeonGameEntry } from "./entries/dungeon-game";
+import { dynamicConnectivityOfflineDivideConquerEntry } from "./entries/dynamic-connectivity-offline-divide-conquer";
+import { dynamicTreeEntry } from "./entries/dynamic-tree";
+import { ed25519Entry } from "./entries/ed25519";
+import { edmondsArborescenceChuLiuEdmondsEntry } from "./entries/edmonds-arborescence-chu-liu-edmonds";
+import { edmondsKarpEntry } from "./entries/edmonds-karp";
+import { ellipticCurveDiffieHellmanEcdhEntry } from "./entries/elliptic-curve-diffie-hellman-ecdh";
+import { ellipticCurveDigitalSignatureAlgorithmEcdsaEntry } from "./entries/elliptic-curve-digital-signature-algorithm-ecdsa";
+import { eulerSTheoremEntry } from "./entries/euler-s-theorem";
+import { eulerSTotientFunctionEntry } from "./entries/euler-s-totient-function";
+import { eulerTourTreeEntry } from "./entries/euler-tour-tree";
+import { expectationMaximizationEntry } from "./entries/expectation-maximization";
+import { expectimaxEntry } from "./entries/expectimax";
+import { extendibleHashingEntry } from "./entries/extendible-hashing";
+import { externalMergeSortEntry } from "./entries/external-merge-sort";
+import { failureFunctionEntry } from "./entries/failure-function";
+import { fastModularExponentiationEntry } from "./entries/fast-modular-exponentiation";
+import { fermatFactorizationEntry } from "./entries/fermat-factorization";
+import { fermatPrimalityTestEntry } from "./entries/fermat-primality-test";
+import { finiteElementMethod1d2dEntry } from "./entries/finite-element-method-1d-2d";
+import { flashattentionEntry } from "./entries/flashattention";
+import { fleurySAlgorithmEntry } from "./entries/fleury-s-algorithm";
+import { fmIndexFullTextSearchEntry } from "./entries/fm-index-full-text-search";
+import { fordFulkersonEntry } from "./entries/ford-fulkerson";
+import { fractionalKnapsackGreedyDpComparisonEntry } from "./entries/fractional-knapsack-greedy-dp-comparison";
+import { gaussianEliminationEntry } from "./entries/gaussian-elimination";
+import { gaussianMixtureModelsEntry } from "./entries/gaussian-mixture-models";
+import { generalWeightedMatchingEntry } from "./entries/general-weighted-matching";
+import { geneticAlgorithmEntry } from "./entries/genetic-algorithm";
+import { gibbsSamplingEntry } from "./entries/gibbs-sampling";
+import { gomoryHuTreeEntry } from "./entries/gomory-hu-tree";
+import { gossipProtocolEntry } from "./entries/gossip-protocol";
+import { graceHashJoinEntry } from "./entries/grace-hash-join";
+import { gramSchmidtOrthogonalizationEntry } from "./entries/gram-schmidt-orthogonalization";
+import { greedySetCoverApproximationEntry } from "./entries/greedy-set-cover-approximation";
+import { groupKnapsackEntry } from "./entries/group-knapsack";
+import { groverSSearchEntry } from "./entries/grover-s-search";
+import { halfPlaneIntersectionEntry } from "./entries/half-plane-intersection";
+import { hamiltonianBacktrackingEntry } from "./entries/hamiltonian-backtracking";
+import { hamiltonianMonteCarloEntry } from "./entries/hamiltonian-monte-carlo";
+import { hammingCodesEntry } from "./entries/hamming-codes";
+import { hammingDistanceEntry } from "./entries/hamming-distance";
+import { hiddenMarkovModelsForwardBackwardEntry } from "./entries/hidden-markov-models-forward-backward";
+import { hierholzerSAlgorithmEntry } from "./entries/hierholzer-s-algorithm";
+import { hillClimbingEntry } from "./entries/hill-climbing";
+import { hmacEntry } from "./entries/hmac";
+import { hungarianAlgorithmEntry } from "./entries/hungarian-algorithm";
+import { hybridLogicalClocksEntry } from "./entries/hybrid-logical-clocks";
+import { inclusionExclusionPrincipleEntry } from "./entries/inclusion-exclusion-principle";
+import { integerPartitionDpEntry } from "./entries/integer-partition-dp";
+import { interiorPointMethodsEntry } from "./entries/interior-point-methods";
+import { inverseFftEntry } from "./entries/inverse-fft";
+import { iterativeDeepeningAEntry } from "./entries/iterative-deepening-a";
+import { jaroSimilarityEntry } from "./entries/jaro-similarity";
+import { jaroWinklerDistanceEntry } from "./entries/jaro-winkler-distance";
+import { jarvisMarchGiftWrappingEntry } from "./entries/jarvis-march-gift-wrapping";
+import { johnsonSElementaryCyclesEntry } from "./entries/johnson-s-elementary-cycles";
+import { kMeansClusteringEntry } from "./entries/k-means-clustering";
+import { kNigSTheoremConstructionEntry } from "./entries/k-nig-s-theorem-construction";
+import { kShortestPathsEntry } from "./entries/k-shortest-paths";
+import { kademliaDhtEntry } from "./entries/kademlia-dht";
+import { kalmanFilterEntry } from "./entries/kalman-filter";
+import { karatsubaMultiplicationEntry } from "./entries/karatsuba-multiplication";
+import { kargerSMinimumCutAlgorithmEntry } from "./entries/karger-s-minimum-cut-algorithm";
+import { kasaiAlgorithmLcpArrayEntry } from "./entries/kasai-algorithm-lcp-array";
+import { kirchhoffMatrixTreeCountingEntry } from "./entries/kirchhoff-matrix-tree-counting";
+import { kitamasaMethodEntry } from "./entries/kitamasa-method";
+import { knuthOptimizationEntry } from "./entries/knuth-optimization";
+import { kyberPostQuantumKeyExchangeEntry } from "./entries/kyber-post-quantum-key-exchange";
+import { lBfgsEntry } from "./entries/l-bfgs";
+import { lamportClocksEntry } from "./entries/lamport-clocks";
+import { lasVegasAlgorithmEntry } from "./entries/las-vegas-algorithm";
+import { ldpcDecodingBeliefPropagationEntry } from "./entries/ldpc-decoding-belief-propagation";
+import { leastCommonMultipleLcmEntry } from "./entries/least-common-multiple-lcm";
+import { lexicographicRankAlgorithmEntry } from "./entries/lexicographic-rank-algorithm";
+import { liChaoTreeEntry } from "./entries/li-chao-tree";
+import { lineSegmentIntersectionEntry } from "./entries/line-segment-intersection";
+import { lineSweepForClosestPairEntry } from "./entries/line-sweep-for-closest-pair";
+import { linearHashingEntry } from "./entries/linear-hashing";
+import { linearSieveEntry } from "./entries/linear-sieve";
+import { linkCutTreeEntry } from "./entries/link-cut-tree";
+import { localSearchEntry } from "./entries/local-search";
+import { lockFreeQueueEntry } from "./entries/lock-free-queue";
+import { longestCommonSubstringSuffixArrayMethodEntry } from "./entries/longest-common-substring-suffix-array-method";
+import { longestPalindromicSubstringEntry } from "./entries/longest-palindromic-substring";
+import { longestRepeatedSubstringEntry } from "./entries/longest-repeated-substring";
+import { louvainCommunityDetectionEntry } from "./entries/louvain-community-detection";
+import { lsmTreeLogStructuredMergeTreeEntry } from "./entries/lsm-tree-log-structured-merge-tree";
+import { luDecompositionEntry } from "./entries/lu-decomposition";
+import { lucasTheoremEntry } from "./entries/lucas-theorem";
+import { lyndonFactorizationDuvalSAlgorithmEntry } from "./entries/lyndon-factorization-duval-s-algorithm";
+import { lz77Entry } from "./entries/lz77";
+import { lz78Entry } from "./entries/lz78";
+import { lzwEntry } from "./entries/lzw";
+import { matrixExponentiationForLinearRecurrencesEntry } from "./entries/matrix-exponentiation-for-linear-recurrences";
+import { matrixInversionEntry } from "./entries/matrix-inversion";
+import { matrixRankEntry } from "./entries/matrix-rank";
+import { maximumCliqueBronKerboschEntry } from "./entries/maximum-clique-bron-kerbosch";
+import { maximumIndependentSetOnTreeEntry } from "./entries/maximum-independent-set-on-tree";
+import { meetInTheMiddleEntry } from "./entries/meet-in-the-middle";
+import { mergeSortTreeEntry } from "./entries/merge-sort-tree";
+import { mergeStonesEntry } from "./entries/merge-stones";
+import { merkleAntiEntropyRepairEntry } from "./entries/merkle-anti-entropy-repair";
+import { merkleTreeConstructionEntry } from "./entries/merkle-tree-construction";
+import { metropolisHastingsMcmcEntry } from "./entries/metropolis-hastings-mcmc";
+import { michaelScottQueueEntry } from "./entries/michael-scott-queue";
+import { minCostFlowCycleCancelingEntry } from "./entries/min-cost-flow-cycle-canceling";
+import { minCostMaxFlowSuccessiveShortestPathsEntry } from "./entries/min-cost-max-flow-successive-shortest-paths";
+import { minimaxEntry } from "./entries/minimax";
+import { modularAdditionEntry } from "./entries/modular-addition";
+import { modularDivisionEntry } from "./entries/modular-division";
+import { modularInverseEntry } from "./entries/modular-inverse";
+import { modularMultiplicationEntry } from "./entries/modular-multiplication";
+import { monteCarloAlgorithmEntry } from "./entries/monte-carlo-algorithm";
+import { moveToFrontTransformEntry } from "./entries/move-to-front-transform";
+import { multigridMethodsEntry } from "./entries/multigrid-methods";
+import { multipleKnapsackEntry } from "./entries/multiple-knapsack";
+import { murmurhashEntry } from "./entries/murmurhash";
+import { mvccMultiVersionConcurrencyControlEntry } from "./entries/mvcc-multi-version-concurrency-control";
+import { newtonRaphsonMethodEntry } from "./entries/newton-raphson-method";
+import { newtonSMethodForOptimizationEntry } from "./entries/newton-s-method-for-optimization";
+import { octreeEntry } from "./entries/octree";
+import { oddEvenMergeSortEntry } from "./entries/odd-even-merge-sort";
+import { operationalTransformationEntry } from "./entries/operational-transformation";
+import { optimalBinarySearchTreeEntry } from "./entries/optimal-binary-search-tree";
+import { orderStatisticTreeEntry } from "./entries/order-statistic-tree";
+import { orientationTestCcwTestEntry } from "./entries/orientation-test-ccw-test";
+import { pagerankEntry } from "./entries/pagerank";
+import { palindromePartitioningEntry } from "./entries/palindrome-partitioning";
+import { palindromicTreeEertreeEntry } from "./entries/palindromic-tree-eertree";
+import { parallelBfsEntry } from "./entries/parallel-bfs";
+import { parallelBinarySearchEntry } from "./entries/parallel-binary-search";
+import { parallelDfsEntry } from "./entries/parallel-dfs";
+import { parallelFftEntry } from "./entries/parallel-fft";
+import { parallelMatrixMultiplicationEntry } from "./entries/parallel-matrix-multiplication";
+import { parallelMergeSortEntry } from "./entries/parallel-merge-sort";
+import { parallelPrefixSumScanEntry } from "./entries/parallel-prefix-sum-scan";
+import { parallelQuicksortEntry } from "./entries/parallel-quicksort";
+import { particleFilterEntry } from "./entries/particle-filter";
+import { particleSwarmOptimizationEntry } from "./entries/particle-swarm-optimization";
+import { partitionEqualSubsetSumEntry } from "./entries/partition-equal-subset-sum";
+import { pascalSTriangleEntry } from "./entries/pascal-s-triangle";
+import { pathCompressionEntry } from "./entries/path-compression";
+import { pbftPracticalByzantineFaultToleranceEntry } from "./entries/pbft-practical-byzantine-fault-tolerance";
+import { pcaEntry } from "./entries/pca";
+import { persistentDsuRollbackDsuEntry } from "./entries/persistent-dsu-rollback-dsu";
+import { persistentQueueEntry } from "./entries/persistent-queue";
+import { persistentSegmentTreeEntry } from "./entries/persistent-segment-tree";
+import { persistentStackEntry } from "./entries/persistent-stack";
+import { pieceTableEntry } from "./entries/piece-table";
+import { planarityTestingBoyerMyrvoldEntry } from "./entries/planarity-testing-boyer-myrvold";
+import { pointInConvexPolygonEntry } from "./entries/point-in-convex-polygon";
+import { pointInPolygonRayCastingEntry } from "./entries/point-in-polygon-ray-casting";
+import { pointOnSegmentTestEntry } from "./entries/point-on-segment-test";
+import { policyGradientReinforceEntry } from "./entries/policy-gradient-reinforce";
+import { poly1305Entry } from "./entries/poly1305";
+import { polygonAreaShoelaceFormulaEntry } from "./entries/polygon-area-shoelace-formula";
+import { polygonTriangulationEntry } from "./entries/polygon-triangulation";
+import { polynomialRollingHashEntry } from "./entries/polynomial-rolling-hash";
+import { primeFactorizationEntry } from "./entries/prime-factorization";
+import { profileDpEntry } from "./entries/profile-dp";
+import { proximalPolicyOptimizationPpoEntry } from "./entries/proximal-policy-optimization-ppo";
+import { qLearningDqnEntry } from "./entries/q-learning-dqn";
+import { qrDecompositionEntry } from "./entries/qr-decomposition";
+import { quadTreeEntry } from "./entries/quad-tree";
+import { quantumFourierTransformEntry } from "./entries/quantum-fourier-transform";
+import { quickhullEntry } from "./entries/quickhull";
+import { rTreeEntry } from "./entries/r-tree";
+import { rabinFingerprintEntry } from "./entries/rabin-fingerprint";
+import { randomizedIncrementalConvexHullEntry } from "./entries/randomized-incremental-convex-hull";
+import { randomizedKruskalEntry } from "./entries/randomized-kruskal";
+import { randomizedPrimSAlgorithmEntry } from "./entries/randomized-prim-s-algorithm";
+import { randomizedQuicksortEntry } from "./entries/randomized-quicksort";
+import { rangeTreeEntry } from "./entries/range-tree";
+import { reedSolomonCodesEntry } from "./entries/reed-solomon-codes";
+import { regexBacktrackingAlgorithmEntry } from "./entries/regex-backtracking-algorithm";
+import { regularExpressionMatchingDpEntry } from "./entries/regular-expression-matching-dp";
+import { removeBoxesEntry } from "./entries/remove-boxes";
+import { reverseDeleteAlgorithmEntry } from "./entries/reverse-delete-algorithm";
+import { rotatingCalipersEntry } from "./entries/rotating-calipers";
+import { rsaEncryptionEntry } from "./entries/rsa-encryption";
+import { rsaKeyGenerationEntry } from "./entries/rsa-key-generation";
+import { runLengthEncodingEntry } from "./entries/run-length-encoding";
+import { rungeKuttaRk4Entry } from "./entries/runge-kutta-rk4";
+import { scaledDotProductAttentionEntry } from "./entries/scaled-dot-product-attention";
+import { schNhageStrassenMultiplicationEntry } from "./entries/sch-nhage-strassen-multiplication";
+import { schnorrSignaturesEntry } from "./entries/schnorr-signatures";
+import { secantMethodEntry } from "./entries/secant-method";
+import { segmentedSieveEntry } from "./entries/segmented-sieve";
+import { sequenceAlignmentNeedlemanWunschEntry } from "./entries/sequence-alignment-needleman-wunsch";
+import { sha1Entry } from "./entries/sha-1";
+import { sha2Entry } from "./entries/sha-2";
+import { sha3Entry } from "./entries/sha-3";
+import { shamirSecretSharingEntry } from "./entries/shamir-secret-sharing";
+import { shorSAlgorithmEntry } from "./entries/shor-s-algorithm";
+import { shortestCommonSupersequenceEntry } from "./entries/shortest-common-supersequence";
+import { simplexMethodEntry } from "./entries/simplex-method";
+import { simulatedAnnealingEntry } from "./entries/simulated-annealing";
+import { singularValueDecompositionEntry } from "./entries/singular-value-decomposition";
+import { siphashEntry } from "./entries/siphash";
+import { slopeTrickEntry } from "./entries/slope-trick";
+import { smallToLargeMergingDsuOnTreeEntry } from "./entries/small-to-large-merging-dsu-on-tree";
+import { smallestEnclosingCircleWelzlSAlgorithmEntry } from "./entries/smallest-enclosing-circle-welzl-s-algorithm";
+import { snapshotIsolationEntry } from "./entries/snapshot-isolation";
+import { solovayStrassenTestEntry } from "./entries/solovay-strassen-test";
+import { spaceOptimizedDpEntry } from "./entries/space-optimized-dp";
+import { spfaShortestPathFasterAlgorithmEntry } from "./entries/spfa-shortest-path-faster-algorithm";
+import { stateCompressionDpEntry } from "./entries/state-compression-dp";
+import { stateMachineDpEntry } from "./entries/state-machine-dp";
+import { steinerTreeDpDreyfusWagnerEntry } from "./entries/steiner-tree-dp-dreyfus-wagner";
+import { stochasticGradientDescentSgdEntry } from "./entries/stochastic-gradient-descent-sgd";
+import { stoerWagnerMinimumCutEntry } from "./entries/stoer-wagner-minimum-cut";
+import { stringInterleavingDpEntry } from "./entries/string-interleaving-dp";
+import { stronglyConnectedComponentsGabowEntry } from "./entries/strongly-connected-components-gabow";
+import { suffixArraySaIsLinearAlgorithmEntry } from "./entries/suffix-array-sa-is-linear-algorithm";
+import { sumOverSubsetsSosDpEntry } from "./entries/sum-over-subsets-sos-dp";
+import { sundayAlgorithmEntry } from "./entries/sunday-algorithm";
+import { swimMembershipProtocolEntry } from "./entries/swim-membership-protocol";
+import { tabuSearchEntry } from "./entries/tabu-search";
+import { tcpCongestionControlRenoCubicEntry } from "./entries/tcp-congestion-control-reno-cubic";
+import { thompsonNfaConstructionEntry } from "./entries/thompson-nfa-construction";
+import { threePhaseCommitEntry } from "./entries/three-phase-commit";
+import { tokenBucketRateLimitingEntry } from "./entries/token-bucket-rate-limiting";
+import { toomCookMultiplicationEntry } from "./entries/toom-cook-multiplication";
+import { transformerForwardBackwardPassEntry } from "./entries/transformer-forward-backward-pass";
+import { treeDpEntry } from "./entries/tree-dp";
+import { treeIsomorphismAhuEntry } from "./entries/tree-isomorphism-ahu";
+import { treeMatchingDpEntry } from "./entries/tree-matching-dp";
+import { treiberStackEntry } from "./entries/treiber-stack";
+import { trialDivisionEntry } from "./entries/trial-division";
+import { tripleDesEntry } from "./entries/triple-des";
+import { twoPhaseCommitEntry } from "./entries/two-phase-commit";
+import { twoPhaseLockingEntry } from "./entries/two-phase-locking";
+import { uniquePathsIiEntry } from "./entries/unique-paths-ii";
+import { unrolledLinkedListEntry } from "./entries/unrolled-linked-list";
+import { variationalInferenceEntry } from "./entries/variational-inference";
+import { vectorClocksEntry } from "./entries/vector-clocks";
+import { vertexCoverApproximationEntry } from "./entries/vertex-cover-approximation";
+import { viterbiDecodingEntry } from "./entries/viterbi-decoding";
+import { voronoiDiagramFortuneSAlgorithmEntry } from "./entries/voronoi-diagram-fortune-s-algorithm";
+import { vpTreeEntry } from "./entries/vp-tree";
+import { waitFreeQueueEntry } from "./entries/wait-free-queue";
+import { waveletTreeEntry } from "./entries/wavelet-tree";
+import { welshPowellEntry } from "./entries/welsh-powell";
+import { wheelFactorizationEntry } from "./entries/wheel-factorization";
+import { wildcardPatternMatchingEntry } from "./entries/wildcard-pattern-matching";
+import { wuManberEntry } from "./entries/wu-manber";
+import { xTreeEntry } from "./entries/x-tree";
+import { xorLinkedListEntry } from "./entries/xor-linked-list";
+import { xxhashEntry } from "./entries/xxhash";
+import { yenSAlgorithmEntry } from "./entries/yen-s-algorithm";
+
 /** All published entries. Order here is the default display order. */
 export const ENTRIES: readonly AlgorithmEntry[] = [
   linearSearchEntry,
@@ -422,6 +756,339 @@ export const ENTRIES: readonly AlgorithmEntry[] = [
   crtEntry,
   fftEntry,
   nttEntry,
+  twoSatViaSccEntry,
+  adamOptimizerEntry,
+  aesEncryptionEntry,
+  aksPrimalityTestEntry,
+  aliensTrickLagrangianRelaxationWqsBinarySearchEntry,
+  alphaBetaPruningEntry,
+  andrewSMonotoneChainEntry,
+  antColonyOptimizationEntry,
+  ariesRecoveryEntry,
+  arithmeticCodingEntry,
+  asymmetricNumeralSystemsAnsEntry,
+  backpropagationEntry,
+  ballTreeEntry,
+  bbrCongestionControlEntry,
+  beamSearchEntry,
+  beliefPropagationEntry,
+  bentleyOttmannAlgorithmEntry,
+  berlekampMasseyEntry,
+  bidirectionalDijkstraEntry,
+  binaryGcdSteinSAlgorithmEntry,
+  binomialCoefficientDpEntry,
+  bipartiteMatchingViaFlowEntry,
+  bisectionMethodEntry,
+  bitonicSortEntry,
+  bloomJoinEntry,
+  blossomAlgorithmEntry,
+  boothSAlgorithmLexicographicallyMinimumRotationEntry,
+  borVkaSAlgorithmEntry,
+  borderArrayEntry,
+  boyerMooreEntry,
+  boyerMooreHorspoolEntry,
+  branchAndBoundEntry,
+  branchAndCutEntry,
+  brokenProfileDpEntry,
+  bufferReplacementClockAlgorithmEntry,
+  bullyLeaderElectionAlgorithmEntry,
+  burrowsWheelerTransformBwtEntry,
+  burstBalloonsEntry,
+  calendarQueueEntry,
+  catalanNumbersEntry,
+  cdqDivideAndConquerEntry,
+  centroidDecompositionEntry,
+  chacha20Entry,
+  chandyLamportSnapshotAlgorithmEntry,
+  cherryPickupEntry,
+  choleskyDecompositionEntry,
+  chordDhtEntry,
+  christofidesAlgorithmApproximateTspEntry,
+  chromaticPolynomialExactColoringEntry,
+  cityhashEntry,
+  commentzWalterEntry,
+  concurrentSkipListEntry,
+  conjugateGradientEntry,
+  connectedComponentsEntry,
+  convexPolygonIntersectionEntry,
+  costBasedQueryOptimizationSelingerEntry,
+  coverTreeEntry,
+  crc32Entry,
+  crdtsGCounterOrSetRgaEntry,
+  cycleDetectionDirectedEntry,
+  cycleDetectionUndirectedEntry,
+  damerauLevenshteinDistanceEntry,
+  decisionTreeLearningId3C45CartEntry,
+  deflateEntry,
+  delaunayTriangulationEntry,
+  derangementsEntry,
+  desEntry,
+  determinantComputationEntry,
+  dfaConstructionEntry,
+  dialSAlgorithmEntry,
+  diameterOfTreeEntry,
+  diffieHellmanKeyExchangeEntry,
+  diffusionModelSamplingDdpmEntry,
+  directedAcyclicWordGraphDawgEntry,
+  distanceBetweenTwoPointsEntry,
+  distanceFromPointToLineEntry,
+  divideAndConquerDpOptimizationEntry,
+  dixonSFactorizationEntry,
+  dominatorTreeLengauerTarjanEntry,
+  doubleHashingEntry,
+  dpOnBrokenLinesConnectivityDpEntry,
+  dsaturEntry,
+  dungeonGameEntry,
+  dynamicConnectivityOfflineDivideConquerEntry,
+  dynamicTreeEntry,
+  ed25519Entry,
+  edmondsArborescenceChuLiuEdmondsEntry,
+  edmondsKarpEntry,
+  ellipticCurveDiffieHellmanEcdhEntry,
+  ellipticCurveDigitalSignatureAlgorithmEcdsaEntry,
+  eulerSTheoremEntry,
+  eulerSTotientFunctionEntry,
+  eulerTourTreeEntry,
+  expectationMaximizationEntry,
+  expectimaxEntry,
+  extendibleHashingEntry,
+  externalMergeSortEntry,
+  failureFunctionEntry,
+  fastModularExponentiationEntry,
+  fermatFactorizationEntry,
+  fermatPrimalityTestEntry,
+  finiteElementMethod1d2dEntry,
+  flashattentionEntry,
+  fleurySAlgorithmEntry,
+  fmIndexFullTextSearchEntry,
+  fordFulkersonEntry,
+  fractionalKnapsackGreedyDpComparisonEntry,
+  gaussianEliminationEntry,
+  gaussianMixtureModelsEntry,
+  generalWeightedMatchingEntry,
+  geneticAlgorithmEntry,
+  gibbsSamplingEntry,
+  gomoryHuTreeEntry,
+  gossipProtocolEntry,
+  graceHashJoinEntry,
+  gramSchmidtOrthogonalizationEntry,
+  greedySetCoverApproximationEntry,
+  groupKnapsackEntry,
+  groverSSearchEntry,
+  halfPlaneIntersectionEntry,
+  hamiltonianBacktrackingEntry,
+  hamiltonianMonteCarloEntry,
+  hammingCodesEntry,
+  hammingDistanceEntry,
+  hiddenMarkovModelsForwardBackwardEntry,
+  hierholzerSAlgorithmEntry,
+  hillClimbingEntry,
+  hmacEntry,
+  hungarianAlgorithmEntry,
+  hybridLogicalClocksEntry,
+  inclusionExclusionPrincipleEntry,
+  integerPartitionDpEntry,
+  interiorPointMethodsEntry,
+  inverseFftEntry,
+  iterativeDeepeningAEntry,
+  jaroSimilarityEntry,
+  jaroWinklerDistanceEntry,
+  jarvisMarchGiftWrappingEntry,
+  johnsonSElementaryCyclesEntry,
+  kMeansClusteringEntry,
+  kNigSTheoremConstructionEntry,
+  kShortestPathsEntry,
+  kademliaDhtEntry,
+  kalmanFilterEntry,
+  karatsubaMultiplicationEntry,
+  kargerSMinimumCutAlgorithmEntry,
+  kasaiAlgorithmLcpArrayEntry,
+  kirchhoffMatrixTreeCountingEntry,
+  kitamasaMethodEntry,
+  knuthOptimizationEntry,
+  kyberPostQuantumKeyExchangeEntry,
+  lBfgsEntry,
+  lamportClocksEntry,
+  lasVegasAlgorithmEntry,
+  ldpcDecodingBeliefPropagationEntry,
+  leastCommonMultipleLcmEntry,
+  lexicographicRankAlgorithmEntry,
+  liChaoTreeEntry,
+  lineSegmentIntersectionEntry,
+  lineSweepForClosestPairEntry,
+  linearHashingEntry,
+  linearSieveEntry,
+  linkCutTreeEntry,
+  localSearchEntry,
+  lockFreeQueueEntry,
+  longestCommonSubstringSuffixArrayMethodEntry,
+  longestPalindromicSubstringEntry,
+  longestRepeatedSubstringEntry,
+  louvainCommunityDetectionEntry,
+  lsmTreeLogStructuredMergeTreeEntry,
+  luDecompositionEntry,
+  lucasTheoremEntry,
+  lyndonFactorizationDuvalSAlgorithmEntry,
+  lz77Entry,
+  lz78Entry,
+  lzwEntry,
+  matrixExponentiationForLinearRecurrencesEntry,
+  matrixInversionEntry,
+  matrixRankEntry,
+  maximumCliqueBronKerboschEntry,
+  maximumIndependentSetOnTreeEntry,
+  meetInTheMiddleEntry,
+  mergeSortTreeEntry,
+  mergeStonesEntry,
+  merkleAntiEntropyRepairEntry,
+  merkleTreeConstructionEntry,
+  metropolisHastingsMcmcEntry,
+  michaelScottQueueEntry,
+  minCostFlowCycleCancelingEntry,
+  minCostMaxFlowSuccessiveShortestPathsEntry,
+  minimaxEntry,
+  modularAdditionEntry,
+  modularDivisionEntry,
+  modularInverseEntry,
+  modularMultiplicationEntry,
+  monteCarloAlgorithmEntry,
+  moveToFrontTransformEntry,
+  multigridMethodsEntry,
+  multipleKnapsackEntry,
+  murmurhashEntry,
+  mvccMultiVersionConcurrencyControlEntry,
+  newtonRaphsonMethodEntry,
+  newtonSMethodForOptimizationEntry,
+  octreeEntry,
+  oddEvenMergeSortEntry,
+  operationalTransformationEntry,
+  optimalBinarySearchTreeEntry,
+  orderStatisticTreeEntry,
+  orientationTestCcwTestEntry,
+  pagerankEntry,
+  palindromePartitioningEntry,
+  palindromicTreeEertreeEntry,
+  parallelBfsEntry,
+  parallelBinarySearchEntry,
+  parallelDfsEntry,
+  parallelFftEntry,
+  parallelMatrixMultiplicationEntry,
+  parallelMergeSortEntry,
+  parallelPrefixSumScanEntry,
+  parallelQuicksortEntry,
+  particleFilterEntry,
+  particleSwarmOptimizationEntry,
+  partitionEqualSubsetSumEntry,
+  pascalSTriangleEntry,
+  pathCompressionEntry,
+  pbftPracticalByzantineFaultToleranceEntry,
+  pcaEntry,
+  persistentDsuRollbackDsuEntry,
+  persistentQueueEntry,
+  persistentSegmentTreeEntry,
+  persistentStackEntry,
+  pieceTableEntry,
+  planarityTestingBoyerMyrvoldEntry,
+  pointInConvexPolygonEntry,
+  pointInPolygonRayCastingEntry,
+  pointOnSegmentTestEntry,
+  policyGradientReinforceEntry,
+  poly1305Entry,
+  polygonAreaShoelaceFormulaEntry,
+  polygonTriangulationEntry,
+  polynomialRollingHashEntry,
+  primeFactorizationEntry,
+  profileDpEntry,
+  proximalPolicyOptimizationPpoEntry,
+  qLearningDqnEntry,
+  qrDecompositionEntry,
+  quadTreeEntry,
+  quantumFourierTransformEntry,
+  quickhullEntry,
+  rTreeEntry,
+  rabinFingerprintEntry,
+  randomizedIncrementalConvexHullEntry,
+  randomizedKruskalEntry,
+  randomizedPrimSAlgorithmEntry,
+  randomizedQuicksortEntry,
+  rangeTreeEntry,
+  reedSolomonCodesEntry,
+  regexBacktrackingAlgorithmEntry,
+  regularExpressionMatchingDpEntry,
+  removeBoxesEntry,
+  reverseDeleteAlgorithmEntry,
+  rotatingCalipersEntry,
+  rsaEncryptionEntry,
+  rsaKeyGenerationEntry,
+  runLengthEncodingEntry,
+  rungeKuttaRk4Entry,
+  scaledDotProductAttentionEntry,
+  schNhageStrassenMultiplicationEntry,
+  schnorrSignaturesEntry,
+  secantMethodEntry,
+  segmentedSieveEntry,
+  sequenceAlignmentNeedlemanWunschEntry,
+  sha1Entry,
+  sha2Entry,
+  sha3Entry,
+  shamirSecretSharingEntry,
+  shorSAlgorithmEntry,
+  shortestCommonSupersequenceEntry,
+  simplexMethodEntry,
+  simulatedAnnealingEntry,
+  singularValueDecompositionEntry,
+  siphashEntry,
+  slopeTrickEntry,
+  smallToLargeMergingDsuOnTreeEntry,
+  smallestEnclosingCircleWelzlSAlgorithmEntry,
+  snapshotIsolationEntry,
+  solovayStrassenTestEntry,
+  spaceOptimizedDpEntry,
+  spfaShortestPathFasterAlgorithmEntry,
+  stateCompressionDpEntry,
+  stateMachineDpEntry,
+  steinerTreeDpDreyfusWagnerEntry,
+  stochasticGradientDescentSgdEntry,
+  stoerWagnerMinimumCutEntry,
+  stringInterleavingDpEntry,
+  stronglyConnectedComponentsGabowEntry,
+  suffixArraySaIsLinearAlgorithmEntry,
+  sumOverSubsetsSosDpEntry,
+  sundayAlgorithmEntry,
+  swimMembershipProtocolEntry,
+  tabuSearchEntry,
+  tcpCongestionControlRenoCubicEntry,
+  thompsonNfaConstructionEntry,
+  threePhaseCommitEntry,
+  tokenBucketRateLimitingEntry,
+  toomCookMultiplicationEntry,
+  transformerForwardBackwardPassEntry,
+  treeDpEntry,
+  treeIsomorphismAhuEntry,
+  treeMatchingDpEntry,
+  treiberStackEntry,
+  trialDivisionEntry,
+  tripleDesEntry,
+  twoPhaseCommitEntry,
+  twoPhaseLockingEntry,
+  uniquePathsIiEntry,
+  unrolledLinkedListEntry,
+  variationalInferenceEntry,
+  vectorClocksEntry,
+  vertexCoverApproximationEntry,
+  viterbiDecodingEntry,
+  voronoiDiagramFortuneSAlgorithmEntry,
+  vpTreeEntry,
+  waitFreeQueueEntry,
+  waveletTreeEntry,
+  welshPowellEntry,
+  wheelFactorizationEntry,
+  wildcardPatternMatchingEntry,
+  wuManberEntry,
+  xTreeEntry,
+  xorLinkedListEntry,
+  xxhashEntry,
+  yenSAlgorithmEntry,
 ];
 
 const bySlug = new Map(ENTRIES.map((e) => [e.slug, e]));

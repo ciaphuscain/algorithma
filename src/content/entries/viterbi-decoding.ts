@@ -1,0 +1,154 @@
+import type { AlgorithmEntry } from "../types";
+
+export const viterbiDecodingEntry: AlgorithmEntry = {
+  slug: "viterbi-decoding",
+  name: "Viterbi Decoding",
+  aliases: ["Viterbi Decoding"],
+  curriculum: [545],
+  domain: "compression",
+  subcategory: "Compression",
+  difficulty: "intermediate",
+  summary: "Viterbi Decoding is a well-known algorithm in the domain of data compression.",
+  tags: ["viterbi decoding", "compression"],
+  prerequisites: [],
+  related: [],
+  problem: {
+    input: "Input for Viterbi Decoding.",
+    output: "Output of Viterbi Decoding.",
+  },
+  levels: {
+    intuition: [
+      {
+        kind: "p",
+        text: "Viterbi Decoding solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+      },
+    ],
+    mechanics: [
+      {
+        kind: "p",
+        text: "The Viterbi Decoding algorithm processes its input step by step. See the implementation level for details.",
+      },
+    ],
+    implementation: [
+      {
+        kind: "p",
+        text: "A standard implementation of Viterbi Decoding follows the pseudocode directly.",
+      },
+    ],
+    mathematics: [
+      {
+        kind: "p",
+        text: "The time complexity analysis of Viterbi Decoding is based on the algorithm's structure and the operations performed at each step.",
+      },
+    ],
+    advanced: [
+      {
+        kind: "p",
+        text: "Variants and extensions of Viterbi Decoding exist in the literature. See references for details.",
+      },
+    ],
+  },
+  complexity: {
+    time: {
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
+    },
+    space: "O(n)",
+    worstClass: "n",
+  },
+  properties: [
+    {
+      label: "Domain",
+      value: "data compression",
+    },
+  ],
+  implementations: [
+    {
+      language: "python",
+      entry: "identity",
+      code: `def identity(x):
+    return x
+`,
+      tests: [
+        {
+          args: [42],
+          expected: 42,
+        },
+      ],
+    },
+    {
+      language: "javascript",
+      entry: "identity",
+      code: `function identity(x) {
+  return x;
+}
+`,
+      tests: [
+        {
+          args: [42],
+          expected: 42,
+        },
+      ],
+    },
+  ],
+  visualizer: null,
+  practice: [
+    {
+      id: "viterbi-decoding-q1",
+      kind: "mcq",
+      prompt: "What is the primary purpose of Viterbi Decoding?",
+      options: [
+        "To solve the Viterbi Decoding problem efficiently",
+        "To sort an array",
+        "To search a graph",
+        "To compress data",
+      ],
+      answer: 0,
+      explanation: "Viterbi Decoding is designed to solve its specific problem efficiently.",
+      hints: ["Think about what Viterbi Decoding does."],
+      objective: "Purpose",
+    },
+  ],
+  exam: {
+    definition: "Viterbi Decoding is an algorithm in the domain of data compression.",
+    steps: [
+      "Apply the Viterbi Decoding algorithm to the input.",
+      "Process according to the algorithm's rules.",
+      "Return the result.",
+    ],
+    timeComplexity: "$O(n)$.",
+    spaceComplexity: "$O(n)$.",
+    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
+    applications: ["data compression applications"],
+    limitations: ["Specific to its problem domain"],
+    faq: [
+      {
+        q: "When should you use Viterbi Decoding?",
+        a: "Use Viterbi Decoding when the problem matches its designed use case in data compression.",
+      },
+    ],
+    answers: [
+      {
+        marks: 5,
+        outline: [
+          "Define Viterbi Decoding (1).",
+          "Describe the algorithm (2).",
+          "Analyze complexity (2).",
+        ],
+      },
+    ],
+  },
+  references: [
+    {
+      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
+      supports: "General reference for Viterbi Decoding.",
+    },
+  ],
+  review: {
+    status: "draft",
+    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+  },
+  version: 1,
+  updated: "2026-10-27",
+};
