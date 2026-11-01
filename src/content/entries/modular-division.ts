@@ -3,30 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const modularDivisionEntry: AlgorithmEntry = {
   slug: "modular-division",
   name: "Modular Division",
-  aliases: [
-    "Modular Division",
-  ],
-  curriculum: [
-    357,
-  ],
+  aliases: ["Modular Division"],
+  curriculum: [357],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Computes (a / b) mod m by multiplying a with the modular inverse of b, which exists when gcd(b, m) = 1.",
-  tags: [
-    "modular arithmetic",
-    "modular inverse",
-    "number theory",
-  ],
-  prerequisites: [
-    "Modular Multiplication",
-    "Binary Exponentiation",
-  ],
-  related: [
-    "modular-multiplication",
-    "modular-inverse",
-    "fast-modular-exponentiation",
-  ],
+  summary:
+    "Computes (a / b) mod m by multiplying a with the modular inverse of b, which exists when gcd(b, m) = 1.",
+  tags: ["modular arithmetic", "modular inverse", "number theory"],
+  prerequisites: ["Modular Multiplication", "Binary Exponentiation"],
+  related: ["modular-multiplication", "modular-inverse", "fast-modular-exponentiation"],
   problem: {
     input: "Integers a and b, and a prime modulus m with gcd(b, m) = 1.",
     output: "(a * b^(-1)) mod m.",
@@ -104,19 +90,11 @@ export const modularDivisionEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            10,
-            2,
-            7,
-          ],
+          args: [10, 2, 7],
           expected: 5,
         },
         {
-          args: [
-            6,
-            3,
-            11,
-          ],
+          args: [6, 3, 11],
           expected: 2,
         },
       ],
@@ -140,11 +118,7 @@ export const modularDivisionEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            10,
-            2,
-            7,
-          ],
+          args: [10, 2, 7],
           expected: 5,
         },
       ],
@@ -156,22 +130,16 @@ export const modularDivisionEntry: AlgorithmEntry = {
       id: "modular-division-q1",
       kind: "mcq",
       prompt: "When does a modular inverse of b mod m exist?",
-      options: [
-        "When gcd(b, m) = 1",
-        "Always",
-        "When b < m",
-        "When m is even",
-      ],
+      options: ["When gcd(b, m) = 1", "Always", "When b < m", "When m is even"],
       answer: 0,
       explanation: "The modular inverse exists if and only if b and m are coprime (gcd = 1).",
-      hints: [
-        "Think about the algorithm's key property.",
-      ],
+      hints: ["Think about the algorithm's key property."],
       objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Computes (a / b) mod m by multiplying a with the modular inverse of b, which exists when gcd(b, m) = 1.",
+    definition:
+      "Computes (a / b) mod m by multiplying a with the modular inverse of b, which exists when gcd(b, m) = 1.",
     steps: [
       "Compute b^(m-2) mod m using fast exponentiation (Fermat's little theorem).",
       "Multiply: result = a * b^(m-2) mod m.",
@@ -179,12 +147,8 @@ export const modularDivisionEntry: AlgorithmEntry = {
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: [
-      "number-theory applications",
-    ],
-    limitations: [
-      "Specific to its problem domain",
-    ],
+    applications: ["number-theory applications"],
+    limitations: ["Specific to its problem domain"],
     faq: [
       {
         q: "When should you use Modular Division?",

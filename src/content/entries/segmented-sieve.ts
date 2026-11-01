@@ -3,29 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const segmentedSieveEntry: AlgorithmEntry = {
   slug: "segmented-sieve",
   name: "Segmented Sieve",
-  aliases: [
-    "Segmented Sieve",
-  ],
-  curriculum: [
-    364,
-  ],
+  aliases: ["Segmented Sieve"],
+  curriculum: [364],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Finds primes in a range [L, R] by sieving segments of size √R, using only O(√R) memory instead of O(R).",
-  tags: [
-    "sieve",
-    "prime",
-    "segmented",
-    "number theory",
-  ],
-  prerequisites: [
-    "Sieve of Eratosthenes",
-  ],
-  related: [
-    "sieve",
-    "linear-sieve",
-  ],
+  summary:
+    "Finds primes in a range [L, R] by sieving segments of size √R, using only O(√R) memory instead of O(R).",
+  tags: ["sieve", "prime", "segmented", "number theory"],
+  prerequisites: ["Sieve of Eratosthenes"],
+  related: ["sieve", "linear-sieve"],
   problem: {
     input: "Integers L and R with 2 ≤ L ≤ R.",
     output: "All primes in [L, R].",
@@ -118,30 +105,12 @@ export const segmentedSieveEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            10,
-            30,
-          ],
-          expected: [
-            11,
-            13,
-            17,
-            19,
-            23,
-            29,
-          ],
+          args: [10, 30],
+          expected: [11, 13, 17, 19, 23, 29],
         },
         {
-          args: [
-            2,
-            10,
-          ],
-          expected: [
-            2,
-            3,
-            5,
-            7,
-          ],
+          args: [2, 10],
+          expected: [2, 3, 5, 7],
         },
       ],
     },
@@ -170,18 +139,8 @@ export const segmentedSieveEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            10,
-            30,
-          ],
-          expected: [
-            11,
-            13,
-            17,
-            19,
-            23,
-            29,
-          ],
+          args: [10, 30],
+          expected: [11, 13, 17, 19, 23, 29],
         },
       ],
     },
@@ -199,15 +158,15 @@ export const segmentedSieveEntry: AlgorithmEntry = {
         "Is easier to implement",
       ],
       answer: 0,
-      explanation: "The segmented sieve processes the range in chunks, needing only O(√R) space for the small primes and one segment.",
-      hints: [
-        "Think about the algorithm's key property.",
-      ],
+      explanation:
+        "The segmented sieve processes the range in chunks, needing only O(√R) space for the small primes and one segment.",
+      hints: ["Think about the algorithm's key property."],
       objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Finds primes in a range [L, R] by sieving segments of size √R, using only O(√R) memory instead of O(R).",
+    definition:
+      "Finds primes in a range [L, R] by sieving segments of size √R, using only O(√R) memory instead of O(R).",
     steps: [
       "First, find all primes up to √R using a regular sieve.",
       "Divide [L, R] into segments of size ≈ √R.",
@@ -217,12 +176,8 @@ export const segmentedSieveEntry: AlgorithmEntry = {
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: [
-      "number-theory applications",
-    ],
-    limitations: [
-      "Specific to its problem domain",
-    ],
+    applications: ["number-theory applications"],
+    limitations: ["Specific to its problem domain"],
     faq: [
       {
         q: "When should you use Segmented Sieve?",

@@ -3,24 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const modularAdditionEntry: AlgorithmEntry = {
   slug: "modular-addition",
   name: "Modular Addition",
-  aliases: [
-    "Modular Addition",
-  ],
-  curriculum: [
-    355,
-  ],
+  aliases: ["Modular Addition"],
+  curriculum: [355],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Adds two numbers under a modulus, returning (a + b) mod m, handling potential overflow.",
-  tags: [
-    "modular arithmetic",
-    "number theory",
-  ],
+  summary:
+    "Adds two numbers under a modulus, returning (a + b) mod m, handling potential overflow.",
+  tags: ["modular arithmetic", "number theory"],
   prerequisites: [],
-  related: [
-    "modular-multiplication",
-  ],
+  related: ["modular-multiplication"],
   problem: {
     input: "Two integers a and b, and a positive modulus m.",
     output: "(a + b) mod m.",
@@ -36,11 +28,7 @@ export const modularAdditionEntry: AlgorithmEntry = {
       {
         kind: "list",
         ordered: true,
-        items: [
-          "Reduce a and b modulo m.",
-          "Add them.",
-          "If the sum >= m, subtract m.",
-        ],
+        items: ["Reduce a and b modulo m.", "Add them.", "If the sum >= m, subtract m."],
       },
     ],
     implementation: [
@@ -89,27 +77,15 @@ export const modularAdditionEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            7,
-            5,
-            10,
-          ],
+          args: [7, 5, 10],
           expected: 2,
         },
         {
-          args: [
-            3,
-            4,
-            12,
-          ],
+          args: [3, 4, 12],
           expected: 7,
         },
         {
-          args: [
-            999,
-            1,
-            1000,
-          ],
+          args: [999, 1, 1000],
           expected: 0,
         },
       ],
@@ -123,19 +99,11 @@ export const modularAdditionEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            7,
-            5,
-            10,
-          ],
+          args: [7, 5, 10],
           expected: 2,
         },
         {
-          args: [
-            999,
-            1,
-            1000,
-          ],
+          args: [999, 1, 1000],
           expected: 0,
         },
       ],
@@ -154,29 +122,21 @@ export const modularAdditionEntry: AlgorithmEntry = {
         "To handle negative numbers",
       ],
       answer: 0,
-      explanation: "Reducing first keeps intermediate values smaller, preventing overflow in fixed-width integer types.",
-      hints: [
-        "Think about the algorithm's key property.",
-      ],
+      explanation:
+        "Reducing first keeps intermediate values smaller, preventing overflow in fixed-width integer types.",
+      hints: ["Think about the algorithm's key property."],
       objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Adds two numbers under a modulus, returning (a + b) mod m, handling potential overflow.",
-    steps: [
-      "Reduce a and b modulo m.",
-      "Add them.",
-      "If the sum >= m, subtract m.",
-    ],
+    definition:
+      "Adds two numbers under a modulus, returning (a + b) mod m, handling potential overflow.",
+    steps: ["Reduce a and b modulo m.", "Add them.", "If the sum >= m, subtract m."],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: [
-      "number-theory applications",
-    ],
-    limitations: [
-      "Specific to its problem domain",
-    ],
+    applications: ["number-theory applications"],
+    limitations: ["Specific to its problem domain"],
     faq: [
       {
         q: "When should you use Modular Addition?",

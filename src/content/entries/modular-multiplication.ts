@@ -3,27 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const modularMultiplicationEntry: AlgorithmEntry = {
   slug: "modular-multiplication",
   name: "Modular Multiplication",
-  aliases: [
-    "Modular Multiplication",
-  ],
-  curriculum: [
-    356,
-  ],
+  aliases: ["Modular Multiplication"],
+  curriculum: [356],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Multiplies two numbers under a modulus, returning (a * b) mod m, avoiding overflow by reducing intermediates.",
-  tags: [
-    "modular arithmetic",
-    "number theory",
-  ],
-  prerequisites: [
-    "Modular Addition",
-  ],
-  related: [
-    "modular-addition",
-    "fast-modular-exponentiation",
-  ],
+  summary:
+    "Multiplies two numbers under a modulus, returning (a * b) mod m, avoiding overflow by reducing intermediates.",
+  tags: ["modular arithmetic", "number theory"],
+  prerequisites: ["Modular Addition"],
+  related: ["modular-addition", "fast-modular-exponentiation"],
   problem: {
     input: "Two integers a and b, and a positive modulus m.",
     output: "(a * b) mod m.",
@@ -39,11 +28,7 @@ export const modularMultiplicationEntry: AlgorithmEntry = {
       {
         kind: "list",
         ordered: true,
-        items: [
-          "Reduce a mod m and b mod m.",
-          "Multiply the results.",
-          "Take modulo m again.",
-        ],
+        items: ["Reduce a mod m and b mod m.", "Multiply the results.", "Take modulo m again."],
       },
     ],
     implementation: [
@@ -92,27 +77,15 @@ export const modularMultiplicationEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            7,
-            5,
-            10,
-          ],
+          args: [7, 5, 10],
           expected: 5,
         },
         {
-          args: [
-            123,
-            456,
-            1000,
-          ],
+          args: [123, 456, 1000],
           expected: 88,
         },
         {
-          args: [
-            3,
-            4,
-            5,
-          ],
+          args: [3, 4, 5],
           expected: 2,
         },
       ],
@@ -126,19 +99,11 @@ export const modularMultiplicationEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            7,
-            5,
-            10,
-          ],
+          args: [7, 5, 10],
           expected: 5,
         },
         {
-          args: [
-            3,
-            4,
-            5,
-          ],
+          args: [3, 4, 5],
           expected: 2,
         },
       ],
@@ -150,36 +115,22 @@ export const modularMultiplicationEntry: AlgorithmEntry = {
       id: "modular-multiplication-q1",
       kind: "mcq",
       prompt: "What is (7 * 8) mod 10?",
-      options: [
-        "6",
-        "56",
-        "5",
-        "8",
-      ],
+      options: ["6", "56", "5", "8"],
       answer: 0,
       explanation: "7 * 8 = 56, and 56 mod 10 = 6.",
-      hints: [
-        "Think about the algorithm's key property.",
-      ],
+      hints: ["Think about the algorithm's key property."],
       objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Multiplies two numbers under a modulus, returning (a * b) mod m, avoiding overflow by reducing intermediates.",
-    steps: [
-      "Reduce a mod m and b mod m.",
-      "Multiply the results.",
-      "Take modulo m again.",
-    ],
+    definition:
+      "Multiplies two numbers under a modulus, returning (a * b) mod m, avoiding overflow by reducing intermediates.",
+    steps: ["Reduce a mod m and b mod m.", "Multiply the results.", "Take modulo m again."],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: [
-      "number-theory applications",
-    ],
-    limitations: [
-      "Specific to its problem domain",
-    ],
+    applications: ["number-theory applications"],
+    limitations: ["Specific to its problem domain"],
     faq: [
       {
         q: "When should you use Modular Multiplication?",

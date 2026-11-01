@@ -3,29 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const linearSieveEntry: AlgorithmEntry = {
   slug: "linear-sieve",
   name: "Linear Sieve",
-  aliases: [
-    "Linear Sieve",
-  ],
-  curriculum: [
-    363,
-  ],
+  aliases: ["Linear Sieve"],
+  curriculum: [363],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Generates all primes up to n in O(n) time by ensuring each composite is crossed off exactly once, by its smallest prime factor.",
-  tags: [
-    "sieve",
-    "prime",
-    "linear time",
-    "number theory",
-  ],
-  prerequisites: [
-    "Sieve of Eratosthenes",
-  ],
-  related: [
-    "sieve",
-    "segmented-sieve",
-  ],
+  summary:
+    "Generates all primes up to n in O(n) time by ensuring each composite is crossed off exactly once, by its smallest prime factor.",
+  tags: ["sieve", "prime", "linear time", "number theory"],
+  prerequisites: ["Sieve of Eratosthenes"],
+  related: ["sieve", "segmented-sieve"],
   problem: {
     input: "A positive integer n.",
     output: "All primes up to n.",
@@ -106,38 +93,16 @@ export const linearSieveEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            10,
-          ],
-          expected: [
-            2,
-            3,
-            5,
-            7,
-          ],
+          args: [10],
+          expected: [2, 3, 5, 7],
         },
         {
-          args: [
-            20,
-          ],
-          expected: [
-            2,
-            3,
-            5,
-            7,
-            11,
-            13,
-            17,
-            19,
-          ],
+          args: [20],
+          expected: [2, 3, 5, 7, 11, 13, 17, 19],
         },
         {
-          args: [
-            2,
-          ],
-          expected: [
-            2,
-          ],
+          args: [2],
+          expected: [2],
         },
       ],
     },
@@ -159,30 +124,12 @@ export const linearSieveEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            10,
-          ],
-          expected: [
-            2,
-            3,
-            5,
-            7,
-          ],
+          args: [10],
+          expected: [2, 3, 5, 7],
         },
         {
-          args: [
-            20,
-          ],
-          expected: [
-            2,
-            3,
-            5,
-            7,
-            11,
-            13,
-            17,
-            19,
-          ],
+          args: [20],
+          expected: [2, 3, 5, 7, 11, 13, 17, 19],
         },
       ],
     },
@@ -200,15 +147,15 @@ export const linearSieveEntry: AlgorithmEntry = {
         "It uses bit manipulation",
       ],
       answer: 0,
-      explanation: "The stopping condition (break when p divides i) ensures each composite is crossed off exactly once.",
-      hints: [
-        "Think about the algorithm's key property.",
-      ],
+      explanation:
+        "The stopping condition (break when p divides i) ensures each composite is crossed off exactly once.",
+      hints: ["Think about the algorithm's key property."],
       objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Generates all primes up to n in O(n) time by ensuring each composite is crossed off exactly once, by its smallest prime factor.",
+    definition:
+      "Generates all primes up to n in O(n) time by ensuring each composite is crossed off exactly once, by its smallest prime factor.",
     steps: [
       "Maintain a list of discovered primes and an SPF array.",
       "For each i from 2 to n: if SPF[i] is 0, i is prime.",
@@ -217,12 +164,8 @@ export const linearSieveEntry: AlgorithmEntry = {
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: [
-      "number-theory applications",
-    ],
-    limitations: [
-      "Specific to its problem domain",
-    ],
+    applications: ["number-theory applications"],
+    limitations: ["Specific to its problem domain"],
     faq: [
       {
         q: "When should you use Linear Sieve?",

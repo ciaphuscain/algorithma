@@ -3,28 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const fastModularExponentiationEntry: AlgorithmEntry = {
   slug: "fast-modular-exponentiation",
   name: "Fast Modular Exponentiation",
-  aliases: [
-    "Fast Modular Exponentiation",
-  ],
-  curriculum: [
-    358,
-  ],
+  aliases: ["Fast Modular Exponentiation"],
+  curriculum: [358],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Computes base^exp mod m in O(log exp) time using repeated squaring (binary exponentiation).",
-  tags: [
-    "modular arithmetic",
-    "binary exponentiation",
-    "number theory",
-  ],
-  prerequisites: [
-    "Modular Multiplication",
-  ],
-  related: [
-    "binary-exponentiation",
-    "modular-multiplication",
-  ],
+  summary:
+    "Computes base^exp mod m in O(log exp) time using repeated squaring (binary exponentiation).",
+  tags: ["modular arithmetic", "binary exponentiation", "number theory"],
+  prerequisites: ["Modular Multiplication"],
+  related: ["binary-exponentiation", "modular-multiplication"],
   problem: {
     input: "Integers base, exp (non-negative), and modulus m.",
     output: "base^exp mod m.",
@@ -101,35 +89,19 @@ export const fastModularExponentiationEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            2,
-            10,
-            1000,
-          ],
+          args: [2, 10, 1000],
           expected: 24,
         },
         {
-          args: [
-            3,
-            13,
-            7,
-          ],
+          args: [3, 13, 7],
           expected: 3,
         },
         {
-          args: [
-            5,
-            0,
-            100,
-          ],
+          args: [5, 0, 100],
           expected: 1,
         },
         {
-          args: [
-            7,
-            3,
-            10,
-          ],
+          args: [7, 3, 10],
           expected: 3,
         },
       ],
@@ -151,19 +123,11 @@ export const fastModularExponentiationEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            2,
-            10,
-            1000,
-          ],
+          args: [2, 10, 1000],
           expected: 24,
         },
         {
-          args: [
-            5,
-            0,
-            100,
-          ],
+          args: [5, 0, 100],
           expected: 1,
         },
       ],
@@ -175,22 +139,16 @@ export const fastModularExponentiationEntry: AlgorithmEntry = {
       id: "fast-modular-exponentiation-q1",
       kind: "mcq",
       prompt: "How many multiplications does modular exponentiation need for base^1000?",
-      options: [
-        "About 10 (log2 1000)",
-        "1000",
-        "500",
-        "About 30",
-      ],
+      options: ["About 10 (log2 1000)", "1000", "500", "About 30"],
       answer: 0,
       explanation: "Binary exponentiation uses O(log exp) multiplications, and log2(1000) ≈ 10.",
-      hints: [
-        "Think about the algorithm's key property.",
-      ],
+      hints: ["Think about the algorithm's key property."],
       objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Computes base^exp mod m in O(log exp) time using repeated squaring (binary exponentiation).",
+    definition:
+      "Computes base^exp mod m in O(log exp) time using repeated squaring (binary exponentiation).",
     steps: [
       "Set result = 1.",
       "While exp > 0: if exp is odd, multiply result by base mod m; square base mod m; halve exp.",
@@ -199,12 +157,8 @@ export const fastModularExponentiationEntry: AlgorithmEntry = {
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: [
-      "number-theory applications",
-    ],
-    limitations: [
-      "Specific to its problem domain",
-    ],
+    applications: ["number-theory applications"],
+    limitations: ["Specific to its problem domain"],
     faq: [
       {
         q: "When should you use Fast Modular Exponentiation?",

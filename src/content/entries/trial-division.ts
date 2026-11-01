@@ -3,26 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const trialDivisionEntry: AlgorithmEntry = {
   slug: "trial-division",
   name: "Trial Division",
-  aliases: [
-    "Trial Division",
-  ],
-  curriculum: [
-    361,
-  ],
+  aliases: ["Trial Division"],
+  curriculum: [361],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Tests whether a number n is prime by checking divisibility by all integers from 2 to √n.",
-  tags: [
-    "primality",
-    "trial division",
-    "number theory",
-  ],
+  summary:
+    "Tests whether a number n is prime by checking divisibility by all integers from 2 to √n.",
+  tags: ["primality", "trial division", "number theory"],
   prerequisites: [],
-  related: [
-    "sieve",
-    "miller-rabin",
-  ],
+  related: ["sieve", "miller-rabin"],
   problem: {
     input: "A positive integer n ≥ 2.",
     output: "True if n is prime, false otherwise.",
@@ -99,33 +89,23 @@ export const trialDivisionEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            2,
-          ],
+          args: [2],
           expected: true,
         },
         {
-          args: [
-            17,
-          ],
+          args: [17],
           expected: true,
         },
         {
-          args: [
-            15,
-          ],
+          args: [15],
           expected: false,
         },
         {
-          args: [
-            1,
-          ],
+          args: [1],
           expected: false,
         },
         {
-          args: [
-            97,
-          ],
+          args: [97],
           expected: true,
         },
       ],
@@ -145,21 +125,15 @@ export const trialDivisionEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            17,
-          ],
+          args: [17],
           expected: true,
         },
         {
-          args: [
-            15,
-          ],
+          args: [15],
           expected: false,
         },
         {
-          args: [
-            97,
-          ],
+          args: [97],
           expected: true,
         },
       ],
@@ -178,15 +152,15 @@ export const trialDivisionEntry: AlgorithmEntry = {
         "It's an approximation",
       ],
       answer: 0,
-      explanation: "If n = a * b and both a,b > √n, then a*b > n, a contradiction. So at least one factor is ≤ √n.",
-      hints: [
-        "Think about the algorithm's key property.",
-      ],
+      explanation:
+        "If n = a * b and both a,b > √n, then a*b > n, a contradiction. So at least one factor is ≤ √n.",
+      hints: ["Think about the algorithm's key property."],
       objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Tests whether a number n is prime by checking divisibility by all integers from 2 to √n.",
+    definition:
+      "Tests whether a number n is prime by checking divisibility by all integers from 2 to √n.",
     steps: [
       "Check if n is divisible by 2.",
       "Check odd numbers from 3 to √n.",
@@ -195,12 +169,8 @@ export const trialDivisionEntry: AlgorithmEntry = {
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: [
-      "number-theory applications",
-    ],
-    limitations: [
-      "Specific to its problem domain",
-    ],
+    applications: ["number-theory applications"],
+    limitations: ["Specific to its problem domain"],
     faq: [
       {
         q: "When should you use Trial Division?",

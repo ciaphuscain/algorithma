@@ -3,29 +3,15 @@ import type { AlgorithmEntry } from "../types";
 export const primeFactorizationEntry: AlgorithmEntry = {
   slug: "prime-factorization",
   name: "Prime Factorization",
-  aliases: [
-    "Prime Factorization",
-  ],
-  curriculum: [
-    366,
-  ],
+  aliases: ["Prime Factorization"],
+  curriculum: [366],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
   summary: "Decomposes a positive integer into its prime factors by trial division up to √n.",
-  tags: [
-    "factorization",
-    "prime",
-    "trial division",
-    "number theory",
-  ],
-  prerequisites: [
-    "Trial Division",
-  ],
-  related: [
-    "trial-division",
-    "pollard-rho",
-  ],
+  tags: ["factorization", "prime", "trial division", "number theory"],
+  prerequisites: ["Trial Division"],
+  related: ["trial-division", "pollard-rho"],
   problem: {
     input: "A positive integer n ≥ 2.",
     output: "The prime factorization of n as a list of [prime, exponent] pairs.",
@@ -108,63 +94,29 @@ export const primeFactorizationEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            12,
-          ],
+          args: [12],
           expected: [
-            [
-              2,
-              2,
-            ],
-            [
-              3,
-              1,
-            ],
+            [2, 2],
+            [3, 1],
           ],
         },
         {
-          args: [
-            100,
-          ],
+          args: [100],
           expected: [
-            [
-              2,
-              2,
-            ],
-            [
-              5,
-              2,
-            ],
+            [2, 2],
+            [5, 2],
           ],
         },
         {
-          args: [
-            17,
-          ],
-          expected: [
-            [
-              17,
-              1,
-            ],
-          ],
+          args: [17],
+          expected: [[17, 1]],
         },
         {
-          args: [
-            360,
-          ],
+          args: [360],
           expected: [
-            [
-              2,
-              3,
-            ],
-            [
-              3,
-              2,
-            ],
-            [
-              5,
-              1,
-            ],
+            [2, 3],
+            [3, 2],
+            [5, 1],
           ],
         },
       ],
@@ -189,30 +141,15 @@ export const primeFactorizationEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            12,
-          ],
+          args: [12],
           expected: [
-            [
-              2,
-              2,
-            ],
-            [
-              3,
-              1,
-            ],
+            [2, 2],
+            [3, 1],
           ],
         },
         {
-          args: [
-            17,
-          ],
-          expected: [
-            [
-              17,
-              1,
-            ],
-          ],
+          args: [17],
+          expected: [[17, 1]],
         },
       ],
     },
@@ -223,17 +160,11 @@ export const primeFactorizationEntry: AlgorithmEntry = {
       id: "prime-factorization-q1",
       kind: "mcq",
       prompt: "What is the time complexity of trial division factorization?",
-      options: [
-        "O(√n)",
-        "O(n)",
-        "O(log n)",
-        "O(n log n)",
-      ],
+      options: ["O(√n)", "O(n)", "O(log n)", "O(n log n)"],
       answer: 0,
-      explanation: "We try divisors up to √n. If n is prime, all √n checks fail and we conclude n is prime.",
-      hints: [
-        "Think about the algorithm's key property.",
-      ],
+      explanation:
+        "We try divisors up to √n. If n is prime, all √n checks fail and we conclude n is prime.",
+      hints: ["Think about the algorithm's key property."],
       objective: "Understanding",
     },
   ],
@@ -247,12 +178,8 @@ export const primeFactorizationEntry: AlgorithmEntry = {
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: [
-      "number-theory applications",
-    ],
-    limitations: [
-      "Specific to its problem domain",
-    ],
+    applications: ["number-theory applications"],
+    limitations: ["Specific to its problem domain"],
     faq: [
       {
         q: "When should you use Prime Factorization?",

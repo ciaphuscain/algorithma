@@ -3,28 +3,16 @@ import type { AlgorithmEntry } from "../types";
 export const binaryGcdSteinSAlgorithmEntry: AlgorithmEntry = {
   slug: "binary-gcd-stein-s-algorithm",
   name: "Binary GCD (Stein's Algorithm)",
-  aliases: [
-    "Binary GCD (Stein's Algorithm)",
-  ],
-  curriculum: [
-    353,
-  ],
+  aliases: ["Binary GCD (Stein's Algorithm)"],
+  curriculum: [353],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Computes the GCD of two non-negative integers using only subtraction and bit shifts, avoiding expensive division operations.",
-  tags: [
-    "gcd",
-    "binary",
-    "bit manipulation",
-    "number theory",
-  ],
-  prerequisites: [
-    "Euclidean Algorithm",
-  ],
-  related: [
-    "euclid",
-  ],
+  summary:
+    "Computes the GCD of two non-negative integers using only subtraction and bit shifts, avoiding expensive division operations.",
+  tags: ["gcd", "binary", "bit manipulation", "number theory"],
+  prerequisites: ["Euclidean Algorithm"],
+  related: ["euclid"],
   problem: {
     input: "Two non-negative integers a and b.",
     output: "Their greatest common divisor.",
@@ -106,31 +94,19 @@ export const binaryGcdSteinSAlgorithmEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            48,
-            18,
-          ],
+          args: [48, 18],
           expected: 6,
         },
         {
-          args: [
-            0,
-            5,
-          ],
+          args: [0, 5],
           expected: 5,
         },
         {
-          args: [
-            17,
-            13,
-          ],
+          args: [17, 13],
           expected: 1,
         },
         {
-          args: [
-            100,
-            75,
-          ],
+          args: [100, 75],
           expected: 25,
         },
       ],
@@ -154,17 +130,11 @@ export const binaryGcdSteinSAlgorithmEntry: AlgorithmEntry = {
 `,
       tests: [
         {
-          args: [
-            48,
-            18,
-          ],
+          args: [48, 18],
           expected: 6,
         },
         {
-          args: [
-            17,
-            13,
-          ],
+          args: [17, 13],
           expected: 1,
         },
       ],
@@ -183,15 +153,15 @@ export const binaryGcdSteinSAlgorithmEntry: AlgorithmEntry = {
         "It finds the LCM as well",
       ],
       answer: 0,
-      explanation: "Binary GCD replaces modular reduction with bit shifts and subtraction, which can be faster on hardware without efficient dividers.",
-      hints: [
-        "Think about the algorithm's key property.",
-      ],
+      explanation:
+        "Binary GCD replaces modular reduction with bit shifts and subtraction, which can be faster on hardware without efficient dividers.",
+      hints: ["Think about the algorithm's key property."],
       objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Computes the GCD of two non-negative integers using only subtraction and bit shifts, avoiding expensive division operations.",
+    definition:
+      "Computes the GCD of two non-negative integers using only subtraction and bit shifts, avoiding expensive division operations.",
     steps: [
       "Count common factors of 2 (trailing zeros), shift both right.",
       "Make both odd by shifting out remaining factors of 2.",
@@ -201,12 +171,8 @@ export const binaryGcdSteinSAlgorithmEntry: AlgorithmEntry = {
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: [
-      "number-theory applications",
-    ],
-    limitations: [
-      "Specific to its problem domain",
-    ],
+    applications: ["number-theory applications"],
+    limitations: ["Specific to its problem domain"],
     faq: [
       {
         q: "When should you use Binary GCD (Stein's Algorithm)?",
