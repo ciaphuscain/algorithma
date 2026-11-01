@@ -147,6 +147,7 @@ export const ed25519Entry: AlgorithmEntry = {
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "ed25519-nonce",

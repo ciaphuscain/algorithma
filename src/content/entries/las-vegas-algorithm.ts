@@ -3,91 +3,161 @@ import type { AlgorithmEntry } from "../types";
 export const lasVegasAlgorithmEntry: AlgorithmEntry = {
   slug: "las-vegas-algorithm",
   name: "Las Vegas Algorithm",
-  aliases: ["Las Vegas Algorithm"],
-  curriculum: [431],
+  aliases: [
+    "Las Vegas randomized algorithm",
+  ],
+  curriculum: [
+    431,
+  ],
   domain: "randomized",
   subcategory: "Randomized Algorithms",
   difficulty: "intermediate",
-  summary: "Las Vegas Algorithm is a well-known algorithm in the domain of randomized algorithms.",
-  tags: ["las vegas algorithm", "randomized"],
-  prerequisites: [],
-  related: [],
+  summary: "A class of randomized algorithms that always produce correct results but whose running time varies randomly, with expected polynomial time — in contrast to Monte Carlo algorithms which may give wrong answers.",
+  tags: [
+    "randomized",
+    "Las Vegas",
+    "always correct",
+    "expected time",
+  ],
+  prerequisites: [
+    "Randomized Algorithms",
+  ],
+  related: [
+    "monte-carlo-algorithm",
+    "karger-s-minimum-cut-algorithm",
+  ],
   problem: {
-    input: "Input for Las Vegas Algorithm.",
-    output: "Output of Las Vegas Algorithm.",
+    input: "A problem instance and a source of random bits.",
+    output: "A guaranteed correct solution (with random running time).",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Las Vegas Algorithm solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Las Vegas algorithms always give the right answer — the randomness only affects how long they take. Contrast with Monte Carlo algorithms, which always run in bounded time but may give wrong answers.",
+      },
+      {
+        kind: "p",
+        text: "Example: randomized quicksort always sorts correctly, but the number of comparisons depends on the random pivot choices. Expected time is O(n log n), worst case O(n²), but the worst case is astronomically unlikely.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Use randomness to make decisions during the algorithm (e.g., choose a random pivot).",
+          "The algorithm always verifies its output or is structured so correctness is guaranteed.",
+          "If the random choices were unlucky, the algorithm may take longer but still produces the correct answer.",
+          "Expected running time is typically polynomial.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Las Vegas Algorithm algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Worked example.** Randomized quicksort on [3, 1, 4, 1, 5]: random pivot 4 → partitions into [3,1,1] and [5]. Recurse on each. Always produces [1,1,3,4,5]. Expected O(n log n) comparisons.",
       },
     ],
     implementation: [
       {
-        kind: "p",
-        text: "A standard implementation of Las Vegas Algorithm follows the pseudocode directly.",
+        kind: "list",
+        items: [
+          "Randomized quicksort: always correct sort, expected O(n log n).",
+          "Randomized selection (quickselect): always correct, expected O(n).",
+          "Can convert Monte Carlo to Las Vegas by repeating and verifying (if verification is cheap).",
+        ],
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Las Vegas Algorithm is based on the algorithm's structure and the operations performed at each step.",
+        text: "For a Las Vegas algorithm with expected time T(n): by Markov's inequality, Pr[time > k·T(n)] ≤ 1/k. Running it for 2T(n) and restarting gives exponentially decreasing failure probability.",
+      },
+      {
+        kind: "p",
+        text: "Any Las Vegas algorithm can be converted to Monte Carlo by imposing a time limit and outputting 'don't know' if it exceeds it. The converse requires a way to verify answers.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Las Vegas Algorithm exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "ZPP (Zero-error Probabilistic Polynomial time) is the complexity class of problems solvable by Las Vegas algorithms in expected polynomial time.",
+          "ZPP = RP ∩ co-RP.",
+          "Derandomization: can Las Vegas algorithms be made deterministic? Open problem in complexity theory.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n²)",
+      best: "varies",
+      average: "expected polynomial",
+      worst: "unbounded (but unlikely)",
     },
     space: "O(n)",
     worstClass: "other",
+    note: "Expected time is polynomial; worst case may be worse but with exponentially small probability.",
   },
   properties: [
     {
-      label: "Domain",
-      value: "randomized algorithms",
+      label: "Correctness",
+      value: "Always correct",
+    },
+    {
+      label: "Time",
+      value: "Random, expected polynomial",
+    },
+    {
+      label: "Complexity class",
+      value: "ZPP",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "las_vegas_search",
+      code: `import random
+
+def las_vegas_search(arr, target, seed=42):
+    """Las Vegas search: randomly probe array positions to find target.
+    Always correct (returns index or -1). Expected O(n) for uniformly random arrays."""
+    random.seed(seed)
+    n = len(arr)
+    visited = set()
+    while len(visited) < n:
+        i = random.randint(0, n - 1)
+        if arr[i] == target:
+            return i
+        visited.add(i)
+    return -1
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              3,
+              1,
+              4,
+              1,
+              5,
+              9,
+            ],
+            5,
+            42,
+          ],
+          expected: 4,
         },
-      ],
-    },
-    {
-      language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
-      tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              1,
+              2,
+              3,
+            ],
+            7,
+            42,
+          ],
+          expected: -1,
         },
       ],
     },
@@ -95,54 +165,61 @@ export const lasVegasAlgorithmEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "las-vegas-algorithm-q1",
+      id: "lv-vs-mc",
       kind: "mcq",
-      prompt: "What is the primary purpose of Las Vegas Algorithm?",
+      prompt: "How do Las Vegas algorithms differ from Monte Carlo algorithms?",
       options: [
-        "To solve the Las Vegas Algorithm problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "Las Vegas always gives correct results; Monte Carlo may err",
+        "Las Vegas is faster",
+        "Monte Carlo always gives correct results",
+        "They are the same",
       ],
       answer: 0,
-      explanation: "Las Vegas Algorithm is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Las Vegas Algorithm does."],
-      objective: "Purpose",
+      explanation: "Las Vegas = always correct, random time. Monte Carlo = bounded time, possibly wrong.",
+      hints: [
+        "Which one sacrifices correctness vs running time?",
+      ],
+      objective: "Distinguish Las Vegas and Monte Carlo",
     },
   ],
   exam: {
-    definition: "Las Vegas Algorithm is an algorithm in the domain of randomized algorithms.",
+    definition: "Las Vegas algorithms always produce correct results with randomized running time (expected polynomial), unlike Monte Carlo which may err.",
     steps: [
-      "Apply the Las Vegas Algorithm algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Use randomness for decisions.",
+      "Guarantee correctness regardless of random choices.",
+      "Expected running time is polynomial.",
     ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["randomized algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    timeComplexity: "Expected polynomial",
+    spaceComplexity: "Varies",
+    correctness: "Correctness is structural (verified or guaranteed by construction); only running time is random.",
+    applications: [
+      "Randomized quicksort",
+      "Randomized selection",
+      "Random sampling algorithms",
+    ],
+    limitations: [
+      "Worst case may be slow (though exponentially unlikely)",
+      "Cannot guarantee a time bound",
+    ],
     faq: [
       {
-        q: "When should you use Las Vegas Algorithm?",
-        a: "Use Las Vegas Algorithm when the problem matches its designed use case in randomized algorithms.",
+        q: "Can a Monte Carlo algorithm be converted to Las Vegas?",
+        a: "Yes, if the answer can be efficiently verified: repeat until verification passes.",
       },
     ],
     answers: [
       {
-        marks: 5,
+        marks: 2,
         outline: [
-          "Define Las Vegas Algorithm (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Define Las Vegas vs Monte Carlo (1). Example algorithm (1).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Las Vegas Algorithm.",
+      citation: "L. Babai, 'Monte-Carlo algorithms in graph isomorphism testing,' Université de Montréal Technical Report, 1979.",
+      supports: "Formalized the Monte Carlo / Las Vegas distinction.",
     },
   ],
   review: {

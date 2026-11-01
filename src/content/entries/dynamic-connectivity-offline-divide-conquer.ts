@@ -222,6 +222,7 @@ export const dynamicConnectivityOfflineDivideConquerEntry: AlgorithmEntry = {
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "dyn-conn-uf",

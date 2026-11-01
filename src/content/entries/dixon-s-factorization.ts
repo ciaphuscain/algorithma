@@ -148,6 +148,7 @@ export const dixonSFactorizationEntry: AlgorithmEntry = {
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "dixon-key-idea",

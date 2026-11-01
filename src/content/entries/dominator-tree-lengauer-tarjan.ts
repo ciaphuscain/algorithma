@@ -210,6 +210,7 @@ export const dominatorTreeLengauerTarjanEntry: AlgorithmEntry = {
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "dominator-def",

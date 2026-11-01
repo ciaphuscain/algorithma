@@ -179,6 +179,7 @@ export const dynamicTreeEntry: AlgorithmEntry = {
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "lct-access",

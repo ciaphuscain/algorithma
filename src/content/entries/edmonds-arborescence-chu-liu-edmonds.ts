@@ -227,6 +227,7 @@ export const edmondsArborescenceChuLiuEdmondsEntry: AlgorithmEntry = {
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "edmonds-cycle",

@@ -173,6 +173,7 @@ export const eulerSTheoremEntry: AlgorithmEntry = {
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "euler-thm-rsa",

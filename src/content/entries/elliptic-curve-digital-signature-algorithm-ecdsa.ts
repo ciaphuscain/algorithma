@@ -151,6 +151,7 @@ export const ellipticCurveDigitalSignatureAlgorithmEcdsaEntry: AlgorithmEntry = 
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "ecdsa-nonce-reuse",

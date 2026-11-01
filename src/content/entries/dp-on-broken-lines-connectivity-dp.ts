@@ -177,6 +177,7 @@ export const dpOnBrokenLinesConnectivityDpEntry: AlgorithmEntry = {
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "profile-dp-state",

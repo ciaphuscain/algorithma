@@ -146,6 +146,7 @@ export const ellipticCurveDiffieHellmanEcdhEntry: AlgorithmEntry = {
       ],
     },
   ],
+  visualizer: null,
   practice: [
     {
       id: "ecdh-advantage",
