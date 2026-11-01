@@ -3,92 +3,155 @@ import type { AlgorithmEntry } from "../types";
 export const minCostClimbingStairsEntry: AlgorithmEntry = {
   slug: "min-cost-climbing-stairs",
   name: "Min Cost Climbing Stairs",
-  aliases: ["Min Cost Climbing Stairs"],
-  curriculum: [258],
+  aliases: [
+    "Min Cost Climbing Stairs",
+  ],
+  curriculum: [
+    258,
+  ],
   domain: "dynamic-programming",
-  subcategory: "Beginner DP",
+  subcategory: "Classic DP",
   difficulty: "beginner",
-  summary:
-    "Find the minimum cost to reach the top of a staircase where each step has a cost. dp[i] = cost[i] + min(dp[i-1], dp[i-2]). Extends climbing stairs with optimization.",
-  tags: ["climbing stairs", "DP", "optimization"],
-  prerequisites: ["Climbing Stairs"],
-  related: ["climbing-stairs", "house-robber"],
+  summary: "Finds the minimum cost to reach the top of stairs where each step has a cost, and you can climb 1 or 2 steps at a time.",
+  tags: [
+    "climbing stairs",
+    "dynamic programming",
+    "minimum cost",
+  ],
+  prerequisites: [
+    "Climbing Stairs",
+  ],
+  related: [
+    "climbing-stairs",
+    "minimum-path-sum",
+  ],
   problem: {
-    input: "Input for Min Cost Climbing Stairs.",
-    output: "Output of Min Cost Climbing Stairs.",
+    input: "An array cost where cost[i] is the cost of step i.",
+    output: "Minimum cost to reach past the last step (you can start from step 0 or 1).",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Find the minimum cost to reach the top of a staircase where each step has a cost. dp[i] = cost[i] + min(dp[i-1], dp[i-2]). Extends climbing stairs with optimization.",
+        text: "At each step, you choose to arrive from one or two steps back — pick the cheaper option. Build the answer bottom-up.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "dp[0] = cost[0], dp[1] = cost[1].",
+          "For i from 2 to n-1: dp[i] = cost[i] + min(dp[i-1], dp[i-2]).",
+          "Return min(dp[n-1], dp[n-2]).",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Min Cost Climbing Stairs algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Example.** cost = [10, 15, 20]. dp = [10, 15, 30]. Answer = min(15, 30) = 15.",
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Min Cost Climbing Stairs follows the pseudocode directly.",
+        text: "Only two previous values are needed, so O(1) space suffices.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Min Cost Climbing Stairs is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(n)$, space $O(1)$. The recurrence is $dp[i] = cost[i] + \\min(dp[i-1], dp[i-2])$.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Min Cost Climbing Stairs exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Generalize to k-step jumps with a sliding window minimum for O(n) time.",
+          "Related to shortest path in a DAG.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "varies",
-      average: "varies",
-      worst: "varies",
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "varies",
+    space: "O(1)",
     worstClass: "n",
   },
   properties: [
     {
-      label: "Category",
-      value: "Beginner DP",
+      label: "Pattern",
+      value: "Linear DP with min aggregation",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "min_cost_stairs",
+      code: `def min_cost_stairs(cost):
+    n = len(cost)
+    if n <= 1:
+        return 0
+    a, b = cost[0], cost[1]
+    for i in range(2, n):
+        a, b = b, cost[i] + min(a, b)
+    return min(a, b)
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              10,
+              15,
+              20,
+            ],
+          ],
+          expected: 15,
+        },
+        {
+          args: [
+            [
+              1,
+              100,
+              1,
+              1,
+              1,
+              100,
+              1,
+              1,
+              100,
+              1,
+            ],
+          ],
+          expected: 6,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "minCostStairs",
+      code: `function minCostStairs(cost) {
+  const n = cost.length;
+  if (n <= 1) return 0;
+  let a = cost[0], b = cost[1];
+  for (let i = 2; i < n; i++) { const t = cost[i] + Math.min(a, b); a = b; b = t; }
+  return Math.min(a, b);
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              10,
+              15,
+              20,
+            ],
+          ],
+          expected: 15,
         },
       ],
     },
@@ -96,53 +159,61 @@ export const minCostClimbingStairsEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "min-cost-climbing-stairs-q1",
+      id: "min-cost-stairs-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Min Cost Climbing Stairs?",
+      prompt: "For cost = [10, 15, 20], what is the minimum cost?",
       options: [
-        "Find the minimum cost to reach the top of a staircase where ...",
-        "Sorting an array",
-        "Finding shortest paths",
-        "Compressing data",
+        "15",
+        "10",
+        "25",
+        "30",
       ],
       answer: 0,
-      explanation:
-        "Min Cost Climbing Stairs: Find the minimum cost to reach the top of a staircase where each step has a cost. dp[i] = cost[i] + min(dp[i-1], dp[i-2]). Extends climbing stairs with optimization.",
-      hints: ["Think about what problem Min Cost Climbing Stairs solves."],
-      objective: "Min Cost Climbing Stairs",
+      explanation: "Start at step 1 (cost 15), jump to the top.",
+      hints: [
+        "You can start from step 0 or 1.",
+      ],
+      objective: "Computation",
     },
   ],
   exam: {
-    definition:
-      "Find the minimum cost to reach the top of a staircase where each step has a cost. dp[i] = cost[i] + min(dp[i-1], dp[i-2]). Extends climbing stairs with optimization.",
-    steps: ["Apply the Min Cost Climbing Stairs algorithm to the input."],
-    timeComplexity: "See complexity section.",
-    spaceComplexity: "See complexity section.",
-    correctness:
-      "The Min Cost Climbing Stairs algorithm is correct because it systematically processes all cases.",
-    applications: ["Beginner DP"],
-    limitations: ["See advanced section for limitations."],
+    definition: "Find minimum cost to climb stairs where each step has a cost.",
+    steps: [
+      "dp[0]=cost[0], dp[1]=cost[1].",
+      "dp[i] = cost[i] + min(dp[i-1], dp[i-2]).",
+      "Answer = min(dp[n-1], dp[n-2]).",
+    ],
+    timeComplexity: "$O(n)$.",
+    spaceComplexity: "$O(1)$.",
+    correctness: "Optimal substructure: min cost to reach step i uses min cost to reach i-1 or i-2.",
+    applications: [
+      "resource optimization",
+      "path planning",
+    ],
+    limitations: [
+      "Only 1 or 2 step jumps",
+    ],
     faq: [
       {
-        q: "When should you use Min Cost Climbing Stairs?",
-        a: "Use Min Cost Climbing Stairs when the problem matches its design: Find the minimum cost to reach the top of a staircase where each step has a cost. dp[i] = cost[i] + ",
+        q: "Why min of last two?",
+        a: "You can jump past the last step from either of the last two steps.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Min Cost Climbing Stairs (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Define recurrence (1).",
+          "Show iteration (2).",
+          "Prove optimality (2).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. Cormen et al., Introduction to Algorithms, 4th ed.",
-      supports: "General reference for Min Cost Climbing Stairs.",
+      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
+      supports: "Dynamic programming.",
     },
   ],
   review: {

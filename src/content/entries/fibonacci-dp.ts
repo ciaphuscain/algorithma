@@ -3,92 +3,190 @@ import type { AlgorithmEntry } from "../types";
 export const fibonacciDpEntry: AlgorithmEntry = {
   slug: "fibonacci-dp",
   name: "Fibonacci Numbers (DP)",
-  aliases: ["Fibonacci Numbers (DP)"],
-  curriculum: [256],
+  aliases: [
+    "Fibonacci DP",
+    "Fibonacci sequence",
+  ],
+  curriculum: [
+    256,
+  ],
   domain: "dynamic-programming",
-  subcategory: "Beginner DP",
+  subcategory: "Classic DP",
   difficulty: "beginner",
-  summary:
-    "Computing the n-th Fibonacci number using dynamic programming (bottom-up tabulation or top-down memoization) instead of naive exponential recursion. The canonical introduction to DP.",
-  tags: ["Fibonacci", "DP", "memoization", "tabulation"],
-  prerequisites: ["Arrays"],
-  related: ["climbing-stairs", "memoization-tabulation"],
+  summary: "Computes the n-th Fibonacci number using dynamic programming in O(n) time and O(1) space, avoiding the exponential blowup of naive recursion.",
+  tags: [
+    "fibonacci",
+    "dynamic programming",
+    "memoization",
+    "tabulation",
+  ],
+  prerequisites: [],
+  related: [
+    "climbing-stairs",
+    "memoization-tabulation",
+  ],
   problem: {
-    input: "Input for Fibonacci Numbers (DP).",
-    output: "Output of Fibonacci Numbers (DP).",
+    input: "A non-negative integer n.",
+    output: "The n-th Fibonacci number F(n), where F(0)=0, F(1)=1, F(n)=F(n-1)+F(n-2).",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Computing the n-th Fibonacci number using dynamic programming (bottom-up tabulation or top-down memoization) instead of naive exponential recursion. The canonical introduction to DP.",
+        text: "Each Fibonacci number is the sum of the two before it. Naive recursion recomputes the same values exponentially many times. DP stores each value once.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Fibonacci Numbers (DP) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Set F(0) = 0, F(1) = 1.",
+          "For i from 2 to n: F(i) = F(i-1) + F(i-2).",
+          "Return F(n).",
+        ],
+      },
+      {
+        kind: "table",
+        head: [
+          "i",
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+        ],
+        rows: [
+          [
+            "F(i)",
+            "0",
+            "1",
+            "1",
+            "2",
+            "3",
+            "5",
+            "8",
+            "13",
+          ],
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Fibonacci Numbers (DP) follows the pseudocode directly.",
+        text: "Since each F(i) depends only on the two preceding values, we only need two variables, giving O(1) space.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Fibonacci Numbers (DP) is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(n)$, space $O(1)$. The closed form is $F(n) = \\frac{\\phi^n - \\psi^n}{\\sqrt{5}}$ where $\\phi = \\frac{1+\\sqrt{5}}{2}$, but it suffers from floating-point error for large n.",
+      },
+      {
+        kind: "p",
+        text: "Matrix exponentiation computes F(n) in $O(\\log n)$ time: $\\begin{pmatrix}1&1\\\\1&0\\end{pmatrix}^n = \\begin{pmatrix}F(n+1)&F(n)\\\\F(n)&F(n-1)\\end{pmatrix}$.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Fibonacci Numbers (DP) exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Matrix exponentiation gives $O(\\log n)$ time.",
+          "Pisano period: $F(n) \\bmod m$ is periodic for any $m$.",
+          "Fibonacci numbers appear in the analysis of Euclid's algorithm (worst case inputs are consecutive Fibonacci numbers).",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "varies",
-      average: "varies",
-      worst: "varies",
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "varies",
+    space: "O(1)",
     worstClass: "n",
   },
   properties: [
     {
-      label: "Category",
-      value: "Beginner DP",
+      label: "Recurrence",
+      value: "F(n) = F(n-1) + F(n-2)",
+    },
+    {
+      label: "Base cases",
+      value: "F(0) = 0, F(1) = 1",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "fib",
+      code: `def fib(n):
+    if n <= 1:
+        return n
+    a, b = 0, 1
+    for _ in range(2, n + 1):
+        a, b = b, a + b
+    return b
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            0,
+          ],
+          expected: 0,
+        },
+        {
+          args: [
+            1,
+          ],
+          expected: 1,
+        },
+        {
+          args: [
+            10,
+          ],
+          expected: 55,
+        },
+        {
+          args: [
+            20,
+          ],
+          expected: 6765,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "fib",
+      code: `function fib(n) {
+  if (n <= 1) return n;
+  let a = 0, b = 1;
+  for (let i = 2; i <= n; i++) { const t = a + b; a = b; b = t; }
+  return b;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            0,
+          ],
+          expected: 0,
+        },
+        {
+          args: [
+            10,
+          ],
+          expected: 55,
+        },
+        {
+          args: [
+            20,
+          ],
+          expected: 6765,
         },
       ],
     },
@@ -98,51 +196,60 @@ export const fibonacciDpEntry: AlgorithmEntry = {
     {
       id: "fibonacci-dp-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Fibonacci Numbers (DP)?",
+      prompt: "What is the time complexity of computing F(n) with naive recursion?",
       options: [
-        "Computing the n-th Fibonacci number using dynamic programmin...",
-        "Sorting an array",
-        "Finding shortest paths",
-        "Compressing data",
+        "O(2^n)",
+        "O(n)",
+        "O(n^2)",
+        "O(log n)",
       ],
       answer: 0,
-      explanation:
-        "Fibonacci Numbers (DP): Computing the n-th Fibonacci number using dynamic programming (bottom-up tabulation or top-down memoization) instead of naive exponential recursion. The canonical introduction to DP.",
-      hints: ["Think about what problem Fibonacci Numbers (DP) solves."],
-      objective: "Fibonacci Numbers (DP)",
+      explanation: "Naive recursion has exponential time because it recomputes the same subproblems.",
+      hints: [
+        "Draw the recursion tree for F(5).",
+      ],
+      objective: "Time complexity",
     },
   ],
   exam: {
-    definition:
-      "Computing the n-th Fibonacci number using dynamic programming (bottom-up tabulation or top-down memoization) instead of naive exponential recursion. The canonical introduction to DP.",
-    steps: ["Apply the Fibonacci Numbers (DP) algorithm to the input."],
-    timeComplexity: "See complexity section.",
-    spaceComplexity: "See complexity section.",
-    correctness:
-      "The Fibonacci Numbers (DP) algorithm is correct because it systematically processes all cases.",
-    applications: ["Beginner DP"],
-    limitations: ["See advanced section for limitations."],
+    definition: "Fibonacci DP computes F(n) iteratively in O(n) time by building up from F(0) and F(1).",
+    steps: [
+      "Set a=0, b=1.",
+      "Loop from 2 to n, updating a,b = b, a+b.",
+      "Return b.",
+    ],
+    timeComplexity: "$O(n)$.",
+    spaceComplexity: "$O(1)$ with two variables.",
+    correctness: "Each iteration correctly computes F(i) = F(i-1) + F(i-2) bottom-up.",
+    applications: [
+      "algorithm analysis",
+      "combinatorics",
+      "nature patterns",
+    ],
+    limitations: [
+      "Large F(n) values require big integers",
+    ],
     faq: [
       {
-        q: "When should you use Fibonacci Numbers (DP)?",
-        a: "Use Fibonacci Numbers (DP) when the problem matches its design: Computing the n-th Fibonacci number using dynamic programming (bottom-up tabulation or top-down memo",
+        q: "Can we do better than O(n)?",
+        a: "Yes, matrix exponentiation gives O(log n).",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Fibonacci Numbers (DP) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Define recurrence (1).",
+          "Show DP algorithm (2).",
+          "Analyze time and space (2).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. Cormen et al., Introduction to Algorithms, 4th ed.",
-      supports: "General reference for Fibonacci Numbers (DP).",
+      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
+      supports: "Dynamic programming introduction.",
     },
   ],
   review: {

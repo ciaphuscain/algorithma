@@ -3,92 +3,168 @@ import type { AlgorithmEntry } from "../types";
 export const houseRobberIiEntry: AlgorithmEntry = {
   slug: "house-robber-ii",
   name: "House Robber II",
-  aliases: ["House Robber II"],
-  curriculum: [260],
+  aliases: [
+    "House Robber II",
+    "Circular house robber",
+  ],
+  curriculum: [
+    260,
+  ],
   domain: "dynamic-programming",
-  subcategory: "Beginner DP",
+  subcategory: "Classic DP",
   difficulty: "intermediate",
-  summary:
-    "House Robber on a circular arrangement: the first and last houses are adjacent. Solve twice — once excluding the first house, once excluding the last — and take the maximum.",
-  tags: ["house robber", "DP", "circular"],
-  prerequisites: ["House Robber"],
-  related: ["house-robber", "climbing-stairs"],
+  summary: "Extension of House Robber where houses are arranged in a circle: the first and last houses are adjacent, so both cannot be robbed.",
+  tags: [
+    "house robber",
+    "dynamic programming",
+    "circular",
+    "non-adjacent",
+  ],
+  prerequisites: [
+    "House Robber",
+  ],
+  related: [
+    "house-robber",
+  ],
   problem: {
-    input: "Input for House Robber II.",
-    output: "Output of House Robber II.",
+    input: "An array of non-negative integers in circular arrangement.",
+    output: "Maximum amount robbed without robbing two adjacent houses (including first-last pair).",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "House Robber on a circular arrangement: the first and last houses are adjacent. Solve twice — once excluding the first house, once excluding the last — and take the maximum.",
+        text: "The circle means house 0 and house n-1 are neighbors. Solve two linear subproblems: one excluding the first house, one excluding the last. The answer is the max of both.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The House Robber II algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Run House Robber on nums[1..n-1] (exclude first).",
+          "Run House Robber on nums[0..n-2] (exclude last).",
+          "Return the maximum of both results.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of House Robber II follows the pseudocode directly.",
+        text: "Reuse the linear House Robber as a helper. Handle edge case: single house.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of House Robber II is based on the algorithm's structure and the operations performed at each step.",
+        text: "Two passes of $O(n)$ each → $O(n)$ total, $O(1)$ space.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of House Robber II exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Can be further generalized to any circular constraint.",
+          "The tree version requires tree DP instead.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "varies",
-      average: "varies",
-      worst: "varies",
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "varies",
+    space: "O(1)",
     worstClass: "n",
   },
   properties: [
     {
-      label: "Category",
-      value: "Beginner DP",
+      label: "Pattern",
+      value: "Two linear passes on a circular array",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "rob2",
+      code: `def rob2(nums):
+    if len(nums) <= 1:
+        return nums[0] if nums else 0
+    def linear(arr):
+        p2, p1 = 0, 0
+        for v in arr:
+            p2, p1 = p1, max(p1, p2 + v)
+        return p1
+    return max(linear(nums[1:]), linear(nums[:-1]))
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              2,
+              3,
+              2,
+            ],
+          ],
+          expected: 3,
+        },
+        {
+          args: [
+            [
+              1,
+              2,
+              3,
+              1,
+            ],
+          ],
+          expected: 4,
+        },
+        {
+          args: [
+            [
+              5,
+            ],
+          ],
+          expected: 5,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "rob2",
+      code: `function rob2(nums) {
+  if (nums.length <= 1) return nums[0] || 0;
+  function linear(arr) {
+    let p2 = 0, p1 = 0;
+    for (const v of arr) { const t = Math.max(p1, p2 + v); p2 = p1; p1 = t; }
+    return p1;
+  }
+  return Math.max(linear(nums.slice(1)), linear(nums.slice(0, -1)));
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              2,
+              3,
+              2,
+            ],
+          ],
+          expected: 3,
+        },
+        {
+          args: [
+            [
+              1,
+              2,
+              3,
+              1,
+            ],
+          ],
+          expected: 4,
         },
       ],
     },
@@ -98,51 +174,58 @@ export const houseRobberIiEntry: AlgorithmEntry = {
     {
       id: "house-robber-ii-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of House Robber II?",
+      prompt: "Why solve two linear subproblems?",
       options: [
-        "House Robber on a circular arrangement: the first and last h...",
-        "Sorting an array",
-        "Finding shortest paths",
-        "Compressing data",
+        "Because first and last houses cannot both be robbed",
+        "To double-check the answer",
+        "Because the array might be empty",
+        "To handle even/odd lengths",
       ],
       answer: 0,
-      explanation:
-        "House Robber II: House Robber on a circular arrangement: the first and last houses are adjacent. Solve twice — once excluding the first house, once excluding the last — and take the maximum.",
-      hints: ["Think about what problem House Robber II solves."],
-      objective: "House Robber II",
+      explanation: "In a circle, the first and last are adjacent, so at most one can be included.",
+      hints: [
+        "Think about what constraint the circle adds.",
+      ],
+      objective: "Insight",
     },
   ],
   exam: {
-    definition:
-      "House Robber on a circular arrangement: the first and last houses are adjacent. Solve twice — once excluding the first house, once excluding the last — and take the maximum.",
-    steps: ["Apply the House Robber II algorithm to the input."],
-    timeComplexity: "See complexity section.",
-    spaceComplexity: "See complexity section.",
-    correctness:
-      "The House Robber II algorithm is correct because it systematically processes all cases.",
-    applications: ["Beginner DP"],
-    limitations: ["See advanced section for limitations."],
+    definition: "Max non-adjacent sum in a circular array.",
+    steps: [
+      "Solve linear version on nums[1..n-1].",
+      "Solve on nums[0..n-2].",
+      "Return max.",
+    ],
+    timeComplexity: "$O(n)$.",
+    spaceComplexity: "$O(1)$.",
+    correctness: "Either house 0 is not robbed (first case) or house n-1 is not (second case). One must hold.",
+    applications: [
+      "circular scheduling",
+    ],
+    limitations: [
+      "Only handles pairs of adjacent constraints",
+    ],
     faq: [
       {
-        q: "When should you use House Robber II?",
-        a: "Use House Robber II when the problem matches its design: House Robber on a circular arrangement: the first and last houses are adjacent. Solve twice — once e",
+        q: "Why not just run House Robber directly?",
+        a: "It might rob both house 0 and n-1, which are adjacent in a circle.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define House Robber II (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Explain circular constraint (1).",
+          "Two linear subproblems (2).",
+          "Correctness argument (2).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. Cormen et al., Introduction to Algorithms, 4th ed.",
-      supports: "General reference for House Robber II.",
+      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
+      supports: "Dynamic programming.",
     },
   ],
   review: {

@@ -3,92 +3,187 @@ import type { AlgorithmEntry } from "../types";
 export const minimumPathSumEntry: AlgorithmEntry = {
   slug: "minimum-path-sum",
   name: "Minimum Path Sum",
-  aliases: ["Minimum Path Sum"],
-  curriculum: [280],
+  aliases: [
+    "Minimum Path Sum",
+    "Grid minimum cost path",
+  ],
+  curriculum: [
+    280,
+  ],
   domain: "dynamic-programming",
-  subcategory: "Matrix DP",
+  subcategory: "Grid DP",
   difficulty: "beginner",
-  summary:
-    "Find the path from top-left to bottom-right of a grid that minimizes the sum of values along the path (moving only right or down). dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1]).",
-  tags: ["grid DP", "minimum path", "optimization"],
-  prerequisites: ["Unique Paths"],
-  related: ["unique-paths", "climbing-stairs"],
+  summary: "Finds the path from top-left to bottom-right of a grid that minimizes the sum of values along the path, moving only right or down.",
+  tags: [
+    "grid",
+    "minimum path",
+    "dynamic programming",
+  ],
+  prerequisites: [
+    "Unique Paths",
+  ],
+  related: [
+    "unique-paths",
+    "dungeon-game",
+  ],
   problem: {
-    input: "Input for Minimum Path Sum.",
-    output: "Output of Minimum Path Sum.",
+    input: "A 2D grid of non-negative integers.",
+    output: "Minimum sum path from (0,0) to (m-1,n-1).",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Find the path from top-left to bottom-right of a grid that minimizes the sum of values along the path (moving only right or down). dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1]).",
+        text: "Each cell's minimum path sum is its value plus the minimum of the path sums from above and from the left.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "dp[0][0] = grid[0][0].",
+          "First row: dp[0][j] = dp[0][j-1] + grid[0][j].",
+          "First col: dp[i][0] = dp[i-1][0] + grid[i][0].",
+          "dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1]).",
+          "Return dp[m-1][n-1].",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Minimum Path Sum algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Example.** [[1,3,1],[1,5,1],[4,2,1]]: path 1→3→1→1→1 = 7.",
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Minimum Path Sum follows the pseudocode directly.",
+        text: "Can modify grid in-place or use a 1D DP array.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Minimum Path Sum is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(mn)$, space $O(1)$ if modifying grid in-place, $O(n)$ otherwise.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Minimum Path Sum exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Dungeon Game reverses direction (dp from bottom-right).",
+          "With negative values, need more careful handling.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "varies",
-      average: "varies",
-      worst: "varies",
+      best: "O(m * n)",
+      average: "O(m * n)",
+      worst: "O(m * n)",
     },
-    space: "varies",
+    space: "O(n)",
     worstClass: "other",
   },
   properties: [
     {
-      label: "Category",
-      value: "Matrix DP",
+      label: "Pattern",
+      value: "Grid DP with min aggregation",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "min_path_sum",
+      code: `def min_path_sum(grid):
+    m, n = len(grid), len(grid[0])
+    dp = [0] * n
+    dp[0] = grid[0][0]
+    for j in range(1, n):
+        dp[j] = dp[j-1] + grid[0][j]
+    for i in range(1, m):
+        dp[0] += grid[i][0]
+        for j in range(1, n):
+            dp[j] = grid[i][j] + min(dp[j], dp[j-1])
+    return dp[n-1]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [
+                1,
+                3,
+                1,
+              ],
+              [
+                1,
+                5,
+                1,
+              ],
+              [
+                4,
+                2,
+                1,
+              ],
+            ],
+          ],
+          expected: 7,
+        },
+        {
+          args: [
+            [
+              [
+                1,
+                2,
+              ],
+              [
+                3,
+                4,
+              ],
+            ],
+          ],
+          expected: 7,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "minPathSum",
+      code: `function minPathSum(grid) {
+  const m = grid.length, n = grid[0].length;
+  const dp = new Array(n).fill(0);
+  dp[0] = grid[0][0];
+  for (let j = 1; j < n; j++) dp[j] = dp[j-1] + grid[0][j];
+  for (let i = 1; i < m; i++) {
+    dp[0] += grid[i][0];
+    for (let j = 1; j < n; j++) dp[j] = grid[i][j] + Math.min(dp[j], dp[j-1]);
+  }
+  return dp[n-1];
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [
+                1,
+                3,
+                1,
+              ],
+              [
+                1,
+                5,
+                1,
+              ],
+              [
+                4,
+                2,
+                1,
+              ],
+            ],
+          ],
+          expected: 7,
         },
       ],
     },
@@ -96,53 +191,61 @@ export const minimumPathSumEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "minimum-path-sum-q1",
+      id: "min-path-sum-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Minimum Path Sum?",
+      prompt: "For grid [[1,2,3],[4,5,6]], what is the minimum path sum?",
       options: [
-        "Find the path from top-left to bottom-right of a grid that m...",
-        "Sorting an array",
-        "Finding shortest paths",
-        "Compressing data",
+        "12",
+        "15",
+        "14",
+        "10",
       ],
       answer: 0,
-      explanation:
-        "Minimum Path Sum: Find the path from top-left to bottom-right of a grid that minimizes the sum of values along the path (moving only right or down). dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1]).",
-      hints: ["Think about what problem Minimum Path Sum solves."],
-      objective: "Minimum Path Sum",
+      explanation: "Path: 1→2→3→6 = 12.",
+      hints: [
+        "Only move right or down.",
+      ],
+      objective: "Computation",
     },
   ],
   exam: {
-    definition:
-      "Find the path from top-left to bottom-right of a grid that minimizes the sum of values along the path (moving only right or down). dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1]).",
-    steps: ["Apply the Minimum Path Sum algorithm to the input."],
-    timeComplexity: "See complexity section.",
-    spaceComplexity: "See complexity section.",
-    correctness:
-      "The Minimum Path Sum algorithm is correct because it systematically processes all cases.",
-    applications: ["Matrix DP"],
-    limitations: ["See advanced section for limitations."],
+    definition: "Find minimum cost path in a grid moving right or down.",
+    steps: [
+      "Init first row/col cumulatively.",
+      "dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1]).",
+      "Return dp[m-1][n-1].",
+    ],
+    timeComplexity: "$O(mn)$.",
+    spaceComplexity: "$O(n)$.",
+    correctness: "Optimal substructure: best path to (i,j) comes from the better of (i-1,j) and (i,j-1).",
+    applications: [
+      "image processing",
+      "cost optimization",
+    ],
+    limitations: [
+      "Only right and down moves",
+    ],
     faq: [
       {
-        q: "When should you use Minimum Path Sum?",
-        a: "Use Minimum Path Sum when the problem matches its design: Find the path from top-left to bottom-right of a grid that minimizes the sum of values along the pat",
+        q: "Can we modify the grid in-place?",
+        a: "Yes, for O(1) extra space, but it destroys the input.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Minimum Path Sum (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Define recurrence (1).",
+          "Show DP solution (2).",
+          "Space optimization (2).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. Cormen et al., Introduction to Algorithms, 4th ed.",
-      supports: "General reference for Minimum Path Sum.",
+      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
+      supports: "Dynamic programming.",
     },
   ],
   review: {

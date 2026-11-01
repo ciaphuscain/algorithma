@@ -3,91 +3,197 @@ import type { AlgorithmEntry } from "../types";
 export const uniquePathsIiEntry: AlgorithmEntry = {
   slug: "unique-paths-ii",
   name: "Unique Paths II",
-  aliases: ["Unique Paths II"],
-  curriculum: [282],
+  aliases: [
+    "Unique Paths II",
+    "Grid paths with obstacles",
+  ],
+  curriculum: [
+    282,
+  ],
   domain: "dynamic-programming",
-  subcategory: "Dynamic Programming",
+  subcategory: "Grid DP",
   difficulty: "intermediate",
-  summary: "Unique Paths II is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["unique paths ii", "dp"],
-  prerequisites: ["Recursion"],
-  related: [],
+  summary: "Counts unique paths in a grid with obstacles. Cells marked as obstacles cannot be traversed.",
+  tags: [
+    "grid",
+    "paths",
+    "obstacles",
+    "dynamic programming",
+  ],
+  prerequisites: [
+    "Unique Paths",
+  ],
+  related: [
+    "unique-paths",
+    "minimum-path-sum",
+  ],
   problem: {
-    input: "Input for Unique Paths II.",
-    output: "Output of Unique Paths II.",
+    input: "A 2D grid where 0 = free, 1 = obstacle.",
+    output: "Number of unique paths from top-left to bottom-right avoiding obstacles.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Unique Paths II solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Same as Unique Paths, but if a cell is an obstacle, it contributes 0 paths. An obstacle blocks all paths through it.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Unique Paths II algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "If start or end is an obstacle, return 0.",
+          "dp[0][0] = 1. First row/column: dp = 1 until an obstacle, then 0.",
+          "For obstacle cells: dp[i][j] = 0. Otherwise dp[i][j] = dp[i-1][j] + dp[i][j-1].",
+          "Return dp[m-1][n-1].",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Unique Paths II follows the pseudocode directly.",
+        text: "Use 1D DP array. Set dp[j] = 0 when grid[i][j] is an obstacle.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Unique Paths II is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(mn)$, space $O(n)$. Same as Unique Paths but with obstacle handling.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Unique Paths II exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Can extend to count paths with exactly k obstacles removed.",
+          "Related to shortest path in a grid with BFS.",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      best: "O(m * n)",
+      average: "O(m * n)",
+      worst: "O(m * n)",
     },
     space: "O(n)",
     worstClass: "other",
   },
   properties: [
     {
-      label: "Domain",
-      value: "dynamic programming",
+      label: "Pattern",
+      value: "Grid DP with blocked cells",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "unique_paths_ii",
+      code: `def unique_paths_ii(grid):
+    m, n = len(grid), len(grid[0])
+    if grid[0][0] == 1 or grid[m-1][n-1] == 1:
+        return 0
+    dp = [0] * n
+    dp[0] = 1
+    for i in range(m):
+        for j in range(n):
+            if grid[i][j] == 1:
+                dp[j] = 0
+            elif j > 0:
+                dp[j] += dp[j - 1]
+    return dp[n - 1]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [
+                0,
+                0,
+                0,
+              ],
+              [
+                0,
+                1,
+                0,
+              ],
+              [
+                0,
+                0,
+                0,
+              ],
+            ],
+          ],
+          expected: 2,
+        },
+        {
+          args: [
+            [
+              [
+                0,
+                1,
+              ],
+              [
+                0,
+                0,
+              ],
+            ],
+          ],
+          expected: 1,
+        },
+        {
+          args: [
+            [
+              [
+                1,
+                0,
+              ],
+            ],
+          ],
+          expected: 0,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "uniquePathsII",
+      code: `function uniquePathsII(grid) {
+  const m = grid.length, n = grid[0].length;
+  if (grid[0][0] === 1 || grid[m-1][n-1] === 1) return 0;
+  const dp = new Array(n).fill(0);
+  dp[0] = 1;
+  for (let i = 0; i < m; i++)
+    for (let j = 0; j < n; j++) {
+      if (grid[i][j] === 1) dp[j] = 0;
+      else if (j > 0) dp[j] += dp[j - 1];
+    }
+  return dp[n - 1];
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [
+                0,
+                0,
+                0,
+              ],
+              [
+                0,
+                1,
+                0,
+              ],
+              [
+                0,
+                0,
+                0,
+              ],
+            ],
+          ],
+          expected: 2,
         },
       ],
     },
@@ -97,44 +203,51 @@ export const uniquePathsIiEntry: AlgorithmEntry = {
     {
       id: "unique-paths-ii-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Unique Paths II?",
+      prompt: "If the start cell is an obstacle, what is the answer?",
       options: [
-        "To solve the Unique Paths II problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "0",
+        "1",
+        "-1",
+        "Undefined",
       ],
       answer: 0,
-      explanation: "Unique Paths II is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Unique Paths II does."],
-      objective: "Purpose",
+      explanation: "No path can begin from an obstacle.",
+      hints: [
+        "Think about what happens at (0,0).",
+      ],
+      objective: "Edge case",
     },
   ],
   exam: {
-    definition: "Unique Paths II is an algorithm in the domain of dynamic programming.",
+    definition: "Count unique paths in a grid avoiding obstacle cells.",
     steps: [
-      "Apply the Unique Paths II algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Check start/end.",
+      "dp[i][j] = 0 if obstacle, else dp[i-1][j] + dp[i][j-1].",
+      "Return dp[m-1][n-1].",
     ],
-    timeComplexity: "$O(n²)$.",
+    timeComplexity: "$O(mn)$.",
     spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    correctness: "Obstacles contribute 0, correctly blocking all paths through them.",
+    applications: [
+      "robotics path planning",
+      "maze solving",
+    ],
+    limitations: [
+      "Only right and down moves",
+    ],
     faq: [
       {
-        q: "When should you use Unique Paths II?",
-        a: "Use Unique Paths II when the problem matches its designed use case in dynamic programming.",
+        q: "How to handle multiple obstacles?",
+        a: "Each obstacle cell sets dp=0, naturally blocking all paths through it.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Unique Paths II (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Obstacle handling (1).",
+          "DP recurrence (2).",
+          "Space optimization (2).",
         ],
       },
     ],
@@ -142,7 +255,7 @@ export const uniquePathsIiEntry: AlgorithmEntry = {
   references: [
     {
       citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Unique Paths II.",
+      supports: "Dynamic programming.",
     },
   ],
   review: {

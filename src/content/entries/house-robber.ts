@@ -3,92 +3,176 @@ import type { AlgorithmEntry } from "../types";
 export const houseRobberEntry: AlgorithmEntry = {
   slug: "house-robber",
   name: "House Robber",
-  aliases: ["House Robber"],
-  curriculum: [259],
+  aliases: [
+    "House Robber",
+    "Maximum non-adjacent sum",
+  ],
+  curriculum: [
+    259,
+  ],
   domain: "dynamic-programming",
-  subcategory: "Beginner DP",
+  subcategory: "Classic DP",
   difficulty: "beginner",
-  summary:
-    "Maximize the sum of non-adjacent elements in an array. dp[i] = max(dp[i-1], dp[i-2] + nums[i]). Models a robber choosing which houses to rob without triggering adjacent alarms.",
-  tags: ["house robber", "DP", "non-adjacent"],
-  prerequisites: ["Climbing Stairs"],
-  related: ["house-robber-ii", "fibonacci-dp"],
+  summary: "Finds the maximum sum of non-adjacent elements in an array, modeling a robber who cannot rob two adjacent houses.",
+  tags: [
+    "house robber",
+    "dynamic programming",
+    "non-adjacent",
+    "maximum sum",
+  ],
+  prerequisites: [
+    "Climbing Stairs",
+  ],
+  related: [
+    "house-robber-ii",
+    "maximum-independent-set-on-tree",
+  ],
   problem: {
-    input: "Input for House Robber.",
-    output: "Output of House Robber.",
+    input: "An array of non-negative integers representing money in each house.",
+    output: "Maximum amount that can be robbed without robbing two adjacent houses.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Maximize the sum of non-adjacent elements in an array. dp[i] = max(dp[i-1], dp[i-2] + nums[i]). Models a robber choosing which houses to rob without triggering adjacent alarms.",
+        text: "At each house, decide: rob it (add its value to the best from two houses back) or skip it (keep the best from the previous house). Track both options as you go.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "prev2 = 0, prev1 = 0.",
+          "For each house value v: new = max(prev1, prev2 + v).",
+          "Update prev2 = prev1, prev1 = new.",
+          "Return prev1.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The House Robber algorithm processes its input step by step. See the implementation level for details.",
+        text: "**Example.** [2, 7, 9, 3, 1]: rob houses 0, 2, 4 → 2+9+1 = 12.",
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of House Robber follows the pseudocode directly.",
+        text: "Two variables suffice. The recurrence is dp[i] = max(dp[i-1], dp[i-2] + nums[i]).",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of House Robber is based on the algorithm's structure and the operations performed at each step.",
+        text: "Time $O(n)$, space $O(1)$. Equivalent to maximum weight independent set on a path graph.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of House Robber exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "House Robber II: circular arrangement (solve twice, exclude first or last).",
+          "Tree version: maximum independent set on a tree (tree DP).",
+        ],
       },
     ],
   },
   complexity: {
     time: {
-      best: "varies",
-      average: "varies",
-      worst: "varies",
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "varies",
+    space: "O(1)",
     worstClass: "n",
   },
   properties: [
     {
-      label: "Category",
-      value: "Beginner DP",
+      label: "Pattern",
+      value: "Include/exclude DP",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "rob",
+      code: `def rob(nums):
+    prev2, prev1 = 0, 0
+    for v in nums:
+        prev2, prev1 = prev1, max(prev1, prev2 + v)
+    return prev1
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              1,
+              2,
+              3,
+              1,
+            ],
+          ],
+          expected: 4,
+        },
+        {
+          args: [
+            [
+              2,
+              7,
+              9,
+              3,
+              1,
+            ],
+          ],
+          expected: 12,
+        },
+        {
+          args: [
+            [],
+          ],
+          expected: 0,
+        },
+        {
+          args: [
+            [
+              5,
+            ],
+          ],
+          expected: 5,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "rob",
+      code: `function rob(nums) {
+  let prev2 = 0, prev1 = 0;
+  for (const v of nums) { const t = Math.max(prev1, prev2 + v); prev2 = prev1; prev1 = t; }
+  return prev1;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              1,
+              2,
+              3,
+              1,
+            ],
+          ],
+          expected: 4,
+        },
+        {
+          args: [
+            [
+              2,
+              7,
+              9,
+              3,
+              1,
+            ],
+          ],
+          expected: 12,
         },
       ],
     },
@@ -98,51 +182,59 @@ export const houseRobberEntry: AlgorithmEntry = {
     {
       id: "house-robber-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of House Robber?",
+      prompt: "For houses [2, 7, 9, 3, 1], what is the maximum?",
       options: [
-        "Maximize the sum of non-adjacent elements in an array. dp[i]...",
-        "Sorting an array",
-        "Finding shortest paths",
-        "Compressing data",
+        "12",
+        "11",
+        "16",
+        "10",
       ],
       answer: 0,
-      explanation:
-        "House Robber: Maximize the sum of non-adjacent elements in an array. dp[i] = max(dp[i-1], dp[i-2] + nums[i]). Models a robber choosing which houses to rob without triggering adjacent alarms.",
-      hints: ["Think about what problem House Robber solves."],
-      objective: "House Robber",
+      explanation: "Rob houses 0, 2, 4: 2+9+1=12.",
+      hints: [
+        "You cannot rob adjacent houses.",
+      ],
+      objective: "Computation",
     },
   ],
   exam: {
-    definition:
-      "Maximize the sum of non-adjacent elements in an array. dp[i] = max(dp[i-1], dp[i-2] + nums[i]). Models a robber choosing which houses to rob without triggering adjacent alarms.",
-    steps: ["Apply the House Robber algorithm to the input."],
-    timeComplexity: "See complexity section.",
-    spaceComplexity: "See complexity section.",
-    correctness:
-      "The House Robber algorithm is correct because it systematically processes all cases.",
-    applications: ["Beginner DP"],
-    limitations: ["See advanced section for limitations."],
+    definition: "Find maximum sum of non-adjacent elements in an array.",
+    steps: [
+      "Initialize prev2=0, prev1=0.",
+      "For each element: max(prev1, prev2+v).",
+      "Return prev1.",
+    ],
+    timeComplexity: "$O(n)$.",
+    spaceComplexity: "$O(1)$.",
+    correctness: "Optimal substructure: best up to house i either includes i (needs best up to i-2) or excludes it (best up to i-1).",
+    applications: [
+      "scheduling",
+      "resource allocation",
+    ],
+    limitations: [
+      "Only linear (not circular) arrangement",
+    ],
     faq: [
       {
-        q: "When should you use House Robber?",
-        a: "Use House Robber when the problem matches its design: Maximize the sum of non-adjacent elements in an array. dp[i] = max(dp[i-1], dp[i-2] + nums[i]). Mode",
+        q: "How does this differ from House Robber II?",
+        a: "In II, houses are in a circle so first and last are adjacent.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define House Robber (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Define recurrence (1).",
+          "Show O(1)-space solution (2).",
+          "Prove optimality (2).",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. Cormen et al., Introduction to Algorithms, 4th ed.",
-      supports: "General reference for House Robber.",
+      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
+      supports: "Dynamic programming.",
     },
   ],
   review: {
