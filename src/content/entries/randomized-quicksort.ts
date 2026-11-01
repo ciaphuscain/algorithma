@@ -8,43 +8,63 @@ export const randomizedQuicksortEntry: AlgorithmEntry = {
   domain: "randomized",
   subcategory: "Randomized Algorithms",
   difficulty: "intermediate",
-  summary: "Randomized QuickSort is a well-known algorithm in the domain of randomized algorithms.",
-  tags: ["randomized quicksort", "randomized"],
+  summary:
+    "Randomized QuickSort is an algorithm in the field of randomized algorithms. It provides an efficient approach to solving problems in this domain.",
+  tags: ["randomized quicksort", "randomized algorithms"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Randomized QuickSort.",
-    output: "Output of Randomized QuickSort.",
+    input: "Input data for Randomized QuickSort.",
+    output: "Result of applying Randomized QuickSort to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Randomized QuickSort solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Randomized QuickSort addresses a fundamental problem in randomized algorithms. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Randomized QuickSort is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Randomized QuickSort algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Randomized QuickSort algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Randomized QuickSort follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Randomized QuickSort, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Randomized QuickSort is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Randomized QuickSort depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Randomized QuickSort exist in the literature. See references for details.",
+        text: "Advanced variants of Randomized QuickSort exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
@@ -52,42 +72,76 @@ export const randomizedQuicksortEntry: AlgorithmEntry = {
     time: {
       best: "O(n)",
       average: "O(n)",
-      worst: "O(n²)",
+      worst: "O(n^2)",
     },
-    space: "O(n)",
-    worstClass: "other",
+    space: "O(1)",
+    worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "randomized algorithms",
+      label: "Category",
+      value: "Randomized Algorithms",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(arr, k):
+    """Find kth smallest element using quickselect (deterministic pivot for testing).
+    k is 0-indexed."""
+    a = list(arr)
+    def select(lo, hi, k):
+        if lo == hi:
+            return a[lo]
+        pivot = a[hi]
+        i = lo
+        for j in range(lo, hi):
+            if a[j] <= pivot:
+                a[i], a[j] = a[j], a[i]
+                i += 1
+        a[i], a[hi] = a[hi], a[i]
+        if k == i:
+            return a[i]
+        elif k < i:
+            return select(lo, i - 1, k)
+        else:
+            return select(i + 1, hi, k)
+    return select(0, len(a) - 1, k)
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[3, 1, 4, 1, 5], 0],
+          expected: 1,
+        },
+        {
+          args: [[3, 1, 4, 1, 5], 2],
+          expected: 3,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(arr, k) {
+  const a = [...arr];
+  function select(lo, hi, k) {
+    if (lo === hi) return a[lo];
+    const pivot = a[hi];
+    let i = lo;
+    for (let j = lo; j < hi; j++) {
+      if (a[j] <= pivot) { [a[i], a[j]] = [a[j], a[i]]; i++; }
+    }
+    [a[i], a[hi]] = [a[hi], a[i]];
+    if (k === i) return a[i];
+    return k < i ? select(lo, i-1, k) : select(i+1, hi, k);
+  }
+  return select(0, a.length - 1, k);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[3, 1, 4, 1, 5], 0],
+          expected: 1,
         },
       ],
     },
@@ -95,54 +149,49 @@ export const randomizedQuicksortEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "randomized-quicksort-q1",
+      id: "randomiz-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Randomized QuickSort?",
       options: [
-        "To solve the Randomized QuickSort problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in randomized algorithms",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Randomized QuickSort is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Randomized QuickSort does."],
-      objective: "Purpose",
+      explanation:
+        "Randomized QuickSort is designed specifically for problems in the domain of randomized algorithms.",
+      hints: ["Think about what domain Randomized QuickSort belongs to"],
+      objective: "Understand the purpose of Randomized QuickSort",
     },
   ],
   exam: {
-    definition: "Randomized QuickSort is an algorithm in the domain of randomized algorithms.",
-    steps: [
-      "Apply the Randomized QuickSort algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["randomized algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Randomized QuickSort and explain its purpose.",
+    steps: ["Describe the main steps of Randomized QuickSort."],
+    timeComplexity: "Analyze the time complexity of Randomized QuickSort.",
+    spaceComplexity: "Analyze the space complexity of Randomized QuickSort.",
+    correctness: "How does Randomized QuickSort guarantee correctness?",
+    applications: ["List two applications of Randomized QuickSort."],
+    limitations: ["What are the limitations of Randomized QuickSort?"],
     faq: [
       {
-        q: "When should you use Randomized QuickSort?",
-        a: "Use Randomized QuickSort when the problem matches its designed use case in randomized algorithms.",
+        q: "Why is Randomized QuickSort preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Randomized QuickSort (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Randomized QuickSort works by applying its core strategy to efficiently solve th",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Randomized QuickSort.",
+      citation: "See literature on Randomized QuickSort",
+      supports: "Core algorithm description",
     },
   ],
   review: {

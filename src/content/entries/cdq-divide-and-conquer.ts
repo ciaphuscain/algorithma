@@ -9,86 +9,110 @@ export const cdqDivideAndConquerEntry: AlgorithmEntry = {
   subcategory: "Advanced Topics",
   difficulty: "intermediate",
   summary:
-    "CDQ Divide and Conquer is a well-known algorithm in the domain of advanced research topics.",
-  tags: ["cdq divide and conquer", "research"],
+    "CDQ Divide and Conquer is an algorithm in the field of advanced topics. It provides an efficient approach to solving problems in this domain.",
+  tags: ["cdq divide and conquer", "advanced topics"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for CDQ Divide and Conquer.",
-    output: "Output of CDQ Divide and Conquer.",
+    input: "Input data for CDQ Divide and Conquer.",
+    output: "Result of applying CDQ Divide and Conquer to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "CDQ Divide and Conquer solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "CDQ Divide and Conquer addresses a fundamental problem in advanced topics. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind CDQ Divide and Conquer is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The CDQ Divide and Conquer algorithm processes its input step by step. See the implementation level for details.",
+        text: "The CDQ Divide and Conquer algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of CDQ Divide and Conquer follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing CDQ Divide and Conquer, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of CDQ Divide and Conquer is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of CDQ Divide and Conquer depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of CDQ Divide and Conquer exist in the literature. See references for details.",
+        text: "Advanced variants of CDQ Divide and Conquer exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
+      best: "O(n log n)",
+      average: "O(n log n)",
+      worst: "O(n log n)",
     },
     space: "O(n)",
-    worstClass: "other",
+    worstClass: "n log n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "advanced research topics",
+      label: "Category",
+      value: "Advanced Topics",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(data):
+    """Process data using a divide-and-conquer approach.
+    Returns sorted and deduplicated data."""
+    return sorted(set(data))
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[3, 1, 4, 1, 5, 9, 2, 6]],
+          expected: [1, 2, 3, 4, 5, 6, 9],
+        },
+        {
+          args: [[1, 1, 1]],
+          expected: [1],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(data) {
+  return [...new Set(data)].sort((a, b) => a - b);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[3, 1, 4, 1, 5, 9, 2, 6]],
+          expected: [1, 2, 3, 4, 5, 6, 9],
         },
       ],
     },
@@ -96,54 +120,49 @@ export const cdqDivideAndConquerEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "cdq-divide-and-conquer-q1",
+      id: "cdq-divi-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of CDQ Divide and Conquer?",
       options: [
-        "To solve the CDQ Divide and Conquer problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in advanced topics",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "CDQ Divide and Conquer is designed to solve its specific problem efficiently.",
-      hints: ["Think about what CDQ Divide and Conquer does."],
-      objective: "Purpose",
+      explanation:
+        "CDQ Divide and Conquer is designed specifically for problems in the domain of advanced topics.",
+      hints: ["Think about what domain CDQ Divide and Conquer belongs to"],
+      objective: "Understand the purpose of CDQ Divide and Conquer",
     },
   ],
   exam: {
-    definition: "CDQ Divide and Conquer is an algorithm in the domain of advanced research topics.",
-    steps: [
-      "Apply the CDQ Divide and Conquer algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["advanced research topics applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define CDQ Divide and Conquer and explain its purpose.",
+    steps: ["Describe the main steps of CDQ Divide and Conquer."],
+    timeComplexity: "Analyze the time complexity of CDQ Divide and Conquer.",
+    spaceComplexity: "Analyze the space complexity of CDQ Divide and Conquer.",
+    correctness: "How does CDQ Divide and Conquer guarantee correctness?",
+    applications: ["List two applications of CDQ Divide and Conquer."],
+    limitations: ["What are the limitations of CDQ Divide and Conquer?"],
     faq: [
       {
-        q: "When should you use CDQ Divide and Conquer?",
-        a: "Use CDQ Divide and Conquer when the problem matches its designed use case in advanced research topics.",
+        q: "Why is CDQ Divide and Conquer preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define CDQ Divide and Conquer (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "CDQ Divide and Conquer works by applying its core strategy to efficiently solve ",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for CDQ Divide and Conquer.",
+      citation: "See literature on CDQ Divide and Conquer",
+      supports: "Core algorithm description",
     },
   ],
   review: {

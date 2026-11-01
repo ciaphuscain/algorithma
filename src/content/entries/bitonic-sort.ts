@@ -8,9 +8,10 @@ export const bitonicSortEntry: AlgorithmEntry = {
   domain: "parallel",
   subcategory: "Parallel Algorithms",
   difficulty: "intermediate",
-  summary: "Bitonic Sort is a well-known algorithm in the domain of parallel computing.",
-  tags: ["bitonic sort", "parallel"],
-  prerequisites: [],
+  summary:
+    "A parallel comparison-based sorting algorithm that builds a bitonic sequence and then sorts it using a network of comparators. Well-suited for GPU and hardware implementations.",
+  tags: ["sorting", "parallel", "sorting network", "bitonic merge"],
+  prerequisites: ["Merge Sort"],
   related: [],
   problem: {
     input: "Input for Bitonic Sort.",
@@ -20,74 +21,135 @@ export const bitonicSortEntry: AlgorithmEntry = {
     intuition: [
       {
         kind: "p",
-        text: "Bitonic Sort solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "A bitonic sequence first increases then decreases (or can be circularly shifted to have that property). Bitonic sort works in two phases: first build a bitonic sequence from the input, then merge it into sorted order.",
+      },
+      {
+        kind: "p",
+        text: "The beauty is that each compare-and-swap is independent of others at the same stage, making the algorithm naturally parallel. On a GPU, all comparisons at one stage run simultaneously.",
       },
     ],
     mechanics: [
       {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Divide the array into pairs and sort each pair to form 2-element bitonic sequences.",
+          "Merge adjacent bitonic sequences into larger ones: one ascending, the next descending.",
+          "Repeat, doubling the size each time until the entire array is one sorted sequence.",
+        ],
+      },
+      {
         kind: "p",
-        text: "The Bitonic Sort algorithm processes its input step by step. See the implementation level for details.",
+        text: "The compare-and-swap network is determined entirely by the array size and is data-independent, which is why it maps well to hardware.",
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Bitonic Sort follows the pseudocode directly.",
+        text: "The implementation uses three nested loops: the outer loop doubles the block size k, the middle loop halves the comparison distance j, and the inner loop performs XOR-based index pairing for comparisons. The direction alternates based on the bit (i & k).",
+      },
+      {
+        kind: "callout",
+        tone: "note",
+        text: "The input size must be a power of 2. For other sizes, pad with infinity values.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Bitonic Sort is based on the algorithm's structure and the operations performed at each step.",
+        text: "The network has O(log^2 n) stages, each with n/2 comparisons, giving O(n log^2 n) total comparisons. On n processors the parallel time is O(log^2 n). The 0-1 principle guarantees that if the network sorts all 0-1 sequences, it sorts all sequences.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Bitonic Sort exist in the literature. See references for details.",
+        text: "Bitonic sort is widely used in GPU computing (CUDA) because its data-independent comparison pattern maps perfectly to SIMD execution. Batcher's odd-even mergesort is a related network sort.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(log²n)",
-      average: "O(log²n)",
-      worst: "O(log²n)",
+      best: "O(n log^2 n)",
+      average: "O(n log^2 n)",
+      worst: "O(n log^2 n)",
     },
-    space: "O(n log²n)",
-    worstClass: "other",
+    space: "O(n log^2 n)",
+    worstClass: "n log n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "parallel computing",
+      label: "Category",
+      value: "Parallel Algorithms",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "bitonic_sort",
+      code: `def bitonic_sort(arr):
+    """Sort array using bitonic sort. Array length must be a power of 2."""
+    a = list(arr)
+    n = len(a)
+    k = 2
+    while k <= n:
+        j = k // 2
+        while j > 0:
+            for i in range(n):
+                l = i ^ j
+                if l > i:
+                    if (i & k) == 0:
+                        if a[i] > a[l]:
+                            a[i], a[l] = a[l], a[i]
+                    else:
+                        if a[i] < a[l]:
+                            a[i], a[l] = a[l], a[i]
+            j //= 2
+        k *= 2
+    return a
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[3, 1, 4, 2]],
+          expected: [1, 2, 3, 4],
+        },
+        {
+          args: [[8, 6, 7, 5, 3, 1, 4, 2]],
+          expected: [1, 2, 3, 4, 5, 6, 7, 8],
+        },
+        {
+          args: [[1, 2, 3, 4]],
+          expected: [1, 2, 3, 4],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "bitonic_sort",
+      code: `function bitonicSort(arr) {
+  const a = [...arr];
+  const n = a.length;
+  for (let k = 2; k <= n; k *= 2) {
+    for (let j = k >> 1; j > 0; j >>= 1) {
+      for (let i = 0; i < n; i++) {
+        const l = i ^ j;
+        if (l > i) {
+          if ((i & k) === 0 ? a[i] > a[l] : a[i] < a[l]) {
+            [a[i], a[l]] = [a[l], a[i]];
+          }
+        }
+      }
+    }
+  }
+  return a;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[3, 1, 4, 2]],
+          expected: [1, 2, 3, 4],
+        },
+        {
+          args: [[8, 6, 7, 5, 3, 1, 4, 2]],
+          expected: [1, 2, 3, 4, 5, 6, 7, 8],
         },
       ],
     },
@@ -95,54 +157,47 @@ export const bitonicSortEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "bitonic-sort-q1",
+      id: "bit-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Bitonic Sort?",
-      options: [
-        "To solve the Bitonic Sort problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "What is the parallel time complexity of bitonic sort on n processors?",
+      options: ["O(log^2 n)", "O(n log n)", "O(n)", "O(log n)"],
       answer: 0,
-      explanation: "Bitonic Sort is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Bitonic Sort does."],
-      objective: "Purpose",
+      explanation: "With n processors, each of the O(log^2 n) stages takes O(1) parallel time.",
+      hints: ["Each stage can be done in parallel"],
+      objective: "Understand parallel complexity",
     },
   ],
   exam: {
-    definition: "Bitonic Sort is an algorithm in the domain of parallel computing.",
-    steps: [
-      "Apply the Bitonic Sort algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(log²n)$.",
-    spaceComplexity: "$O(n log²n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["parallel computing applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Bitonic Sort and explain its purpose.",
+    steps: ["Describe the main steps of Bitonic Sort."],
+    timeComplexity: "Analyze the time complexity of Bitonic Sort.",
+    spaceComplexity: "Analyze the space complexity of Bitonic Sort.",
+    correctness: "How does Bitonic Sort guarantee correctness?",
+    applications: ["List two applications of Bitonic Sort."],
+    limitations: ["What are the limitations of Bitonic Sort?"],
     faq: [
       {
-        q: "When should you use Bitonic Sort?",
-        a: "Use Bitonic Sort when the problem matches its designed use case in parallel computing.",
+        q: "Why is Bitonic Sort preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Bitonic Sort (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Bitonic Sort works by applying its core strategy to efficiently solve the target",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Bitonic Sort.",
+      citation: "Batcher, Sorting Networks and their Applications, 1968",
+      supports: "Original bitonic sorting network",
+    },
+    {
+      citation: "Cormen et al., Introduction to Algorithms, Ch. 27",
+      supports: "Sorting networks",
     },
   ],
   review: {

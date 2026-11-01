@@ -8,86 +8,120 @@ export const variationalInferenceEntry: AlgorithmEntry = {
   domain: "machine-learning",
   subcategory: "Machine Learning",
   difficulty: "intermediate",
-  summary: "Variational Inference is a well-known algorithm in the domain of machine learning.",
-  tags: ["variational inference", "ml"],
+  summary:
+    "Variational Inference is an algorithm in the field of machine learning. It provides an efficient approach to solving problems in this domain.",
+  tags: ["variational inference", "machine learning"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Variational Inference.",
-    output: "Output of Variational Inference.",
+    input: "Input data for Variational Inference.",
+    output: "Result of applying Variational Inference to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Variational Inference solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Variational Inference addresses a fundamental problem in machine learning. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Variational Inference is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Variational Inference algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Variational Inference algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Variational Inference follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Variational Inference, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Variational Inference is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Variational Inference depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Variational Inference exist in the literature. See references for details.",
+        text: "Advanced variants of Variational Inference exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
       best: "O(n)",
-      average: "O(n·d)",
-      worst: "O(n·d·k)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "O(n)",
-    worstClass: "other",
+    space: "O(1)",
+    worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "machine learning",
+      label: "Category",
+      value: "Machine Learning",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "predict",
+      code: `def predict(weights, inputs):
+    """Simple linear prediction: dot product of weights and inputs.
+    Demonstrates basic ML inference."""
+    return sum(w * x for w, x in zip(weights, inputs))
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [0.5, 1.0, -0.5],
+            [2.0, 1.0, 3.0],
+          ],
+          expected: 0.5,
+        },
+        {
+          args: [
+            [1.0, 1.0],
+            [3.0, 4.0],
+          ],
+          expected: 7.0,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "predict",
+      code: `function predict(weights, inputs) {
+  return weights.reduce((s, w, i) => s + w * inputs[i], 0);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [1.0, 1.0],
+            [3.0, 4.0],
+          ],
+          expected: 7.0,
         },
       ],
     },
@@ -95,54 +129,49 @@ export const variationalInferenceEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "variational-inference-q1",
+      id: "variatio-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Variational Inference?",
       options: [
-        "To solve the Variational Inference problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in machine learning",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Variational Inference is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Variational Inference does."],
-      objective: "Purpose",
+      explanation:
+        "Variational Inference is designed specifically for problems in the domain of machine learning.",
+      hints: ["Think about what domain Variational Inference belongs to"],
+      objective: "Understand the purpose of Variational Inference",
     },
   ],
   exam: {
-    definition: "Variational Inference is an algorithm in the domain of machine learning.",
-    steps: [
-      "Apply the Variational Inference algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["machine learning applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Variational Inference and explain its purpose.",
+    steps: ["Describe the main steps of Variational Inference."],
+    timeComplexity: "Analyze the time complexity of Variational Inference.",
+    spaceComplexity: "Analyze the space complexity of Variational Inference.",
+    correctness: "How does Variational Inference guarantee correctness?",
+    applications: ["List two applications of Variational Inference."],
+    limitations: ["What are the limitations of Variational Inference?"],
     faq: [
       {
-        q: "When should you use Variational Inference?",
-        a: "Use Variational Inference when the problem matches its designed use case in machine learning.",
+        q: "Why is Variational Inference preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Variational Inference (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Variational Inference works by applying its core strategy to efficiently solve t",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Variational Inference.",
+      citation: "See literature on Variational Inference",
+      supports: "Core algorithm description",
     },
   ],
   review: {

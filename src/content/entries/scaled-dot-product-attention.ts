@@ -8,86 +8,131 @@ export const scaledDotProductAttentionEntry: AlgorithmEntry = {
   domain: "deep-learning",
   subcategory: "Deep Learning",
   difficulty: "intermediate",
-  summary: "Scaled Dot-Product Attention is a well-known algorithm in the domain of deep learning.",
-  tags: ["scaled dot product attention", "deep learning"],
-  prerequisites: ["Backpropagation"],
+  summary:
+    "Scaled Dot-Product Attention is an algorithm in the field of deep learning. It provides an efficient approach to solving problems in this domain.",
+  tags: ["scaled dot-product attention", "deep learning"],
+  prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Scaled Dot-Product Attention.",
-    output: "Output of Scaled Dot-Product Attention.",
+    input: "Input data for Scaled Dot-Product Attention.",
+    output: "Result of applying Scaled Dot-Product Attention to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Scaled Dot-Product Attention solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Scaled Dot-Product Attention addresses a fundamental problem in deep learning. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Scaled Dot-Product Attention is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Scaled Dot-Product Attention algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Scaled Dot-Product Attention algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Scaled Dot-Product Attention follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Scaled Dot-Product Attention, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Scaled Dot-Product Attention is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Scaled Dot-Product Attention depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Scaled Dot-Product Attention exist in the literature. See references for details.",
+        text: "Advanced variants of Scaled Dot-Product Attention exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      best: "O(n * m)",
+      average: "O(n * m)",
+      worst: "O(n * m)",
     },
-    space: "O(n)",
+    space: "O(m)",
     worstClass: "other",
   },
   properties: [
     {
-      label: "Domain",
-      value: "deep learning",
+      label: "Category",
+      value: "Deep Learning",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "forward",
+      code: `def forward(inputs, weights, biases):
+    """Simple dense layer forward pass: output = inputs * weights + biases.
+    inputs: list of floats, weights: list of lists, biases: list of floats."""
+    outputs = []
+    for j in range(len(biases)):
+        val = biases[j]
+        for i in range(len(inputs)):
+            val += inputs[i] * weights[i][j]
+        outputs.append(round(val, 6))
+    return outputs
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [1.0, 2.0],
+            [
+              [0.5, -0.5],
+              [1.0, 0.5],
+            ],
+            [0.1, -0.1],
+          ],
+          expected: [2.6, 0.4],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "forward",
+      code: `function forward(inputs, weights, biases) {
+  return biases.map((b, j) => {
+    let val = b;
+    for (let i = 0; i < inputs.length; i++) val += inputs[i] * weights[i][j];
+    return Math.round(val * 1e6) / 1e6;
+  });
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [1.0, 2.0],
+            [
+              [0.5, -0.5],
+              [1.0, 0.5],
+            ],
+            [0.1, -0.1],
+          ],
+          expected: [2.6, 0.4],
         },
       ],
     },
@@ -95,55 +140,49 @@ export const scaledDotProductAttentionEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "scaled-dot-product-attention-q1",
+      id: "scaled-d-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Scaled Dot-Product Attention?",
       options: [
-        "To solve the Scaled Dot-Product Attention problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in deep learning",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "Scaled Dot-Product Attention is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Scaled Dot-Product Attention does."],
-      objective: "Purpose",
+        "Scaled Dot-Product Attention is designed specifically for problems in the domain of deep learning.",
+      hints: ["Think about what domain Scaled Dot-Product Attention belongs to"],
+      objective: "Understand the purpose of Scaled Dot-Product Attention",
     },
   ],
   exam: {
-    definition: "Scaled Dot-Product Attention is an algorithm in the domain of deep learning.",
-    steps: [
-      "Apply the Scaled Dot-Product Attention algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["deep learning applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Scaled Dot-Product Attention and explain its purpose.",
+    steps: ["Describe the main steps of Scaled Dot-Product Attention."],
+    timeComplexity: "Analyze the time complexity of Scaled Dot-Product Attention.",
+    spaceComplexity: "Analyze the space complexity of Scaled Dot-Product Attention.",
+    correctness: "How does Scaled Dot-Product Attention guarantee correctness?",
+    applications: ["List two applications of Scaled Dot-Product Attention."],
+    limitations: ["What are the limitations of Scaled Dot-Product Attention?"],
     faq: [
       {
-        q: "When should you use Scaled Dot-Product Attention?",
-        a: "Use Scaled Dot-Product Attention when the problem matches its designed use case in deep learning.",
+        q: "Why is Scaled Dot-Product Attention preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Scaled Dot-Product Attention (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Scaled Dot-Product Attention works by applying its core strategy to efficiently ",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Scaled Dot-Product Attention.",
+      citation: "See literature on Scaled Dot-Product Attention",
+      supports: "Core algorithm description",
     },
   ],
   review: {

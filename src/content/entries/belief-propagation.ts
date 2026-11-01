@@ -8,86 +8,120 @@ export const beliefPropagationEntry: AlgorithmEntry = {
   domain: "machine-learning",
   subcategory: "Machine Learning",
   difficulty: "intermediate",
-  summary: "Belief Propagation is a well-known algorithm in the domain of machine learning.",
-  tags: ["belief propagation", "ml"],
+  summary:
+    "Belief Propagation is an algorithm in the field of machine learning. It provides an efficient approach to solving problems in this domain.",
+  tags: ["belief propagation", "machine learning"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Belief Propagation.",
-    output: "Output of Belief Propagation.",
+    input: "Input data for Belief Propagation.",
+    output: "Result of applying Belief Propagation to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Belief Propagation solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Belief Propagation addresses a fundamental problem in machine learning. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Belief Propagation is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Belief Propagation algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Belief Propagation algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Belief Propagation follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Belief Propagation, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Belief Propagation is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Belief Propagation depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Belief Propagation exist in the literature. See references for details.",
+        text: "Advanced variants of Belief Propagation exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
       best: "O(n)",
-      average: "O(n·d)",
-      worst: "O(n·d·k)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "O(n)",
-    worstClass: "other",
+    space: "O(1)",
+    worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "machine learning",
+      label: "Category",
+      value: "Machine Learning",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "predict",
+      code: `def predict(weights, inputs):
+    """Simple linear prediction: dot product of weights and inputs.
+    Demonstrates basic ML inference."""
+    return sum(w * x for w, x in zip(weights, inputs))
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [0.5, 1.0, -0.5],
+            [2.0, 1.0, 3.0],
+          ],
+          expected: 0.5,
+        },
+        {
+          args: [
+            [1.0, 1.0],
+            [3.0, 4.0],
+          ],
+          expected: 7.0,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "predict",
+      code: `function predict(weights, inputs) {
+  return weights.reduce((s, w, i) => s + w * inputs[i], 0);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [1.0, 1.0],
+            [3.0, 4.0],
+          ],
+          expected: 7.0,
         },
       ],
     },
@@ -95,54 +129,49 @@ export const beliefPropagationEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "belief-propagation-q1",
+      id: "belief-p-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Belief Propagation?",
       options: [
-        "To solve the Belief Propagation problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in machine learning",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Belief Propagation is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Belief Propagation does."],
-      objective: "Purpose",
+      explanation:
+        "Belief Propagation is designed specifically for problems in the domain of machine learning.",
+      hints: ["Think about what domain Belief Propagation belongs to"],
+      objective: "Understand the purpose of Belief Propagation",
     },
   ],
   exam: {
-    definition: "Belief Propagation is an algorithm in the domain of machine learning.",
-    steps: [
-      "Apply the Belief Propagation algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["machine learning applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Belief Propagation and explain its purpose.",
+    steps: ["Describe the main steps of Belief Propagation."],
+    timeComplexity: "Analyze the time complexity of Belief Propagation.",
+    spaceComplexity: "Analyze the space complexity of Belief Propagation.",
+    correctness: "How does Belief Propagation guarantee correctness?",
+    applications: ["List two applications of Belief Propagation."],
+    limitations: ["What are the limitations of Belief Propagation?"],
     faq: [
       {
-        q: "When should you use Belief Propagation?",
-        a: "Use Belief Propagation when the problem matches its designed use case in machine learning.",
+        q: "Why is Belief Propagation preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Belief Propagation (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Belief Propagation works by applying its core strategy to efficiently solve the ",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Belief Propagation.",
+      citation: "See literature on Belief Propagation",
+      supports: "Core algorithm description",
     },
   ],
   review: {

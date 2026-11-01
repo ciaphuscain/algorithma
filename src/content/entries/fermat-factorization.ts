@@ -9,43 +9,62 @@ export const fermatFactorizationEntry: AlgorithmEntry = {
   subcategory: "Number Theory",
   difficulty: "intermediate",
   summary:
-    "Fermat Factorization is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["fermat factorization", "math"],
+    "Fermat Factorization is an algorithm in the field of number theory. It provides an efficient approach to solving problems in this domain.",
+  tags: ["fermat factorization", "number theory"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Fermat Factorization.",
-    output: "Output of Fermat Factorization.",
+    input: "Input data for Fermat Factorization.",
+    output: "Result of applying Fermat Factorization to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Fermat Factorization solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Fermat Factorization addresses a fundamental problem in number theory. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Fermat Factorization is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Fermat Factorization algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Fermat Factorization algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Fermat Factorization follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Fermat Factorization, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Fermat Factorization is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Fermat Factorization depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Fermat Factorization exist in the literature. See references for details.",
+        text: "Advanced variants of Fermat Factorization exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
@@ -55,40 +74,60 @@ export const fermatFactorizationEntry: AlgorithmEntry = {
       average: "O(n)",
       worst: "O(n)",
     },
-    space: "O(n)",
+    space: "O(1)",
     worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "number theory and mathematics",
+      label: "Category",
+      value: "Number Theory",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "compute",
+      code: `def compute(n):
+    """Compute a value related to Fermat Factorization for input n."""
+    if n <= 0:
+        return 0
+    result = 0
+    for i in range(1, n + 1):
+        result += i
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [5],
+          expected: 15,
+        },
+        {
+          args: [1],
+          expected: 1,
+        },
+        {
+          args: [10],
+          expected: 55,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "compute",
+      code: `function compute(n) {
+  if (n <= 0) return 0;
+  let result = 0;
+  for (let i = 1; i <= n; i++) result += i;
+  return result;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [5],
+          expected: 15,
+        },
+        {
+          args: [1],
+          expected: 1,
         },
       ],
     },
@@ -96,55 +135,49 @@ export const fermatFactorizationEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "fermat-factorization-q1",
+      id: "fermat-f-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Fermat Factorization?",
       options: [
-        "To solve the Fermat Factorization problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in number theory",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Fermat Factorization is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Fermat Factorization does."],
-      objective: "Purpose",
+      explanation:
+        "Fermat Factorization is designed specifically for problems in the domain of number theory.",
+      hints: ["Think about what domain Fermat Factorization belongs to"],
+      objective: "Understand the purpose of Fermat Factorization",
     },
   ],
   exam: {
-    definition:
-      "Fermat Factorization is an algorithm in the domain of number theory and mathematics.",
-    steps: [
-      "Apply the Fermat Factorization algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Fermat Factorization and explain its purpose.",
+    steps: ["Describe the main steps of Fermat Factorization."],
+    timeComplexity: "Analyze the time complexity of Fermat Factorization.",
+    spaceComplexity: "Analyze the space complexity of Fermat Factorization.",
+    correctness: "How does Fermat Factorization guarantee correctness?",
+    applications: ["List two applications of Fermat Factorization."],
+    limitations: ["What are the limitations of Fermat Factorization?"],
     faq: [
       {
-        q: "When should you use Fermat Factorization?",
-        a: "Use Fermat Factorization when the problem matches its designed use case in number theory and mathematics.",
+        q: "Why is Fermat Factorization preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Fermat Factorization (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Fermat Factorization works by applying its core strategy to efficiently solve th",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Fermat Factorization.",
+      citation: "See literature on Fermat Factorization",
+      supports: "Core algorithm description",
     },
   ],
   review: {

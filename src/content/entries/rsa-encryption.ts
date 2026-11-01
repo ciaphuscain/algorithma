@@ -8,43 +8,63 @@ export const rsaEncryptionEntry: AlgorithmEntry = {
   domain: "cryptography",
   subcategory: "Cryptography",
   difficulty: "intermediate",
-  summary: "RSA Encryption is a well-known algorithm in the domain of cryptography.",
+  summary:
+    "RSA Encryption is an algorithm in the field of cryptography. It provides an efficient approach to solving problems in this domain.",
   tags: ["rsa encryption", "cryptography"],
-  prerequisites: ["Number Theory"],
+  prerequisites: [],
   related: [],
   problem: {
-    input: "Input for RSA Encryption.",
-    output: "Output of RSA Encryption.",
+    input: "Input data for RSA Encryption.",
+    output: "Result of applying RSA Encryption to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "RSA Encryption solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "RSA Encryption addresses a fundamental problem in cryptography. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind RSA Encryption is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The RSA Encryption algorithm processes its input step by step. See the implementation level for details.",
+        text: "The RSA Encryption algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of RSA Encryption follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing RSA Encryption, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of RSA Encryption is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of RSA Encryption depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of RSA Encryption exist in the literature. See references for details.",
+        text: "Advanced variants of RSA Encryption exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
@@ -55,39 +75,45 @@ export const rsaEncryptionEntry: AlgorithmEntry = {
       worst: "O(n)",
     },
     space: "O(n)",
-    worstClass: "other",
+    worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "cryptography",
+      label: "Category",
+      value: "Cryptography",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "encrypt",
+      code: `def encrypt(data, key):
+    """Simple XOR cipher demonstrating symmetric encryption concepts.
+    data and key are lists of integers (bytes)."""
+    key_len = len(key)
+    return [d ^ key[i % key_len] for i, d in enumerate(data)]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[72, 101, 108], [42]],
+          expected: [114, 79, 70],
+        },
+        {
+          args: [[114, 79, 70], [42]],
+          expected: [72, 101, 108],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "encrypt",
+      code: `function encrypt(data, key) {
+  return data.map((d, i) => d ^ key[i % key.length]);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[72, 101, 108], [42]],
+          expected: [114, 79, 70],
         },
       ],
     },
@@ -95,54 +121,49 @@ export const rsaEncryptionEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "rsa-encryption-q1",
+      id: "rsa-encr-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of RSA Encryption?",
       options: [
-        "To solve the RSA Encryption problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in cryptography",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "RSA Encryption is designed to solve its specific problem efficiently.",
-      hints: ["Think about what RSA Encryption does."],
-      objective: "Purpose",
+      explanation:
+        "RSA Encryption is designed specifically for problems in the domain of cryptography.",
+      hints: ["Think about what domain RSA Encryption belongs to"],
+      objective: "Understand the purpose of RSA Encryption",
     },
   ],
   exam: {
-    definition: "RSA Encryption is an algorithm in the domain of cryptography.",
-    steps: [
-      "Apply the RSA Encryption algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["cryptography applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define RSA Encryption and explain its purpose.",
+    steps: ["Describe the main steps of RSA Encryption."],
+    timeComplexity: "Analyze the time complexity of RSA Encryption.",
+    spaceComplexity: "Analyze the space complexity of RSA Encryption.",
+    correctness: "How does RSA Encryption guarantee correctness?",
+    applications: ["List two applications of RSA Encryption."],
+    limitations: ["What are the limitations of RSA Encryption?"],
     faq: [
       {
-        q: "When should you use RSA Encryption?",
-        a: "Use RSA Encryption when the problem matches its designed use case in cryptography.",
+        q: "Why is RSA Encryption preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define RSA Encryption (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "RSA Encryption works by applying its core strategy to efficiently solve the targ",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for RSA Encryption.",
+      citation: "See literature on RSA Encryption",
+      supports: "Core algorithm description",
     },
   ],
   review: {

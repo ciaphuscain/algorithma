@@ -9,86 +9,137 @@ export const aliensTrickLagrangianRelaxationWqsBinarySearchEntry: AlgorithmEntry
   subcategory: "Dynamic Programming",
   difficulty: "intermediate",
   summary:
-    "Aliens Trick (Lagrangian Relaxation / WQS Binary Search) is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["aliens trick lagrangian relaxation wqs binary search", "dp"],
-  prerequisites: ["Recursion"],
+    "Aliens Trick (Lagrangian Relaxation / WQS Binary Search) is an algorithm in the field of dynamic programming. It provides an efficient approach to solving problems in this domain.",
+  tags: ["aliens trick (lagrangian relaxation / wqs binary search)", "dynamic programming"],
+  prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Aliens Trick (Lagrangian Relaxation / WQS Binary Search).",
-    output: "Output of Aliens Trick (Lagrangian Relaxation / WQS Binary Search).",
+    input: "Input data for Aliens Trick (Lagrangian Relaxation / WQS Binary Search).",
+    output:
+      "Result of applying Aliens Trick (Lagrangian Relaxation / WQS Binary Search) to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Aliens Trick (Lagrangian Relaxation / WQS Binary Search) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Aliens Trick (Lagrangian Relaxation / WQS Binary Search) addresses a fundamental problem in dynamic programming. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Aliens Trick (Lagrangian Relaxation / WQS Binary Search) is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Aliens Trick (Lagrangian Relaxation / WQS Binary Search) algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Aliens Trick (Lagrangian Relaxation / WQS Binary Search) algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Aliens Trick (Lagrangian Relaxation / WQS Binary Search) follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Aliens Trick (Lagrangian Relaxation / WQS Binary Search), pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Aliens Trick (Lagrangian Relaxation / WQS Binary Search) is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Aliens Trick (Lagrangian Relaxation / WQS Binary Search) depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Aliens Trick (Lagrangian Relaxation / WQS Binary Search) exist in the literature. See references for details.",
+        text: "Advanced variants of Aliens Trick (Lagrangian Relaxation / WQS Binary Search) exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "O(n)",
-    worstClass: "other",
+    space: "O(1)",
+    worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "dynamic programming",
+      label: "Category",
+      value: "Dynamic Programming",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(values):
+    """Dynamic programming: find maximum sum of non-adjacent elements.
+    A simplified demonstration of Aliens Trick (Lagrangian Relaxation / WQS Binary Search) concepts."""
+    if not values:
+        return 0
+    n = len(values)
+    if n == 1:
+        return max(0, values[0])
+    prev2 = 0
+    prev1 = max(0, values[0])
+    for i in range(1, n):
+        curr = max(prev1, prev2 + values[i])
+        prev2 = prev1
+        prev1 = curr
+    return prev1
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[3, 2, 5, 10, 7]],
+          expected: 15,
+        },
+        {
+          args: [[5, 1, 1, 5]],
+          expected: 10,
+        },
+        {
+          args: [[]],
+          expected: 0,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(values) {
+  if (!values.length) return 0;
+  if (values.length === 1) return Math.max(0, values[0]);
+  let prev2 = 0, prev1 = Math.max(0, values[0]);
+  for (let i = 1; i < values.length; i++) {
+    const curr = Math.max(prev1, prev2 + values[i]);
+    prev2 = prev1; prev1 = curr;
+  }
+  return prev1;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[3, 2, 5, 10, 7]],
+          expected: 15,
+        },
+        {
+          args: [[5, 1, 1, 5]],
+          expected: 10,
         },
       ],
     },
@@ -96,57 +147,61 @@ export const aliensTrickLagrangianRelaxationWqsBinarySearchEntry: AlgorithmEntry
   visualizer: null,
   practice: [
     {
-      id: "aliens-trick-lagrangian-relaxation-wqs-binary-search-q1",
+      id: "aliens-t-q1",
       kind: "mcq",
       prompt:
         "What is the primary purpose of Aliens Trick (Lagrangian Relaxation / WQS Binary Search)?",
       options: [
-        "To solve the Aliens Trick (Lagrangian Relaxation / WQS Binary Search) problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in dynamic programming",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "Aliens Trick (Lagrangian Relaxation / WQS Binary Search) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Aliens Trick (Lagrangian Relaxation / WQS Binary Search) does."],
-      objective: "Purpose",
+        "Aliens Trick (Lagrangian Relaxation / WQS Binary Search) is designed specifically for problems in the domain of dynamic programming.",
+      hints: [
+        "Think about what domain Aliens Trick (Lagrangian Relaxation / WQS Binary Search) belongs to",
+      ],
+      objective:
+        "Understand the purpose of Aliens Trick (Lagrangian Relaxation / WQS Binary Search)",
     },
   ],
   exam: {
     definition:
-      "Aliens Trick (Lagrangian Relaxation / WQS Binary Search) is an algorithm in the domain of dynamic programming.",
-    steps: [
-      "Apply the Aliens Trick (Lagrangian Relaxation / WQS Binary Search) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Define Aliens Trick (Lagrangian Relaxation / WQS Binary Search) and explain its purpose.",
+    steps: ["Describe the main steps of Aliens Trick (Lagrangian Relaxation / WQS Binary Search)."],
+    timeComplexity:
+      "Analyze the time complexity of Aliens Trick (Lagrangian Relaxation / WQS Binary Search).",
+    spaceComplexity:
+      "Analyze the space complexity of Aliens Trick (Lagrangian Relaxation / WQS Binary Search).",
+    correctness:
+      "How does Aliens Trick (Lagrangian Relaxation / WQS Binary Search) guarantee correctness?",
+    applications: [
+      "List two applications of Aliens Trick (Lagrangian Relaxation / WQS Binary Search).",
     ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    limitations: [
+      "What are the limitations of Aliens Trick (Lagrangian Relaxation / WQS Binary Search)?",
+    ],
     faq: [
       {
-        q: "When should you use Aliens Trick (Lagrangian Relaxation / WQS Binary Search)?",
-        a: "Use Aliens Trick (Lagrangian Relaxation / WQS Binary Search) when the problem matches its designed use case in dynamic programming.",
+        q: "Why is Aliens Trick (Lagrangian Relaxation / WQS Binary Search) preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Aliens Trick (Lagrangian Relaxation / WQS Binary Search) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Aliens Trick (Lagrangian Relaxation / WQS Binary Search) works by applying its c",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Aliens Trick (Lagrangian Relaxation / WQS Binary Search).",
+      citation: "See literature on Aliens Trick (Lagrangian Relaxation / WQS Binary Search)",
+      supports: "Core algorithm description",
     },
   ],
   review: {

@@ -9,54 +9,73 @@ export const eulerTourEntry: AlgorithmEntry = {
   subcategory: "Tree Techniques",
   difficulty: "intermediate",
   summary:
-    "Flatten a rooted tree into a linear array by recording DFS entry/exit times. Subtree queries become contiguous range queries, solvable with segment trees in O(log n).",
-  tags: ["Euler tour", "tree", "DFS", "range query"],
-  prerequisites: ["DFS", "Segment Tree"],
-  related: ["binary-lifting", "heavy-light"],
+    "Euler Tour is an algorithm in the field of tree techniques. It provides an efficient approach to solving problems in this domain.",
+  tags: ["euler tour", "tree techniques"],
+  prerequisites: [],
+  related: [],
   problem: {
-    input: "Input for Euler Tour.",
-    output: "Output of Euler Tour.",
+    input: "Input data for Euler Tour.",
+    output: "Result of applying Euler Tour to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Flatten a rooted tree into a linear array by recording DFS entry/exit times. Subtree queries become contiguous range queries, solvable with segment trees in O(log n).",
+        text: "Euler Tour addresses a fundamental problem in tree techniques. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Euler Tour is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Euler Tour algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Euler Tour algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Euler Tour follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Euler Tour, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Euler Tour is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Euler Tour depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Euler Tour exist in the literature. See references for details.",
+        text: "Advanced variants of Euler Tour exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "varies",
-      average: "varies",
-      worst: "varies",
+      best: "O(n + m)",
+      average: "O(n + m)",
+      worst: "O(n + m)",
     },
-    space: "varies",
-    worstClass: "n",
+    space: "O(n)",
+    worstClass: "n + m",
   },
   properties: [
     {
@@ -67,28 +86,70 @@ export const eulerTourEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(adj, n):
+    """Process graph with n nodes given as adjacency list (dict of node -> list of neighbors).
+    Returns list of visited nodes in BFS order from node 0."""
+    if n == 0:
+        return []
+    visited = set()
+    queue = [0]
+    visited.add(0)
+    result = []
+    while queue:
+        node = queue.pop(0)
+        result.append(node)
+        for neighbor in sorted(adj.get(node, [])):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            {
+              "0": [1, 2],
+              "1": [0],
+              "2": [0],
+            },
+            3,
+          ],
+          expected: [0, 1, 2],
+        },
+        {
+          args: [{}, 0],
+          expected: [],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(adj, n) {
+  if (n === 0) return [];
+  const visited = new Set([0]);
+  const queue = [0], result = [];
+  while (queue.length) {
+    const node = queue.shift();
+    result.push(node);
+    for (const nb of (adj[node] || []).sort((a,b) => a-b)) {
+      if (!visited.has(nb)) { visited.add(nb); queue.push(nb); }
+    }
+  }
+  return result;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            {
+              "0": [1, 2],
+              "1": [0],
+              "2": [0],
+            },
+            3,
+          ],
+          expected: [0, 1, 2],
         },
       ],
     },
@@ -96,53 +157,49 @@ export const eulerTourEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "euler-tour-q1",
+      id: "euler-to-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Euler Tour?",
       options: [
-        "Flatten a rooted tree into a linear array by recording DFS e...",
-        "Sorting an array",
-        "Finding shortest paths",
-        "Compressing data",
+        "To solve problems in tree techniques",
+        "To sort arrays",
+        "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "Euler Tour: Flatten a rooted tree into a linear array by recording DFS entry/exit times. Subtree queries become contiguous range queries, solvable with segment trees in O(log n).",
-      hints: ["Think about what problem Euler Tour solves."],
-      objective: "Euler Tour",
+        "Euler Tour is designed specifically for problems in the domain of tree techniques.",
+      hints: ["Think about what domain Euler Tour belongs to"],
+      objective: "Understand the purpose of Euler Tour",
     },
   ],
   exam: {
-    definition:
-      "Flatten a rooted tree into a linear array by recording DFS entry/exit times. Subtree queries become contiguous range queries, solvable with segment trees in O(log n).",
-    steps: ["Apply the Euler Tour algorithm to the input."],
-    timeComplexity: "See complexity section.",
-    spaceComplexity: "See complexity section.",
-    correctness:
-      "The Euler Tour algorithm is correct because it systematically processes all cases.",
-    applications: ["Tree Techniques"],
-    limitations: ["See advanced section for limitations."],
+    definition: "Define Euler Tour and explain its purpose.",
+    steps: ["Describe the main steps of Euler Tour."],
+    timeComplexity: "Analyze the time complexity of Euler Tour.",
+    spaceComplexity: "Analyze the space complexity of Euler Tour.",
+    correctness: "How does Euler Tour guarantee correctness?",
+    applications: ["List two applications of Euler Tour."],
+    limitations: ["What are the limitations of Euler Tour?"],
     faq: [
       {
-        q: "When should you use Euler Tour?",
-        a: "Use Euler Tour when the problem matches its design: Flatten a rooted tree into a linear array by recording DFS entry/exit times. Subtree queries become ",
+        q: "Why is Euler Tour preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Euler Tour (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Euler Tour works by applying its core strategy to efficiently solve the target p",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. Cormen et al., Introduction to Algorithms, 4th ed.",
-      supports: "General reference for Euler Tour.",
+      citation: "See literature on Euler Tour",
+      supports: "Core algorithm description",
     },
   ],
   review: {

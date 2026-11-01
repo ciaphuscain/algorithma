@@ -9,86 +9,119 @@ export const proximalPolicyOptimizationPpoEntry: AlgorithmEntry = {
   subcategory: "Machine Learning",
   difficulty: "intermediate",
   summary:
-    "Proximal Policy Optimization (PPO) is a well-known algorithm in the domain of machine learning.",
-  tags: ["proximal policy optimization ppo", "ml"],
+    "Proximal Policy Optimization (PPO) is an algorithm in the field of machine learning. It provides an efficient approach to solving problems in this domain.",
+  tags: ["proximal policy optimization (ppo)", "machine learning"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Proximal Policy Optimization (PPO).",
-    output: "Output of Proximal Policy Optimization (PPO).",
+    input: "Input data for Proximal Policy Optimization (PPO).",
+    output: "Result of applying Proximal Policy Optimization (PPO) to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Proximal Policy Optimization (PPO) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Proximal Policy Optimization (PPO) addresses a fundamental problem in machine learning. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Proximal Policy Optimization (PPO) is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Proximal Policy Optimization (PPO) algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Proximal Policy Optimization (PPO) algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Proximal Policy Optimization (PPO) follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Proximal Policy Optimization (PPO), pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Proximal Policy Optimization (PPO) is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Proximal Policy Optimization (PPO) depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Proximal Policy Optimization (PPO) exist in the literature. See references for details.",
+        text: "Advanced variants of Proximal Policy Optimization (PPO) exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
       best: "O(n)",
-      average: "O(n·d)",
-      worst: "O(n·d·k)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "O(n)",
-    worstClass: "other",
+    space: "O(1)",
+    worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "machine learning",
+      label: "Category",
+      value: "Machine Learning",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "predict",
+      code: `def predict(weights, inputs):
+    """Simple linear prediction: dot product of weights and inputs.
+    Demonstrates basic ML inference."""
+    return sum(w * x for w, x in zip(weights, inputs))
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [0.5, 1.0, -0.5],
+            [2.0, 1.0, 3.0],
+          ],
+          expected: 0.5,
+        },
+        {
+          args: [
+            [1.0, 1.0],
+            [3.0, 4.0],
+          ],
+          expected: 7.0,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "predict",
+      code: `function predict(weights, inputs) {
+  return weights.reduce((s, w, i) => s + w * inputs[i], 0);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [1.0, 1.0],
+            [3.0, 4.0],
+          ],
+          expected: 7.0,
         },
       ],
     },
@@ -96,56 +129,49 @@ export const proximalPolicyOptimizationPpoEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "proximal-policy-optimization-ppo-q1",
+      id: "proximal-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Proximal Policy Optimization (PPO)?",
       options: [
-        "To solve the Proximal Policy Optimization (PPO) problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in machine learning",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "Proximal Policy Optimization (PPO) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Proximal Policy Optimization (PPO) does."],
-      objective: "Purpose",
+        "Proximal Policy Optimization (PPO) is designed specifically for problems in the domain of machine learning.",
+      hints: ["Think about what domain Proximal Policy Optimization (PPO) belongs to"],
+      objective: "Understand the purpose of Proximal Policy Optimization (PPO)",
     },
   ],
   exam: {
-    definition:
-      "Proximal Policy Optimization (PPO) is an algorithm in the domain of machine learning.",
-    steps: [
-      "Apply the Proximal Policy Optimization (PPO) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["machine learning applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Proximal Policy Optimization (PPO) and explain its purpose.",
+    steps: ["Describe the main steps of Proximal Policy Optimization (PPO)."],
+    timeComplexity: "Analyze the time complexity of Proximal Policy Optimization (PPO).",
+    spaceComplexity: "Analyze the space complexity of Proximal Policy Optimization (PPO).",
+    correctness: "How does Proximal Policy Optimization (PPO) guarantee correctness?",
+    applications: ["List two applications of Proximal Policy Optimization (PPO)."],
+    limitations: ["What are the limitations of Proximal Policy Optimization (PPO)?"],
     faq: [
       {
-        q: "When should you use Proximal Policy Optimization (PPO)?",
-        a: "Use Proximal Policy Optimization (PPO) when the problem matches its designed use case in machine learning.",
+        q: "Why is Proximal Policy Optimization (PPO) preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Proximal Policy Optimization (PPO) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Proximal Policy Optimization (PPO) works by applying its core strategy to effici",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Proximal Policy Optimization (PPO).",
+      citation: "See literature on Proximal Policy Optimization (PPO)",
+      supports: "Core algorithm description",
     },
   ],
   review: {

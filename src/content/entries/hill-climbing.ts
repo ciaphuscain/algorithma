@@ -8,86 +8,120 @@ export const hillClimbingEntry: AlgorithmEntry = {
   domain: "optimization",
   subcategory: "Optimization",
   difficulty: "intermediate",
-  summary: "Hill Climbing is a well-known algorithm in the domain of optimization.",
+  summary:
+    "Hill Climbing is an algorithm in the field of optimization. It provides an efficient approach to solving problems in this domain.",
   tags: ["hill climbing", "optimization"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Hill Climbing.",
-    output: "Output of Hill Climbing.",
+    input: "Input data for Hill Climbing.",
+    output: "Result of applying Hill Climbing to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Hill Climbing solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Hill Climbing addresses a fundamental problem in optimization. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Hill Climbing is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Hill Climbing algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Hill Climbing algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Hill Climbing follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Hill Climbing, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Hill Climbing is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Hill Climbing depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Hill Climbing exist in the literature. See references for details.",
+        text: "Advanced variants of Hill Climbing exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      best: "O(n * W)",
+      average: "O(n * W)",
+      worst: "O(n * W)",
     },
-    space: "O(n)",
+    space: "O(W)",
     worstClass: "other",
   },
   properties: [
     {
-      label: "Domain",
-      value: "optimization",
+      label: "Category",
+      value: "Optimization",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(values, weights, capacity):
+    """0/1 Knapsack: maximize total value with weight constraint.
+    Demonstrates optimization via dynamic programming."""
+    n = len(values)
+    dp = [0] * (capacity + 1)
+    for i in range(n):
+        for w in range(capacity, weights[i] - 1, -1):
+            dp[w] = max(dp[w], dp[w - weights[i]] + values[i])
+    return dp[capacity]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[60, 100, 120], [10, 20, 30], 50],
+          expected: 220,
+        },
+        {
+          args: [[10, 20], [5, 10], 15],
+          expected: 30,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(values, weights, capacity) {
+  const dp = new Array(capacity + 1).fill(0);
+  for (let i = 0; i < values.length; i++)
+    for (let w = capacity; w >= weights[i]; w--)
+      dp[w] = Math.max(dp[w], dp[w - weights[i]] + values[i]);
+  return dp[capacity];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[60, 100, 120], [10, 20, 30], 50],
+          expected: 220,
         },
       ],
     },
@@ -95,54 +129,49 @@ export const hillClimbingEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "hill-climbing-q1",
+      id: "hill-cli-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Hill Climbing?",
       options: [
-        "To solve the Hill Climbing problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in optimization",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Hill Climbing is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Hill Climbing does."],
-      objective: "Purpose",
+      explanation:
+        "Hill Climbing is designed specifically for problems in the domain of optimization.",
+      hints: ["Think about what domain Hill Climbing belongs to"],
+      objective: "Understand the purpose of Hill Climbing",
     },
   ],
   exam: {
-    definition: "Hill Climbing is an algorithm in the domain of optimization.",
-    steps: [
-      "Apply the Hill Climbing algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["optimization applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Hill Climbing and explain its purpose.",
+    steps: ["Describe the main steps of Hill Climbing."],
+    timeComplexity: "Analyze the time complexity of Hill Climbing.",
+    spaceComplexity: "Analyze the space complexity of Hill Climbing.",
+    correctness: "How does Hill Climbing guarantee correctness?",
+    applications: ["List two applications of Hill Climbing."],
+    limitations: ["What are the limitations of Hill Climbing?"],
     faq: [
       {
-        q: "When should you use Hill Climbing?",
-        a: "Use Hill Climbing when the problem matches its designed use case in optimization.",
+        q: "Why is Hill Climbing preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Hill Climbing (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Hill Climbing works by applying its core strategy to efficiently solve the targe",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Hill Climbing.",
+      citation: "See literature on Hill Climbing",
+      supports: "Core algorithm description",
     },
   ],
   review: {

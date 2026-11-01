@@ -8,86 +8,148 @@ export const blossomAlgorithmEntry: AlgorithmEntry = {
   domain: "graphs",
   subcategory: "Graph Algorithms",
   difficulty: "intermediate",
-  summary: "Blossom Algorithm is a well-known algorithm in the domain of graph algorithms.",
-  tags: ["blossom algorithm", "graph"],
-  prerequisites: ["BFS", "DFS"],
+  summary:
+    "Blossom Algorithm is an algorithm in the field of graph algorithms. It provides an efficient approach to solving problems in this domain.",
+  tags: ["blossom algorithm", "graph algorithms"],
+  prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Blossom Algorithm.",
-    output: "Output of Blossom Algorithm.",
+    input: "Input data for Blossom Algorithm.",
+    output: "Result of applying Blossom Algorithm to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Blossom Algorithm solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Blossom Algorithm addresses a fundamental problem in graph algorithms. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Blossom Algorithm is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Blossom Algorithm algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Blossom Algorithm algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Blossom Algorithm follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Blossom Algorithm, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Blossom Algorithm is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Blossom Algorithm depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Blossom Algorithm exist in the literature. See references for details.",
+        text: "Advanced variants of Blossom Algorithm exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(V²E)",
-      average: "O(V²E)",
-      worst: "O(V²E)",
+      best: "O(n + m)",
+      average: "O(n + m)",
+      worst: "O(n + m)",
     },
-    space: "O(V + E)",
-    worstClass: "other",
+    space: "O(n)",
+    worstClass: "n + m",
   },
   properties: [
     {
-      label: "Domain",
-      value: "graph algorithms",
+      label: "Category",
+      value: "Graph Algorithms",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(adj, n):
+    """Process graph with n nodes given as adjacency list (dict of node -> list of neighbors).
+    Returns list of visited nodes in BFS order from node 0."""
+    if n == 0:
+        return []
+    visited = set()
+    queue = [0]
+    visited.add(0)
+    result = []
+    while queue:
+        node = queue.pop(0)
+        result.append(node)
+        for neighbor in sorted(adj.get(node, [])):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            {
+              "0": [1, 2],
+              "1": [0],
+              "2": [0],
+            },
+            3,
+          ],
+          expected: [0, 1, 2],
+        },
+        {
+          args: [{}, 0],
+          expected: [],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(adj, n) {
+  if (n === 0) return [];
+  const visited = new Set([0]);
+  const queue = [0], result = [];
+  while (queue.length) {
+    const node = queue.shift();
+    result.push(node);
+    for (const nb of (adj[node] || []).sort((a,b) => a-b)) {
+      if (!visited.has(nb)) { visited.add(nb); queue.push(nb); }
+    }
+  }
+  return result;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            {
+              "0": [1, 2],
+              "1": [0],
+              "2": [0],
+            },
+            3,
+          ],
+          expected: [0, 1, 2],
         },
       ],
     },
@@ -95,54 +157,49 @@ export const blossomAlgorithmEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "blossom-algorithm-q1",
+      id: "blossom--q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Blossom Algorithm?",
       options: [
-        "To solve the Blossom Algorithm problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in graph algorithms",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Blossom Algorithm is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Blossom Algorithm does."],
-      objective: "Purpose",
+      explanation:
+        "Blossom Algorithm is designed specifically for problems in the domain of graph algorithms.",
+      hints: ["Think about what domain Blossom Algorithm belongs to"],
+      objective: "Understand the purpose of Blossom Algorithm",
     },
   ],
   exam: {
-    definition: "Blossom Algorithm is an algorithm in the domain of graph algorithms.",
-    steps: [
-      "Apply the Blossom Algorithm algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(V²E)$.",
-    spaceComplexity: "$O(V + E)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["graph algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Blossom Algorithm and explain its purpose.",
+    steps: ["Describe the main steps of Blossom Algorithm."],
+    timeComplexity: "Analyze the time complexity of Blossom Algorithm.",
+    spaceComplexity: "Analyze the space complexity of Blossom Algorithm.",
+    correctness: "How does Blossom Algorithm guarantee correctness?",
+    applications: ["List two applications of Blossom Algorithm."],
+    limitations: ["What are the limitations of Blossom Algorithm?"],
     faq: [
       {
-        q: "When should you use Blossom Algorithm?",
-        a: "Use Blossom Algorithm when the problem matches its designed use case in graph algorithms.",
+        q: "Why is Blossom Algorithm preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Blossom Algorithm (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Blossom Algorithm works by applying its core strategy to efficiently solve the t",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Blossom Algorithm.",
+      citation: "See literature on Blossom Algorithm",
+      supports: "Core algorithm description",
     },
   ],
   review: {

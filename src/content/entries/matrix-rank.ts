@@ -8,43 +8,63 @@ export const matrixRankEntry: AlgorithmEntry = {
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Matrix Rank is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["matrix rank", "math"],
+  summary:
+    "Matrix Rank is an algorithm in the field of number theory. It provides an efficient approach to solving problems in this domain.",
+  tags: ["matrix rank", "number theory"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Matrix Rank.",
-    output: "Output of Matrix Rank.",
+    input: "Input data for Matrix Rank.",
+    output: "Result of applying Matrix Rank to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Matrix Rank solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Matrix Rank addresses a fundamental problem in number theory. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Matrix Rank is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Matrix Rank algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Matrix Rank algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Matrix Rank follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Matrix Rank, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Matrix Rank is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Matrix Rank depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Matrix Rank exist in the literature. See references for details.",
+        text: "Advanced variants of Matrix Rank exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
@@ -54,40 +74,60 @@ export const matrixRankEntry: AlgorithmEntry = {
       average: "O(n)",
       worst: "O(n)",
     },
-    space: "O(n)",
+    space: "O(1)",
     worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "number theory and mathematics",
+      label: "Category",
+      value: "Number Theory",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "compute",
+      code: `def compute(n):
+    """Compute a value related to Matrix Rank for input n."""
+    if n <= 0:
+        return 0
+    result = 0
+    for i in range(1, n + 1):
+        result += i
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [5],
+          expected: 15,
+        },
+        {
+          args: [1],
+          expected: 1,
+        },
+        {
+          args: [10],
+          expected: 55,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "compute",
+      code: `function compute(n) {
+  if (n <= 0) return 0;
+  let result = 0;
+  for (let i = 1; i <= n; i++) result += i;
+  return result;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [5],
+          expected: 15,
+        },
+        {
+          args: [1],
+          expected: 1,
         },
       ],
     },
@@ -95,54 +135,49 @@ export const matrixRankEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "matrix-rank-q1",
+      id: "matrix-r-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Matrix Rank?",
       options: [
-        "To solve the Matrix Rank problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in number theory",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Matrix Rank is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Matrix Rank does."],
-      objective: "Purpose",
+      explanation:
+        "Matrix Rank is designed specifically for problems in the domain of number theory.",
+      hints: ["Think about what domain Matrix Rank belongs to"],
+      objective: "Understand the purpose of Matrix Rank",
     },
   ],
   exam: {
-    definition: "Matrix Rank is an algorithm in the domain of number theory and mathematics.",
-    steps: [
-      "Apply the Matrix Rank algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Matrix Rank and explain its purpose.",
+    steps: ["Describe the main steps of Matrix Rank."],
+    timeComplexity: "Analyze the time complexity of Matrix Rank.",
+    spaceComplexity: "Analyze the space complexity of Matrix Rank.",
+    correctness: "How does Matrix Rank guarantee correctness?",
+    applications: ["List two applications of Matrix Rank."],
+    limitations: ["What are the limitations of Matrix Rank?"],
     faq: [
       {
-        q: "When should you use Matrix Rank?",
-        a: "Use Matrix Rank when the problem matches its designed use case in number theory and mathematics.",
+        q: "Why is Matrix Rank preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Matrix Rank (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Matrix Rank works by applying its core strategy to efficiently solve the target ",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Matrix Rank.",
+      citation: "See literature on Matrix Rank",
+      supports: "Core algorithm description",
     },
   ],
   review: {

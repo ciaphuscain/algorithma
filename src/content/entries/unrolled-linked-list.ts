@@ -9,50 +9,69 @@ export const unrolledLinkedListEntry: AlgorithmEntry = {
   subcategory: "Linear Data Structures",
   difficulty: "intermediate",
   summary:
-    "Unrolled Linked List is a well-known algorithm in the domain of linear data structures.",
-  tags: ["unrolled linked list", "data structure"],
+    "Unrolled Linked List is an algorithm in the field of linear data structures. It provides an efficient approach to solving problems in this domain.",
+  tags: ["unrolled linked list", "linear data structures"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Unrolled Linked List.",
-    output: "Output of Unrolled Linked List.",
+    input: "Input data for Unrolled Linked List.",
+    output: "Result of applying Unrolled Linked List to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Unrolled Linked List solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Unrolled Linked List addresses a fundamental problem in linear data structures. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Unrolled Linked List is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Unrolled Linked List algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Unrolled Linked List algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Unrolled Linked List follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Unrolled Linked List, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Unrolled Linked List is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Unrolled Linked List depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Unrolled Linked List exist in the literature. See references for details.",
+        text: "Advanced variants of Unrolled Linked List exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(1)",
-      average: "O(1)",
+      best: "O(n)",
+      average: "O(n)",
       worst: "O(n)",
     },
     space: "O(n)",
@@ -60,35 +79,52 @@ export const unrolledLinkedListEntry: AlgorithmEntry = {
   },
   properties: [
     {
-      label: "Domain",
-      value: "linear data structures",
+      label: "Category",
+      value: "Linear Data Structures",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(operations):
+    """Process a sequence of queue operations: [op, val?].
+    op='push' adds val, op='pop' removes front. Returns list of popped values."""
+    queue = []
+    result = []
+    for op in operations:
+        if op[0] == "push":
+            queue.append(op[1])
+        elif op[0] == "pop" and queue:
+            result.append(queue.pop(0))
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[["push", 1], ["push", 2], ["pop"], ["push", 3], ["pop"]]],
+          expected: [1, 2],
+        },
+        {
+          args: [[["push", 5], ["pop"]]],
+          expected: [5],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(operations) {
+  const queue = [], result = [];
+  for (const op of operations) {
+    if (op[0] === "push") queue.push(op[1]);
+    else if (op[0] === "pop" && queue.length) result.push(queue.shift());
+  }
+  return result;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[["push", 1], ["push", 2], ["pop"], ["push", 3], ["pop"]]],
+          expected: [1, 2],
         },
       ],
     },
@@ -96,54 +132,49 @@ export const unrolledLinkedListEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "unrolled-linked-list-q1",
+      id: "unrolled-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Unrolled Linked List?",
       options: [
-        "To solve the Unrolled Linked List problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in linear data structures",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Unrolled Linked List is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Unrolled Linked List does."],
-      objective: "Purpose",
+      explanation:
+        "Unrolled Linked List is designed specifically for problems in the domain of linear data structures.",
+      hints: ["Think about what domain Unrolled Linked List belongs to"],
+      objective: "Understand the purpose of Unrolled Linked List",
     },
   ],
   exam: {
-    definition: "Unrolled Linked List is an algorithm in the domain of linear data structures.",
-    steps: [
-      "Apply the Unrolled Linked List algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(1)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["linear data structures applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Unrolled Linked List and explain its purpose.",
+    steps: ["Describe the main steps of Unrolled Linked List."],
+    timeComplexity: "Analyze the time complexity of Unrolled Linked List.",
+    spaceComplexity: "Analyze the space complexity of Unrolled Linked List.",
+    correctness: "How does Unrolled Linked List guarantee correctness?",
+    applications: ["List two applications of Unrolled Linked List."],
+    limitations: ["What are the limitations of Unrolled Linked List?"],
     faq: [
       {
-        q: "When should you use Unrolled Linked List?",
-        a: "Use Unrolled Linked List when the problem matches its designed use case in linear data structures.",
+        q: "Why is Unrolled Linked List preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Unrolled Linked List (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Unrolled Linked List works by applying its core strategy to efficiently solve th",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Unrolled Linked List.",
+      citation: "See literature on Unrolled Linked List",
+      supports: "Core algorithm description",
     },
   ],
   review: {

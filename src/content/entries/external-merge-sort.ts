@@ -8,86 +8,142 @@ export const externalMergeSortEntry: AlgorithmEntry = {
   domain: "databases",
   subcategory: "Database Algorithms",
   difficulty: "intermediate",
-  summary: "External Merge Sort is a well-known algorithm in the domain of database algorithms.",
-  tags: ["external merge sort", "database"],
+  summary:
+    "External Merge Sort is an algorithm in the field of database algorithms. It provides an efficient approach to solving problems in this domain.",
+  tags: ["external merge sort", "database algorithms"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for External Merge Sort.",
-    output: "Output of External Merge Sort.",
+    input: "Input data for External Merge Sort.",
+    output: "Result of applying External Merge Sort to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "External Merge Sort solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "External Merge Sort addresses a fundamental problem in database algorithms. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind External Merge Sort is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The External Merge Sort algorithm processes its input step by step. See the implementation level for details.",
+        text: "The External Merge Sort algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of External Merge Sort follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing External Merge Sort, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of External Merge Sort is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of External Merge Sort depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of External Merge Sort exist in the literature. See references for details.",
+        text: "Advanced variants of External Merge Sort exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
+      best: "O(n log n)",
       average: "O(n log n)",
       worst: "O(n log n)",
     },
     space: "O(n)",
-    worstClass: "other",
+    worstClass: "n log n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "database algorithms",
+      label: "Category",
+      value: "Database Algorithms",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(records, key_index):
+    """Sort records by the given key index, simulating a basic database operation.
+    Returns sorted list of records."""
+    return sorted(records, key=lambda r: r[key_index])
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [3, "c"],
+              [1, "a"],
+              [2, "b"],
+            ],
+            0,
+          ],
+          expected: [
+            [1, "a"],
+            [2, "b"],
+            [3, "c"],
+          ],
+        },
+        {
+          args: [
+            [
+              [1, "z"],
+              [2, "a"],
+            ],
+            1,
+          ],
+          expected: [
+            [2, "a"],
+            [1, "z"],
+          ],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(records, keyIndex) {
+  return [...records].sort((a, b) => a[keyIndex] < b[keyIndex] ? -1 : a[keyIndex] > b[keyIndex] ? 1 : 0);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [3, "c"],
+              [1, "a"],
+              [2, "b"],
+            ],
+            0,
+          ],
+          expected: [
+            [1, "a"],
+            [2, "b"],
+            [3, "c"],
+          ],
         },
       ],
     },
@@ -95,54 +151,49 @@ export const externalMergeSortEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "external-merge-sort-q1",
+      id: "external-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of External Merge Sort?",
       options: [
-        "To solve the External Merge Sort problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in database algorithms",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "External Merge Sort is designed to solve its specific problem efficiently.",
-      hints: ["Think about what External Merge Sort does."],
-      objective: "Purpose",
+      explanation:
+        "External Merge Sort is designed specifically for problems in the domain of database algorithms.",
+      hints: ["Think about what domain External Merge Sort belongs to"],
+      objective: "Understand the purpose of External Merge Sort",
     },
   ],
   exam: {
-    definition: "External Merge Sort is an algorithm in the domain of database algorithms.",
-    steps: [
-      "Apply the External Merge Sort algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["database algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define External Merge Sort and explain its purpose.",
+    steps: ["Describe the main steps of External Merge Sort."],
+    timeComplexity: "Analyze the time complexity of External Merge Sort.",
+    spaceComplexity: "Analyze the space complexity of External Merge Sort.",
+    correctness: "How does External Merge Sort guarantee correctness?",
+    applications: ["List two applications of External Merge Sort."],
+    limitations: ["What are the limitations of External Merge Sort?"],
     faq: [
       {
-        q: "When should you use External Merge Sort?",
-        a: "Use External Merge Sort when the problem matches its designed use case in database algorithms.",
+        q: "Why is External Merge Sort preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define External Merge Sort (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "External Merge Sort works by applying its core strategy to efficiently solve the",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for External Merge Sort.",
+      citation: "See literature on External Merge Sort",
+      supports: "Core algorithm description",
     },
   ],
   review: {

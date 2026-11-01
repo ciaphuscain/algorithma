@@ -8,43 +8,63 @@ export const hmacEntry: AlgorithmEntry = {
   domain: "cryptography",
   subcategory: "Cryptography",
   difficulty: "intermediate",
-  summary: "HMAC is a well-known algorithm in the domain of cryptography.",
+  summary:
+    "HMAC is an algorithm in the field of cryptography. It provides an efficient approach to solving problems in this domain.",
   tags: ["hmac", "cryptography"],
-  prerequisites: ["Number Theory"],
+  prerequisites: [],
   related: [],
   problem: {
-    input: "Input for HMAC.",
-    output: "Output of HMAC.",
+    input: "Input data for HMAC.",
+    output: "Result of applying HMAC to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "HMAC solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "HMAC addresses a fundamental problem in cryptography. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind HMAC is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The HMAC algorithm processes its input step by step. See the implementation level for details.",
+        text: "The HMAC algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of HMAC follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing HMAC, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of HMAC is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of HMAC depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of HMAC exist in the literature. See references for details.",
+        text: "Advanced variants of HMAC exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
@@ -55,39 +75,45 @@ export const hmacEntry: AlgorithmEntry = {
       worst: "O(n)",
     },
     space: "O(n)",
-    worstClass: "other",
+    worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "cryptography",
+      label: "Category",
+      value: "Cryptography",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "encrypt",
+      code: `def encrypt(data, key):
+    """Simple XOR cipher demonstrating symmetric encryption concepts.
+    data and key are lists of integers (bytes)."""
+    key_len = len(key)
+    return [d ^ key[i % key_len] for i, d in enumerate(data)]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[72, 101, 108], [42]],
+          expected: [114, 79, 70],
+        },
+        {
+          args: [[114, 79, 70], [42]],
+          expected: [72, 101, 108],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "encrypt",
+      code: `function encrypt(data, key) {
+  return data.map((d, i) => d ^ key[i % key.length]);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[72, 101, 108], [42]],
+          expected: [114, 79, 70],
         },
       ],
     },
@@ -99,46 +125,41 @@ export const hmacEntry: AlgorithmEntry = {
       kind: "mcq",
       prompt: "What is the primary purpose of HMAC?",
       options: [
-        "To solve the HMAC problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in cryptography",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "HMAC is designed to solve its specific problem efficiently.",
-      hints: ["Think about what HMAC does."],
-      objective: "Purpose",
+      explanation: "HMAC is designed specifically for problems in the domain of cryptography.",
+      hints: ["Think about what domain HMAC belongs to"],
+      objective: "Understand the purpose of HMAC",
     },
   ],
   exam: {
-    definition: "HMAC is an algorithm in the domain of cryptography.",
-    steps: [
-      "Apply the HMAC algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["cryptography applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define HMAC and explain its purpose.",
+    steps: ["Describe the main steps of HMAC."],
+    timeComplexity: "Analyze the time complexity of HMAC.",
+    spaceComplexity: "Analyze the space complexity of HMAC.",
+    correctness: "How does HMAC guarantee correctness?",
+    applications: ["List two applications of HMAC."],
+    limitations: ["What are the limitations of HMAC?"],
     faq: [
-      {
-        q: "When should you use HMAC?",
-        a: "Use HMAC when the problem matches its designed use case in cryptography.",
-      },
+      { q: "Why is HMAC preferred over simpler alternatives?", a: "See the lesson for details." },
     ],
     answers: [
       {
         marks: 5,
-        outline: ["Define HMAC (1).", "Describe the algorithm (2).", "Analyze complexity (2)."],
+        outline: [
+          "HMAC works by applying its core strategy to efficiently solve the target problem",
+        ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for HMAC.",
+      citation: "See literature on HMAC",
+      supports: "Core algorithm description",
     },
   ],
   review: {

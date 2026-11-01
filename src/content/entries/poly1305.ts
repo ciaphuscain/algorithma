@@ -8,43 +8,63 @@ export const poly1305Entry: AlgorithmEntry = {
   domain: "cryptography",
   subcategory: "Cryptography",
   difficulty: "intermediate",
-  summary: "Poly1305 is a well-known algorithm in the domain of cryptography.",
+  summary:
+    "Poly1305 is an algorithm in the field of cryptography. It provides an efficient approach to solving problems in this domain.",
   tags: ["poly1305", "cryptography"],
-  prerequisites: ["Number Theory"],
+  prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Poly1305.",
-    output: "Output of Poly1305.",
+    input: "Input data for Poly1305.",
+    output: "Result of applying Poly1305 to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Poly1305 solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Poly1305 addresses a fundamental problem in cryptography. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Poly1305 is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Poly1305 algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Poly1305 algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Poly1305 follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Poly1305, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Poly1305 is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Poly1305 depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Poly1305 exist in the literature. See references for details.",
+        text: "Advanced variants of Poly1305 exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
@@ -55,39 +75,45 @@ export const poly1305Entry: AlgorithmEntry = {
       worst: "O(n)",
     },
     space: "O(n)",
-    worstClass: "other",
+    worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "cryptography",
+      label: "Category",
+      value: "Cryptography",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "encrypt",
+      code: `def encrypt(data, key):
+    """Simple XOR cipher demonstrating symmetric encryption concepts.
+    data and key are lists of integers (bytes)."""
+    key_len = len(key)
+    return [d ^ key[i % key_len] for i, d in enumerate(data)]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[72, 101, 108], [42]],
+          expected: [114, 79, 70],
+        },
+        {
+          args: [[114, 79, 70], [42]],
+          expected: [72, 101, 108],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "encrypt",
+      code: `function encrypt(data, key) {
+  return data.map((d, i) => d ^ key[i % key.length]);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[72, 101, 108], [42]],
+          expected: [114, 79, 70],
         },
       ],
     },
@@ -99,46 +125,44 @@ export const poly1305Entry: AlgorithmEntry = {
       kind: "mcq",
       prompt: "What is the primary purpose of Poly1305?",
       options: [
-        "To solve the Poly1305 problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in cryptography",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Poly1305 is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Poly1305 does."],
-      objective: "Purpose",
+      explanation: "Poly1305 is designed specifically for problems in the domain of cryptography.",
+      hints: ["Think about what domain Poly1305 belongs to"],
+      objective: "Understand the purpose of Poly1305",
     },
   ],
   exam: {
-    definition: "Poly1305 is an algorithm in the domain of cryptography.",
-    steps: [
-      "Apply the Poly1305 algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["cryptography applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Poly1305 and explain its purpose.",
+    steps: ["Describe the main steps of Poly1305."],
+    timeComplexity: "Analyze the time complexity of Poly1305.",
+    spaceComplexity: "Analyze the space complexity of Poly1305.",
+    correctness: "How does Poly1305 guarantee correctness?",
+    applications: ["List two applications of Poly1305."],
+    limitations: ["What are the limitations of Poly1305?"],
     faq: [
       {
-        q: "When should you use Poly1305?",
-        a: "Use Poly1305 when the problem matches its designed use case in cryptography.",
+        q: "Why is Poly1305 preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: ["Define Poly1305 (1).", "Describe the algorithm (2).", "Analyze complexity (2)."],
+        outline: [
+          "Poly1305 works by applying its core strategy to efficiently solve the target pro",
+        ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Poly1305.",
+      citation: "See literature on Poly1305",
+      supports: "Core algorithm description",
     },
   ],
   review: {

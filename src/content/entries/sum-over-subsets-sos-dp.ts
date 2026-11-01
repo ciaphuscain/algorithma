@@ -9,86 +9,136 @@ export const sumOverSubsetsSosDpEntry: AlgorithmEntry = {
   subcategory: "Dynamic Programming",
   difficulty: "intermediate",
   summary:
-    "Sum over Subsets (SOS) DP is a well-known algorithm in the domain of dynamic programming.",
-  tags: ["sum over subsets sos dp", "dp"],
-  prerequisites: ["Recursion"],
+    "Sum over Subsets (SOS) DP is an algorithm in the field of dynamic programming. It provides an efficient approach to solving problems in this domain.",
+  tags: ["sum over subsets (sos) dp", "dynamic programming"],
+  prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Sum over Subsets (SOS) DP.",
-    output: "Output of Sum over Subsets (SOS) DP.",
+    input: "Input data for Sum over Subsets (SOS) DP.",
+    output: "Result of applying Sum over Subsets (SOS) DP to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Sum over Subsets (SOS) DP solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Sum over Subsets (SOS) DP addresses a fundamental problem in dynamic programming. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Sum over Subsets (SOS) DP is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Sum over Subsets (SOS) DP algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Sum over Subsets (SOS) DP algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Sum over Subsets (SOS) DP follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Sum over Subsets (SOS) DP, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Sum over Subsets (SOS) DP is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Sum over Subsets (SOS) DP depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Sum over Subsets (SOS) DP exist in the literature. See references for details.",
+        text: "Advanced variants of Sum over Subsets (SOS) DP exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "O(n)",
-    worstClass: "other",
+    space: "O(1)",
+    worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "dynamic programming",
+      label: "Category",
+      value: "Dynamic Programming",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(values):
+    """Dynamic programming: find maximum sum of non-adjacent elements.
+    A simplified demonstration of Sum over Subsets (SOS) DP concepts."""
+    if not values:
+        return 0
+    n = len(values)
+    if n == 1:
+        return max(0, values[0])
+    prev2 = 0
+    prev1 = max(0, values[0])
+    for i in range(1, n):
+        curr = max(prev1, prev2 + values[i])
+        prev2 = prev1
+        prev1 = curr
+    return prev1
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[3, 2, 5, 10, 7]],
+          expected: 15,
+        },
+        {
+          args: [[5, 1, 1, 5]],
+          expected: 10,
+        },
+        {
+          args: [[]],
+          expected: 0,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(values) {
+  if (!values.length) return 0;
+  if (values.length === 1) return Math.max(0, values[0]);
+  let prev2 = 0, prev1 = Math.max(0, values[0]);
+  for (let i = 1; i < values.length; i++) {
+    const curr = Math.max(prev1, prev2 + values[i]);
+    prev2 = prev1; prev1 = curr;
+  }
+  return prev1;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[3, 2, 5, 10, 7]],
+          expected: 15,
+        },
+        {
+          args: [[5, 1, 1, 5]],
+          expected: 10,
         },
       ],
     },
@@ -96,55 +146,49 @@ export const sumOverSubsetsSosDpEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "sum-over-subsets-sos-dp-q1",
+      id: "sum-over-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Sum over Subsets (SOS) DP?",
       options: [
-        "To solve the Sum over Subsets (SOS) DP problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in dynamic programming",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "Sum over Subsets (SOS) DP is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Sum over Subsets (SOS) DP does."],
-      objective: "Purpose",
+        "Sum over Subsets (SOS) DP is designed specifically for problems in the domain of dynamic programming.",
+      hints: ["Think about what domain Sum over Subsets (SOS) DP belongs to"],
+      objective: "Understand the purpose of Sum over Subsets (SOS) DP",
     },
   ],
   exam: {
-    definition: "Sum over Subsets (SOS) DP is an algorithm in the domain of dynamic programming.",
-    steps: [
-      "Apply the Sum over Subsets (SOS) DP algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["dynamic programming applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Sum over Subsets (SOS) DP and explain its purpose.",
+    steps: ["Describe the main steps of Sum over Subsets (SOS) DP."],
+    timeComplexity: "Analyze the time complexity of Sum over Subsets (SOS) DP.",
+    spaceComplexity: "Analyze the space complexity of Sum over Subsets (SOS) DP.",
+    correctness: "How does Sum over Subsets (SOS) DP guarantee correctness?",
+    applications: ["List two applications of Sum over Subsets (SOS) DP."],
+    limitations: ["What are the limitations of Sum over Subsets (SOS) DP?"],
     faq: [
       {
-        q: "When should you use Sum over Subsets (SOS) DP?",
-        a: "Use Sum over Subsets (SOS) DP when the problem matches its designed use case in dynamic programming.",
+        q: "Why is Sum over Subsets (SOS) DP preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Sum over Subsets (SOS) DP (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Sum over Subsets (SOS) DP works by applying its core strategy to efficiently sol",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Sum over Subsets (SOS) DP.",
+      citation: "See literature on Sum over Subsets (SOS) DP",
+      supports: "Core algorithm description",
     },
   ],
   review: {

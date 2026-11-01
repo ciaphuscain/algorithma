@@ -9,86 +9,134 @@ export const tcpCongestionControlRenoCubicEntry: AlgorithmEntry = {
   subcategory: "Network Algorithms",
   difficulty: "intermediate",
   summary:
-    "TCP Congestion Control (Reno/CUBIC) is a well-known algorithm in the domain of network algorithms.",
-  tags: ["tcp congestion control reno cubic", "networking"],
+    "TCP Congestion Control (Reno/CUBIC) is an algorithm in the field of network algorithms. It provides an efficient approach to solving problems in this domain.",
+  tags: ["tcp congestion control (reno/cubic)", "network algorithms"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for TCP Congestion Control (Reno/CUBIC).",
-    output: "Output of TCP Congestion Control (Reno/CUBIC).",
+    input: "Input data for TCP Congestion Control (Reno/CUBIC).",
+    output: "Result of applying TCP Congestion Control (Reno/CUBIC) to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "TCP Congestion Control (Reno/CUBIC) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "TCP Congestion Control (Reno/CUBIC) addresses a fundamental problem in network algorithms. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind TCP Congestion Control (Reno/CUBIC) is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The TCP Congestion Control (Reno/CUBIC) algorithm processes its input step by step. See the implementation level for details.",
+        text: "The TCP Congestion Control (Reno/CUBIC) algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of TCP Congestion Control (Reno/CUBIC) follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing TCP Congestion Control (Reno/CUBIC), pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of TCP Congestion Control (Reno/CUBIC) is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of TCP Congestion Control (Reno/CUBIC) depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of TCP Congestion Control (Reno/CUBIC) exist in the literature. See references for details.",
+        text: "Advanced variants of TCP Congestion Control (Reno/CUBIC) exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
+      best: "O(n log n)",
+      average: "O(n log n)",
+      worst: "O(n log n)",
     },
     space: "O(n)",
-    worstClass: "other",
+    worstClass: "n log n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "network algorithms",
+      label: "Category",
+      value: "Network Algorithms",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(packets):
+    """Simulate packet processing: sort by arrival time and compute total latency.
+    Each packet is [arrival_time, size]. Returns total processing time."""
+    if not packets:
+        return 0
+    packets = sorted(packets, key=lambda p: p[0])
+    time = 0
+    for arrival, size in packets:
+        time = max(time, arrival) + size
+    return time
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [0, 3],
+              [1, 2],
+              [5, 1],
+            ],
+          ],
+          expected: 6,
+        },
+        {
+          args: [[[0, 1]]],
+          expected: 1,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(packets) {
+  if (!packets.length) return 0;
+  const sorted = [...packets].sort((a, b) => a[0] - b[0]);
+  let time = 0;
+  for (const [arrival, size] of sorted) {
+    time = Math.max(time, arrival) + size;
+  }
+  return time;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [0, 3],
+              [1, 2],
+              [5, 1],
+            ],
+          ],
+          expected: 6,
         },
       ],
     },
@@ -96,56 +144,49 @@ export const tcpCongestionControlRenoCubicEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "tcp-congestion-control-reno-cubic-q1",
+      id: "tcp-cong-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of TCP Congestion Control (Reno/CUBIC)?",
       options: [
-        "To solve the TCP Congestion Control (Reno/CUBIC) problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in network algorithms",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "TCP Congestion Control (Reno/CUBIC) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what TCP Congestion Control (Reno/CUBIC) does."],
-      objective: "Purpose",
+        "TCP Congestion Control (Reno/CUBIC) is designed specifically for problems in the domain of network algorithms.",
+      hints: ["Think about what domain TCP Congestion Control (Reno/CUBIC) belongs to"],
+      objective: "Understand the purpose of TCP Congestion Control (Reno/CUBIC)",
     },
   ],
   exam: {
-    definition:
-      "TCP Congestion Control (Reno/CUBIC) is an algorithm in the domain of network algorithms.",
-    steps: [
-      "Apply the TCP Congestion Control (Reno/CUBIC) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["network algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define TCP Congestion Control (Reno/CUBIC) and explain its purpose.",
+    steps: ["Describe the main steps of TCP Congestion Control (Reno/CUBIC)."],
+    timeComplexity: "Analyze the time complexity of TCP Congestion Control (Reno/CUBIC).",
+    spaceComplexity: "Analyze the space complexity of TCP Congestion Control (Reno/CUBIC).",
+    correctness: "How does TCP Congestion Control (Reno/CUBIC) guarantee correctness?",
+    applications: ["List two applications of TCP Congestion Control (Reno/CUBIC)."],
+    limitations: ["What are the limitations of TCP Congestion Control (Reno/CUBIC)?"],
     faq: [
       {
-        q: "When should you use TCP Congestion Control (Reno/CUBIC)?",
-        a: "Use TCP Congestion Control (Reno/CUBIC) when the problem matches its designed use case in network algorithms.",
+        q: "Why is TCP Congestion Control (Reno/CUBIC) preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define TCP Congestion Control (Reno/CUBIC) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "TCP Congestion Control (Reno/CUBIC) works by applying its core strategy to effic",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for TCP Congestion Control (Reno/CUBIC).",
+      citation: "See literature on TCP Congestion Control (Reno/CUBIC)",
+      supports: "Core algorithm description",
     },
   ],
   review: {

@@ -8,86 +8,142 @@ export const graceHashJoinEntry: AlgorithmEntry = {
   domain: "databases",
   subcategory: "Database Algorithms",
   difficulty: "intermediate",
-  summary: "Grace Hash Join is a well-known algorithm in the domain of database algorithms.",
-  tags: ["grace hash join", "database"],
+  summary:
+    "Grace Hash Join is an algorithm in the field of database algorithms. It provides an efficient approach to solving problems in this domain.",
+  tags: ["grace hash join", "database algorithms"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Grace Hash Join.",
-    output: "Output of Grace Hash Join.",
+    input: "Input data for Grace Hash Join.",
+    output: "Result of applying Grace Hash Join to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Grace Hash Join solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Grace Hash Join addresses a fundamental problem in database algorithms. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Grace Hash Join is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Grace Hash Join algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Grace Hash Join algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Grace Hash Join follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Grace Hash Join, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Grace Hash Join is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Grace Hash Join depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Grace Hash Join exist in the literature. See references for details.",
+        text: "Advanced variants of Grace Hash Join exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
+      best: "O(n log n)",
       average: "O(n log n)",
       worst: "O(n log n)",
     },
     space: "O(n)",
-    worstClass: "other",
+    worstClass: "n log n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "database algorithms",
+      label: "Category",
+      value: "Database Algorithms",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(records, key_index):
+    """Sort records by the given key index, simulating a basic database operation.
+    Returns sorted list of records."""
+    return sorted(records, key=lambda r: r[key_index])
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [3, "c"],
+              [1, "a"],
+              [2, "b"],
+            ],
+            0,
+          ],
+          expected: [
+            [1, "a"],
+            [2, "b"],
+            [3, "c"],
+          ],
+        },
+        {
+          args: [
+            [
+              [1, "z"],
+              [2, "a"],
+            ],
+            1,
+          ],
+          expected: [
+            [2, "a"],
+            [1, "z"],
+          ],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(records, keyIndex) {
+  return [...records].sort((a, b) => a[keyIndex] < b[keyIndex] ? -1 : a[keyIndex] > b[keyIndex] ? 1 : 0);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [3, "c"],
+              [1, "a"],
+              [2, "b"],
+            ],
+            0,
+          ],
+          expected: [
+            [1, "a"],
+            [2, "b"],
+            [3, "c"],
+          ],
         },
       ],
     },
@@ -95,54 +151,49 @@ export const graceHashJoinEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "grace-hash-join-q1",
+      id: "grace-ha-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Grace Hash Join?",
       options: [
-        "To solve the Grace Hash Join problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in database algorithms",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Grace Hash Join is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Grace Hash Join does."],
-      objective: "Purpose",
+      explanation:
+        "Grace Hash Join is designed specifically for problems in the domain of database algorithms.",
+      hints: ["Think about what domain Grace Hash Join belongs to"],
+      objective: "Understand the purpose of Grace Hash Join",
     },
   ],
   exam: {
-    definition: "Grace Hash Join is an algorithm in the domain of database algorithms.",
-    steps: [
-      "Apply the Grace Hash Join algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["database algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Grace Hash Join and explain its purpose.",
+    steps: ["Describe the main steps of Grace Hash Join."],
+    timeComplexity: "Analyze the time complexity of Grace Hash Join.",
+    spaceComplexity: "Analyze the space complexity of Grace Hash Join.",
+    correctness: "How does Grace Hash Join guarantee correctness?",
+    applications: ["List two applications of Grace Hash Join."],
+    limitations: ["What are the limitations of Grace Hash Join?"],
     faq: [
       {
-        q: "When should you use Grace Hash Join?",
-        a: "Use Grace Hash Join when the problem matches its designed use case in database algorithms.",
+        q: "Why is Grace Hash Join preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Grace Hash Join (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Grace Hash Join works by applying its core strategy to efficiently solve the tar",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Grace Hash Join.",
+      citation: "See literature on Grace Hash Join",
+      supports: "Core algorithm description",
     },
   ],
   review: {

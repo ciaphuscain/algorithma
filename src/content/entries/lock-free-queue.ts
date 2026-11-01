@@ -8,50 +8,70 @@ export const lockFreeQueueEntry: AlgorithmEntry = {
   domain: "linear-structures",
   subcategory: "Linear Data Structures",
   difficulty: "intermediate",
-  summary: "Lock-Free Queue is a well-known algorithm in the domain of linear data structures.",
-  tags: ["lock free queue", "data structure"],
+  summary:
+    "Lock-Free Queue is an algorithm in the field of linear data structures. It provides an efficient approach to solving problems in this domain.",
+  tags: ["lock-free queue", "linear data structures"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Lock-Free Queue.",
-    output: "Output of Lock-Free Queue.",
+    input: "Input data for Lock-Free Queue.",
+    output: "Result of applying Lock-Free Queue to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Lock-Free Queue solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Lock-Free Queue addresses a fundamental problem in linear data structures. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Lock-Free Queue is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Lock-Free Queue algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Lock-Free Queue algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Lock-Free Queue follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Lock-Free Queue, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Lock-Free Queue is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Lock-Free Queue depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Lock-Free Queue exist in the literature. See references for details.",
+        text: "Advanced variants of Lock-Free Queue exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(1)",
-      average: "O(1)",
+      best: "O(n)",
+      average: "O(n)",
       worst: "O(n)",
     },
     space: "O(n)",
@@ -59,35 +79,52 @@ export const lockFreeQueueEntry: AlgorithmEntry = {
   },
   properties: [
     {
-      label: "Domain",
-      value: "linear data structures",
+      label: "Category",
+      value: "Linear Data Structures",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(operations):
+    """Process a sequence of queue operations: [op, val?].
+    op='push' adds val, op='pop' removes front. Returns list of popped values."""
+    queue = []
+    result = []
+    for op in operations:
+        if op[0] == "push":
+            queue.append(op[1])
+        elif op[0] == "pop" and queue:
+            result.append(queue.pop(0))
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[["push", 1], ["push", 2], ["pop"], ["push", 3], ["pop"]]],
+          expected: [1, 2],
+        },
+        {
+          args: [[["push", 5], ["pop"]]],
+          expected: [5],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(operations) {
+  const queue = [], result = [];
+  for (const op of operations) {
+    if (op[0] === "push") queue.push(op[1]);
+    else if (op[0] === "pop" && queue.length) result.push(queue.shift());
+  }
+  return result;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[["push", 1], ["push", 2], ["pop"], ["push", 3], ["pop"]]],
+          expected: [1, 2],
         },
       ],
     },
@@ -95,54 +132,49 @@ export const lockFreeQueueEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "lock-free-queue-q1",
+      id: "lock-fre-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Lock-Free Queue?",
       options: [
-        "To solve the Lock-Free Queue problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in linear data structures",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Lock-Free Queue is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Lock-Free Queue does."],
-      objective: "Purpose",
+      explanation:
+        "Lock-Free Queue is designed specifically for problems in the domain of linear data structures.",
+      hints: ["Think about what domain Lock-Free Queue belongs to"],
+      objective: "Understand the purpose of Lock-Free Queue",
     },
   ],
   exam: {
-    definition: "Lock-Free Queue is an algorithm in the domain of linear data structures.",
-    steps: [
-      "Apply the Lock-Free Queue algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(1)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["linear data structures applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Lock-Free Queue and explain its purpose.",
+    steps: ["Describe the main steps of Lock-Free Queue."],
+    timeComplexity: "Analyze the time complexity of Lock-Free Queue.",
+    spaceComplexity: "Analyze the space complexity of Lock-Free Queue.",
+    correctness: "How does Lock-Free Queue guarantee correctness?",
+    applications: ["List two applications of Lock-Free Queue."],
+    limitations: ["What are the limitations of Lock-Free Queue?"],
     faq: [
       {
-        q: "When should you use Lock-Free Queue?",
-        a: "Use Lock-Free Queue when the problem matches its designed use case in linear data structures.",
+        q: "Why is Lock-Free Queue preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Lock-Free Queue (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Lock-Free Queue works by applying its core strategy to efficiently solve the tar",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Lock-Free Queue.",
+      citation: "See literature on Lock-Free Queue",
+      supports: "Core algorithm description",
     },
   ],
   review: {

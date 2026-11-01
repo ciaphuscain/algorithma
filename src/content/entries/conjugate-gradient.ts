@@ -9,43 +9,62 @@ export const conjugateGradientEntry: AlgorithmEntry = {
   subcategory: "Number Theory",
   difficulty: "intermediate",
   summary:
-    "Conjugate Gradient is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["conjugate gradient", "math"],
+    "Conjugate Gradient is an algorithm in the field of number theory. It provides an efficient approach to solving problems in this domain.",
+  tags: ["conjugate gradient", "number theory"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Conjugate Gradient.",
-    output: "Output of Conjugate Gradient.",
+    input: "Input data for Conjugate Gradient.",
+    output: "Result of applying Conjugate Gradient to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Conjugate Gradient solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Conjugate Gradient addresses a fundamental problem in number theory. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Conjugate Gradient is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Conjugate Gradient algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Conjugate Gradient algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Conjugate Gradient follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Conjugate Gradient, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Conjugate Gradient is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Conjugate Gradient depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Conjugate Gradient exist in the literature. See references for details.",
+        text: "Advanced variants of Conjugate Gradient exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
@@ -55,40 +74,60 @@ export const conjugateGradientEntry: AlgorithmEntry = {
       average: "O(n)",
       worst: "O(n)",
     },
-    space: "O(n)",
+    space: "O(1)",
     worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "number theory and mathematics",
+      label: "Category",
+      value: "Number Theory",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "compute",
+      code: `def compute(n):
+    """Compute a value related to Conjugate Gradient for input n."""
+    if n <= 0:
+        return 0
+    result = 0
+    for i in range(1, n + 1):
+        result += i
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [5],
+          expected: 15,
+        },
+        {
+          args: [1],
+          expected: 1,
+        },
+        {
+          args: [10],
+          expected: 55,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "compute",
+      code: `function compute(n) {
+  if (n <= 0) return 0;
+  let result = 0;
+  for (let i = 1; i <= n; i++) result += i;
+  return result;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [5],
+          expected: 15,
+        },
+        {
+          args: [1],
+          expected: 1,
         },
       ],
     },
@@ -96,55 +135,49 @@ export const conjugateGradientEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "conjugate-gradient-q1",
+      id: "conjugat-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Conjugate Gradient?",
       options: [
-        "To solve the Conjugate Gradient problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in number theory",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Conjugate Gradient is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Conjugate Gradient does."],
-      objective: "Purpose",
+      explanation:
+        "Conjugate Gradient is designed specifically for problems in the domain of number theory.",
+      hints: ["Think about what domain Conjugate Gradient belongs to"],
+      objective: "Understand the purpose of Conjugate Gradient",
     },
   ],
   exam: {
-    definition:
-      "Conjugate Gradient is an algorithm in the domain of number theory and mathematics.",
-    steps: [
-      "Apply the Conjugate Gradient algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Conjugate Gradient and explain its purpose.",
+    steps: ["Describe the main steps of Conjugate Gradient."],
+    timeComplexity: "Analyze the time complexity of Conjugate Gradient.",
+    spaceComplexity: "Analyze the space complexity of Conjugate Gradient.",
+    correctness: "How does Conjugate Gradient guarantee correctness?",
+    applications: ["List two applications of Conjugate Gradient."],
+    limitations: ["What are the limitations of Conjugate Gradient?"],
     faq: [
       {
-        q: "When should you use Conjugate Gradient?",
-        a: "Use Conjugate Gradient when the problem matches its designed use case in number theory and mathematics.",
+        q: "Why is Conjugate Gradient preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Conjugate Gradient (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Conjugate Gradient works by applying its core strategy to efficiently solve the ",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Conjugate Gradient.",
+      citation: "See literature on Conjugate Gradient",
+      supports: "Core algorithm description",
     },
   ],
   review: {

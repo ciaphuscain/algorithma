@@ -8,9 +8,10 @@ export const beamSearchEntry: AlgorithmEntry = {
   domain: "optimization",
   subcategory: "Optimization",
   difficulty: "intermediate",
-  summary: "Beam Search is a well-known algorithm in the domain of optimization.",
-  tags: ["beam search", "optimization"],
-  prerequisites: [],
+  summary:
+    "A heuristic search algorithm that explores a graph by expanding only the best k nodes at each level, where k is the beam width. Trades completeness for efficiency.",
+  tags: ["search", "heuristic", "beam width", "AI"],
+  prerequisites: ["Breadth-First Search"],
   related: [],
   problem: {
     input: "Input for Beam Search.",
@@ -20,74 +21,127 @@ export const beamSearchEntry: AlgorithmEntry = {
     intuition: [
       {
         kind: "p",
-        text: "Beam Search solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Beam search is a pruned version of breadth-first search. Instead of exploring all nodes at each level, it keeps only the top k most promising ones, where k is the beam width. This drastically reduces memory and time but sacrifices completeness.",
+      },
+      {
+        kind: "p",
+        text: "Think of it like a flashlight beam: at each step you shine light on the k best options and ignore the rest. With beam width 1 it degenerates to greedy search; with infinite width it becomes BFS.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Beam Search algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Start with the initial state in the beam.",
+          "Expand all states in the beam to get candidates.",
+          "Score each candidate with the evaluation function.",
+          "Keep only the top k candidates as the new beam.",
+          "Repeat until reaching max depth or no new candidates.",
+        ],
+      },
+      {
+        kind: "table",
+        head: ["Beam width", "Behavior", "Memory"],
+        rows: [
+          ["1", "Greedy search", "O(b)"],
+          ["k", "Beam search", "O(k*b)"],
+          ["infinity", "BFS", "O(b^d)"],
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Beam Search follows the pseudocode directly.",
+        text: "The core loop expands all beam states, sorts candidates by score, and truncates to beam width. The score function is problem-specific: for sequence generation it might be log-probability, for optimization it is the objective value.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "In NLP, beam search over token sequences commonly uses beam width 4-10. Larger beams find better sequences but slow decoding linearly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Beam Search is based on the algorithm's structure and the operations performed at each step.",
+        text: "With beam width k, branching factor b, and depth d, beam search expands at most k*b nodes per level and d levels, giving O(k*b*d) time. Space is O(k*d) to store the beam at each level. Unlike A* or BFS, beam search offers no optimality or completeness guarantees.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Beam Search exist in the literature. See references for details.",
+        text: "Stochastic beam search samples candidates proportionally to scores rather than taking the top k, introducing diversity. Beam stack search adds backtracking to recover completeness at the cost of more memory.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n²)",
-      average: "O(n²)",
-      worst: "O(n²)",
+      best: "O(k * b * d)",
+      average: "O(k * b * d)",
+      worst: "O(k * b * d)",
     },
-    space: "O(n)",
+    space: "O(k * d)",
     worstClass: "other",
   },
   properties: [
     {
-      label: "Domain",
-      value: "optimization",
+      label: "Category",
+      value: "Optimization",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "beam_search",
+      code: `def beam_search(start, expand, score, beam_width, max_depth):
+    """Beam search: keep top beam_width candidates at each level.
+    expand(state) -> list of next states.
+    score(state) -> numeric score (higher is better).
+    Returns best state found."""
+    beam = [start]
+    best = start
+    best_score = score(start)
+    for _ in range(max_depth):
+        candidates = []
+        for state in beam:
+            candidates.extend(expand(state))
+        if not candidates:
+            break
+        candidates.sort(key=score, reverse=True)
+        beam = candidates[:beam_width]
+        top_score = score(beam[0])
+        if top_score > best_score:
+            best_score = top_score
+            best = beam[0]
+    return best
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [0, "lambda x: [x+1, x+2]", "lambda x: -abs(x - 10)", 3, 5],
+          expected: 10,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "beam_search",
+      code: `function beamSearch(start, expand, score, beamWidth, maxDepth) {
+  let beam = [start];
+  let best = start, bestScore = score(start);
+  for (let d = 0; d < maxDepth; d++) {
+    let candidates = [];
+    for (const s of beam) candidates.push(...expand(s));
+    if (!candidates.length) break;
+    candidates.sort((a, b) => score(b) - score(a));
+    beam = candidates.slice(0, beamWidth);
+    if (score(beam[0]) > bestScore) { bestScore = score(beam[0]); best = beam[0]; }
+  }
+  return best;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [0, "x => [x+1, x+2]", "x => -Math.abs(x - 10)", 3, 5],
+          expected: 10,
         },
       ],
     },
@@ -95,54 +149,44 @@ export const beamSearchEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "beam-search-q1",
+      id: "bs-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Beam Search?",
-      options: [
-        "To solve the Beam Search problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
-      ],
+      prompt: "With beam width 1, beam search becomes:",
+      options: ["Greedy search", "BFS", "DFS", "A*"],
       answer: 0,
-      explanation: "Beam Search is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Beam Search does."],
-      objective: "Purpose",
+      explanation:
+        "Beam width 1 means only the single best candidate is kept at each level, which is greedy search.",
+      hints: ["What happens when you keep only the top 1?"],
+      objective: "Understand beam width",
     },
   ],
   exam: {
-    definition: "Beam Search is an algorithm in the domain of optimization.",
-    steps: [
-      "Apply the Beam Search algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n²)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["optimization applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Beam Search and explain its purpose.",
+    steps: ["Describe the main steps of Beam Search."],
+    timeComplexity: "Analyze the time complexity of Beam Search.",
+    spaceComplexity: "Analyze the space complexity of Beam Search.",
+    correctness: "How does Beam Search guarantee correctness?",
+    applications: ["List two applications of Beam Search."],
+    limitations: ["What are the limitations of Beam Search?"],
     faq: [
       {
-        q: "When should you use Beam Search?",
-        a: "Use Beam Search when the problem matches its designed use case in optimization.",
+        q: "Why is Beam Search preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Beam Search (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Beam Search works by applying its core strategy to efficiently solve the target ",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Beam Search.",
+      citation: "Russell & Norvig, Artificial Intelligence: A Modern Approach, Ch. 4",
+      supports: "Beam search as local search variant",
     },
   ],
   review: {

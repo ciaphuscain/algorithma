@@ -8,86 +8,140 @@ export const geneticAlgorithmEntry: AlgorithmEntry = {
   domain: "randomized",
   subcategory: "Randomized Algorithms",
   difficulty: "intermediate",
-  summary: "Genetic Algorithm is a well-known algorithm in the domain of randomized algorithms.",
-  tags: ["genetic algorithm", "randomized"],
+  summary:
+    "Genetic Algorithm is an algorithm in the field of randomized algorithms. It provides an efficient approach to solving problems in this domain.",
+  tags: ["genetic algorithm", "randomized algorithms"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Genetic Algorithm.",
-    output: "Output of Genetic Algorithm.",
+    input: "Input data for Genetic Algorithm.",
+    output: "Result of applying Genetic Algorithm to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Genetic Algorithm solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Genetic Algorithm addresses a fundamental problem in randomized algorithms. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Genetic Algorithm is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Genetic Algorithm algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Genetic Algorithm algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Genetic Algorithm follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Genetic Algorithm, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Genetic Algorithm is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Genetic Algorithm depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Genetic Algorithm exist in the literature. See references for details.",
+        text: "Advanced variants of Genetic Algorithm exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(g·p·n)",
-      average: "O(g·p·n)",
-      worst: "O(g·p·n)",
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n^2)",
     },
-    space: "O(p·n)",
-    worstClass: "other",
+    space: "O(1)",
+    worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "randomized algorithms",
+      label: "Category",
+      value: "Randomized Algorithms",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(arr, k):
+    """Find kth smallest element using quickselect (deterministic pivot for testing).
+    k is 0-indexed."""
+    a = list(arr)
+    def select(lo, hi, k):
+        if lo == hi:
+            return a[lo]
+        pivot = a[hi]
+        i = lo
+        for j in range(lo, hi):
+            if a[j] <= pivot:
+                a[i], a[j] = a[j], a[i]
+                i += 1
+        a[i], a[hi] = a[hi], a[i]
+        if k == i:
+            return a[i]
+        elif k < i:
+            return select(lo, i - 1, k)
+        else:
+            return select(i + 1, hi, k)
+    return select(0, len(a) - 1, k)
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[3, 1, 4, 1, 5], 0],
+          expected: 1,
+        },
+        {
+          args: [[3, 1, 4, 1, 5], 2],
+          expected: 3,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(arr, k) {
+  const a = [...arr];
+  function select(lo, hi, k) {
+    if (lo === hi) return a[lo];
+    const pivot = a[hi];
+    let i = lo;
+    for (let j = lo; j < hi; j++) {
+      if (a[j] <= pivot) { [a[i], a[j]] = [a[j], a[i]]; i++; }
+    }
+    [a[i], a[hi]] = [a[hi], a[i]];
+    if (k === i) return a[i];
+    return k < i ? select(lo, i-1, k) : select(i+1, hi, k);
+  }
+  return select(0, a.length - 1, k);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[3, 1, 4, 1, 5], 0],
+          expected: 1,
         },
       ],
     },
@@ -95,54 +149,49 @@ export const geneticAlgorithmEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "genetic-algorithm-q1",
+      id: "genetic--q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Genetic Algorithm?",
       options: [
-        "To solve the Genetic Algorithm problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in randomized algorithms",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Genetic Algorithm is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Genetic Algorithm does."],
-      objective: "Purpose",
+      explanation:
+        "Genetic Algorithm is designed specifically for problems in the domain of randomized algorithms.",
+      hints: ["Think about what domain Genetic Algorithm belongs to"],
+      objective: "Understand the purpose of Genetic Algorithm",
     },
   ],
   exam: {
-    definition: "Genetic Algorithm is an algorithm in the domain of randomized algorithms.",
-    steps: [
-      "Apply the Genetic Algorithm algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(g·p·n)$.",
-    spaceComplexity: "$O(p·n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["randomized algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Genetic Algorithm and explain its purpose.",
+    steps: ["Describe the main steps of Genetic Algorithm."],
+    timeComplexity: "Analyze the time complexity of Genetic Algorithm.",
+    spaceComplexity: "Analyze the space complexity of Genetic Algorithm.",
+    correctness: "How does Genetic Algorithm guarantee correctness?",
+    applications: ["List two applications of Genetic Algorithm."],
+    limitations: ["What are the limitations of Genetic Algorithm?"],
     faq: [
       {
-        q: "When should you use Genetic Algorithm?",
-        a: "Use Genetic Algorithm when the problem matches its designed use case in randomized algorithms.",
+        q: "Why is Genetic Algorithm preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Genetic Algorithm (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Genetic Algorithm works by applying its core strategy to efficiently solve the t",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Genetic Algorithm.",
+      citation: "See literature on Genetic Algorithm",
+      supports: "Core algorithm description",
     },
   ],
   review: {

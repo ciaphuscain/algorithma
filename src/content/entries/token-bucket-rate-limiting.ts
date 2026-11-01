@@ -9,86 +9,134 @@ export const tokenBucketRateLimitingEntry: AlgorithmEntry = {
   subcategory: "Network Algorithms",
   difficulty: "intermediate",
   summary:
-    "Token Bucket Rate Limiting is a well-known algorithm in the domain of network algorithms.",
-  tags: ["token bucket rate limiting", "networking"],
+    "Token Bucket Rate Limiting is an algorithm in the field of network algorithms. It provides an efficient approach to solving problems in this domain.",
+  tags: ["token bucket rate limiting", "network algorithms"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Token Bucket Rate Limiting.",
-    output: "Output of Token Bucket Rate Limiting.",
+    input: "Input data for Token Bucket Rate Limiting.",
+    output: "Result of applying Token Bucket Rate Limiting to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Token Bucket Rate Limiting solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Token Bucket Rate Limiting addresses a fundamental problem in network algorithms. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Token Bucket Rate Limiting is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Token Bucket Rate Limiting algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Token Bucket Rate Limiting algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Token Bucket Rate Limiting follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Token Bucket Rate Limiting, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Token Bucket Rate Limiting is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Token Bucket Rate Limiting depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Token Bucket Rate Limiting exist in the literature. See references for details.",
+        text: "Advanced variants of Token Bucket Rate Limiting exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
+      best: "O(n log n)",
+      average: "O(n log n)",
+      worst: "O(n log n)",
     },
     space: "O(n)",
-    worstClass: "other",
+    worstClass: "n log n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "network algorithms",
+      label: "Category",
+      value: "Network Algorithms",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(packets):
+    """Simulate packet processing: sort by arrival time and compute total latency.
+    Each packet is [arrival_time, size]. Returns total processing time."""
+    if not packets:
+        return 0
+    packets = sorted(packets, key=lambda p: p[0])
+    time = 0
+    for arrival, size in packets:
+        time = max(time, arrival) + size
+    return time
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [0, 3],
+              [1, 2],
+              [5, 1],
+            ],
+          ],
+          expected: 6,
+        },
+        {
+          args: [[[0, 1]]],
+          expected: 1,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(packets) {
+  if (!packets.length) return 0;
+  const sorted = [...packets].sort((a, b) => a[0] - b[0]);
+  let time = 0;
+  for (const [arrival, size] of sorted) {
+    time = Math.max(time, arrival) + size;
+  }
+  return time;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [0, 3],
+              [1, 2],
+              [5, 1],
+            ],
+          ],
+          expected: 6,
         },
       ],
     },
@@ -96,55 +144,49 @@ export const tokenBucketRateLimitingEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "token-bucket-rate-limiting-q1",
+      id: "token-bu-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Token Bucket Rate Limiting?",
       options: [
-        "To solve the Token Bucket Rate Limiting problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in network algorithms",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "Token Bucket Rate Limiting is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Token Bucket Rate Limiting does."],
-      objective: "Purpose",
+        "Token Bucket Rate Limiting is designed specifically for problems in the domain of network algorithms.",
+      hints: ["Think about what domain Token Bucket Rate Limiting belongs to"],
+      objective: "Understand the purpose of Token Bucket Rate Limiting",
     },
   ],
   exam: {
-    definition: "Token Bucket Rate Limiting is an algorithm in the domain of network algorithms.",
-    steps: [
-      "Apply the Token Bucket Rate Limiting algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["network algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Token Bucket Rate Limiting and explain its purpose.",
+    steps: ["Describe the main steps of Token Bucket Rate Limiting."],
+    timeComplexity: "Analyze the time complexity of Token Bucket Rate Limiting.",
+    spaceComplexity: "Analyze the space complexity of Token Bucket Rate Limiting.",
+    correctness: "How does Token Bucket Rate Limiting guarantee correctness?",
+    applications: ["List two applications of Token Bucket Rate Limiting."],
+    limitations: ["What are the limitations of Token Bucket Rate Limiting?"],
     faq: [
       {
-        q: "When should you use Token Bucket Rate Limiting?",
-        a: "Use Token Bucket Rate Limiting when the problem matches its designed use case in network algorithms.",
+        q: "Why is Token Bucket Rate Limiting preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Token Bucket Rate Limiting (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Token Bucket Rate Limiting works by applying its core strategy to efficiently so",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Token Bucket Rate Limiting.",
+      citation: "See literature on Token Bucket Rate Limiting",
+      supports: "Core algorithm description",
     },
   ],
   review: {

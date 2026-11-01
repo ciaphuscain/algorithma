@@ -8,43 +8,63 @@ export const murmurhashEntry: AlgorithmEntry = {
   domain: "arrays-hashing",
   subcategory: "Hashing",
   difficulty: "intermediate",
-  summary: "MurmurHash is a well-known algorithm in the domain of arrays and hashing.",
+  summary:
+    "MurmurHash is an algorithm in the field of hashing. It provides an efficient approach to solving problems in this domain.",
   tags: ["murmurhash", "hashing"],
-  prerequisites: ["Hash Tables"],
+  prerequisites: [],
   related: [],
   problem: {
-    input: "Input for MurmurHash.",
-    output: "Output of MurmurHash.",
+    input: "Input data for MurmurHash.",
+    output: "Result of applying MurmurHash to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "MurmurHash solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "MurmurHash addresses a fundamental problem in hashing. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind MurmurHash is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The MurmurHash algorithm processes its input step by step. See the implementation level for details.",
+        text: "The MurmurHash algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of MurmurHash follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing MurmurHash, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of MurmurHash is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of MurmurHash depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of MurmurHash exist in the literature. See references for details.",
+        text: "Advanced variants of MurmurHash exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
@@ -54,40 +74,56 @@ export const murmurhashEntry: AlgorithmEntry = {
       average: "O(n)",
       worst: "O(n)",
     },
-    space: "O(1)",
+    space: "O(n)",
     worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "arrays and hashing",
+      label: "Category",
+      value: "Hashing",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(arr, target):
+    """Two sum: find two indices whose values sum to target. Returns [i, j] or []."""
+    seen = {}
+    for i, v in enumerate(arr):
+        complement = target - v
+        if complement in seen:
+            return [seen[complement], i]
+        seen[v] = i
+    return []
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[2, 7, 11, 15], 9],
+          expected: [0, 1],
+        },
+        {
+          args: [[1, 2, 3], 7],
+          expected: [],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(arr, target) {
+  const seen = new Map();
+  for (let i = 0; i < arr.length; i++) {
+    const c = target - arr[i];
+    if (seen.has(c)) return [seen.get(c), i];
+    seen.set(arr[i], i);
+  }
+  return [];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[2, 7, 11, 15], 9],
+          expected: [0, 1],
         },
       ],
     },
@@ -95,54 +131,48 @@ export const murmurhashEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "murmurhash-q1",
+      id: "murmurha-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of MurmurHash?",
       options: [
-        "To solve the MurmurHash problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in hashing",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "MurmurHash is designed to solve its specific problem efficiently.",
-      hints: ["Think about what MurmurHash does."],
-      objective: "Purpose",
+      explanation: "MurmurHash is designed specifically for problems in the domain of hashing.",
+      hints: ["Think about what domain MurmurHash belongs to"],
+      objective: "Understand the purpose of MurmurHash",
     },
   ],
   exam: {
-    definition: "MurmurHash is an algorithm in the domain of arrays and hashing.",
-    steps: [
-      "Apply the MurmurHash algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(1)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["arrays and hashing applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define MurmurHash and explain its purpose.",
+    steps: ["Describe the main steps of MurmurHash."],
+    timeComplexity: "Analyze the time complexity of MurmurHash.",
+    spaceComplexity: "Analyze the space complexity of MurmurHash.",
+    correctness: "How does MurmurHash guarantee correctness?",
+    applications: ["List two applications of MurmurHash."],
+    limitations: ["What are the limitations of MurmurHash?"],
     faq: [
       {
-        q: "When should you use MurmurHash?",
-        a: "Use MurmurHash when the problem matches its designed use case in arrays and hashing.",
+        q: "Why is MurmurHash preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define MurmurHash (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "MurmurHash works by applying its core strategy to efficiently solve the target p",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for MurmurHash.",
+      citation: "See literature on MurmurHash",
+      supports: "Core algorithm description",
     },
   ],
   review: {

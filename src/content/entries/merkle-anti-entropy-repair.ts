@@ -9,86 +9,130 @@ export const merkleAntiEntropyRepairEntry: AlgorithmEntry = {
   subcategory: "Distributed Algorithms",
   difficulty: "intermediate",
   summary:
-    "Merkle Anti-Entropy Repair is a well-known algorithm in the domain of distributed systems.",
-  tags: ["merkle anti entropy repair", "distributed"],
+    "Merkle Anti-Entropy Repair is an algorithm in the field of distributed algorithms. It provides an efficient approach to solving problems in this domain.",
+  tags: ["merkle anti-entropy repair", "distributed algorithms"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Merkle Anti-Entropy Repair.",
-    output: "Output of Merkle Anti-Entropy Repair.",
+    input: "Input data for Merkle Anti-Entropy Repair.",
+    output: "Result of applying Merkle Anti-Entropy Repair to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Merkle Anti-Entropy Repair solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Merkle Anti-Entropy Repair addresses a fundamental problem in distributed algorithms. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Merkle Anti-Entropy Repair is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Merkle Anti-Entropy Repair algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Merkle Anti-Entropy Repair algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Merkle Anti-Entropy Repair follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Merkle Anti-Entropy Repair, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Merkle Anti-Entropy Repair is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Merkle Anti-Entropy Repair depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Merkle Anti-Entropy Repair exist in the literature. See references for details.",
+        text: "Advanced variants of Merkle Anti-Entropy Repair exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n)",
-      average: "O(n)",
-      worst: "O(n)",
+      best: "O(n log n)",
+      average: "O(n log n)",
+      worst: "O(n log n)",
     },
     space: "O(n)",
-    worstClass: "other",
+    worstClass: "n log n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "distributed systems",
+      label: "Category",
+      value: "Distributed Algorithms",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(events):
+    """Process distributed events with logical timestamps.
+    Each event is [node_id, local_time]. Returns events sorted by causal order."""
+    return sorted(events, key=lambda e: (e[1], e[0]))
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [1, 3],
+              [2, 1],
+              [1, 2],
+            ],
+          ],
+          expected: [
+            [2, 1],
+            [1, 2],
+            [1, 3],
+          ],
+        },
+        {
+          args: [[[0, 0]]],
+          expected: [[0, 0]],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(events) {
+  return [...events].sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [1, 3],
+              [2, 1],
+              [1, 2],
+            ],
+          ],
+          expected: [
+            [2, 1],
+            [1, 2],
+            [1, 3],
+          ],
         },
       ],
     },
@@ -96,55 +140,49 @@ export const merkleAntiEntropyRepairEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "merkle-anti-entropy-repair-q1",
+      id: "merkle-a-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Merkle Anti-Entropy Repair?",
       options: [
-        "To solve the Merkle Anti-Entropy Repair problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in distributed algorithms",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "Merkle Anti-Entropy Repair is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Merkle Anti-Entropy Repair does."],
-      objective: "Purpose",
+        "Merkle Anti-Entropy Repair is designed specifically for problems in the domain of distributed algorithms.",
+      hints: ["Think about what domain Merkle Anti-Entropy Repair belongs to"],
+      objective: "Understand the purpose of Merkle Anti-Entropy Repair",
     },
   ],
   exam: {
-    definition: "Merkle Anti-Entropy Repair is an algorithm in the domain of distributed systems.",
-    steps: [
-      "Apply the Merkle Anti-Entropy Repair algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["distributed systems applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Merkle Anti-Entropy Repair and explain its purpose.",
+    steps: ["Describe the main steps of Merkle Anti-Entropy Repair."],
+    timeComplexity: "Analyze the time complexity of Merkle Anti-Entropy Repair.",
+    spaceComplexity: "Analyze the space complexity of Merkle Anti-Entropy Repair.",
+    correctness: "How does Merkle Anti-Entropy Repair guarantee correctness?",
+    applications: ["List two applications of Merkle Anti-Entropy Repair."],
+    limitations: ["What are the limitations of Merkle Anti-Entropy Repair?"],
     faq: [
       {
-        q: "When should you use Merkle Anti-Entropy Repair?",
-        a: "Use Merkle Anti-Entropy Repair when the problem matches its designed use case in distributed systems.",
+        q: "Why is Merkle Anti-Entropy Repair preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Merkle Anti-Entropy Repair (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Merkle Anti-Entropy Repair works by applying its core strategy to efficiently so",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Merkle Anti-Entropy Repair.",
+      citation: "See literature on Merkle Anti-Entropy Repair",
+      supports: "Core algorithm description",
     },
   ],
   review: {

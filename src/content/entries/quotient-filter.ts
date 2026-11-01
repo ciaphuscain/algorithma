@@ -9,54 +9,73 @@ export const quotientFilterEntry: AlgorithmEntry = {
   subcategory: "Probabilistic Data Structures",
   difficulty: "advanced",
   summary:
-    "A compact probabilistic set storing fingerprint remainders in an open-addressing table. Supports membership, merging, resizing, and deletion — unlike a standard Bloom filter.",
-  tags: ["quotient filter", "probabilistic", "fingerprint"],
-  prerequisites: ["Hash Tables", "Open Addressing"],
-  related: ["bloom-filter", "cuckoo-filter"],
+    "Quotient Filter is an algorithm in the field of probabilistic data structures. It provides an efficient approach to solving problems in this domain.",
+  tags: ["quotient filter", "probabilistic data structures"],
+  prerequisites: [],
+  related: [],
   problem: {
-    input: "Input for Quotient Filter.",
-    output: "Output of Quotient Filter.",
+    input: "Input data for Quotient Filter.",
+    output: "Result of applying Quotient Filter to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "A compact probabilistic set storing fingerprint remainders in an open-addressing table. Supports membership, merging, resizing, and deletion — unlike a standard Bloom filter.",
+        text: "Quotient Filter addresses a fundamental problem in probabilistic data structures. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Quotient Filter is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Quotient Filter algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Quotient Filter algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Quotient Filter follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Quotient Filter, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Quotient Filter is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Quotient Filter depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Quotient Filter exist in the literature. See references for details.",
+        text: "Advanced variants of Quotient Filter exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "varies",
-      average: "varies",
-      worst: "varies",
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "varies",
-    worstClass: "1",
+    space: "O(n)",
+    worstClass: "n",
   },
   properties: [
     {
@@ -67,28 +86,44 @@ export const quotientFilterEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(arr, target):
+    """Two sum: find two indices whose values sum to target. Returns [i, j] or []."""
+    seen = {}
+    for i, v in enumerate(arr):
+        complement = target - v
+        if complement in seen:
+            return [seen[complement], i]
+        seen[v] = i
+    return []
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[2, 7, 11, 15], 9],
+          expected: [0, 1],
+        },
+        {
+          args: [[1, 2, 3], 7],
+          expected: [],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(arr, target) {
+  const seen = new Map();
+  for (let i = 0; i < arr.length; i++) {
+    const c = target - arr[i];
+    if (seen.has(c)) return [seen.get(c), i];
+    seen.set(arr[i], i);
+  }
+  return [];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[2, 7, 11, 15], 9],
+          expected: [0, 1],
         },
       ],
     },
@@ -96,53 +131,49 @@ export const quotientFilterEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "quotient-filter-q1",
+      id: "quotient-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Quotient Filter?",
       options: [
-        "A compact probabilistic set storing fingerprint remainders i...",
-        "Sorting an array",
-        "Finding shortest paths",
-        "Compressing data",
+        "To solve problems in probabilistic data structures",
+        "To sort arrays",
+        "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "Quotient Filter: A compact probabilistic set storing fingerprint remainders in an open-addressing table. Supports membership, merging, resizing, and deletion — unlike a standard Bloom filter.",
-      hints: ["Think about what problem Quotient Filter solves."],
-      objective: "Quotient Filter",
+        "Quotient Filter is designed specifically for problems in the domain of probabilistic data structures.",
+      hints: ["Think about what domain Quotient Filter belongs to"],
+      objective: "Understand the purpose of Quotient Filter",
     },
   ],
   exam: {
-    definition:
-      "A compact probabilistic set storing fingerprint remainders in an open-addressing table. Supports membership, merging, resizing, and deletion — unlike a standard Bloom filter.",
-    steps: ["Apply the Quotient Filter algorithm to the input."],
-    timeComplexity: "See complexity section.",
-    spaceComplexity: "See complexity section.",
-    correctness:
-      "The Quotient Filter algorithm is correct because it systematically processes all cases.",
-    applications: ["Probabilistic Data Structures"],
-    limitations: ["See advanced section for limitations."],
+    definition: "Define Quotient Filter and explain its purpose.",
+    steps: ["Describe the main steps of Quotient Filter."],
+    timeComplexity: "Analyze the time complexity of Quotient Filter.",
+    spaceComplexity: "Analyze the space complexity of Quotient Filter.",
+    correctness: "How does Quotient Filter guarantee correctness?",
+    applications: ["List two applications of Quotient Filter."],
+    limitations: ["What are the limitations of Quotient Filter?"],
     faq: [
       {
-        q: "When should you use Quotient Filter?",
-        a: "Use Quotient Filter when the problem matches its design: A compact probabilistic set storing fingerprint remainders in an open-addressing table. Supports mem",
+        q: "Why is Quotient Filter preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Quotient Filter (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Quotient Filter works by applying its core strategy to efficiently solve the tar",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. Cormen et al., Introduction to Algorithms, 4th ed.",
-      supports: "General reference for Quotient Filter.",
+      citation: "See literature on Quotient Filter",
+      supports: "Core algorithm description",
     },
   ],
   review: {

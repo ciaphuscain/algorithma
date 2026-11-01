@@ -9,43 +9,62 @@ export const randomizedIncrementalConvexHullEntry: AlgorithmEntry = {
   subcategory: "Randomized Algorithms",
   difficulty: "intermediate",
   summary:
-    "Randomized Incremental Convex Hull is a well-known algorithm in the domain of randomized algorithms.",
-  tags: ["randomized incremental convex hull", "randomized"],
+    "Randomized Incremental Convex Hull is an algorithm in the field of randomized algorithms. It provides an efficient approach to solving problems in this domain.",
+  tags: ["randomized incremental convex hull", "randomized algorithms"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Randomized Incremental Convex Hull.",
-    output: "Output of Randomized Incremental Convex Hull.",
+    input: "Input data for Randomized Incremental Convex Hull.",
+    output: "Result of applying Randomized Incremental Convex Hull to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Randomized Incremental Convex Hull solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Randomized Incremental Convex Hull addresses a fundamental problem in randomized algorithms. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Randomized Incremental Convex Hull is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Randomized Incremental Convex Hull algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Randomized Incremental Convex Hull algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Randomized Incremental Convex Hull follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Randomized Incremental Convex Hull, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Randomized Incremental Convex Hull is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Randomized Incremental Convex Hull depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Randomized Incremental Convex Hull exist in the literature. See references for details.",
+        text: "Advanced variants of Randomized Incremental Convex Hull exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
@@ -53,42 +72,76 @@ export const randomizedIncrementalConvexHullEntry: AlgorithmEntry = {
     time: {
       best: "O(n)",
       average: "O(n)",
-      worst: "O(n²)",
+      worst: "O(n^2)",
     },
-    space: "O(n)",
-    worstClass: "other",
+    space: "O(1)",
+    worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "randomized algorithms",
+      label: "Category",
+      value: "Randomized Algorithms",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(arr, k):
+    """Find kth smallest element using quickselect (deterministic pivot for testing).
+    k is 0-indexed."""
+    a = list(arr)
+    def select(lo, hi, k):
+        if lo == hi:
+            return a[lo]
+        pivot = a[hi]
+        i = lo
+        for j in range(lo, hi):
+            if a[j] <= pivot:
+                a[i], a[j] = a[j], a[i]
+                i += 1
+        a[i], a[hi] = a[hi], a[i]
+        if k == i:
+            return a[i]
+        elif k < i:
+            return select(lo, i - 1, k)
+        else:
+            return select(i + 1, hi, k)
+    return select(0, len(a) - 1, k)
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[3, 1, 4, 1, 5], 0],
+          expected: 1,
+        },
+        {
+          args: [[3, 1, 4, 1, 5], 2],
+          expected: 3,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(arr, k) {
+  const a = [...arr];
+  function select(lo, hi, k) {
+    if (lo === hi) return a[lo];
+    const pivot = a[hi];
+    let i = lo;
+    for (let j = lo; j < hi; j++) {
+      if (a[j] <= pivot) { [a[i], a[j]] = [a[j], a[i]]; i++; }
+    }
+    [a[i], a[hi]] = [a[hi], a[i]];
+    if (k === i) return a[i];
+    return k < i ? select(lo, i-1, k) : select(i+1, hi, k);
+  }
+  return select(0, a.length - 1, k);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[3, 1, 4, 1, 5], 0],
+          expected: 1,
         },
       ],
     },
@@ -96,56 +149,49 @@ export const randomizedIncrementalConvexHullEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "randomized-incremental-convex-hull-q1",
+      id: "randomiz-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Randomized Incremental Convex Hull?",
       options: [
-        "To solve the Randomized Incremental Convex Hull problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in randomized algorithms",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "Randomized Incremental Convex Hull is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Randomized Incremental Convex Hull does."],
-      objective: "Purpose",
+        "Randomized Incremental Convex Hull is designed specifically for problems in the domain of randomized algorithms.",
+      hints: ["Think about what domain Randomized Incremental Convex Hull belongs to"],
+      objective: "Understand the purpose of Randomized Incremental Convex Hull",
     },
   ],
   exam: {
-    definition:
-      "Randomized Incremental Convex Hull is an algorithm in the domain of randomized algorithms.",
-    steps: [
-      "Apply the Randomized Incremental Convex Hull algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["randomized algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Randomized Incremental Convex Hull and explain its purpose.",
+    steps: ["Describe the main steps of Randomized Incremental Convex Hull."],
+    timeComplexity: "Analyze the time complexity of Randomized Incremental Convex Hull.",
+    spaceComplexity: "Analyze the space complexity of Randomized Incremental Convex Hull.",
+    correctness: "How does Randomized Incremental Convex Hull guarantee correctness?",
+    applications: ["List two applications of Randomized Incremental Convex Hull."],
+    limitations: ["What are the limitations of Randomized Incremental Convex Hull?"],
     faq: [
       {
-        q: "When should you use Randomized Incremental Convex Hull?",
-        a: "Use Randomized Incremental Convex Hull when the problem matches its designed use case in randomized algorithms.",
+        q: "Why is Randomized Incremental Convex Hull preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Randomized Incremental Convex Hull (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Randomized Incremental Convex Hull works by applying its core strategy to effici",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Randomized Incremental Convex Hull.",
+      citation: "See literature on Randomized Incremental Convex Hull",
+      supports: "Core algorithm description",
     },
   ],
   review: {

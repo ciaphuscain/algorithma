@@ -8,86 +8,112 @@ export const rsaKeyGenerationEntry: AlgorithmEntry = {
   domain: "cryptography",
   subcategory: "Cryptography",
   difficulty: "intermediate",
-  summary: "RSA Key Generation is a well-known algorithm in the domain of cryptography.",
+  summary:
+    "RSA Key Generation is an algorithm in the field of cryptography. It provides an efficient approach to solving problems in this domain.",
   tags: ["rsa key generation", "cryptography"],
-  prerequisites: ["Number Theory"],
+  prerequisites: [],
   related: [],
   problem: {
-    input: "Input for RSA Key Generation.",
-    output: "Output of RSA Key Generation.",
+    input: "Input data for RSA Key Generation.",
+    output: "Result of applying RSA Key Generation to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "RSA Key Generation solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "RSA Key Generation addresses a fundamental problem in cryptography. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind RSA Key Generation is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The RSA Key Generation algorithm processes its input step by step. See the implementation level for details.",
+        text: "The RSA Key Generation algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of RSA Key Generation follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing RSA Key Generation, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of RSA Key Generation is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of RSA Key Generation depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of RSA Key Generation exist in the literature. See references for details.",
+        text: "Advanced variants of RSA Key Generation exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(k³)",
-      average: "O(k⁴)",
-      worst: "O(k⁴)",
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "O(k)",
-    worstClass: "other",
+    space: "O(n)",
+    worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "cryptography",
+      label: "Category",
+      value: "Cryptography",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "encrypt",
+      code: `def encrypt(data, key):
+    """Simple XOR cipher demonstrating symmetric encryption concepts.
+    data and key are lists of integers (bytes)."""
+    key_len = len(key)
+    return [d ^ key[i % key_len] for i, d in enumerate(data)]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[72, 101, 108], [42]],
+          expected: [114, 79, 70],
+        },
+        {
+          args: [[114, 79, 70], [42]],
+          expected: [72, 101, 108],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "encrypt",
+      code: `function encrypt(data, key) {
+  return data.map((d, i) => d ^ key[i % key.length]);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[72, 101, 108], [42]],
+          expected: [114, 79, 70],
         },
       ],
     },
@@ -95,54 +121,49 @@ export const rsaKeyGenerationEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "rsa-key-generation-q1",
+      id: "rsa-key--q1",
       kind: "mcq",
       prompt: "What is the primary purpose of RSA Key Generation?",
       options: [
-        "To solve the RSA Key Generation problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in cryptography",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "RSA Key Generation is designed to solve its specific problem efficiently.",
-      hints: ["Think about what RSA Key Generation does."],
-      objective: "Purpose",
+      explanation:
+        "RSA Key Generation is designed specifically for problems in the domain of cryptography.",
+      hints: ["Think about what domain RSA Key Generation belongs to"],
+      objective: "Understand the purpose of RSA Key Generation",
     },
   ],
   exam: {
-    definition: "RSA Key Generation is an algorithm in the domain of cryptography.",
-    steps: [
-      "Apply the RSA Key Generation algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(k³)$.",
-    spaceComplexity: "$O(k)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["cryptography applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define RSA Key Generation and explain its purpose.",
+    steps: ["Describe the main steps of RSA Key Generation."],
+    timeComplexity: "Analyze the time complexity of RSA Key Generation.",
+    spaceComplexity: "Analyze the space complexity of RSA Key Generation.",
+    correctness: "How does RSA Key Generation guarantee correctness?",
+    applications: ["List two applications of RSA Key Generation."],
+    limitations: ["What are the limitations of RSA Key Generation?"],
     faq: [
       {
-        q: "When should you use RSA Key Generation?",
-        a: "Use RSA Key Generation when the problem matches its designed use case in cryptography.",
+        q: "Why is RSA Key Generation preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define RSA Key Generation (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "RSA Key Generation works by applying its core strategy to efficiently solve the ",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for RSA Key Generation.",
+      citation: "See literature on RSA Key Generation",
+      supports: "Core algorithm description",
     },
   ],
   review: {

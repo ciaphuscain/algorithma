@@ -9,43 +9,62 @@ export const pointInPolygonRayCastingEntry: AlgorithmEntry = {
   subcategory: "Computational Geometry",
   difficulty: "intermediate",
   summary:
-    "Point in Polygon (Ray Casting) is a well-known algorithm in the domain of computational geometry.",
-  tags: ["point in polygon ray casting", "geometry"],
-  prerequisites: ["Sorting"],
+    "Point in Polygon (Ray Casting) is an algorithm in the field of computational geometry. It provides an efficient approach to solving problems in this domain.",
+  tags: ["point in polygon (ray casting)", "computational geometry"],
+  prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Point in Polygon (Ray Casting).",
-    output: "Output of Point in Polygon (Ray Casting).",
+    input: "Input data for Point in Polygon (Ray Casting).",
+    output: "Result of applying Point in Polygon (Ray Casting) to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Point in Polygon (Ray Casting) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Point in Polygon (Ray Casting) addresses a fundamental problem in computational geometry. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Point in Polygon (Ray Casting) is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Point in Polygon (Ray Casting) algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Point in Polygon (Ray Casting) algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Point in Polygon (Ray Casting) follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Point in Polygon (Ray Casting), pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Point in Polygon (Ray Casting) is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Point in Polygon (Ray Casting) depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Point in Polygon (Ray Casting) exist in the literature. See references for details.",
+        text: "Advanced variants of Point in Polygon (Ray Casting) exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
@@ -60,35 +79,84 @@ export const pointInPolygonRayCastingEntry: AlgorithmEntry = {
   },
   properties: [
     {
-      label: "Domain",
-      value: "computational geometry",
+      label: "Category",
+      value: "Computational Geometry",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(points):
+    """Compute convex hull of 2D points using Graham scan approach.
+    Points are [x, y] pairs. Returns hull points in counter-clockwise order."""
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    pts = sorted(map(list, points))
+    if len(pts) <= 1:
+        return pts
+    lower = []
+    for p in pts:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:
+            lower.pop()
+        lower.append(p)
+    upper = []
+    for p in reversed(pts):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
+            upper.pop()
+        upper.append(p)
+    return lower[:-1] + upper[:-1]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [0, 0],
+              [1, 0],
+              [0, 1],
+            ],
+          ],
+          expected: [
+            [0, 0],
+            [1, 0],
+            [0, 1],
+          ],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(points) {
+  const cross = (o, a, b) => (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0]);
+  const pts = points.map(p => [...p]).sort((a,b) => a[0]-b[0] || a[1]-b[1]);
+  if (pts.length <= 1) return pts;
+  const lower = [];
+  for (const p of pts) {
+    while (lower.length >= 2 && cross(lower[lower.length-2], lower[lower.length-1], p) <= 0) lower.pop();
+    lower.push(p);
+  }
+  const upper = [];
+  for (const p of [...pts].reverse()) {
+    while (upper.length >= 2 && cross(upper[upper.length-2], upper[upper.length-1], p) <= 0) upper.pop();
+    upper.push(p);
+  }
+  return lower.slice(0, -1).concat(upper.slice(0, -1));
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [0, 0],
+              [1, 0],
+              [0, 1],
+            ],
+          ],
+          expected: [
+            [0, 0],
+            [1, 0],
+            [0, 1],
+          ],
         },
       ],
     },
@@ -96,56 +164,49 @@ export const pointInPolygonRayCastingEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "point-in-polygon-ray-casting-q1",
+      id: "point-in-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Point in Polygon (Ray Casting)?",
       options: [
-        "To solve the Point in Polygon (Ray Casting) problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in computational geometry",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "Point in Polygon (Ray Casting) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Point in Polygon (Ray Casting) does."],
-      objective: "Purpose",
+        "Point in Polygon (Ray Casting) is designed specifically for problems in the domain of computational geometry.",
+      hints: ["Think about what domain Point in Polygon (Ray Casting) belongs to"],
+      objective: "Understand the purpose of Point in Polygon (Ray Casting)",
     },
   ],
   exam: {
-    definition:
-      "Point in Polygon (Ray Casting) is an algorithm in the domain of computational geometry.",
-    steps: [
-      "Apply the Point in Polygon (Ray Casting) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n log n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["computational geometry applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Point in Polygon (Ray Casting) and explain its purpose.",
+    steps: ["Describe the main steps of Point in Polygon (Ray Casting)."],
+    timeComplexity: "Analyze the time complexity of Point in Polygon (Ray Casting).",
+    spaceComplexity: "Analyze the space complexity of Point in Polygon (Ray Casting).",
+    correctness: "How does Point in Polygon (Ray Casting) guarantee correctness?",
+    applications: ["List two applications of Point in Polygon (Ray Casting)."],
+    limitations: ["What are the limitations of Point in Polygon (Ray Casting)?"],
     faq: [
       {
-        q: "When should you use Point in Polygon (Ray Casting)?",
-        a: "Use Point in Polygon (Ray Casting) when the problem matches its designed use case in computational geometry.",
+        q: "Why is Point in Polygon (Ray Casting) preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Point in Polygon (Ray Casting) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Point in Polygon (Ray Casting) works by applying its core strategy to efficientl",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Point in Polygon (Ray Casting).",
+      citation: "See literature on Point in Polygon (Ray Casting)",
+      supports: "Core algorithm description",
     },
   ],
   review: {

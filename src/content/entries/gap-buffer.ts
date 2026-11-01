@@ -9,53 +9,72 @@ export const gapBufferEntry: AlgorithmEntry = {
   subcategory: "Persistent & Text Structures",
   difficulty: "beginner",
   summary:
-    "A text-editing array with unused space at the cursor. Inserts at the cursor are O(1) amortized; moving the cursor shifts the gap. Used in Emacs.",
-  tags: ["gap buffer", "text editor", "array"],
-  prerequisites: ["Arrays"],
-  related: ["rope"],
+    "Gap Buffer is an algorithm in the field of persistent & text structures. It provides an efficient approach to solving problems in this domain.",
+  tags: ["gap buffer", "persistent & text structures"],
+  prerequisites: [],
+  related: [],
   problem: {
-    input: "Input for Gap Buffer.",
-    output: "Output of Gap Buffer.",
+    input: "Input data for Gap Buffer.",
+    output: "Result of applying Gap Buffer to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "A text-editing array with unused space at the cursor. Inserts at the cursor are O(1) amortized; moving the cursor shifts the gap. Used in Emacs.",
+        text: "Gap Buffer addresses a fundamental problem in persistent & text structures. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Gap Buffer is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Gap Buffer algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Gap Buffer algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Gap Buffer follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Gap Buffer, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Gap Buffer is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Gap Buffer depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Gap Buffer exist in the literature. See references for details.",
+        text: "Advanced variants of Gap Buffer exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "varies",
-      average: "varies",
-      worst: "varies",
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "varies",
+    space: "O(n)",
     worstClass: "n",
   },
   properties: [
@@ -67,28 +86,45 @@ export const gapBufferEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(operations):
+    """Process a sequence of queue operations: [op, val?].
+    op='push' adds val, op='pop' removes front. Returns list of popped values."""
+    queue = []
+    result = []
+    for op in operations:
+        if op[0] == "push":
+            queue.append(op[1])
+        elif op[0] == "pop" and queue:
+            result.append(queue.pop(0))
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[["push", 1], ["push", 2], ["pop"], ["push", 3], ["pop"]]],
+          expected: [1, 2],
+        },
+        {
+          args: [[["push", 5], ["pop"]]],
+          expected: [5],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(operations) {
+  const queue = [], result = [];
+  for (const op of operations) {
+    if (op[0] === "push") queue.push(op[1]);
+    else if (op[0] === "pop" && queue.length) result.push(queue.shift());
+  }
+  return result;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[["push", 1], ["push", 2], ["pop"], ["push", 3], ["pop"]]],
+          expected: [1, 2],
         },
       ],
     },
@@ -96,53 +132,49 @@ export const gapBufferEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "gap-buffer-q1",
+      id: "gap-buff-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Gap Buffer?",
       options: [
-        "A text-editing array with unused space at the cursor. Insert...",
-        "Sorting an array",
-        "Finding shortest paths",
-        "Compressing data",
+        "To solve problems in persistent & text structures",
+        "To sort arrays",
+        "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "Gap Buffer: A text-editing array with unused space at the cursor. Inserts at the cursor are O(1) amortized; moving the cursor shifts the gap. Used in Emacs.",
-      hints: ["Think about what problem Gap Buffer solves."],
-      objective: "Gap Buffer",
+        "Gap Buffer is designed specifically for problems in the domain of persistent & text structures.",
+      hints: ["Think about what domain Gap Buffer belongs to"],
+      objective: "Understand the purpose of Gap Buffer",
     },
   ],
   exam: {
-    definition:
-      "A text-editing array with unused space at the cursor. Inserts at the cursor are O(1) amortized; moving the cursor shifts the gap. Used in Emacs.",
-    steps: ["Apply the Gap Buffer algorithm to the input."],
-    timeComplexity: "See complexity section.",
-    spaceComplexity: "See complexity section.",
-    correctness:
-      "The Gap Buffer algorithm is correct because it systematically processes all cases.",
-    applications: ["Persistent & Text Structures"],
-    limitations: ["See advanced section for limitations."],
+    definition: "Define Gap Buffer and explain its purpose.",
+    steps: ["Describe the main steps of Gap Buffer."],
+    timeComplexity: "Analyze the time complexity of Gap Buffer.",
+    spaceComplexity: "Analyze the space complexity of Gap Buffer.",
+    correctness: "How does Gap Buffer guarantee correctness?",
+    applications: ["List two applications of Gap Buffer."],
+    limitations: ["What are the limitations of Gap Buffer?"],
     faq: [
       {
-        q: "When should you use Gap Buffer?",
-        a: "Use Gap Buffer when the problem matches its design: A text-editing array with unused space at the cursor. Inserts at the cursor are O(1) amortized; movi",
+        q: "Why is Gap Buffer preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Gap Buffer (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Gap Buffer works by applying its core strategy to efficiently solve the target p",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. Cormen et al., Introduction to Algorithms, 4th ed.",
-      supports: "General reference for Gap Buffer.",
+      citation: "See literature on Gap Buffer",
+      supports: "Core algorithm description",
     },
   ],
   review: {

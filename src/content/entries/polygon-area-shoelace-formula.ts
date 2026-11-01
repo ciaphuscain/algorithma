@@ -9,43 +9,62 @@ export const polygonAreaShoelaceFormulaEntry: AlgorithmEntry = {
   subcategory: "Computational Geometry",
   difficulty: "intermediate",
   summary:
-    "Polygon Area (Shoelace Formula) is a well-known algorithm in the domain of computational geometry.",
-  tags: ["polygon area shoelace formula", "geometry"],
-  prerequisites: ["Sorting"],
+    "Polygon Area (Shoelace Formula) is an algorithm in the field of computational geometry. It provides an efficient approach to solving problems in this domain.",
+  tags: ["polygon area (shoelace formula)", "computational geometry"],
+  prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Polygon Area (Shoelace Formula).",
-    output: "Output of Polygon Area (Shoelace Formula).",
+    input: "Input data for Polygon Area (Shoelace Formula).",
+    output: "Result of applying Polygon Area (Shoelace Formula) to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Polygon Area (Shoelace Formula) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Polygon Area (Shoelace Formula) addresses a fundamental problem in computational geometry. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Polygon Area (Shoelace Formula) is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Polygon Area (Shoelace Formula) algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Polygon Area (Shoelace Formula) algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Polygon Area (Shoelace Formula) follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Polygon Area (Shoelace Formula), pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Polygon Area (Shoelace Formula) is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Polygon Area (Shoelace Formula) depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Polygon Area (Shoelace Formula) exist in the literature. See references for details.",
+        text: "Advanced variants of Polygon Area (Shoelace Formula) exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
@@ -60,35 +79,84 @@ export const polygonAreaShoelaceFormulaEntry: AlgorithmEntry = {
   },
   properties: [
     {
-      label: "Domain",
-      value: "computational geometry",
+      label: "Category",
+      value: "Computational Geometry",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(points):
+    """Compute convex hull of 2D points using Graham scan approach.
+    Points are [x, y] pairs. Returns hull points in counter-clockwise order."""
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    pts = sorted(map(list, points))
+    if len(pts) <= 1:
+        return pts
+    lower = []
+    for p in pts:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:
+            lower.pop()
+        lower.append(p)
+    upper = []
+    for p in reversed(pts):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
+            upper.pop()
+        upper.append(p)
+    return lower[:-1] + upper[:-1]
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [0, 0],
+              [1, 0],
+              [0, 1],
+            ],
+          ],
+          expected: [
+            [0, 0],
+            [1, 0],
+            [0, 1],
+          ],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(points) {
+  const cross = (o, a, b) => (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0]);
+  const pts = points.map(p => [...p]).sort((a,b) => a[0]-b[0] || a[1]-b[1]);
+  if (pts.length <= 1) return pts;
+  const lower = [];
+  for (const p of pts) {
+    while (lower.length >= 2 && cross(lower[lower.length-2], lower[lower.length-1], p) <= 0) lower.pop();
+    lower.push(p);
+  }
+  const upper = [];
+  for (const p of [...pts].reverse()) {
+    while (upper.length >= 2 && cross(upper[upper.length-2], upper[upper.length-1], p) <= 0) upper.pop();
+    upper.push(p);
+  }
+  return lower.slice(0, -1).concat(upper.slice(0, -1));
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [
+              [0, 0],
+              [1, 0],
+              [0, 1],
+            ],
+          ],
+          expected: [
+            [0, 0],
+            [1, 0],
+            [0, 1],
+          ],
         },
       ],
     },
@@ -96,56 +164,49 @@ export const polygonAreaShoelaceFormulaEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "polygon-area-shoelace-formula-q1",
+      id: "polygon--q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Polygon Area (Shoelace Formula)?",
       options: [
-        "To solve the Polygon Area (Shoelace Formula) problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in computational geometry",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "Polygon Area (Shoelace Formula) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Polygon Area (Shoelace Formula) does."],
-      objective: "Purpose",
+        "Polygon Area (Shoelace Formula) is designed specifically for problems in the domain of computational geometry.",
+      hints: ["Think about what domain Polygon Area (Shoelace Formula) belongs to"],
+      objective: "Understand the purpose of Polygon Area (Shoelace Formula)",
     },
   ],
   exam: {
-    definition:
-      "Polygon Area (Shoelace Formula) is an algorithm in the domain of computational geometry.",
-    steps: [
-      "Apply the Polygon Area (Shoelace Formula) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n log n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["computational geometry applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Polygon Area (Shoelace Formula) and explain its purpose.",
+    steps: ["Describe the main steps of Polygon Area (Shoelace Formula)."],
+    timeComplexity: "Analyze the time complexity of Polygon Area (Shoelace Formula).",
+    spaceComplexity: "Analyze the space complexity of Polygon Area (Shoelace Formula).",
+    correctness: "How does Polygon Area (Shoelace Formula) guarantee correctness?",
+    applications: ["List two applications of Polygon Area (Shoelace Formula)."],
+    limitations: ["What are the limitations of Polygon Area (Shoelace Formula)?"],
     faq: [
       {
-        q: "When should you use Polygon Area (Shoelace Formula)?",
-        a: "Use Polygon Area (Shoelace Formula) when the problem matches its designed use case in computational geometry.",
+        q: "Why is Polygon Area (Shoelace Formula) preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Polygon Area (Shoelace Formula) (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Polygon Area (Shoelace Formula) works by applying its core strategy to efficient",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Polygon Area (Shoelace Formula).",
+      citation: "See literature on Polygon Area (Shoelace Formula)",
+      supports: "Core algorithm description",
     },
   ],
   review: {

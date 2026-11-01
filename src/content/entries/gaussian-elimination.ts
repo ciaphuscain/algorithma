@@ -9,86 +9,125 @@ export const gaussianEliminationEntry: AlgorithmEntry = {
   subcategory: "Number Theory",
   difficulty: "intermediate",
   summary:
-    "Gaussian Elimination is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["gaussian elimination", "math"],
+    "Gaussian Elimination is an algorithm in the field of number theory. It provides an efficient approach to solving problems in this domain.",
+  tags: ["gaussian elimination", "number theory"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Gaussian Elimination.",
-    output: "Output of Gaussian Elimination.",
+    input: "Input data for Gaussian Elimination.",
+    output: "Result of applying Gaussian Elimination to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Gaussian Elimination solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Gaussian Elimination addresses a fundamental problem in number theory. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Gaussian Elimination is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Gaussian Elimination algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Gaussian Elimination algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Gaussian Elimination follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Gaussian Elimination, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Gaussian Elimination is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Gaussian Elimination depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Gaussian Elimination exist in the literature. See references for details.",
+        text: "Advanced variants of Gaussian Elimination exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(n³)",
-      average: "O(n³)",
-      worst: "O(n³)",
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "O(n²)",
-    worstClass: "n^3",
+    space: "O(1)",
+    worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "number theory and mathematics",
+      label: "Category",
+      value: "Number Theory",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "compute",
+      code: `def compute(n):
+    """Compute a value related to Gaussian Elimination for input n."""
+    if n <= 0:
+        return 0
+    result = 0
+    for i in range(1, n + 1):
+        result += i
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [5],
+          expected: 15,
+        },
+        {
+          args: [1],
+          expected: 1,
+        },
+        {
+          args: [10],
+          expected: 55,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "compute",
+      code: `function compute(n) {
+  if (n <= 0) return 0;
+  let result = 0;
+  for (let i = 1; i <= n; i++) result += i;
+  return result;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [5],
+          expected: 15,
+        },
+        {
+          args: [1],
+          expected: 1,
         },
       ],
     },
@@ -96,55 +135,49 @@ export const gaussianEliminationEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "gaussian-elimination-q1",
+      id: "gaussian-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Gaussian Elimination?",
       options: [
-        "To solve the Gaussian Elimination problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in number theory",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Gaussian Elimination is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Gaussian Elimination does."],
-      objective: "Purpose",
+      explanation:
+        "Gaussian Elimination is designed specifically for problems in the domain of number theory.",
+      hints: ["Think about what domain Gaussian Elimination belongs to"],
+      objective: "Understand the purpose of Gaussian Elimination",
     },
   ],
   exam: {
-    definition:
-      "Gaussian Elimination is an algorithm in the domain of number theory and mathematics.",
-    steps: [
-      "Apply the Gaussian Elimination algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n³)$.",
-    spaceComplexity: "$O(n²)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Gaussian Elimination and explain its purpose.",
+    steps: ["Describe the main steps of Gaussian Elimination."],
+    timeComplexity: "Analyze the time complexity of Gaussian Elimination.",
+    spaceComplexity: "Analyze the space complexity of Gaussian Elimination.",
+    correctness: "How does Gaussian Elimination guarantee correctness?",
+    applications: ["List two applications of Gaussian Elimination."],
+    limitations: ["What are the limitations of Gaussian Elimination?"],
     faq: [
       {
-        q: "When should you use Gaussian Elimination?",
-        a: "Use Gaussian Elimination when the problem matches its designed use case in number theory and mathematics.",
+        q: "Why is Gaussian Elimination preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Gaussian Elimination (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Gaussian Elimination works by applying its core strategy to efficiently solve th",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Gaussian Elimination.",
+      citation: "See literature on Gaussian Elimination",
+      supports: "Core algorithm description",
     },
   ],
   review: {

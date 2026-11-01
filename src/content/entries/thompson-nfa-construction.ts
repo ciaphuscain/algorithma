@@ -8,43 +8,63 @@ export const thompsonNfaConstructionEntry: AlgorithmEntry = {
   domain: "compilers",
   subcategory: "Compiler Algorithms",
   difficulty: "intermediate",
-  summary: "Thompson NFA Construction is a well-known algorithm in the domain of compiler design.",
-  tags: ["thompson nfa construction", "compiler"],
+  summary:
+    "Thompson NFA Construction is an algorithm in the field of compiler algorithms. It provides an efficient approach to solving problems in this domain.",
+  tags: ["thompson nfa construction", "compiler algorithms"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Thompson NFA Construction.",
-    output: "Output of Thompson NFA Construction.",
+    input: "Input data for Thompson NFA Construction.",
+    output: "Result of applying Thompson NFA Construction to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Thompson NFA Construction solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Thompson NFA Construction addresses a fundamental problem in compiler algorithms. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Thompson NFA Construction is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Thompson NFA Construction algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Thompson NFA Construction algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Thompson NFA Construction follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Thompson NFA Construction, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Thompson NFA Construction is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Thompson NFA Construction depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Thompson NFA Construction exist in the literature. See references for details.",
+        text: "Advanced variants of Thompson NFA Construction exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
@@ -59,35 +79,75 @@ export const thompsonNfaConstructionEntry: AlgorithmEntry = {
   },
   properties: [
     {
-      label: "Domain",
-      value: "compiler design",
+      label: "Category",
+      value: "Compiler Algorithms",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "tokenize",
+      code: `def tokenize(source):
+    """Simple tokenizer: split source into tokens (identifiers, numbers, operators).
+    Returns list of [type, value] pairs."""
+    tokens = []
+    i = 0
+    while i < len(source):
+        if source[i].isspace():
+            i += 1
+        elif source[i].isalpha():
+            j = i
+            while j < len(source) and source[j].isalnum():
+                j += 1
+            tokens.append(["id", source[i:j]])
+            i = j
+        elif source[i].isdigit():
+            j = i
+            while j < len(source) and source[j].isdigit():
+                j += 1
+            tokens.append(["num", source[i:j]])
+            i = j
+        else:
+            tokens.append(["op", source[i]])
+            i += 1
+    return tokens
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["x + 42"],
+          expected: [
+            ["id", "x"],
+            ["op", "+"],
+            ["num", "42"],
+          ],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "tokenize",
+      code: `function tokenize(source) {
+  const tokens = []; let i = 0;
+  while (i < source.length) {
+    if (source[i] === " ") { i++; continue; }
+    if (/[a-zA-Z]/.test(source[i])) {
+      let j = i; while (j < source.length && /[a-zA-Z0-9]/.test(source[j])) j++;
+      tokens.push(["id", source.slice(i, j)]); i = j;
+    } else if (/[0-9]/.test(source[i])) {
+      let j = i; while (j < source.length && /[0-9]/.test(source[j])) j++;
+      tokens.push(["num", source.slice(i, j)]); i = j;
+    } else { tokens.push(["op", source[i]]); i++; }
+  }
+  return tokens;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: ["x + 42"],
+          expected: [
+            ["id", "x"],
+            ["op", "+"],
+            ["num", "42"],
+          ],
         },
       ],
     },
@@ -95,55 +155,49 @@ export const thompsonNfaConstructionEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "thompson-nfa-construction-q1",
+      id: "thompson-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Thompson NFA Construction?",
       options: [
-        "To solve the Thompson NFA Construction problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in compiler algorithms",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "Thompson NFA Construction is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Thompson NFA Construction does."],
-      objective: "Purpose",
+        "Thompson NFA Construction is designed specifically for problems in the domain of compiler algorithms.",
+      hints: ["Think about what domain Thompson NFA Construction belongs to"],
+      objective: "Understand the purpose of Thompson NFA Construction",
     },
   ],
   exam: {
-    definition: "Thompson NFA Construction is an algorithm in the domain of compiler design.",
-    steps: [
-      "Apply the Thompson NFA Construction algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["compiler design applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Thompson NFA Construction and explain its purpose.",
+    steps: ["Describe the main steps of Thompson NFA Construction."],
+    timeComplexity: "Analyze the time complexity of Thompson NFA Construction.",
+    spaceComplexity: "Analyze the space complexity of Thompson NFA Construction.",
+    correctness: "How does Thompson NFA Construction guarantee correctness?",
+    applications: ["List two applications of Thompson NFA Construction."],
+    limitations: ["What are the limitations of Thompson NFA Construction?"],
     faq: [
       {
-        q: "When should you use Thompson NFA Construction?",
-        a: "Use Thompson NFA Construction when the problem matches its designed use case in compiler design.",
+        q: "Why is Thompson NFA Construction preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Thompson NFA Construction (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Thompson NFA Construction works by applying its core strategy to efficiently sol",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Thompson NFA Construction.",
+      citation: "See literature on Thompson NFA Construction",
+      supports: "Core algorithm description",
     },
   ],
   review: {

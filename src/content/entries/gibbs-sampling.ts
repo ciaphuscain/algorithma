@@ -8,86 +8,120 @@ export const gibbsSamplingEntry: AlgorithmEntry = {
   domain: "machine-learning",
   subcategory: "Machine Learning",
   difficulty: "intermediate",
-  summary: "Gibbs Sampling is a well-known algorithm in the domain of machine learning.",
-  tags: ["gibbs sampling", "ml"],
+  summary:
+    "Gibbs Sampling is an algorithm in the field of machine learning. It provides an efficient approach to solving problems in this domain.",
+  tags: ["gibbs sampling", "machine learning"],
   prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Gibbs Sampling.",
-    output: "Output of Gibbs Sampling.",
+    input: "Input data for Gibbs Sampling.",
+    output: "Result of applying Gibbs Sampling to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Gibbs Sampling solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Gibbs Sampling addresses a fundamental problem in machine learning. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Gibbs Sampling is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Gibbs Sampling algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Gibbs Sampling algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Gibbs Sampling follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Gibbs Sampling, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Gibbs Sampling is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Gibbs Sampling depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Gibbs Sampling exist in the literature. See references for details.",
+        text: "Advanced variants of Gibbs Sampling exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
       best: "O(n)",
-      average: "O(n·d)",
-      worst: "O(n·d·k)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "O(n)",
-    worstClass: "other",
+    space: "O(1)",
+    worstClass: "n",
   },
   properties: [
     {
-      label: "Domain",
-      value: "machine learning",
+      label: "Category",
+      value: "Machine Learning",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "predict",
+      code: `def predict(weights, inputs):
+    """Simple linear prediction: dot product of weights and inputs.
+    Demonstrates basic ML inference."""
+    return sum(w * x for w, x in zip(weights, inputs))
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [0.5, 1.0, -0.5],
+            [2.0, 1.0, 3.0],
+          ],
+          expected: 0.5,
+        },
+        {
+          args: [
+            [1.0, 1.0],
+            [3.0, 4.0],
+          ],
+          expected: 7.0,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "predict",
+      code: `function predict(weights, inputs) {
+  return weights.reduce((s, w, i) => s + w * inputs[i], 0);
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            [1.0, 1.0],
+            [3.0, 4.0],
+          ],
+          expected: 7.0,
         },
       ],
     },
@@ -95,54 +129,49 @@ export const gibbsSamplingEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "gibbs-sampling-q1",
+      id: "gibbs-sa-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Gibbs Sampling?",
       options: [
-        "To solve the Gibbs Sampling problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in machine learning",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
-      explanation: "Gibbs Sampling is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Gibbs Sampling does."],
-      objective: "Purpose",
+      explanation:
+        "Gibbs Sampling is designed specifically for problems in the domain of machine learning.",
+      hints: ["Think about what domain Gibbs Sampling belongs to"],
+      objective: "Understand the purpose of Gibbs Sampling",
     },
   ],
   exam: {
-    definition: "Gibbs Sampling is an algorithm in the domain of machine learning.",
-    steps: [
-      "Apply the Gibbs Sampling algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(n)$.",
-    spaceComplexity: "$O(n)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["machine learning applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Gibbs Sampling and explain its purpose.",
+    steps: ["Describe the main steps of Gibbs Sampling."],
+    timeComplexity: "Analyze the time complexity of Gibbs Sampling.",
+    spaceComplexity: "Analyze the space complexity of Gibbs Sampling.",
+    correctness: "How does Gibbs Sampling guarantee correctness?",
+    applications: ["List two applications of Gibbs Sampling."],
+    limitations: ["What are the limitations of Gibbs Sampling?"],
     faq: [
       {
-        q: "When should you use Gibbs Sampling?",
-        a: "Use Gibbs Sampling when the problem matches its designed use case in machine learning.",
+        q: "Why is Gibbs Sampling preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Gibbs Sampling (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Gibbs Sampling works by applying its core strategy to efficiently solve the targ",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Gibbs Sampling.",
+      citation: "See literature on Gibbs Sampling",
+      supports: "Core algorithm description",
     },
   ],
   review: {

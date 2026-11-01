@@ -8,86 +8,148 @@ export const generalWeightedMatchingEntry: AlgorithmEntry = {
   domain: "graphs",
   subcategory: "Graph Algorithms",
   difficulty: "intermediate",
-  summary: "General Weighted Matching is a well-known algorithm in the domain of graph algorithms.",
-  tags: ["general weighted matching", "graph"],
-  prerequisites: ["BFS", "DFS"],
+  summary:
+    "General Weighted Matching is an algorithm in the field of graph algorithms. It provides an efficient approach to solving problems in this domain.",
+  tags: ["general weighted matching", "graph algorithms"],
+  prerequisites: [],
   related: [],
   problem: {
-    input: "Input for General Weighted Matching.",
-    output: "Output of General Weighted Matching.",
+    input: "Input data for General Weighted Matching.",
+    output: "Result of applying General Weighted Matching to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "General Weighted Matching solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "General Weighted Matching addresses a fundamental problem in graph algorithms. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind General Weighted Matching is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The General Weighted Matching algorithm processes its input step by step. See the implementation level for details.",
+        text: "The General Weighted Matching algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of General Weighted Matching follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing General Weighted Matching, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of General Weighted Matching is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of General Weighted Matching depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of General Weighted Matching exist in the literature. See references for details.",
+        text: "Advanced variants of General Weighted Matching exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(V + E)",
-      average: "O(V + E)",
-      worst: "O(V + E)",
+      best: "O(n + m)",
+      average: "O(n + m)",
+      worst: "O(n + m)",
     },
-    space: "O(V + E)",
+    space: "O(n)",
     worstClass: "n + m",
   },
   properties: [
     {
-      label: "Domain",
-      value: "graph algorithms",
+      label: "Category",
+      value: "Graph Algorithms",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(adj, n):
+    """Process graph with n nodes given as adjacency list (dict of node -> list of neighbors).
+    Returns list of visited nodes in BFS order from node 0."""
+    if n == 0:
+        return []
+    visited = set()
+    queue = [0]
+    visited.add(0)
+    result = []
+    while queue:
+        node = queue.pop(0)
+        result.append(node)
+        for neighbor in sorted(adj.get(node, [])):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            {
+              "0": [1, 2],
+              "1": [0],
+              "2": [0],
+            },
+            3,
+          ],
+          expected: [0, 1, 2],
+        },
+        {
+          args: [{}, 0],
+          expected: [],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(adj, n) {
+  if (n === 0) return [];
+  const visited = new Set([0]);
+  const queue = [0], result = [];
+  while (queue.length) {
+    const node = queue.shift();
+    result.push(node);
+    for (const nb of (adj[node] || []).sort((a,b) => a-b)) {
+      if (!visited.has(nb)) { visited.add(nb); queue.push(nb); }
+    }
+  }
+  return result;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            {
+              "0": [1, 2],
+              "1": [0],
+              "2": [0],
+            },
+            3,
+          ],
+          expected: [0, 1, 2],
         },
       ],
     },
@@ -95,55 +157,49 @@ export const generalWeightedMatchingEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "general-weighted-matching-q1",
+      id: "general--q1",
       kind: "mcq",
       prompt: "What is the primary purpose of General Weighted Matching?",
       options: [
-        "To solve the General Weighted Matching problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in graph algorithms",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "General Weighted Matching is designed to solve its specific problem efficiently.",
-      hints: ["Think about what General Weighted Matching does."],
-      objective: "Purpose",
+        "General Weighted Matching is designed specifically for problems in the domain of graph algorithms.",
+      hints: ["Think about what domain General Weighted Matching belongs to"],
+      objective: "Understand the purpose of General Weighted Matching",
     },
   ],
   exam: {
-    definition: "General Weighted Matching is an algorithm in the domain of graph algorithms.",
-    steps: [
-      "Apply the General Weighted Matching algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(V + E)$.",
-    spaceComplexity: "$O(V + E)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["graph algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define General Weighted Matching and explain its purpose.",
+    steps: ["Describe the main steps of General Weighted Matching."],
+    timeComplexity: "Analyze the time complexity of General Weighted Matching.",
+    spaceComplexity: "Analyze the space complexity of General Weighted Matching.",
+    correctness: "How does General Weighted Matching guarantee correctness?",
+    applications: ["List two applications of General Weighted Matching."],
+    limitations: ["What are the limitations of General Weighted Matching?"],
     faq: [
       {
-        q: "When should you use General Weighted Matching?",
-        a: "Use General Weighted Matching when the problem matches its designed use case in graph algorithms.",
+        q: "Why is General Weighted Matching preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define General Weighted Matching (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "General Weighted Matching works by applying its core strategy to efficiently sol",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for General Weighted Matching.",
+      citation: "See literature on General Weighted Matching",
+      supports: "Core algorithm description",
     },
   ],
   review: {

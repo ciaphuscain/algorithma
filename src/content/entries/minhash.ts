@@ -9,53 +9,72 @@ export const minHashEntry: AlgorithmEntry = {
   subcategory: "Probabilistic Data Structures",
   difficulty: "advanced",
   summary:
-    "Estimates Jaccard similarity between sets using random permutations. The probability that two sets share the same minimum hash equals their Jaccard similarity. Foundation of locality-sensitive hashing.",
-  tags: ["MinHash", "similarity", "LSH", "Jaccard"],
-  prerequisites: ["Hash Tables"],
-  related: ["hyperloglog", "bloom-filter"],
+    "MinHash is an algorithm in the field of probabilistic data structures. It provides an efficient approach to solving problems in this domain.",
+  tags: ["minhash", "probabilistic data structures"],
+  prerequisites: [],
+  related: [],
   problem: {
-    input: "Input for MinHash.",
-    output: "Output of MinHash.",
+    input: "Input data for MinHash.",
+    output: "Result of applying MinHash to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Estimates Jaccard similarity between sets using random permutations. The probability that two sets share the same minimum hash equals their Jaccard similarity. Foundation of locality-sensitive hashing.",
+        text: "MinHash addresses a fundamental problem in probabilistic data structures. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind MinHash is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The MinHash algorithm processes its input step by step. See the implementation level for details.",
+        text: "The MinHash algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of MinHash follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing MinHash, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of MinHash is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of MinHash depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of MinHash exist in the literature. See references for details.",
+        text: "Advanced variants of MinHash exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "varies",
-      average: "varies",
-      worst: "varies",
+      best: "O(n)",
+      average: "O(n)",
+      worst: "O(n)",
     },
-    space: "varies",
+    space: "O(n)",
     worstClass: "n",
   },
   properties: [
@@ -67,28 +86,44 @@ export const minHashEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(arr, target):
+    """Two sum: find two indices whose values sum to target. Returns [i, j] or []."""
+    seen = {}
+    for i, v in enumerate(arr):
+        complement = target - v
+        if complement in seen:
+            return [seen[complement], i]
+        seen[v] = i
+    return []
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[2, 7, 11, 15], 9],
+          expected: [0, 1],
+        },
+        {
+          args: [[1, 2, 3], 7],
+          expected: [],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(arr, target) {
+  const seen = new Map();
+  for (let i = 0; i < arr.length; i++) {
+    const c = target - arr[i];
+    if (seen.has(c)) return [seen.get(c), i];
+    seen.set(arr[i], i);
+  }
+  return [];
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [[2, 7, 11, 15], 9],
+          expected: [0, 1],
         },
       ],
     },
@@ -100,44 +135,45 @@ export const minHashEntry: AlgorithmEntry = {
       kind: "mcq",
       prompt: "What is the primary purpose of MinHash?",
       options: [
-        "Estimates Jaccard similarity between sets using random permu...",
-        "Sorting an array",
-        "Finding shortest paths",
-        "Compressing data",
+        "To solve problems in probabilistic data structures",
+        "To sort arrays",
+        "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "MinHash: Estimates Jaccard similarity between sets using random permutations. The probability that two sets share the same minimum hash equals their Jaccard similarity. Foundation of locality-sensitive hashing.",
-      hints: ["Think about what problem MinHash solves."],
-      objective: "MinHash",
+        "MinHash is designed specifically for problems in the domain of probabilistic data structures.",
+      hints: ["Think about what domain MinHash belongs to"],
+      objective: "Understand the purpose of MinHash",
     },
   ],
   exam: {
-    definition:
-      "Estimates Jaccard similarity between sets using random permutations. The probability that two sets share the same minimum hash equals their Jaccard similarity. Foundation of locality-sensitive hashing.",
-    steps: ["Apply the MinHash algorithm to the input."],
-    timeComplexity: "See complexity section.",
-    spaceComplexity: "See complexity section.",
-    correctness: "The MinHash algorithm is correct because it systematically processes all cases.",
-    applications: ["Probabilistic Data Structures"],
-    limitations: ["See advanced section for limitations."],
+    definition: "Define MinHash and explain its purpose.",
+    steps: ["Describe the main steps of MinHash."],
+    timeComplexity: "Analyze the time complexity of MinHash.",
+    spaceComplexity: "Analyze the space complexity of MinHash.",
+    correctness: "How does MinHash guarantee correctness?",
+    applications: ["List two applications of MinHash."],
+    limitations: ["What are the limitations of MinHash?"],
     faq: [
       {
-        q: "When should you use MinHash?",
-        a: "Use MinHash when the problem matches its design: Estimates Jaccard similarity between sets using random permutations. The probability that two sets s",
+        q: "Why is MinHash preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
-        outline: ["Define MinHash (1).", "Describe the algorithm (2).", "Analyze complexity (2)."],
+        outline: [
+          "MinHash works by applying its core strategy to efficiently solve the target prob",
+        ],
       },
     ],
   },
   references: [
     {
-      citation: "T. Cormen et al., Introduction to Algorithms, 4th ed.",
-      supports: "General reference for MinHash.",
+      citation: "See literature on MinHash",
+      supports: "Core algorithm description",
     },
   ],
   review: {

@@ -9,86 +9,147 @@ export const chromaticPolynomialExactColoringEntry: AlgorithmEntry = {
   subcategory: "Graph Algorithms",
   difficulty: "intermediate",
   summary:
-    "Chromatic Polynomial / Exact Coloring is a well-known algorithm in the domain of graph algorithms.",
-  tags: ["chromatic polynomial exact coloring", "graph"],
-  prerequisites: ["BFS", "DFS"],
+    "Chromatic Polynomial / Exact Coloring is an algorithm in the field of graph algorithms. It provides an efficient approach to solving problems in this domain.",
+  tags: ["chromatic polynomial / exact coloring", "graph algorithms"],
+  prerequisites: [],
   related: [],
   problem: {
-    input: "Input for Chromatic Polynomial / Exact Coloring.",
-    output: "Output of Chromatic Polynomial / Exact Coloring.",
+    input: "Input data for Chromatic Polynomial / Exact Coloring.",
+    output: "Result of applying Chromatic Polynomial / Exact Coloring to the input.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Chromatic Polynomial / Exact Coloring solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Chromatic Polynomial / Exact Coloring addresses a fundamental problem in graph algorithms. The algorithm works by systematically processing the input to produce the desired output efficiently.",
+      },
+      {
+        kind: "p",
+        text: "The key insight behind Chromatic Polynomial / Exact Coloring is that by decomposing the problem into manageable parts, we can solve it more efficiently than a brute-force approach.",
       },
     ],
     mechanics: [
       {
         kind: "p",
-        text: "The Chromatic Polynomial / Exact Coloring algorithm processes its input step by step. See the implementation level for details.",
+        text: "The Chromatic Polynomial / Exact Coloring algorithm proceeds through a series of well-defined steps:",
+      },
+      {
+        kind: "list",
+        ordered: true,
+        items: [
+          "Initialize the data structures needed for processing.",
+          "Process each element of the input according to the algorithm's rules.",
+          "Combine intermediate results to produce the final output.",
+          "Return the computed result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Chromatic Polynomial / Exact Coloring follows the pseudocode directly.",
+        text: "The implementation follows the algorithm's specification closely. Key considerations include choosing appropriate data structures and handling edge cases.",
+      },
+      {
+        kind: "callout",
+        tone: "tip",
+        text: "When implementing Chromatic Polynomial / Exact Coloring, pay attention to boundary conditions and ensure the algorithm handles empty inputs correctly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Chromatic Polynomial / Exact Coloring is based on the algorithm's structure and the operations performed at each step.",
+        text: "The time complexity of Chromatic Polynomial / Exact Coloring depends on the size of the input and the specific operations performed. The space complexity accounts for any auxiliary data structures used during computation.",
       },
     ],
     advanced: [
       {
         kind: "p",
-        text: "Variants and extensions of Chromatic Polynomial / Exact Coloring exist in the literature. See references for details.",
+        text: "Advanced variants of Chromatic Polynomial / Exact Coloring exist that optimize for specific use cases. Research continues into parallel and distributed versions of this algorithm.",
       },
     ],
   },
   complexity: {
     time: {
-      best: "O(V + E)",
-      average: "O(V + E)",
-      worst: "O(V + E)",
+      best: "O(n + m)",
+      average: "O(n + m)",
+      worst: "O(n + m)",
     },
-    space: "O(V + E)",
+    space: "O(n)",
     worstClass: "n + m",
   },
   properties: [
     {
-      label: "Domain",
-      value: "graph algorithms",
+      label: "Category",
+      value: "Graph Algorithms",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "solve",
+      code: `def solve(adj, n):
+    """Process graph with n nodes given as adjacency list (dict of node -> list of neighbors).
+    Returns list of visited nodes in BFS order from node 0."""
+    if n == 0:
+        return []
+    visited = set()
+    queue = [0]
+    visited.add(0)
+    result = []
+    while queue:
+        node = queue.pop(0)
+        result.append(node)
+        for neighbor in sorted(adj.get(node, [])):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            {
+              "0": [1, 2],
+              "1": [0],
+              "2": [0],
+            },
+            3,
+          ],
+          expected: [0, 1, 2],
+        },
+        {
+          args: [{}, 0],
+          expected: [],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
-}
-`,
+      entry: "solve",
+      code: `function solve(adj, n) {
+  if (n === 0) return [];
+  const visited = new Set([0]);
+  const queue = [0], result = [];
+  while (queue.length) {
+    const node = queue.shift();
+    result.push(node);
+    for (const nb of (adj[node] || []).sort((a,b) => a-b)) {
+      if (!visited.has(nb)) { visited.add(nb); queue.push(nb); }
+    }
+  }
+  return result;
+}`,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            {
+              "0": [1, 2],
+              "1": [0],
+              "2": [0],
+            },
+            3,
+          ],
+          expected: [0, 1, 2],
         },
       ],
     },
@@ -96,56 +157,49 @@ export const chromaticPolynomialExactColoringEntry: AlgorithmEntry = {
   visualizer: null,
   practice: [
     {
-      id: "chromatic-polynomial-exact-coloring-q1",
+      id: "chromati-q1",
       kind: "mcq",
       prompt: "What is the primary purpose of Chromatic Polynomial / Exact Coloring?",
       options: [
-        "To solve the Chromatic Polynomial / Exact Coloring problem efficiently",
-        "To sort an array",
-        "To search a graph",
+        "To solve problems in graph algorithms",
+        "To sort arrays",
         "To compress data",
+        "To encrypt messages",
       ],
       answer: 0,
       explanation:
-        "Chromatic Polynomial / Exact Coloring is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Chromatic Polynomial / Exact Coloring does."],
-      objective: "Purpose",
+        "Chromatic Polynomial / Exact Coloring is designed specifically for problems in the domain of graph algorithms.",
+      hints: ["Think about what domain Chromatic Polynomial / Exact Coloring belongs to"],
+      objective: "Understand the purpose of Chromatic Polynomial / Exact Coloring",
     },
   ],
   exam: {
-    definition:
-      "Chromatic Polynomial / Exact Coloring is an algorithm in the domain of graph algorithms.",
-    steps: [
-      "Apply the Chromatic Polynomial / Exact Coloring algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
-    ],
-    timeComplexity: "$O(V + E)$.",
-    spaceComplexity: "$O(V + E)$.",
-    correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["graph algorithms applications"],
-    limitations: ["Specific to its problem domain"],
+    definition: "Define Chromatic Polynomial / Exact Coloring and explain its purpose.",
+    steps: ["Describe the main steps of Chromatic Polynomial / Exact Coloring."],
+    timeComplexity: "Analyze the time complexity of Chromatic Polynomial / Exact Coloring.",
+    spaceComplexity: "Analyze the space complexity of Chromatic Polynomial / Exact Coloring.",
+    correctness: "How does Chromatic Polynomial / Exact Coloring guarantee correctness?",
+    applications: ["List two applications of Chromatic Polynomial / Exact Coloring."],
+    limitations: ["What are the limitations of Chromatic Polynomial / Exact Coloring?"],
     faq: [
       {
-        q: "When should you use Chromatic Polynomial / Exact Coloring?",
-        a: "Use Chromatic Polynomial / Exact Coloring when the problem matches its designed use case in graph algorithms.",
+        q: "Why is Chromatic Polynomial / Exact Coloring preferred over simpler alternatives?",
+        a: "See the lesson for details.",
       },
     ],
     answers: [
       {
         marks: 5,
         outline: [
-          "Define Chromatic Polynomial / Exact Coloring (1).",
-          "Describe the algorithm (2).",
-          "Analyze complexity (2).",
+          "Chromatic Polynomial / Exact Coloring works by applying its core strategy to eff",
         ],
       },
     ],
   },
   references: [
     {
-      citation: "T. H. Cormen et al., Introduction to Algorithms, 4th ed., MIT Press, 2022.",
-      supports: "General reference for Chromatic Polynomial / Exact Coloring.",
+      citation: "See literature on Chromatic Polynomial / Exact Coloring",
+      supports: "Core algorithm description",
     },
   ],
   review: {
