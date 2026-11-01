@@ -6,7 +6,7 @@ ALGORITHMA is an algorithm encyclopedia whose entries can be run. Pick an algori
 
 ## What is here
 
-- **169 interactive algorithms**, covering every Tier 1, 2 and 3 item of the curriculum and more:
+- **542 algorithm entries** covering all 600 curriculum items (the full curriculum, with 169 fully traced interactive modules and 373 lesson-only entries):
   - searching and sorting: linear search (plain and with a sentinel), binary search (iterative, recursive and Knuth's uniform version), ternary, interpolation, exponential, jump and Fibonacci search; bubble (plain and optimised), cocktail shaker, comb, odd–even, gnome, selection, double selection, bingo, cycle, insertion (plain, binary, library) and patience sort, Shell sort, merge sort (top-down, bottom-up, natural), quicksort (Lomuto, three-way, dual-pivot), heap sort, weak-heap sort, smoothsort, tournament sort, Timsort, introsort, block (rotation-based in-place merging), tree, pancake and strand sort; bead, sleep (simulated) and bogo sort; counting, radix (LSD, MSD and American flag), bucket and flash sort; randomized quickselect;
   - linked lists: reversal (whole and in groups of k), Floyd's cycle detection, merging sorted lists, two-pointer techniques (palindrome, rotate, remove n-th from end), copying a list with random pointers;
   - stacks: balanced brackets, infix to postfix (shunting-yard), postfix and prefix evaluation, expression trees, Tower of Hanoi;
