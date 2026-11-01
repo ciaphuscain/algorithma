@@ -3,49 +3,70 @@ import type { AlgorithmEntry } from "../types";
 export const fastModularExponentiationEntry: AlgorithmEntry = {
   slug: "fast-modular-exponentiation",
   name: "Fast Modular Exponentiation",
-  aliases: ["Fast Modular Exponentiation"],
-  curriculum: [358],
+  aliases: [
+    "Fast Modular Exponentiation",
+  ],
+  curriculum: [
+    358,
+  ],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary:
-    "Fast Modular Exponentiation is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["fast modular exponentiation", "math"],
-  prerequisites: [],
-  related: [],
+  summary: "Computes base^exp mod m in O(log exp) time using repeated squaring (binary exponentiation).",
+  tags: [
+    "modular arithmetic",
+    "binary exponentiation",
+    "number theory",
+  ],
+  prerequisites: [
+    "Modular Multiplication",
+  ],
+  related: [
+    "binary-exponentiation",
+    "modular-multiplication",
+  ],
   problem: {
-    input: "Input for Fast Modular Exponentiation.",
-    output: "Output of Fast Modular Exponentiation.",
+    input: "Integers base, exp (non-negative), and modulus m.",
+    output: "base^exp mod m.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Fast Modular Exponentiation solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Instead of multiplying base by itself exp times, square the base and halve the exponent. Process each bit of exp: if set, multiply the result by the current base.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Fast Modular Exponentiation algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Set result = 1.",
+          "While exp > 0: if exp is odd, multiply result by base mod m; square base mod m; halve exp.",
+          "Return result.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Fast Modular Exponentiation follows the pseudocode directly.",
+        text: "Handle edge cases: exp = 0 returns 1, m = 1 returns 0.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Fast Modular Exponentiation is based on the algorithm's structure and the operations performed at each step.",
+        text: "$O(\\log e)$ multiplications, each $O(1)$ for fixed-size integers. Total $O(\\log e)$.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Fast Modular Exponentiation exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Used in RSA encryption (large modular exponentiations).",
+          "Matrix exponentiation for linear recurrences uses the same principle.",
+          "Montgomery multiplication speeds up repeated modular multiplications.",
+        ],
       },
     ],
   },
@@ -61,34 +82,89 @@ export const fastModularExponentiationEntry: AlgorithmEntry = {
   properties: [
     {
       label: "Domain",
-      value: "number theory and mathematics",
+      value: "number theory",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "mod_pow",
+      code: `def mod_pow(base, exp, m):
+    if m == 1: return 0
+    result = 1
+    base %= m
+    while exp > 0:
+        if exp & 1: result = result * base % m
+        exp >>= 1
+        base = base * base % m
+    return result
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            2,
+            10,
+            1000,
+          ],
+          expected: 24,
+        },
+        {
+          args: [
+            3,
+            13,
+            7,
+          ],
+          expected: 3,
+        },
+        {
+          args: [
+            5,
+            0,
+            100,
+          ],
+          expected: 1,
+        },
+        {
+          args: [
+            7,
+            3,
+            10,
+          ],
+          expected: 3,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "modPow",
+      code: `function modPow(base, exp, m) {
+  if (m === 1) return 0;
+  let result = 1;
+  base %= m;
+  while (exp > 0) {
+    if (exp & 1) result = result * base % m;
+    exp >>= 1;
+    base = base * base % m;
+  }
+  return result;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            2,
+            10,
+            1000,
+          ],
+          expected: 24,
+        },
+        {
+          args: [
+            5,
+            0,
+            100,
+          ],
+          expected: 1,
         },
       ],
     },
@@ -98,37 +174,41 @@ export const fastModularExponentiationEntry: AlgorithmEntry = {
     {
       id: "fast-modular-exponentiation-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Fast Modular Exponentiation?",
+      prompt: "How many multiplications does modular exponentiation need for base^1000?",
       options: [
-        "To solve the Fast Modular Exponentiation problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "About 10 (log2 1000)",
+        "1000",
+        "500",
+        "About 30",
       ],
       answer: 0,
-      explanation:
-        "Fast Modular Exponentiation is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Fast Modular Exponentiation does."],
-      objective: "Purpose",
+      explanation: "Binary exponentiation uses O(log exp) multiplications, and log2(1000) ≈ 10.",
+      hints: [
+        "Think about the algorithm's key property.",
+      ],
+      objective: "Understanding",
     },
   ],
   exam: {
-    definition:
-      "Fast Modular Exponentiation is an algorithm in the domain of number theory and mathematics.",
+    definition: "Computes base^exp mod m in O(log exp) time using repeated squaring (binary exponentiation).",
     steps: [
-      "Apply the Fast Modular Exponentiation algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Set result = 1.",
+      "While exp > 0: if exp is odd, multiply result by base mod m; square base mod m; halve exp.",
+      "Return result.",
     ],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    applications: [
+      "number-theory applications",
+    ],
+    limitations: [
+      "Specific to its problem domain",
+    ],
     faq: [
       {
         q: "When should you use Fast Modular Exponentiation?",
-        a: "Use Fast Modular Exponentiation when the problem matches its designed use case in number theory and mathematics.",
+        a: "Computes base^exp mod m in O(log exp) time using repeated squaring (binary exponentiation).",
       },
     ],
     answers: [

@@ -3,49 +3,71 @@ import type { AlgorithmEntry } from "../types";
 export const modularDivisionEntry: AlgorithmEntry = {
   slug: "modular-division",
   name: "Modular Division",
-  aliases: ["Modular Division"],
-  curriculum: [357],
+  aliases: [
+    "Modular Division",
+  ],
+  curriculum: [
+    357,
+  ],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary:
-    "Modular Division is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["modular division", "math"],
-  prerequisites: [],
-  related: [],
+  summary: "Computes (a / b) mod m by multiplying a with the modular inverse of b, which exists when gcd(b, m) = 1.",
+  tags: [
+    "modular arithmetic",
+    "modular inverse",
+    "number theory",
+  ],
+  prerequisites: [
+    "Modular Multiplication",
+    "Binary Exponentiation",
+  ],
+  related: [
+    "modular-multiplication",
+    "modular-inverse",
+    "fast-modular-exponentiation",
+  ],
   problem: {
-    input: "Input for Modular Division.",
-    output: "Output of Modular Division.",
+    input: "Integers a and b, and a prime modulus m with gcd(b, m) = 1.",
+    output: "(a * b^(-1)) mod m.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Modular Division solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Division mod m means multiplying by the modular inverse. By Fermat's little theorem, when m is prime, b^(-1) = b^(m-2) mod m.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Modular Division algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Compute b^(m-2) mod m using fast exponentiation (Fermat's little theorem).",
+          "Multiply: result = a * b^(m-2) mod m.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Modular Division follows the pseudocode directly.",
+        text: "For non-prime m, use the extended Euclidean algorithm to find the inverse (if it exists).",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Modular Division is based on the algorithm's structure and the operations performed at each step.",
+        text: "When $m$ is prime and $\\gcd(b, m) = 1$: $b^{-1} \\equiv b^{m-2} \\pmod{m}$ by Fermat's little theorem. Time $O(\\log m)$.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Modular Division exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "For composite m, use extended GCD.",
+          "No inverse exists when gcd(b, m) > 1.",
+          "Used heavily in competitive programming and cryptography.",
+        ],
       },
     ],
   },
@@ -61,34 +83,69 @@ export const modularDivisionEntry: AlgorithmEntry = {
   properties: [
     {
       label: "Domain",
-      value: "number theory and mathematics",
+      value: "number theory",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "mod_div",
+      code: `def mod_div(a, b, m):
+    """Compute (a / b) mod m. Requires m prime and b not divisible by m."""
+    def power(base, exp, mod):
+        result = 1
+        base %= mod
+        while exp > 0:
+            if exp & 1: result = result * base % mod
+            exp >>= 1
+            base = base * base % mod
+        return result
+    return a % m * power(b, m - 2, m) % m
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            10,
+            2,
+            7,
+          ],
+          expected: 5,
+        },
+        {
+          args: [
+            6,
+            3,
+            11,
+          ],
+          expected: 2,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "modDiv",
+      code: `function modDiv(a, b, m) {
+  function power(base, exp, mod) {
+    let result = 1;
+    base %= mod;
+    while (exp > 0) {
+      if (exp & 1) result = result * base % mod;
+      exp >>= 1;
+      base = base * base % mod;
+    }
+    return result;
+  }
+  return a % m * power(b, m - 2, m) % m;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            10,
+            2,
+            7,
+          ],
+          expected: 5,
         },
       ],
     },
@@ -98,35 +155,40 @@ export const modularDivisionEntry: AlgorithmEntry = {
     {
       id: "modular-division-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Modular Division?",
+      prompt: "When does a modular inverse of b mod m exist?",
       options: [
-        "To solve the Modular Division problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "When gcd(b, m) = 1",
+        "Always",
+        "When b < m",
+        "When m is even",
       ],
       answer: 0,
-      explanation: "Modular Division is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Modular Division does."],
-      objective: "Purpose",
+      explanation: "The modular inverse exists if and only if b and m are coprime (gcd = 1).",
+      hints: [
+        "Think about the algorithm's key property.",
+      ],
+      objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Modular Division is an algorithm in the domain of number theory and mathematics.",
+    definition: "Computes (a / b) mod m by multiplying a with the modular inverse of b, which exists when gcd(b, m) = 1.",
     steps: [
-      "Apply the Modular Division algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Compute b^(m-2) mod m using fast exponentiation (Fermat's little theorem).",
+      "Multiply: result = a * b^(m-2) mod m.",
     ],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    applications: [
+      "number-theory applications",
+    ],
+    limitations: [
+      "Specific to its problem domain",
+    ],
     faq: [
       {
         q: "When should you use Modular Division?",
-        a: "Use Modular Division when the problem matches its designed use case in number theory and mathematics.",
+        a: "Computes (a / b) mod m by multiplying a with the modular inverse of b, which exists when gcd(b, m) = 1.",
       },
     ],
     answers: [

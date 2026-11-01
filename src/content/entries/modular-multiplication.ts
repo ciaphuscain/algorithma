@@ -3,49 +3,68 @@ import type { AlgorithmEntry } from "../types";
 export const modularMultiplicationEntry: AlgorithmEntry = {
   slug: "modular-multiplication",
   name: "Modular Multiplication",
-  aliases: ["Modular Multiplication"],
-  curriculum: [356],
+  aliases: [
+    "Modular Multiplication",
+  ],
+  curriculum: [
+    356,
+  ],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary:
-    "Modular Multiplication is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["modular multiplication", "math"],
-  prerequisites: [],
-  related: [],
+  summary: "Multiplies two numbers under a modulus, returning (a * b) mod m, avoiding overflow by reducing intermediates.",
+  tags: [
+    "modular arithmetic",
+    "number theory",
+  ],
+  prerequisites: [
+    "Modular Addition",
+  ],
+  related: [
+    "modular-addition",
+    "fast-modular-exponentiation",
+  ],
   problem: {
-    input: "Input for Modular Multiplication.",
-    output: "Output of Modular Multiplication.",
+    input: "Two integers a and b, and a positive modulus m.",
+    output: "(a * b) mod m.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Modular Multiplication solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Multiply a and b, then take the remainder. For large numbers, reduce a and b first to keep intermediates small.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Modular Multiplication algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Reduce a mod m and b mod m.",
+          "Multiply the results.",
+          "Take modulo m again.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Modular Multiplication follows the pseudocode directly.",
+        text: "In Python, arbitrary-precision integers handle overflow. In C/JS, use 64-bit types or Russian-peasant multiplication for very large moduli.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Modular Multiplication is based on the algorithm's structure and the operations performed at each step.",
+        text: "$(a \\cdot b) \\bmod m = ((a \\bmod m) \\cdot (b \\bmod m)) \\bmod m$. Time $O(1)$ with hardware multiplication.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Modular Multiplication exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Russian-peasant (binary) method: decompose b into powers of 2, use modular addition to avoid overflow.",
+          "Montgomery multiplication accelerates repeated modular multiplications.",
+        ],
       },
     ],
   },
@@ -61,34 +80,66 @@ export const modularMultiplicationEntry: AlgorithmEntry = {
   properties: [
     {
       label: "Domain",
-      value: "number theory and mathematics",
+      value: "number theory",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "mod_mul",
+      code: `def mod_mul(a, b, m):
+    return (a % m) * (b % m) % m
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            7,
+            5,
+            10,
+          ],
+          expected: 5,
+        },
+        {
+          args: [
+            123,
+            456,
+            1000,
+          ],
+          expected: 88,
+        },
+        {
+          args: [
+            3,
+            4,
+            5,
+          ],
+          expected: 2,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "modMul",
+      code: `function modMul(a, b, m) {
+  return ((a % m) * (b % m)) % m;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            7,
+            5,
+            10,
+          ],
+          expected: 5,
+        },
+        {
+          args: [
+            3,
+            4,
+            5,
+          ],
+          expected: 2,
         },
       ],
     },
@@ -98,36 +149,41 @@ export const modularMultiplicationEntry: AlgorithmEntry = {
     {
       id: "modular-multiplication-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Modular Multiplication?",
+      prompt: "What is (7 * 8) mod 10?",
       options: [
-        "To solve the Modular Multiplication problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "6",
+        "56",
+        "5",
+        "8",
       ],
       answer: 0,
-      explanation: "Modular Multiplication is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Modular Multiplication does."],
-      objective: "Purpose",
+      explanation: "7 * 8 = 56, and 56 mod 10 = 6.",
+      hints: [
+        "Think about the algorithm's key property.",
+      ],
+      objective: "Understanding",
     },
   ],
   exam: {
-    definition:
-      "Modular Multiplication is an algorithm in the domain of number theory and mathematics.",
+    definition: "Multiplies two numbers under a modulus, returning (a * b) mod m, avoiding overflow by reducing intermediates.",
     steps: [
-      "Apply the Modular Multiplication algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Reduce a mod m and b mod m.",
+      "Multiply the results.",
+      "Take modulo m again.",
     ],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    applications: [
+      "number-theory applications",
+    ],
+    limitations: [
+      "Specific to its problem domain",
+    ],
     faq: [
       {
         q: "When should you use Modular Multiplication?",
-        a: "Use Modular Multiplication when the problem matches its designed use case in number theory and mathematics.",
+        a: "Multiplies two numbers under a modulus, returning (a * b) mod m, avoiding overflow by reducing intermediates.",
       },
     ],
     answers: [

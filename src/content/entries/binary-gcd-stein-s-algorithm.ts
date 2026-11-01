@@ -3,49 +3,70 @@ import type { AlgorithmEntry } from "../types";
 export const binaryGcdSteinSAlgorithmEntry: AlgorithmEntry = {
   slug: "binary-gcd-stein-s-algorithm",
   name: "Binary GCD (Stein's Algorithm)",
-  aliases: ["Binary GCD (Stein's Algorithm)"],
-  curriculum: [353],
+  aliases: [
+    "Binary GCD (Stein's Algorithm)",
+  ],
+  curriculum: [
+    353,
+  ],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary:
-    "Binary GCD (Stein's Algorithm) is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["binary gcd stein s algorithm", "math"],
-  prerequisites: [],
-  related: [],
+  summary: "Computes the GCD of two non-negative integers using only subtraction and bit shifts, avoiding expensive division operations.",
+  tags: [
+    "gcd",
+    "binary",
+    "bit manipulation",
+    "number theory",
+  ],
+  prerequisites: [
+    "Euclidean Algorithm",
+  ],
+  related: [
+    "euclid",
+  ],
   problem: {
-    input: "Input for Binary GCD (Stein's Algorithm).",
-    output: "Output of Binary GCD (Stein's Algorithm).",
+    input: "Two non-negative integers a and b.",
+    output: "Their greatest common divisor.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Binary GCD (Stein's Algorithm) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Instead of dividing, use the facts: if both even, gcd(a,b) = 2·gcd(a/2,b/2); if one even, gcd(a,b) = gcd(a/2,b); if both odd, gcd(a,b) = gcd(|a-b|/2, min(a,b)).",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Binary GCD (Stein's Algorithm) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Count common factors of 2 (trailing zeros), shift both right.",
+          "Make both odd by shifting out remaining factors of 2.",
+          "Repeatedly subtract the smaller from the larger, shift out factors of 2.",
+          "Multiply the result by the common power of 2.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Binary GCD (Stein's Algorithm) follows the pseudocode directly.",
+        text: "Use bitwise AND with 1 to test parity, right-shift to divide by 2. Count trailing zeros with a loop or __builtin_ctz.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Binary GCD (Stein's Algorithm) is based on the algorithm's structure and the operations performed at each step.",
+        text: "Each step reduces at least one operand by half, so $O(\\log(\\max(a,b))^2)$ bit operations. No division needed, making it faster on hardware without fast dividers.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Binary GCD (Stein's Algorithm) exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Used in cryptographic libraries where constant-time GCD is needed.",
+          "The extended binary GCD computes Bézout coefficients similarly.",
+        ],
       },
     ],
   },
@@ -61,34 +82,90 @@ export const binaryGcdSteinSAlgorithmEntry: AlgorithmEntry = {
   properties: [
     {
       label: "Domain",
-      value: "number theory and mathematics",
+      value: "number theory",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "binary_gcd",
+      code: `def binary_gcd(a, b):
+    if a == 0: return b
+    if b == 0: return a
+    shift = 0
+    while ((a | b) & 1) == 0:
+        a >>= 1; b >>= 1; shift += 1
+    while (a & 1) == 0:
+        a >>= 1
+    while b != 0:
+        while (b & 1) == 0:
+            b >>= 1
+        if a > b: a, b = b, a
+        b -= a
+    return a << shift
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            48,
+            18,
+          ],
+          expected: 6,
+        },
+        {
+          args: [
+            0,
+            5,
+          ],
+          expected: 5,
+        },
+        {
+          args: [
+            17,
+            13,
+          ],
+          expected: 1,
+        },
+        {
+          args: [
+            100,
+            75,
+          ],
+          expected: 25,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "binaryGcd",
+      code: `function binaryGcd(a, b) {
+  if (a === 0) return b;
+  if (b === 0) return a;
+  let shift = 0;
+  while (((a | b) & 1) === 0) { a >>= 1; b >>= 1; shift++; }
+  while ((a & 1) === 0) a >>= 1;
+  while (b !== 0) {
+    while ((b & 1) === 0) b >>= 1;
+    if (a > b) { const t = a; a = b; b = t; }
+    b -= a;
+  }
+  return a << shift;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            48,
+            18,
+          ],
+          expected: 6,
+        },
+        {
+          args: [
+            17,
+            13,
+          ],
+          expected: 1,
         },
       ],
     },
@@ -98,37 +175,42 @@ export const binaryGcdSteinSAlgorithmEntry: AlgorithmEntry = {
     {
       id: "binary-gcd-stein-s-algorithm-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Binary GCD (Stein's Algorithm)?",
+      prompt: "What advantage does Binary GCD have over the Euclidean algorithm?",
       options: [
-        "To solve the Binary GCD (Stein's Algorithm) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "It avoids division, using only shifts and subtraction",
+        "It always runs in fewer steps",
+        "It works with floating-point numbers",
+        "It finds the LCM as well",
       ],
       answer: 0,
-      explanation:
-        "Binary GCD (Stein's Algorithm) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Binary GCD (Stein's Algorithm) does."],
-      objective: "Purpose",
+      explanation: "Binary GCD replaces modular reduction with bit shifts and subtraction, which can be faster on hardware without efficient dividers.",
+      hints: [
+        "Think about the algorithm's key property.",
+      ],
+      objective: "Understanding",
     },
   ],
   exam: {
-    definition:
-      "Binary GCD (Stein's Algorithm) is an algorithm in the domain of number theory and mathematics.",
+    definition: "Computes the GCD of two non-negative integers using only subtraction and bit shifts, avoiding expensive division operations.",
     steps: [
-      "Apply the Binary GCD (Stein's Algorithm) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Count common factors of 2 (trailing zeros), shift both right.",
+      "Make both odd by shifting out remaining factors of 2.",
+      "Repeatedly subtract the smaller from the larger, shift out factors of 2.",
+      "Multiply the result by the common power of 2.",
     ],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    applications: [
+      "number-theory applications",
+    ],
+    limitations: [
+      "Specific to its problem domain",
+    ],
     faq: [
       {
         q: "When should you use Binary GCD (Stein's Algorithm)?",
-        a: "Use Binary GCD (Stein's Algorithm) when the problem matches its designed use case in number theory and mathematics.",
+        a: "Computes the GCD of two non-negative integers using only subtraction and bit shifts, avoiding expensive division operations.",
       },
     ],
     answers: [

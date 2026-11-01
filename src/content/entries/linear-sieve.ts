@@ -3,48 +3,71 @@ import type { AlgorithmEntry } from "../types";
 export const linearSieveEntry: AlgorithmEntry = {
   slug: "linear-sieve",
   name: "Linear Sieve",
-  aliases: ["Linear Sieve"],
-  curriculum: [363],
+  aliases: [
+    "Linear Sieve",
+  ],
+  curriculum: [
+    363,
+  ],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary: "Linear Sieve is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["linear sieve", "math"],
-  prerequisites: [],
-  related: [],
+  summary: "Generates all primes up to n in O(n) time by ensuring each composite is crossed off exactly once, by its smallest prime factor.",
+  tags: [
+    "sieve",
+    "prime",
+    "linear time",
+    "number theory",
+  ],
+  prerequisites: [
+    "Sieve of Eratosthenes",
+  ],
+  related: [
+    "sieve",
+    "segmented-sieve",
+  ],
   problem: {
-    input: "Input for Linear Sieve.",
-    output: "Output of Linear Sieve.",
+    input: "A positive integer n.",
+    output: "All primes up to n.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Linear Sieve solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Unlike the Sieve of Eratosthenes which may mark a composite multiple times, the linear sieve marks each composite exactly once using its smallest prime factor (SPF), achieving true O(n) time.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Linear Sieve algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Maintain a list of discovered primes and an SPF array.",
+          "For each i from 2 to n: if SPF[i] is 0, i is prime.",
+          "For each prime p ≤ SPF[i]: mark i*p with SPF[i*p] = p. Stop when p divides i (ensures each composite is marked by its SPF only once).",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Linear Sieve follows the pseudocode directly.",
+        text: "The key is breaking when p divides i: this ensures i*p is marked by p = SPF(i*p), not any larger prime.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Linear Sieve is based on the algorithm's structure and the operations performed at each step.",
+        text: "Each number 2..n is visited O(1) times total, giving $O(n)$ time and $O(n)$ space. Also computes the smallest prime factor of every number, enabling O(log n) factorization.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Linear Sieve exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Also called the Euler sieve.",
+          "The SPF array enables fast factorization: divide by SPF repeatedly.",
+          "Can be extended to compute multiplicative functions (Euler's totient, Möbius, divisor sum) in O(n).",
+        ],
       },
     ],
   },
@@ -60,34 +83,106 @@ export const linearSieveEntry: AlgorithmEntry = {
   properties: [
     {
       label: "Domain",
-      value: "number theory and mathematics",
+      value: "number theory",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "linear_sieve",
+      code: `def linear_sieve(n):
+    """Return list of primes up to n using the linear sieve."""
+    spf = [0] * (n + 1)
+    primes = []
+    for i in range(2, n + 1):
+        if spf[i] == 0:
+            spf[i] = i
+            primes.append(i)
+        for p in primes:
+            if p > spf[i] or i * p > n:
+                break
+            spf[i * p] = p
+    return primes
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            10,
+          ],
+          expected: [
+            2,
+            3,
+            5,
+            7,
+          ],
+        },
+        {
+          args: [
+            20,
+          ],
+          expected: [
+            2,
+            3,
+            5,
+            7,
+            11,
+            13,
+            17,
+            19,
+          ],
+        },
+        {
+          args: [
+            2,
+          ],
+          expected: [
+            2,
+          ],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "linearSieve",
+      code: `function linearSieve(n) {
+  const spf = new Array(n + 1).fill(0);
+  const primes = [];
+  for (let i = 2; i <= n; i++) {
+    if (spf[i] === 0) { spf[i] = i; primes.push(i); }
+    for (const p of primes) {
+      if (p > spf[i] || i * p > n) break;
+      spf[i * p] = p;
+    }
+  }
+  return primes;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            10,
+          ],
+          expected: [
+            2,
+            3,
+            5,
+            7,
+          ],
+        },
+        {
+          args: [
+            20,
+          ],
+          expected: [
+            2,
+            3,
+            5,
+            7,
+            11,
+            13,
+            17,
+            19,
+          ],
         },
       ],
     },
@@ -97,35 +192,41 @@ export const linearSieveEntry: AlgorithmEntry = {
     {
       id: "linear-sieve-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Linear Sieve?",
+      prompt: "What makes the linear sieve O(n) instead of O(n log log n)?",
       options: [
-        "To solve the Linear Sieve problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "Each composite is marked exactly once by its smallest prime factor",
+        "It uses a hash table",
+        "It skips even numbers",
+        "It uses bit manipulation",
       ],
       answer: 0,
-      explanation: "Linear Sieve is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Linear Sieve does."],
-      objective: "Purpose",
+      explanation: "The stopping condition (break when p divides i) ensures each composite is crossed off exactly once.",
+      hints: [
+        "Think about the algorithm's key property.",
+      ],
+      objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Linear Sieve is an algorithm in the domain of number theory and mathematics.",
+    definition: "Generates all primes up to n in O(n) time by ensuring each composite is crossed off exactly once, by its smallest prime factor.",
     steps: [
-      "Apply the Linear Sieve algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Maintain a list of discovered primes and an SPF array.",
+      "For each i from 2 to n: if SPF[i] is 0, i is prime.",
+      "For each prime p ≤ SPF[i]: mark i*p with SPF[i*p] = p. Stop when p divides i (ensures each composite is marked by its SPF only once).",
     ],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    applications: [
+      "number-theory applications",
+    ],
+    limitations: [
+      "Specific to its problem domain",
+    ],
     faq: [
       {
         q: "When should you use Linear Sieve?",
-        a: "Use Linear Sieve when the problem matches its designed use case in number theory and mathematics.",
+        a: "Generates all primes up to n in O(n) time by ensuring each composite is crossed off exactly once, by its smallest prime factor.",
       },
     ],
     answers: [

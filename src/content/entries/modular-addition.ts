@@ -3,49 +3,65 @@ import type { AlgorithmEntry } from "../types";
 export const modularAdditionEntry: AlgorithmEntry = {
   slug: "modular-addition",
   name: "Modular Addition",
-  aliases: ["Modular Addition"],
-  curriculum: [355],
+  aliases: [
+    "Modular Addition",
+  ],
+  curriculum: [
+    355,
+  ],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary:
-    "Modular Addition is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["modular addition", "math"],
+  summary: "Adds two numbers under a modulus, returning (a + b) mod m, handling potential overflow.",
+  tags: [
+    "modular arithmetic",
+    "number theory",
+  ],
   prerequisites: [],
-  related: [],
+  related: [
+    "modular-multiplication",
+  ],
   problem: {
-    input: "Input for Modular Addition.",
-    output: "Output of Modular Addition.",
+    input: "Two integers a and b, and a positive modulus m.",
+    output: "(a + b) mod m.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Modular Addition solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "In modular arithmetic, we keep numbers in range [0, m) by taking the remainder after division. For addition, (a+b) mod m gives the result.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Modular Addition algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Reduce a and b modulo m.",
+          "Add them.",
+          "If the sum >= m, subtract m.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Modular Addition follows the pseudocode directly.",
+        text: "To avoid overflow in languages with fixed-width integers, reduce a and b first, then check if a + b >= m rather than computing (a+b) % m directly.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Modular Addition is based on the algorithm's structure and the operations performed at each step.",
+        text: "$(a + b) \\bmod m = ((a \\bmod m) + (b \\bmod m)) \\bmod m$. Runs in $O(1)$ time.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Modular Addition exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "Forms a group $(\\mathbb{Z}/m\\mathbb{Z}, +)$.",
+          "Foundation for modular multiplication and exponentiation.",
+        ],
       },
     ],
   },
@@ -61,34 +77,66 @@ export const modularAdditionEntry: AlgorithmEntry = {
   properties: [
     {
       label: "Domain",
-      value: "number theory and mathematics",
+      value: "number theory",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "mod_add",
+      code: `def mod_add(a, b, m):
+    return (a % m + b % m) % m
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            7,
+            5,
+            10,
+          ],
+          expected: 2,
+        },
+        {
+          args: [
+            3,
+            4,
+            12,
+          ],
+          expected: 7,
+        },
+        {
+          args: [
+            999,
+            1,
+            1000,
+          ],
+          expected: 0,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "modAdd",
+      code: `function modAdd(a, b, m) {
+  return ((a % m) + (b % m)) % m;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            7,
+            5,
+            10,
+          ],
+          expected: 2,
+        },
+        {
+          args: [
+            999,
+            1,
+            1000,
+          ],
+          expected: 0,
         },
       ],
     },
@@ -98,35 +146,41 @@ export const modularAdditionEntry: AlgorithmEntry = {
     {
       id: "modular-addition-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Modular Addition?",
+      prompt: "Why reduce a and b before adding in modular addition?",
       options: [
-        "To solve the Modular Addition problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "To prevent integer overflow",
+        "To make the algorithm faster",
+        "Because it changes the result",
+        "To handle negative numbers",
       ],
       answer: 0,
-      explanation: "Modular Addition is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Modular Addition does."],
-      objective: "Purpose",
+      explanation: "Reducing first keeps intermediate values smaller, preventing overflow in fixed-width integer types.",
+      hints: [
+        "Think about the algorithm's key property.",
+      ],
+      objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Modular Addition is an algorithm in the domain of number theory and mathematics.",
+    definition: "Adds two numbers under a modulus, returning (a + b) mod m, handling potential overflow.",
     steps: [
-      "Apply the Modular Addition algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Reduce a and b modulo m.",
+      "Add them.",
+      "If the sum >= m, subtract m.",
     ],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    applications: [
+      "number-theory applications",
+    ],
+    limitations: [
+      "Specific to its problem domain",
+    ],
     faq: [
       {
         q: "When should you use Modular Addition?",
-        a: "Use Modular Addition when the problem matches its designed use case in number theory and mathematics.",
+        a: "Adds two numbers under a modulus, returning (a + b) mod m, handling potential overflow.",
       },
     ],
     answers: [

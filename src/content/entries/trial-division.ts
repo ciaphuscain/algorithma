@@ -3,49 +3,68 @@ import type { AlgorithmEntry } from "../types";
 export const trialDivisionEntry: AlgorithmEntry = {
   slug: "trial-division",
   name: "Trial Division",
-  aliases: ["Trial Division"],
-  curriculum: [361],
+  aliases: [
+    "Trial Division",
+  ],
+  curriculum: [
+    361,
+  ],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary:
-    "Trial Division is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["trial division", "math"],
+  summary: "Tests whether a number n is prime by checking divisibility by all integers from 2 to √n.",
+  tags: [
+    "primality",
+    "trial division",
+    "number theory",
+  ],
   prerequisites: [],
-  related: [],
+  related: [
+    "sieve",
+    "miller-rabin",
+  ],
   problem: {
-    input: "Input for Trial Division.",
-    output: "Output of Trial Division.",
+    input: "A positive integer n ≥ 2.",
+    output: "True if n is prime, false otherwise.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Trial Division solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "If n has a factor other than 1 and itself, at least one factor must be ≤ √n. So we only need to check up to √n.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Trial Division algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Check if n is divisible by 2.",
+          "Check odd numbers from 3 to √n.",
+          "If no divisor found, n is prime.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Trial Division follows the pseudocode directly.",
+        text: "First handle 2 separately, then iterate odd numbers only. Can also skip multiples of 2 and 3 (check 6k±1).",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Trial Division is based on the algorithm's structure and the operations performed at each step.",
+        text: "$O(\\sqrt{n})$ divisions in the worst case. Space $O(1)$.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Trial Division exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "For large n, probabilistic tests (Miller-Rabin) are much faster.",
+          "Trial division is optimal for finding small factors quickly.",
+          "Can be combined with a small sieve for the first few primes.",
+        ],
       },
     ],
   },
@@ -61,34 +80,87 @@ export const trialDivisionEntry: AlgorithmEntry = {
   properties: [
     {
       label: "Domain",
-      value: "number theory and mathematics",
+      value: "number theory",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "is_prime",
+      code: `def is_prime(n):
+    if n < 2: return False
+    if n < 4: return True
+    if n % 2 == 0 or n % 3 == 0: return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0: return False
+        i += 6
+    return True
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            2,
+          ],
+          expected: true,
+        },
+        {
+          args: [
+            17,
+          ],
+          expected: true,
+        },
+        {
+          args: [
+            15,
+          ],
+          expected: false,
+        },
+        {
+          args: [
+            1,
+          ],
+          expected: false,
+        },
+        {
+          args: [
+            97,
+          ],
+          expected: true,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "isPrime",
+      code: `function isPrime(n) {
+  if (n < 2) return false;
+  if (n < 4) return true;
+  if (n % 2 === 0 || n % 3 === 0) return false;
+  for (let i = 5; i * i <= n; i += 6) {
+    if (n % i === 0 || n % (i + 2) === 0) return false;
+  }
+  return true;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            17,
+          ],
+          expected: true,
+        },
+        {
+          args: [
+            15,
+          ],
+          expected: false,
+        },
+        {
+          args: [
+            97,
+          ],
+          expected: true,
         },
       ],
     },
@@ -98,35 +170,41 @@ export const trialDivisionEntry: AlgorithmEntry = {
     {
       id: "trial-division-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Trial Division?",
+      prompt: "Why do we only check divisors up to √n?",
       options: [
-        "To solve the Trial Division problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "If n = a*b with a ≤ b, then a ≤ √n",
+        "To save memory",
+        "Larger divisors don't exist",
+        "It's an approximation",
       ],
       answer: 0,
-      explanation: "Trial Division is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Trial Division does."],
-      objective: "Purpose",
+      explanation: "If n = a * b and both a,b > √n, then a*b > n, a contradiction. So at least one factor is ≤ √n.",
+      hints: [
+        "Think about the algorithm's key property.",
+      ],
+      objective: "Understanding",
     },
   ],
   exam: {
-    definition: "Trial Division is an algorithm in the domain of number theory and mathematics.",
+    definition: "Tests whether a number n is prime by checking divisibility by all integers from 2 to √n.",
     steps: [
-      "Apply the Trial Division algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Check if n is divisible by 2.",
+      "Check odd numbers from 3 to √n.",
+      "If no divisor found, n is prime.",
     ],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    applications: [
+      "number-theory applications",
+    ],
+    limitations: [
+      "Specific to its problem domain",
+    ],
     faq: [
       {
         q: "When should you use Trial Division?",
-        a: "Use Trial Division when the problem matches its designed use case in number theory and mathematics.",
+        a: "Tests whether a number n is prime by checking divisibility by all integers from 2 to √n.",
       },
     ],
     answers: [

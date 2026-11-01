@@ -3,49 +3,71 @@ import type { AlgorithmEntry } from "../types";
 export const primeFactorizationEntry: AlgorithmEntry = {
   slug: "prime-factorization",
   name: "Prime Factorization",
-  aliases: ["Prime Factorization"],
-  curriculum: [366],
+  aliases: [
+    "Prime Factorization",
+  ],
+  curriculum: [
+    366,
+  ],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary:
-    "Prime Factorization is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["prime factorization", "math"],
-  prerequisites: [],
-  related: [],
+  summary: "Decomposes a positive integer into its prime factors by trial division up to √n.",
+  tags: [
+    "factorization",
+    "prime",
+    "trial division",
+    "number theory",
+  ],
+  prerequisites: [
+    "Trial Division",
+  ],
+  related: [
+    "trial-division",
+    "pollard-rho",
+  ],
   problem: {
-    input: "Input for Prime Factorization.",
-    output: "Output of Prime Factorization.",
+    input: "A positive integer n ≥ 2.",
+    output: "The prime factorization of n as a list of [prime, exponent] pairs.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Prime Factorization solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "Divide n by each prime starting from 2. Each time a prime divides n, count how many times and divide it out. After checking up to √n, if anything remains, it's a prime factor.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Prime Factorization algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Divide by 2 as many times as possible.",
+          "Try odd divisors from 3 to √n.",
+          "If n > 1 at the end, n itself is prime.",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Prime Factorization follows the pseudocode directly.",
+        text: "Keep dividing n by each factor until it no longer divides, counting the exponent.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Prime Factorization is based on the algorithm's structure and the operations performed at each step.",
+        text: "$O(\\sqrt{n})$ trial divisions in the worst case (when n is prime). Can be sped up with a precomputed SPF table to $O(\\log n)$.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Prime Factorization exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "For large n, use Pollard's rho or the quadratic sieve.",
+          "With a linear sieve's SPF array, factorization takes O(log n).",
+          "The fundamental theorem of arithmetic guarantees uniqueness of the factorization.",
+        ],
       },
     ],
   },
@@ -61,34 +83,136 @@ export const primeFactorizationEntry: AlgorithmEntry = {
   properties: [
     {
       label: "Domain",
-      value: "number theory and mathematics",
+      value: "number theory",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "factorize",
+      code: `def factorize(n):
+    """Return prime factorization as list of [prime, exponent] pairs."""
+    factors = []
+    d = 2
+    while d * d <= n:
+        if n % d == 0:
+            exp = 0
+            while n % d == 0:
+                n //= d
+                exp += 1
+            factors.append([d, exp])
+        d += 1 if d == 2 else 2
+    if n > 1:
+        factors.append([n, 1])
+    return factors
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            12,
+          ],
+          expected: [
+            [
+              2,
+              2,
+            ],
+            [
+              3,
+              1,
+            ],
+          ],
+        },
+        {
+          args: [
+            100,
+          ],
+          expected: [
+            [
+              2,
+              2,
+            ],
+            [
+              5,
+              2,
+            ],
+          ],
+        },
+        {
+          args: [
+            17,
+          ],
+          expected: [
+            [
+              17,
+              1,
+            ],
+          ],
+        },
+        {
+          args: [
+            360,
+          ],
+          expected: [
+            [
+              2,
+              3,
+            ],
+            [
+              3,
+              2,
+            ],
+            [
+              5,
+              1,
+            ],
+          ],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "factorize",
+      code: `function factorize(n) {
+  const factors = [];
+  let d = 2;
+  while (d * d <= n) {
+    if (n % d === 0) {
+      let exp = 0;
+      while (n % d === 0) { n = Math.floor(n / d); exp++; }
+      factors.push([d, exp]);
+    }
+    d += d === 2 ? 1 : 2;
+  }
+  if (n > 1) factors.push([n, 1]);
+  return factors;
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            12,
+          ],
+          expected: [
+            [
+              2,
+              2,
+            ],
+            [
+              3,
+              1,
+            ],
+          ],
+        },
+        {
+          args: [
+            17,
+          ],
+          expected: [
+            [
+              17,
+              1,
+            ],
+          ],
         },
       ],
     },
@@ -98,36 +222,41 @@ export const primeFactorizationEntry: AlgorithmEntry = {
     {
       id: "prime-factorization-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Prime Factorization?",
+      prompt: "What is the time complexity of trial division factorization?",
       options: [
-        "To solve the Prime Factorization problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "O(√n)",
+        "O(n)",
+        "O(log n)",
+        "O(n log n)",
       ],
       answer: 0,
-      explanation: "Prime Factorization is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Prime Factorization does."],
-      objective: "Purpose",
+      explanation: "We try divisors up to √n. If n is prime, all √n checks fail and we conclude n is prime.",
+      hints: [
+        "Think about the algorithm's key property.",
+      ],
+      objective: "Understanding",
     },
   ],
   exam: {
-    definition:
-      "Prime Factorization is an algorithm in the domain of number theory and mathematics.",
+    definition: "Decomposes a positive integer into its prime factors by trial division up to √n.",
     steps: [
-      "Apply the Prime Factorization algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Divide by 2 as many times as possible.",
+      "Try odd divisors from 3 to √n.",
+      "If n > 1 at the end, n itself is prime.",
     ],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    applications: [
+      "number-theory applications",
+    ],
+    limitations: [
+      "Specific to its problem domain",
+    ],
     faq: [
       {
         q: "When should you use Prime Factorization?",
-        a: "Use Prime Factorization when the problem matches its designed use case in number theory and mathematics.",
+        a: "Decomposes a positive integer into its prime factors by trial division up to √n.",
       },
     ],
     answers: [

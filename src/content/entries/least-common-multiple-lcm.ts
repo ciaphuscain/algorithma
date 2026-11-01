@@ -3,49 +3,67 @@ import type { AlgorithmEntry } from "../types";
 export const leastCommonMultipleLcmEntry: AlgorithmEntry = {
   slug: "least-common-multiple-lcm",
   name: "Least Common Multiple (LCM)",
-  aliases: ["Least Common Multiple (LCM)"],
-  curriculum: [354],
+  aliases: [
+    "Least Common Multiple (LCM)",
+  ],
+  curriculum: [
+    354,
+  ],
   domain: "number-theory",
   subcategory: "Number Theory",
   difficulty: "intermediate",
-  summary:
-    "Least Common Multiple (LCM) is a well-known algorithm in the domain of number theory and mathematics.",
-  tags: ["least common multiple lcm", "math"],
-  prerequisites: [],
-  related: [],
+  summary: "Computes the least common multiple of two integers using the relationship LCM(a,b) = |a*b| / GCD(a,b).",
+  tags: [
+    "lcm",
+    "gcd",
+    "number theory",
+  ],
+  prerequisites: [
+    "Euclidean Algorithm",
+  ],
+  related: [
+    "euclid",
+  ],
   problem: {
-    input: "Input for Least Common Multiple (LCM).",
-    output: "Output of Least Common Multiple (LCM).",
+    input: "Two positive integers a and b.",
+    output: "Their least common multiple.",
   },
   levels: {
     intuition: [
       {
         kind: "p",
-        text: "Least Common Multiple (LCM) solves its problem by following a systematic approach. See the mechanics level for a step-by-step description.",
+        text: "The LCM is the smallest number divisible by both a and b. Since a*b = GCD(a,b) * LCM(a,b), we can compute LCM from the GCD.",
       },
     ],
     mechanics: [
       {
-        kind: "p",
-        text: "The Least Common Multiple (LCM) algorithm processes its input step by step. See the implementation level for details.",
+        kind: "list",
+        ordered: true,
+        items: [
+          "Compute GCD(a, b) using the Euclidean algorithm.",
+          "Return a // GCD * b to avoid overflow (divide first, then multiply).",
+        ],
       },
     ],
     implementation: [
       {
         kind: "p",
-        text: "A standard implementation of Least Common Multiple (LCM) follows the pseudocode directly.",
+        text: "Divide a by gcd(a,b) first to avoid integer overflow, then multiply by b.",
       },
     ],
     mathematics: [
       {
         kind: "p",
-        text: "The time complexity analysis of Least Common Multiple (LCM) is based on the algorithm's structure and the operations performed at each step.",
+        text: "$\\text{lcm}(a,b) = \\frac{|a \\cdot b|}{\\gcd(a,b)}$. Time is dominated by the GCD computation: $O(\\log(\\min(a,b)))$.",
       },
     ],
     advanced: [
       {
-        kind: "p",
-        text: "Variants and extensions of Least Common Multiple (LCM) exist in the literature. See references for details.",
+        kind: "list",
+        items: [
+          "LCM of multiple numbers: fold pairwise.",
+          "LCM appears in fraction arithmetic and in scheduling periodic events.",
+        ],
       },
     ],
   },
@@ -61,34 +79,74 @@ export const leastCommonMultipleLcmEntry: AlgorithmEntry = {
   properties: [
     {
       label: "Domain",
-      value: "number theory and mathematics",
+      value: "number theory",
     },
   ],
   implementations: [
     {
       language: "python",
-      entry: "identity",
-      code: `def identity(x):
-    return x
+      entry: "lcm",
+      code: `def lcm(a, b):
+    if a == 0 or b == 0: return 0
+    def gcd(x, y):
+        while y: x, y = y, x % y
+        return x
+    return abs(a) // gcd(abs(a), abs(b)) * abs(b)
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            4,
+            6,
+          ],
+          expected: 12,
+        },
+        {
+          args: [
+            3,
+            7,
+          ],
+          expected: 21,
+        },
+        {
+          args: [
+            0,
+            5,
+          ],
+          expected: 0,
+        },
+        {
+          args: [
+            12,
+            18,
+          ],
+          expected: 36,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "identity",
-      code: `function identity(x) {
-  return x;
+      entry: "lcm",
+      code: `function lcm(a, b) {
+  if (a === 0 || b === 0) return 0;
+  function gcd(x, y) { while (y) { const t = y; y = x % y; x = t; } return x; }
+  return Math.abs(a) / gcd(Math.abs(a), Math.abs(b)) * Math.abs(b);
 }
 `,
       tests: [
         {
-          args: [42],
-          expected: 42,
+          args: [
+            4,
+            6,
+          ],
+          expected: 12,
+        },
+        {
+          args: [
+            3,
+            7,
+          ],
+          expected: 21,
         },
       ],
     },
@@ -98,37 +156,40 @@ export const leastCommonMultipleLcmEntry: AlgorithmEntry = {
     {
       id: "least-common-multiple-lcm-q1",
       kind: "mcq",
-      prompt: "What is the primary purpose of Least Common Multiple (LCM)?",
+      prompt: "How is LCM related to GCD?",
       options: [
-        "To solve the Least Common Multiple (LCM) problem efficiently",
-        "To sort an array",
-        "To search a graph",
-        "To compress data",
+        "LCM(a,b) = |a*b| / GCD(a,b)",
+        "LCM(a,b) = GCD(a,b) * (a+b)",
+        "LCM(a,b) = a * b",
+        "LCM(a,b) = GCD(a,b)^2",
       ],
       answer: 0,
-      explanation:
-        "Least Common Multiple (LCM) is designed to solve its specific problem efficiently.",
-      hints: ["Think about what Least Common Multiple (LCM) does."],
-      objective: "Purpose",
+      explanation: "The product of two numbers equals the product of their GCD and LCM.",
+      hints: [
+        "Think about the algorithm's key property.",
+      ],
+      objective: "Understanding",
     },
   ],
   exam: {
-    definition:
-      "Least Common Multiple (LCM) is an algorithm in the domain of number theory and mathematics.",
+    definition: "Computes the least common multiple of two integers using the relationship LCM(a,b) = |a*b| / GCD(a,b).",
     steps: [
-      "Apply the Least Common Multiple (LCM) algorithm to the input.",
-      "Process according to the algorithm's rules.",
-      "Return the result.",
+      "Compute GCD(a, b) using the Euclidean algorithm.",
+      "Return a // GCD * b to avoid overflow (divide first, then multiply).",
     ],
     timeComplexity: "$O(n)$.",
     spaceComplexity: "$O(n)$.",
     correctness: "The algorithm correctly solves the problem by following its defined procedure.",
-    applications: ["number theory and mathematics applications"],
-    limitations: ["Specific to its problem domain"],
+    applications: [
+      "number-theory applications",
+    ],
+    limitations: [
+      "Specific to its problem domain",
+    ],
     faq: [
       {
         q: "When should you use Least Common Multiple (LCM)?",
-        a: "Use Least Common Multiple (LCM) when the problem matches its designed use case in number theory and mathematics.",
+        a: "Computes the least common multiple of two integers using the relationship LCM(a,b) = |a*b| / GCD(a,b).",
       },
     ],
     answers: [
