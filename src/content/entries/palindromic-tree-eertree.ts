@@ -57,8 +57,8 @@ export const palindromicTreeEertreeEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(n)$" },
-    space: "$O(n)$",
+    time: { best: "O(n)", average: "O(n)", worst: "O(n)" },
+    space: "O(n)",
     worstClass: "n",
   },
   properties: [],

@@ -56,8 +56,8 @@ export const stringInterleavingDpEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(mn)$", average: "$O(mn)$", worst: "$O(mn)$" },
-    space: "$O(mn)$",
+    time: { best: "O(mn)", average: "O(mn)", worst: "O(mn)" },
+    space: "O(mn)",
     worstClass: "n",
   },
   properties: [],

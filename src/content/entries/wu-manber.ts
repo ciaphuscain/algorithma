@@ -59,8 +59,8 @@ export const wuManberEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(n/m)$", average: "$O(Bn/m)$", worst: "$O(nmk)$" },
-    space: "$O(|\\Sigma|^B + \\sum |p_i|)$",
+    time: { best: "O(n/m)", average: "O(Bn/m)", worst: "O(nmk)" },
+    space: "O(|\\Sigma|^B + \\sum |p_i|)",
     worstClass: "n",
   },
   properties: [],

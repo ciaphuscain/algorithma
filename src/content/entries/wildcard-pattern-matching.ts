@@ -55,8 +55,8 @@ export const wildcardPatternMatchingEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(n)$", average: "$O(mn)$", worst: "$O(mn)$" },
-    space: "$O(mn)$",
+    time: { best: "O(n)", average: "O(mn)", worst: "O(mn)" },
+    space: "O(mn)",
     worstClass: "n",
   },
   properties: [],

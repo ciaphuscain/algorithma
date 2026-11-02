@@ -12,7 +12,7 @@ export const kargerSMinimumCutAlgorithmEntry: AlgorithmEntry = {
     "Finds a minimum cut in an undirected graph by repeatedly contracting random edges until two vertices remain, with probability at least 2/n(n-1) of finding the minimum cut per trial.",
   tags: ["minimum cut", "randomized", "contraction", "graph"],
   prerequisites: ["Graph Theory"],
-  related: ["ford-fulkerson", "stoer-wagner"],
+  related: ["ford-fulkerson", "stoer-wagner-minimum-cut"],
   problem: {
     input: "An undirected multigraph with n vertices.",
     output:

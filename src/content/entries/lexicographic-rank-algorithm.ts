@@ -56,8 +56,8 @@ export const lexicographicRankAlgorithmEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(n^2)$", average: "$O(n^2)$", worst: "$O(n^2)$" },
-    space: "$O(n)$",
+    time: { best: "O(n^2)", average: "O(n^2)", worst: "O(n^2)" },
+    space: "O(n)",
     worstClass: "n",
   },
   properties: [],

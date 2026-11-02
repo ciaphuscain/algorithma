@@ -57,8 +57,8 @@ export const fmIndexFullTextSearchEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(m)$", average: "$O(m)$", worst: "$O(m + \\text{occ})$" },
-    space: "$O(n)$",
+    time: { best: "O(m)", average: "O(m)", worst: "O(m + \\text{occ})" },
+    space: "O(n)",
     worstClass: "n",
   },
   properties: [],

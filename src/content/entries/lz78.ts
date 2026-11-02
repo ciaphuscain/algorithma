@@ -57,15 +57,15 @@ export const lz78Entry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(n)$" },
-    space: "$O(n)$",
+    time: { best: "O(n)", average: "O(n)", worst: "O(n)" },
+    space: "O(n)",
     worstClass: "n",
   },
   properties: [],
   implementations: [
     {
       language: "python",
-      entry: "lz78_decompress",
+      entry: "lz78_compress",
       code: `def lz78_compress(data: str) -> list[tuple[int, str]]:
     dictionary: dict[str, int] = {"": 0}
     tokens = []

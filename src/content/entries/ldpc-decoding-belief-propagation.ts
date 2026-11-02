@@ -57,8 +57,8 @@ export const ldpcDecodingBeliefPropagationEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(n)$", average: "$O(n \\cdot T)$", worst: "$O(n \\cdot T)$" },
-    space: "$O(n)$",
+    time: { best: "O(n)", average: "O(n \\cdot T)", worst: "O(n \\cdot T)" },
+    space: "O(n)",
     worstClass: "n",
   },
   properties: [],

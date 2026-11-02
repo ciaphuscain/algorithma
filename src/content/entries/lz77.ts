@@ -57,15 +57,15 @@ export const lz77Entry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(n \\cdot W)$" },
-    space: "$O(W)$",
+    time: { best: "O(n)", average: "O(n)", worst: "O(n \\cdot W)" },
+    space: "O(W)",
     worstClass: "n",
   },
   properties: [],
   implementations: [
     {
       language: "python",
-      entry: "lz77_decompress",
+      entry: "lz77_compress",
       code: `def lz77_compress(data: str, window_size: int = 20) -> list[tuple[int, int, str]]:
     i = 0
     tokens = []

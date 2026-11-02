@@ -99,7 +99,7 @@ export const shamirSecretSharingEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "shamir_split",
+      entry: "shamir_reconstruct",
       code: `def shamir_split(secret, k, n, p):
     """Split secret into n shares with threshold k, mod prime p."""
     import random

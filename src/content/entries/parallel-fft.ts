@@ -12,7 +12,7 @@ export const parallelFftEntry: AlgorithmEntry = {
     "Computes the discrete Fourier transform of n points in O(log n) parallel depth by executing the butterfly operations of each FFT stage simultaneously across processors.",
   tags: ["parallel", "FFT", "Fourier transform", "butterfly"],
   prerequisites: ["FFT"],
-  related: ["fft-fast-fourier-transform"],
+  related: ["fft"],
   problem: {
     input: "An array of n complex numbers (n a power of 2) and p processors.",
     output: "The DFT of the array, computed in parallel.",

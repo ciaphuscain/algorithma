@@ -12,7 +12,7 @@ export const parallelMatrixMultiplicationEntry: AlgorithmEntry = {
     "Distributes the work of multiplying two n×n matrices across p processors, reducing time from O(n³) to O(n³/p) with various communication patterns depending on the memory model.",
   tags: ["parallel", "matrix", "linear algebra", "Cannon", "SUMMA"],
   prerequisites: ["Matrix Multiplication"],
-  related: ["strassen-matrix-multiplication"],
+  related: ["matrix-exponentiation"],
   problem: {
     input: "Two n×n matrices A and B, and p processors.",
     output: "The product matrix C = A × B, computed in parallel.",

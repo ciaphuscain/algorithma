@@ -12,7 +12,7 @@ export const knuthOptimizationEntry: AlgorithmEntry = {
     "Speeds up certain O(n³) interval DP recurrences to O(n²) by exploiting the monotonicity of optimal split points, originally applied to optimal binary search tree construction.",
   tags: ["DP optimization", "interval DP", "monotone", "Knuth"],
   prerequisites: ["Dynamic Programming", "Interval DP"],
-  related: ["divide-and-conquer-optimization"],
+  related: ["divide-and-conquer-dp-optimization"],
   problem: {
     input:
       "An interval DP recurrence $dp[i][j] = \\min_{i \\le k < j} (dp[i][k] + dp[k+1][j] + C[i][j])$ where optimal split points are monotone.",

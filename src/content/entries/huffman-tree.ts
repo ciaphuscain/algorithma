@@ -59,8 +59,8 @@ export const huffmanTreeEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(n \\log n)$", average: "$O(n \\log n)$", worst: "$O(n \\log n)$" },
-    space: "$O(n)$",
+    time: { best: "O(n \\log n)", average: "O(n \\log n)", worst: "O(n \\log n)" },
+    space: "O(n)",
     worstClass: "n log n",
   },
   properties: [],
