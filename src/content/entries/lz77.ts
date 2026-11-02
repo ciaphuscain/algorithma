@@ -128,7 +128,10 @@ def lz77_decompress(tokens: list[tuple[int, int, str]]) -> str:
       tests: [
         {
           args: ["aab"],
-          expected: [[0, 0, "a"], [1, 1, "b"]],
+          expected: [
+            [0, 0, "a"],
+            [1, 1, "b"],
+          ],
         },
       ],
     },
