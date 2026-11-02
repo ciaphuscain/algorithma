@@ -126,7 +126,12 @@ def lz78_decompress(tokens: list[tuple[int, str]]) -> str:
   return tokens;
 }
 `,
-      tests: [],
+      tests: [
+        {
+          args: ["aba"],
+          expected: [[0, "a"], [0, "b"], [1, ""]],
+        },
+      ],
     },
   ],
   visualizer: null,

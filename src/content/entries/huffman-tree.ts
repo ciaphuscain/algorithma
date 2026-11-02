@@ -157,7 +157,12 @@ def huffman_codes_simple(freq: dict[str, int]) -> dict[str, str]:
   return codes;
 }
 `,
-      tests: [],
+      tests: [
+        {
+          args: [{ a: 1 }],
+          expected: { a: "0" },
+        },
+      ],
     },
   ],
   visualizer: null,

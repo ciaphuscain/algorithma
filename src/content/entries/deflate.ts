@@ -127,7 +127,12 @@ def simplified_inflate(tokens: list) -> str:
   return tokens;
 }
 `,
-      tests: [],
+      tests: [
+        {
+          args: ["abcabc"],
+          expected: ["a", "b", "c", [3, 3]],
+        },
+      ],
     },
   ],
   visualizer: null,

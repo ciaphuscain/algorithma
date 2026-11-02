@@ -132,7 +132,12 @@ def ldpc_decode(H: list[list[int]], llr: list[float], max_iter: int = 50) -> lis
   return llr.map(b => b >= 0 ? 0 : 1);
 }
 `,
-      tests: [],
+      tests: [
+        {
+          args: [[[1, 1, 0], [0, 1, 1]], [5, 5, 5]],
+          expected: [0, 0, 0],
+        },
+      ],
     },
   ],
   visualizer: null,

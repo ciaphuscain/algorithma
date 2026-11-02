@@ -11,7 +11,7 @@ export const johnsonSElementaryCyclesEntry: AlgorithmEntry = {
   summary:
     "Finds all elementary (simple) cycles in a directed graph by performing DFS from each vertex in the order of strongly connected components, using a blocking mechanism to avoid redundant exploration.",
   tags: ["cycles", "directed graph", "enumeration", "SCC"],
-  prerequisites: ["DFS", "Strongly Connected Components"],
+  prerequisites: ["DFS", "Tarjan's Strongly Connected Components"],
   related: ["tarjan-scc", "cycle-detection-directed"],
   problem: {
     input: "A directed graph with n vertices and m edges.",

@@ -114,7 +114,12 @@ def rans_decode(x: int, length: int, freqs: list[int]) -> list[int]:
   return x;
 }
 `,
-      tests: [],
+      tests: [
+        {
+          args: [[0, 1], [2, 2]],
+          expected: 20,
+        },
+      ],
     },
   ],
   visualizer: null,

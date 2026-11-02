@@ -134,7 +134,12 @@ function rsEncode(message, nsym) {
   return [...message, ...msg.slice(message.length)];
 }
 `,
-      tests: [],
+      tests: [
+        {
+          args: [[1, 2], 2],
+          expected: [1, 2, 1, 2],
+        },
+      ],
     },
   ],
   visualizer: null,

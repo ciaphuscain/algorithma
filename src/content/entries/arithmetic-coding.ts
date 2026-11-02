@@ -113,7 +113,12 @@ def arithmetic_decode(code: float, length: int, probs: dict[str, tuple[float, fl
   return (low + high) / 2;
 }
 `,
-      tests: [],
+      tests: [
+        {
+          args: ["ab", { a: [0, 0.5], b: [0.5, 1] }],
+          expected: 0.375,
+        },
+      ],
     },
   ],
   visualizer: null,
