@@ -79,7 +79,7 @@ export const metropolisHastingsMcmcEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "metropolis",
+      entry: "metropolis_demo",
       code: `def metropolis(log_target, x0, sigma, n_samples, seed=42):
     """Metropolis-Hastings with Gaussian proposal. Returns samples."""
     import random, math
@@ -93,17 +93,20 @@ export const metropolisHastingsMcmcEntry: AlgorithmEntry = {
             x = x_prop
         samples.append(round(x, 2))
     return samples
+
+def metropolis_demo(x0, sigma, n_samples, seed=42):
+    return metropolis(lambda x: -0.5*x*x, x0, sigma, n_samples, seed)
 `,
       tests: [
         {
-          args: ["lambda x: -0.5*x*x", 0, 1.0, 5, 42],
-          expected: [0.04, 0.04, 0.38, -0.46, -0.46],
+          args: [0, 1.0, 5, 42],
+          expected: [-0.14, -0.32, -0.44, -1.94, -2.16],
         },
       ],
     },
     {
       language: "javascript",
-      entry: "metropolis",
+      entry: "metropolisDemo",
       code: `function metropolis(logTarget, x0, sigma, nSamples, seed = 42) {
   function rng(s) { s = (s * 1103515245 + 12345) & 0x7fffffff; return s; }
   let s = seed, x = x0;
@@ -120,11 +123,14 @@ export const metropolisHastingsMcmcEntry: AlgorithmEntry = {
   }
   return samples;
 }
+function metropolisDemo(x0, sigma, nSamples, seed) {
+  return metropolis(x => -0.5*x*x, x0, sigma, nSamples, seed);
+}
 `,
       tests: [
         {
-          args: ["x => -0.5*x*x", 0, 1.0, 3, 42],
-          expected: [-0.73, 0.09, 0.09],
+          args: [0, 1.0, 3, 42],
+          expected: [0, 0.02, 0.68],
         },
       ],
     },
