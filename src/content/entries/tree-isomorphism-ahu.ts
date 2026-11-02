@@ -90,6 +90,7 @@ export const treeIsomorphismAhuEntry: AlgorithmEntry = {
       code: `def solve(adj, n):
     """Process graph with n nodes given as adjacency list (dict of node -> list of neighbors).
     Returns list of visited nodes in BFS order from node 0."""
+    adj = {int(k): v for k, v in adj.items()}
     if n == 0:
         return []
     visited = set()
