@@ -103,9 +103,9 @@ export const lBfgsEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "lbfgs_minimize",
+      entry: "lbfgs_demo",
       code: `def lbfgs_minimize(f, grad, x0, m=5, max_iter=100, tol=1e-6):
-    """L-BFGS minimization. Returns (x_opt, f_opt)."""
+    """L-BFGS minimization. Returns optimized x."""
     import math
     n = len(x0)
     x = list(x0)
@@ -115,7 +115,6 @@ export const lBfgsEntry: AlgorithmEntry = {
     for iteration in range(max_iter):
         if math.sqrt(sum(gi**2 for gi in g)) < tol:
             break
-        # Two-loop recursion
         q = list(g)
         alphas = []
         for i in range(len(history_s)-1, -1, -1):
@@ -125,7 +124,6 @@ export const lBfgsEntry: AlgorithmEntry = {
             alphas.append(alpha)
             q = [q[j] - alpha*y[j] for j in range(n)]
         alphas.reverse()
-        # Initial Hessian scaling
         if history_s:
             s, y = history_s[-1], history_y[-1]
             sy = sum(s[j]*y[j] for j in range(n))
@@ -139,7 +137,6 @@ export const lBfgsEntry: AlgorithmEntry = {
             rho = 1.0 / max(sum(y[j]*s[j] for j in range(n)), 1e-10)
             beta = rho * sum(y[j]*r[j] for j in range(n))
             r = [r[j] + (alphas[i] - beta)*s[j] for j in range(n)]
-        # Line search (simple backtracking)
         d = [-r[j] for j in range(n)]
         step = 1.0
         fx = f(x)
@@ -160,14 +157,15 @@ export const lBfgsEntry: AlgorithmEntry = {
         history_y.append(y)
         x, g = xn, gn
     return [round(xi, 6) for xi in x]
+
+def lbfgs_demo(x0):
+    f = lambda x: (x[0]-3)**2 + (x[1]+1)**2
+    grad = lambda x: [2*(x[0]-3), 2*(x[1]+1)]
+    return lbfgs_minimize(f, grad, x0)
 `,
       tests: [
         {
-          args: [
-            "lambda x: (x[0]-3)**2 + (x[1]+1)**2",
-            "lambda x: [2*(x[0]-3), 2*(x[1]+1)]",
-            [0.0, 0.0],
-          ],
+          args: [[0.0, 0.0]],
           expected: [3.0, -1.0],
         },
       ],
