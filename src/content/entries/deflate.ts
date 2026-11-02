@@ -57,15 +57,15 @@ export const deflateEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(n^2)$" },
-    space: "$O(n)$",
+    time: { best: "O(n)", average: "O(n)", worst: "O(n^2)" },
+    space: "O(n)",
     worstClass: "n",
   },
   properties: [],
   implementations: [
     {
       language: "python",
-      entry: "simplified_inflate",
+      entry: "simplified_deflate",
       code: `def simplified_deflate(data: str) -> list:
     tokens = []
     i = 0

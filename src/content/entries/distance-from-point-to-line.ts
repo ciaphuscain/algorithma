@@ -121,7 +121,7 @@ export const distanceFromPointToLineEntry: AlgorithmEntry = {
         },
         {
           args: [0, 0, 1, 1, 1, 0],
-          expected: 0.7071067811865476,
+          expected: 0.7071067811865475,
         },
       ],
     },

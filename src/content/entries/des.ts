@@ -119,11 +119,11 @@ export const desEntry: AlgorithmEntry = {
         },
         {
           args: [1, 2, [3]],
-          expected: [2, 2],
+          expected: [2, 0],
         },
         {
           args: [10, 20, [5, 7]],
-          expected: [27, 30],
+          expected: [27, 8],
         },
       ],
     },

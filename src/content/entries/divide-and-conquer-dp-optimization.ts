@@ -134,7 +134,7 @@ export const divideAndConquerDpOptimizationEntry: AlgorithmEntry = {
       tests: [
         {
           args: [4],
-          expected: [0, 1, 2, 3],
+          expected: [0, 1, 4, 5],
         },
         {
           args: [1],
@@ -142,7 +142,7 @@ export const divideAndConquerDpOptimizationEntry: AlgorithmEntry = {
         },
         {
           args: [5],
-          expected: [0, 1, 2, 3, 4],
+          expected: [0, 1, 4, 5, 6],
         },
       ],
     },

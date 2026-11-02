@@ -94,7 +94,7 @@ export const minimaxEntry: AlgorithmEntry = {
       tests: [
         {
           args: [[true, [false, 3, 5], [false, 2, 9]]],
-          expected: 5,
+          expected: 3,
         },
         {
           args: [[true, [false, 1, 2], [false, 3, 4]]],
@@ -120,7 +120,7 @@ export const minimaxEntry: AlgorithmEntry = {
       tests: [
         {
           args: [[true, [false, 3, 5], [false, 2, 9]]],
-          expected: 5,
+          expected: 3,
         },
         {
           args: [7],

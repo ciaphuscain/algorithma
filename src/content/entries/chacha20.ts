@@ -96,11 +96,11 @@ export const chacha20Entry: AlgorithmEntry = {
       tests: [
         {
           args: [[72, 101, 108], [42]],
-          expected: [114, 79, 70],
+          expected: [98, 79, 70],
         },
         {
           args: [[114, 79, 70], [42]],
-          expected: [72, 101, 108],
+          expected: [88, 101, 108],
         },
       ],
     },
@@ -113,7 +113,7 @@ export const chacha20Entry: AlgorithmEntry = {
       tests: [
         {
           args: [[72, 101, 108], [42]],
-          expected: [114, 79, 70],
+          expected: [98, 79, 70],
         },
       ],
     },

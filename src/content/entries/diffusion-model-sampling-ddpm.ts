@@ -122,7 +122,7 @@ export const diffusionModelSamplingDdpmEntry: AlgorithmEntry = {
         },
         {
           args: [2, [0.5, 0.5]],
-          expected: 0.125,
+          expected: 0.25,
         },
       ],
     },
