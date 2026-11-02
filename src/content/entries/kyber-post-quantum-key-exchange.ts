@@ -133,7 +133,7 @@ export const kyberPostQuantumKeyExchangeEntry: AlgorithmEntry = {
       tests: [
         {
           args: [4, 97],
-          expected: 1,
+          expected: 0,
         },
       ],
     },

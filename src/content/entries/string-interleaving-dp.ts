@@ -91,7 +91,7 @@ export const stringInterleavingDpEntry: AlgorithmEntry = {
         },
         {
           args: ["ab", "cd", "abdc"],
-          expected: true,
+          expected: false,
         },
         {
           args: ["ab", "cd", "adcb"],

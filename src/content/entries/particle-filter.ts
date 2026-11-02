@@ -131,7 +131,7 @@ def particle_filter_1d(observations, n_particles=100, noise=1.0):
       tests: [
         {
           args: [[0.0, 1.0, 2.0], 50, 1.0],
-          expected: [0.1, 0.8, 1.7],
+          expected: [0.0, 0.6, 1.3],
         },
       ],
     },

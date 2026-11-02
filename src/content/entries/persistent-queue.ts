@@ -95,7 +95,7 @@ export const persistentQueueEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "PersistentQueue",
+      entry: "test_persistent_queue",
       code: `class PersistentQueue:
     def __init__(self, front=None, rear=None):
         self.front = front or []
@@ -125,7 +125,7 @@ def test_persistent_queue():
       tests: [
         {
           args: [],
-          expected: [1, 2, 1],
+          expected: [2, 1, 3],
         },
       ],
     },

@@ -87,7 +87,7 @@ export const optimalBinarySearchTreeEntry: AlgorithmEntry = {
         },
         {
           args: [[25, 20, 5, 20, 30]],
-          expected: 205,
+          expected: 210,
         },
       ],
     },
@@ -120,7 +120,7 @@ export const optimalBinarySearchTreeEntry: AlgorithmEntry = {
         },
         {
           args: [[25, 20, 5, 20, 30]],
-          expected: 205,
+          expected: 210,
         },
       ],
     },

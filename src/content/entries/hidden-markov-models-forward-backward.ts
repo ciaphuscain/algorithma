@@ -111,7 +111,7 @@ export const hiddenMarkovModelsForwardBackwardEntry: AlgorithmEntry = {
             [0.6, 0.4],
             [0, 1, 1],
           ],
-          expected: 0.1316,
+          expected: 0.145984,
         },
       ],
     },

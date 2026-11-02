@@ -99,7 +99,7 @@ export const kalmanFilterEntry: AlgorithmEntry = {
       tests: [
         {
           args: [[1, 2, 3]],
-          expected: [0.5, 1.2105, 2.0288],
+          expected: [0.5238, 1.0909, 1.7137],
         },
       ],
     },

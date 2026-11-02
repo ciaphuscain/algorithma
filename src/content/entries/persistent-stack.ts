@@ -95,7 +95,7 @@ export const persistentStackEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "PersistentStack",
+      entry: "test_persistent_stack",
       code: `class PersistentStack:
     def __init__(self, val=None, rest=None):
         self.val = val

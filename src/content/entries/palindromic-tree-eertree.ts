@@ -110,7 +110,7 @@ def build_eertree(s: str) -> int:
         },
         {
           args: ["aaa"],
-          expected: 2,
+          expected: 3,
         },
       ],
     },

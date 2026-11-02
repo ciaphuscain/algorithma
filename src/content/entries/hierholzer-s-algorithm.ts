@@ -111,7 +111,7 @@ export const hierholzerSAlgorithmEntry: AlgorithmEntry = {
               [2, 0],
             ],
           ],
-          expected: [0, 1, 2, 0],
+          expected: [0, 2, 1, 0],
         },
         {
           args: [

@@ -80,7 +80,7 @@ export const multipleKnapsackEntry: AlgorithmEntry = {
       tests: [
         {
           args: [[2, 3], [5, 8], [3, 2], 10],
-          expected: 25,
+          expected: 26,
         },
         {
           args: [[1, 2, 3], [2, 5, 8], [3, 2, 1], 7],
@@ -108,7 +108,7 @@ export const multipleKnapsackEntry: AlgorithmEntry = {
       tests: [
         {
           args: [[2, 3], [5, 8], [3, 2], 10],
-          expected: 25,
+          expected: 26,
         },
         {
           args: [[1, 2, 3], [2, 5, 8], [3, 2, 1], 7],

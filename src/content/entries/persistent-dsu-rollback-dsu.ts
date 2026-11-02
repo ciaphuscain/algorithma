@@ -95,7 +95,7 @@ export const persistentDsuRollbackDsuEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "RollbackDSU",
+      entry: "test_rollback_dsu",
       code: `class RollbackDSU:
     def __init__(self, n):
         self.parent = list(range(n))

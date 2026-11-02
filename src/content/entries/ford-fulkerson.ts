@@ -140,7 +140,7 @@ export const fordFulkersonEntry: AlgorithmEntry = {
             0,
             3,
           ],
-          expected: 18,
+          expected: 16,
         },
         {
           args: [2, [[0, 1, 5]], 0, 1],

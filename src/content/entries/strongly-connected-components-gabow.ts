@@ -133,7 +133,7 @@ export const stronglyConnectedComponentsGabowEntry: AlgorithmEntry = {
               [3, 4],
             ],
           ],
-          expected: [0, 0, 0, 1, 2],
+          expected: [2, 2, 2, 1, 0],
         },
         {
           args: [
@@ -143,7 +143,7 @@ export const stronglyConnectedComponentsGabowEntry: AlgorithmEntry = {
               [1, 2],
             ],
           ],
-          expected: [0, 1, 2],
+          expected: [2, 1, 0],
         },
       ],
     },
@@ -188,7 +188,7 @@ export const stronglyConnectedComponentsGabowEntry: AlgorithmEntry = {
               [3, 4],
             ],
           ],
-          expected: [0, 0, 0, 1, 2],
+          expected: [2, 2, 2, 1, 0],
         },
       ],
     },

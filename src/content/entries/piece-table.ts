@@ -96,7 +96,7 @@ export const pieceTableEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "PieceTable",
+      entry: "test_piece_table",
       code: `class PieceTable:
     def __init__(self, text):
         self.original = text

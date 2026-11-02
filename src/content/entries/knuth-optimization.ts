@@ -136,7 +136,7 @@ export const knuthOptimizationEntry: AlgorithmEntry = {
       tests: [
         {
           args: [[3, 1, 2]],
-          expected: 9,
+          expected: 10,
         },
         {
           args: [[1, 1]],

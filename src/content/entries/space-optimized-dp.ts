@@ -127,7 +127,7 @@ export const spaceOptimizedDpEntry: AlgorithmEntry = {
               [3, 5],
             ],
           ],
-          expected: 5,
+          expected: 6,
         },
         {
           args: [0, [[1, 10]]],

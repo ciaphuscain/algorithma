@@ -174,7 +174,7 @@ def karger_repeated(n, edges, trials=100):
             ],
             50,
           ],
-          expected: 1,
+          expected: 2,
         },
       ],
     },

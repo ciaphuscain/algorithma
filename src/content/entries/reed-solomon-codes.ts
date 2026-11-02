@@ -99,7 +99,7 @@ def rs_encode(message: list[int], nsym: int) -> list[int]:
       tests: [
         {
           args: [[1, 2, 3], 4],
-          expected: [1, 2, 3, 2],
+          expected: [1, 2, 3, 139, 243, 142, 246],
         },
       ],
     },

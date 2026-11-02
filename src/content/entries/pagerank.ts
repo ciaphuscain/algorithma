@@ -132,7 +132,7 @@ export const pagerankEntry: AlgorithmEntry = {
         },
         {
           args: [2, [[0, 1]], 0.85, 1e-6, 100],
-          expected: [0.15, 0.85],
+          expected: [0.350877, 0.649123],
         },
       ],
     },
