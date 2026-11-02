@@ -93,7 +93,7 @@ export const moveToFrontTransformEntry: AlgorithmEntry = {
       tests: [
         {
           args: ["banana"],
-          expected: [1, 1, 14, 1, 1, 2],
+          expected: [1, 1, 13, 1, 1, 1],
         },
         {
           args: ["aaa"],
@@ -119,7 +119,7 @@ export const moveToFrontTransformEntry: AlgorithmEntry = {
       tests: [
         {
           args: ["banana"],
-          expected: [1, 1, 14, 1, 1, 2],
+          expected: [1, 1, 13, 1, 1, 1],
         },
       ],
     },

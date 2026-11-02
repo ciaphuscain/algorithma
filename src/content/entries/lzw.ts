@@ -58,15 +58,15 @@ export const lzwEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(n)$" },
-    space: "$O(D)$",
+    time: { best: "O(n)", average: "O(n)", worst: "O(n)" },
+    space: "O(D)",
     worstClass: "n",
   },
   properties: [],
   implementations: [
     {
       language: "python",
-      entry: "lzw_decompress",
+      entry: "lzw_compress",
       code: `def lzw_compress(data: str) -> list[int]:
     dictionary = {chr(i): i for i in range(256)}
     next_code = 256
@@ -106,7 +106,7 @@ def lzw_decompress(codes: list[int]) -> str:
       tests: [
         {
           args: ["ABABABA"],
-          expected: [65, 66, 256, 258, 65],
+          expected: [65, 66, 256, 258],
         },
       ],
     },
@@ -129,7 +129,7 @@ def lzw_decompress(codes: list[int]) -> str:
       tests: [
         {
           args: ["ABABABA"],
-          expected: [65, 66, 256, 258, 65],
+          expected: [65, 66, 256, 258],
         },
       ],
     },

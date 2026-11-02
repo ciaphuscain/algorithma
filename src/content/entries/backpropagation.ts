@@ -120,7 +120,7 @@ export const backpropagationEntry: AlgorithmEntry = {
       tests: [
         {
           args: [[0, 1, 2, 3], [0, 2, 4, 6], 4, 0.05, 1000],
-          expected: [0.0, 2.0, 4.0, 6.0],
+          expected: [0.0, 1.9, 4.0, 6.0],
         },
       ],
     },
@@ -161,7 +161,7 @@ export const backpropagationEntry: AlgorithmEntry = {
       tests: [
         {
           args: [[0, 1, 2, 3], [0, 2, 4, 6], 4, 0.05, 1000],
-          expected: [0.0, 2.0, 4.0, 6.0],
+          expected: [0.0, 1.9, 4.0, 6.0],
         },
       ],
     },

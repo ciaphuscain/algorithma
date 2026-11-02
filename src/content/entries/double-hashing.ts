@@ -89,7 +89,7 @@ export const doubleHashingEntry: AlgorithmEntry = {
       tests: [
         {
           args: ["abc"],
-          expected: [96354, 137846],
+          expected: [96354, 136518],
         },
         {
           args: [""],
@@ -113,7 +113,7 @@ export const doubleHashingEntry: AlgorithmEntry = {
       tests: [
         {
           args: ["abc"],
-          expected: [96354, 137846],
+          expected: [96354, 136518],
         },
       ],
     },

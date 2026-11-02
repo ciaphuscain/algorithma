@@ -81,7 +81,7 @@ export const damerauLevenshteinDistanceEntry: AlgorithmEntry = {
       tests: [
         {
           args: ["ca", "abc"],
-          expected: 2,
+          expected: 3,
         },
         {
           args: ["kitten", "sitting"],
@@ -114,7 +114,7 @@ export const damerauLevenshteinDistanceEntry: AlgorithmEntry = {
       tests: [
         {
           args: ["ca", "abc"],
-          expected: 2,
+          expected: 3,
         },
         {
           args: ["kitten", "sitting"],

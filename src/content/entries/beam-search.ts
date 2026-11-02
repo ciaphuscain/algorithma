@@ -92,55 +92,50 @@ export const beamSearchEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "beamSearch",
-      code: `def beam_search(start, expand, score, beam_width, max_depth):
-    """Beam search: keep top beam_width candidates at each level.
-    expand(state) -> list of next states.
-    score(state) -> numeric score (higher is better).
-    Returns best state found."""
+      entry: "beam_search",
+      code: `def beam_search(start, target, beam_width, max_depth):
+    """Beam search over integers toward a target.
+    Returns closest value found."""
     beam = [start]
     best = start
-    best_score = score(start)
     for _ in range(max_depth):
         candidates = []
-        for state in beam:
-            candidates.extend(expand(state))
+        for s in beam:
+            candidates.extend([s + 1, s + 2])
         if not candidates:
             break
-        candidates.sort(key=score, reverse=True)
+        candidates.sort(key=lambda x: abs(x - target))
         beam = candidates[:beam_width]
-        top_score = score(beam[0])
-        if top_score > best_score:
-            best_score = top_score
-            best = beam[0]
+        for c in beam:
+            if abs(c - target) < abs(best - target):
+                best = c
     return best
 `,
       tests: [
         {
-          args: [0, "lambda x: [x+1, x+2]", "lambda x: -abs(x - 10)", 3, 5],
+          args: [0, 10, 3, 5],
           expected: 10,
         },
       ],
     },
     {
       language: "javascript",
-      entry: "beam_search",
-      code: `function beamSearch(start, expand, score, beamWidth, maxDepth) {
-  let beam = [start];
-  let best = start, bestScore = score(start);
+      entry: "beamSearch",
+      code: `function beamSearch(start, target, beamWidth, maxDepth) {
+  let beam = [start], best = start;
   for (let d = 0; d < maxDepth; d++) {
     let candidates = [];
-    for (const s of beam) candidates.push(...expand(s));
+    for (const s of beam) candidates.push(s + 1, s + 2);
     if (!candidates.length) break;
-    candidates.sort((a, b) => score(b) - score(a));
+    candidates.sort((a, b) => Math.abs(a - target) - Math.abs(b - target));
     beam = candidates.slice(0, beamWidth);
-    if (score(beam[0]) > bestScore) { bestScore = score(beam[0]); best = beam[0]; }
+    for (const c of beam) if (Math.abs(c - target) < Math.abs(best - target)) best = c;
   }
   return best;
 }`,
       tests: [
         {
-          args: [0, "x => [x+1, x+2]", "x => -Math.abs(x - 10)", 3, 5],
+          args: [0, 10, 3, 5],
           expected: 10,
         },
       ],

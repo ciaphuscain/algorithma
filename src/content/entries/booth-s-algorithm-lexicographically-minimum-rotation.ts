@@ -63,8 +63,8 @@ export const boothSAlgorithmLexicographicallyMinimumRotationEntry: AlgorithmEntr
     ],
   },
   complexity: {
-    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(n)$" },
-    space: "$O(n)$",
+    time: { best: "O(n)", average: "O(n)", worst: "O(n)" },
+    space: "O(n)",
     worstClass: "n",
   },
   properties: [],
@@ -95,7 +95,7 @@ export const boothSAlgorithmLexicographicallyMinimumRotationEntry: AlgorithmEntr
       tests: [
         {
           args: ["bca"],
-          expected: 1,
+          expected: 2,
         },
         {
           args: ["cba"],
@@ -103,7 +103,7 @@ export const boothSAlgorithmLexicographicallyMinimumRotationEntry: AlgorithmEntr
         },
         {
           args: ["aab"],
-          expected: 2,
+          expected: 0,
         },
       ],
     },
@@ -131,7 +131,7 @@ export const boothSAlgorithmLexicographicallyMinimumRotationEntry: AlgorithmEntr
       tests: [
         {
           args: ["bca"],
-          expected: 1,
+          expected: 2,
         },
       ],
     },

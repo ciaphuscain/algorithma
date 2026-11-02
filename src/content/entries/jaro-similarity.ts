@@ -111,7 +111,7 @@ export const jaroSimilarityEntry: AlgorithmEntry = {
       tests: [
         {
           args: ["martha", "marhta"],
-          expected: 0.9444444444444444,
+          expected: 0.9444444444444445,
         },
         {
           args: ["abc", "xyz"],
@@ -149,7 +149,7 @@ export const jaroSimilarityEntry: AlgorithmEntry = {
       tests: [
         {
           args: ["martha", "marhta"],
-          expected: 0.9444444444444444,
+          expected: 0.9444444444444445,
         },
       ],
     },

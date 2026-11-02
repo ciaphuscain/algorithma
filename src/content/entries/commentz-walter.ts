@@ -57,8 +57,8 @@ export const commentzWalterEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(n/m)$", average: "$O(n)$", worst: "$O(nm)$" },
-    space: "$O(\\Sigma p_i)$",
+    time: { best: "O(n/m)", average: "O(n)", worst: "O(nm)" },
+    space: "O(\\Sigma p_i)",
     worstClass: "n",
   },
   properties: [],
@@ -106,7 +106,7 @@ export const commentzWalterEntry: AlgorithmEntry = {
           args: ["hershehis", ["he", "his"]],
           expected: [
             [0, "he"],
-            [5, "he"],
+            [4, "he"],
             [6, "his"],
           ],
         },
@@ -135,7 +135,7 @@ export const commentzWalterEntry: AlgorithmEntry = {
           args: ["hershehis", ["he", "his"]],
           expected: [
             [0, "he"],
-            [5, "he"],
+            [4, "he"],
             [6, "his"],
           ],
         },
