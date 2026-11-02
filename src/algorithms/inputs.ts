@@ -11,7 +11,11 @@ export interface NumberArrayLimits {
   max: number;
 }
 
-export function parseNumberList(text: string, limits: NumberArrayLimits, label = "Array"): ParseResult<number[]> {
+export function parseNumberList(
+  text: string,
+  limits: NumberArrayLimits,
+  label = "Array",
+): ParseResult<number[]> {
   const tokens = text
     .split(/[\s,;]+/)
     .map((t) => t.trim())
@@ -24,14 +28,20 @@ export function parseNumberList(text: string, limits: NumberArrayLimits, label =
       continue;
     }
     const v = Number(token);
-    if (v < limits.min || v > limits.max) errors.push(`${v} is outside ${limits.min}…${limits.max}`);
+    if (v < limits.min || v > limits.max)
+      errors.push(`${v} is outside ${limits.min}…${limits.max}`);
     values.push(v);
   }
-  if (values.length < limits.minLength) errors.push(`${label} needs at least ${limits.minLength} element(s)`);
+  if (values.length < limits.minLength)
+    errors.push(`${label} needs at least ${limits.minLength} element(s)`);
   if (values.length > limits.maxLength) {
-    errors.push(`${label} has ${values.length} elements; the visualizer supports at most ${limits.maxLength}`);
+    errors.push(
+      `${label} has ${values.length} elements; the visualizer supports at most ${limits.maxLength}`,
+    );
   }
-  return errors.length > 0 ? { ok: false, errors: errors.slice(0, 5) } : { ok: true, value: values };
+  return errors.length > 0
+    ? { ok: false, errors: errors.slice(0, 5) }
+    : { ok: true, value: values };
 }
 
 export function randomNumbers(rng: Rng, length: number, min: number, max: number): number[] {
@@ -58,7 +68,11 @@ export function numberArrayInput(options: {
     format: (value) => ({ values: value.join(", ") }),
     presets: options.presets,
     random: (rng, size) => {
-      const n = clamp(size ?? options.defaultRandomLength ?? 10, limits.minLength, limits.maxLength);
+      const n = clamp(
+        size ?? options.defaultRandomLength ?? 10,
+        limits.minLength,
+        limits.maxLength,
+      );
       return randomNumbers(rng, n, Math.max(limits.min, 1), Math.min(limits.max, 99));
     },
   };
@@ -71,23 +85,31 @@ export interface SearchInput {
   target: number;
 }
 
-export function sortedSearchInput(options: {
+/** Array + target. With `sorted: true` the array must be in non-decreasing order. */
+export function searchInput(options: {
   limits: NumberArrayLimits;
   presets: InputPreset<SearchInput>[];
+  sorted: boolean;
 }): InputSpec<SearchInput> {
-  const { limits } = options;
+  const { limits, sorted } = options;
+  const label = sorted ? "Sorted array" : "Array";
   return {
     fields: [
-      { name: "values", label: "Sorted array", placeholder: "e.g. 2, 5, 8, 12, 16", help: "Must be in non-decreasing order." },
+      {
+        name: "values",
+        label,
+        placeholder: sorted ? "e.g. 2, 5, 8, 12, 16" : "e.g. 7, 3, 9, 1, 4",
+        ...(sorted ? { help: "Must be in non-decreasing order." } : {}),
+      },
       { name: "target", label: "Target", placeholder: "e.g. 12" },
     ],
-    constraints: `${limits.minLength}–${limits.maxLength} whole numbers in non-decreasing order; integer target.`,
+    constraints: `${limits.minLength}–${limits.maxLength} whole numbers${sorted ? " in non-decreasing order" : ""}; integer target.`,
     parse: (fields) => {
-      const list = parseNumberList(fields.values ?? "", limits, "Sorted array");
+      const list = parseNumberList(fields.values ?? "", limits, label);
       const errors = list.ok ? [] : [...list.errors];
       const targetText = (fields.target ?? "").trim();
       if (!/^-?\d+$/.test(targetText)) errors.push("Target must be a whole number");
-      if (list.ok) {
+      if (list.ok && sorted) {
         for (let i = 1; i < list.value.length; i++) {
           if (list.value[i]! < list.value[i - 1]!) {
             errors.push(`Array is not sorted: ${list.value[i - 1]} comes before ${list.value[i]}`);
@@ -102,12 +124,20 @@ export function sortedSearchInput(options: {
     presets: options.presets,
     random: (rng, size) => {
       const n = clamp(size ?? 12, limits.minLength, limits.maxLength);
-      const values = randomNumbers(rng, n, 1, 99).sort((a, b) => a - b);
+      const values = randomNumbers(rng, n, 1, 99);
+      if (sorted) values.sort((a, b) => a - b);
       // Half the time search for a present value, otherwise any value.
       const target = rng.next() < 0.5 ? values[rng.int(0, n - 1)]! : rng.int(1, 99);
       return { values, target };
     },
   };
+}
+
+export function sortedSearchInput(options: {
+  limits: NumberArrayLimits;
+  presets: InputPreset<SearchInput>[];
+}): InputSpec<SearchInput> {
+  return searchInput({ ...options, sorted: true });
 }
 
 /* ------------------------------------------------------------------ graphs */
@@ -127,6 +157,17 @@ export interface GraphLimits {
   maxWeight?: number;
 }
 
+export interface GraphOptions {
+  directed: boolean;
+  weighted: boolean;
+  limits: GraphLimits;
+  /**
+   * Whether the algorithm starts from a chosen vertex. When false the form has no
+   * "Start node" field and `source` is set to the first vertex, unused.
+   */
+  withSource?: boolean;
+}
+
 const NODE_ID = /^[A-Za-z0-9]{1,3}$/;
 
 /**
@@ -137,7 +178,7 @@ const NODE_ID = /^[A-Za-z0-9]{1,3}$/;
 export function parseGraph(
   text: string,
   sourceText: string,
-  options: { directed: boolean; weighted: boolean; limits: GraphLimits },
+  options: GraphOptions,
 ): ParseResult<GraphInputValue> {
   const { directed, weighted, limits } = options;
   const errors: string[] = [];
@@ -201,10 +242,14 @@ export function parseGraph(
       }
       weight = Number(weightText);
       if (limits.minWeight !== undefined && weight < limits.minWeight) {
-        errors.push(`Weight ${weight} on ${from}${sep}${to} is below the minimum ${limits.minWeight}`);
+        errors.push(
+          `Weight ${weight} on ${from}${sep}${to} is below the minimum ${limits.minWeight}`,
+        );
       }
       if (limits.maxWeight !== undefined && weight > limits.maxWeight) {
-        errors.push(`Weight ${weight} on ${from}${sep}${to} exceeds the maximum ${limits.maxWeight}`);
+        errors.push(
+          `Weight ${weight} on ${from}${sep}${to} exceeds the maximum ${limits.maxWeight}`,
+        );
       }
     } else if (weightText !== undefined) {
       errors.push(`"${token}": this graph is unweighted`);
@@ -216,10 +261,13 @@ export function parseGraph(
   }
 
   if (nodes.length === 0) errors.push("The graph needs at least one node");
-  if (nodes.length > limits.maxNodes) errors.push(`${nodes.length} nodes; the visualizer supports at most ${limits.maxNodes}`);
-  if (edges.length > limits.maxEdges) errors.push(`${edges.length} edges; the visualizer supports at most ${limits.maxEdges}`);
-  const source = sourceText.trim();
-  if (!seen.has(source)) errors.push(source ? `Start node "${source}" is not in the graph` : "Choose a start node");
+  if (nodes.length > limits.maxNodes)
+    errors.push(`${nodes.length} nodes; the visualizer supports at most ${limits.maxNodes}`);
+  if (edges.length > limits.maxEdges)
+    errors.push(`${edges.length} edges; the visualizer supports at most ${limits.maxEdges}`);
+  const source = options.withSource === false ? (nodes[0] ?? "") : sourceText.trim();
+  if (nodes.length > 0 && !seen.has(source))
+    errors.push(source ? `Start node "${source}" is not in the graph` : "Choose a start node");
   if (errors.length > 0) return { ok: false, errors: errors.slice(0, 5) };
 
   return {
@@ -231,17 +279,15 @@ export function parseGraph(
 export function formatGraph(value: GraphInputValue): Record<string, string> {
   const sep = value.directed ? "->" : "-";
   const inEdge = new Set(value.edges.flatMap((e) => [e.from, e.to]));
-  const parts = value.edges.map((e) => `${e.from}${sep}${e.to}${e.weight !== undefined ? `:${e.weight}` : ""}`);
+  const parts = value.edges.map(
+    (e) => `${e.from}${sep}${e.to}${e.weight !== undefined ? `:${e.weight}` : ""}`,
+  );
   for (const n of value.nodes) if (!inEdge.has(n.id)) parts.push(n.id);
   return { edges: parts.join(", "), source: value.source };
 }
 
 /** Build a graph value from edge notation with automatic layout (used for presets). */
-export function graphPreset(
-  text: string,
-  source: string,
-  options: { directed: boolean; weighted: boolean; limits: GraphLimits },
-): GraphInputValue {
+export function graphPreset(text: string, source: string, options: GraphOptions): GraphInputValue {
   const parsed = parseGraph(text, source, options);
   if (!parsed.ok) throw new Error(`invalid graph preset: ${parsed.errors.join("; ")}`);
   return parsed.value;
@@ -250,9 +296,19 @@ export function graphPreset(
 /** Random connected-ish graph: a random spanning tree plus extra edges. */
 export function randomGraph(
   rng: Rng,
-  options: { directed: boolean; weighted: boolean; nodes: number; extraEdges: number; minWeight?: number; maxWeight?: number },
+  options: {
+    directed: boolean;
+    weighted: boolean;
+    nodes: number;
+    extraEdges: number;
+    minWeight?: number;
+    maxWeight?: number;
+  },
 ): GraphInputValue {
-  const ids = Array.from({ length: options.nodes }, (_, i) => String.fromCharCode(65 + (i % 26)) + (i >= 26 ? String(Math.floor(i / 26)) : ""));
+  const ids = Array.from(
+    { length: options.nodes },
+    (_, i) => String.fromCharCode(65 + (i % 26)) + (i >= 26 ? String(Math.floor(i / 26)) : ""),
+  );
   const edges: GraphInputValue["edges"] = [];
   const keys = new Set<string>();
   const weight = () => rng.int(options.minWeight ?? 1, options.maxWeight ?? 9);
@@ -279,14 +335,18 @@ export function randomGraph(
   };
 }
 
-export function graphInput(options: {
-  directed: boolean;
-  weighted: boolean;
-  limits: GraphLimits;
-  presets: InputPreset<GraphInputValue>[];
-}): InputSpec<GraphInputValue> {
+export function graphInput(
+  options: GraphOptions & { presets: InputPreset<GraphInputValue>[] },
+): InputSpec<GraphInputValue> {
   const { directed, weighted, limits } = options;
-  const example = directed ? (weighted ? "A->B:4, B->C:1, A->C:7" : "A->B, B->C, A->C") : weighted ? "A-B:4, B-C:1, A-C:7" : "A-B, B-C, A-C, C-D";
+  const withSource = options.withSource !== false;
+  const example = directed
+    ? weighted
+      ? "A->B:4, B->C:1, A->C:7"
+      : "A->B, B->C, A->C"
+    : weighted
+      ? "A-B:4, B-C:1, A-C:7"
+      : "A-B, B-C, A-C, C-D";
   return {
     fields: [
       {
@@ -296,13 +356,25 @@ export function graphInput(options: {
         multiline: true,
         help: `Separate edges with commas or new lines.${weighted ? " Add a weight after a colon." : ""} A lone id adds an isolated node.`,
       },
-      { name: "source", label: "Start node", placeholder: "e.g. A" },
+      ...(withSource ? [{ name: "source", label: "Start node", placeholder: "e.g. A" }] : []),
     ],
     constraints: `Up to ${limits.maxNodes} nodes and ${limits.maxEdges} edges; node ids are 1–3 letters or digits.${
-      weighted && limits.minWeight !== undefined ? ` Weights ${limits.minWeight}–${limits.maxWeight}.` : ""
+      weighted && limits.minWeight !== undefined
+        ? ` Weights ${limits.minWeight}–${limits.maxWeight}.`
+        : ""
     }`,
-    parse: (fields) => parseGraph(fields.edges ?? "", fields.source ?? "", { directed, weighted, limits }),
-    format: formatGraph,
+    parse: (fields) =>
+      parseGraph(fields.edges ?? "", fields.source ?? "", {
+        directed,
+        weighted,
+        limits,
+        withSource,
+      }),
+    format: (value) => {
+      const fields = formatGraph(value);
+      if (!withSource) delete fields.source;
+      return fields;
+    },
     presets: options.presets,
     random: (rng, size) => {
       const nodes = clamp(size ?? 8, 2, Math.min(limits.maxNodes, 26));
@@ -335,7 +407,9 @@ export function toTraceGraph(value: GraphInputValue) {
 export const edgeId = (from: string, to: string) => `${from}-${to}`;
 
 /** Adjacency lists in input order. For undirected graphs each edge appears in both lists. */
-export function adjacency(value: GraphInputValue): Map<string, { to: string; edge: string; weight: number }[]> {
+export function adjacency(
+  value: GraphInputValue,
+): Map<string, { to: string; edge: string; weight: number }[]> {
   const adj = new Map<string, { to: string; edge: string; weight: number }[]>();
   for (const n of value.nodes) adj.set(n.id, []);
   for (const e of value.edges) {
@@ -350,4 +424,146 @@ export function adjacency(value: GraphInputValue): Map<string, { to: string; edg
 
 export function clamp(v: number, lo: number, hi: number): number {
   return Math.min(Math.max(v, lo), hi);
+}
+
+/* ------------------------------------------------------------- string pairs */
+
+export interface StringPair {
+  a: string;
+  b: string;
+}
+
+const PRINTABLE = /^[\x21-\x7e]*$/;
+
+export function stringPairInput(options: {
+  labels: [string, string];
+  /** One limit for both strings, or [limit for a, limit for b]. */
+  maxLength: number | [number, number];
+  /** Minimum lengths for [a, b]; default 0. */
+  minLength?: [number, number];
+  presets: InputPreset<StringPair>[];
+  alphabet?: string;
+  placeholders?: [string, string];
+}): InputSpec<StringPair> {
+  const [maxA, maxB] =
+    typeof options.maxLength === "number"
+      ? [options.maxLength, options.maxLength]
+      : options.maxLength;
+  const [minA, minB] = options.minLength ?? [0, 0];
+  const alphabet = options.alphabet ?? "abcdefgh";
+  const check = (s: string, label: string, min: number, max: number, errors: string[]) => {
+    if (s.length > max) errors.push(`${label} has ${s.length} characters; the maximum is ${max}`);
+    if (s.length < min)
+      errors.push(`${label} needs at least ${min} character${min === 1 ? "" : "s"}`);
+    if (!PRINTABLE.test(s))
+      errors.push(`${label} may contain only visible ASCII characters, no spaces`);
+  };
+  return {
+    fields: [
+      {
+        name: "a",
+        label: options.labels[0],
+        placeholder: options.placeholders?.[0] ?? "e.g. kitten",
+      },
+      {
+        name: "b",
+        label: options.labels[1],
+        placeholder: options.placeholders?.[1] ?? "e.g. sitting",
+      },
+    ],
+    constraints:
+      maxA === maxB && minA === minB
+        ? `Each string ${minA}–${maxA} visible ASCII characters (no spaces).`
+        : `${options.labels[0]}: ${minA}–${maxA} characters; ${options.labels[1]}: ${minB}–${maxB}. Visible ASCII, no spaces.`,
+    parse: (fields) => {
+      const a = (fields.a ?? "").trim();
+      const b = (fields.b ?? "").trim();
+      const errors: string[] = [];
+      check(a, options.labels[0], minA, maxA, errors);
+      check(b, options.labels[1], minB, maxB, errors);
+      return errors.length > 0 ? { ok: false, errors } : { ok: true, value: { a, b } };
+    },
+    format: (v) => ({ a: v.a, b: v.b }),
+    presets: options.presets,
+    random: (rng, size) => {
+      const word = (min: number, max: number) => {
+        const len = clamp(rng.int(Math.max(1, (size ?? 6) - 2), size ?? 6), Math.max(min, 1), max);
+        return Array.from({ length: len }, () => alphabet[rng.int(0, alphabet.length - 1)]).join(
+          "",
+        );
+      };
+      return { a: word(minA, maxA), b: word(minB, maxB) };
+    },
+  };
+}
+
+/* --------------------------------------------------------------- knapsack */
+
+export interface KnapsackInput {
+  weights: number[];
+  values: number[];
+  capacity: number;
+}
+
+export function knapsackInput(options: {
+  maxItems: number;
+  maxCapacity: number;
+  presets: InputPreset<KnapsackInput>[];
+}): InputSpec<KnapsackInput> {
+  const { maxItems, maxCapacity } = options;
+  return {
+    fields: [
+      {
+        name: "weights",
+        label: "Weights",
+        placeholder: "e.g. 1, 3, 4, 5",
+        help: "One positive whole number per item.",
+      },
+      {
+        name: "values",
+        label: "Values",
+        placeholder: "e.g. 1, 4, 5, 7",
+        help: "Same number of items as weights.",
+      },
+      { name: "capacity", label: "Capacity", placeholder: "e.g. 7" },
+    ],
+    constraints: `1–${maxItems} items with weights 1–${maxCapacity} and values 0–99; capacity 0–${maxCapacity}.`,
+    parse: (fields) => {
+      const w = parseNumberList(
+        fields.weights ?? "",
+        { minLength: 1, maxLength: maxItems, min: 1, max: maxCapacity },
+        "Weights",
+      );
+      const v = parseNumberList(
+        fields.values ?? "",
+        { minLength: 1, maxLength: maxItems, min: 0, max: 99 },
+        "Values",
+      );
+      const errors = [...(w.ok ? [] : w.errors), ...(v.ok ? [] : v.errors)];
+      const capText = (fields.capacity ?? "").trim();
+      if (!/^\d+$/.test(capText) || Number(capText) > maxCapacity)
+        errors.push(`Capacity must be a whole number from 0 to ${maxCapacity}`);
+      if (w.ok && v.ok && w.value.length !== v.value.length) {
+        errors.push(
+          `${w.value.length} weights but ${v.value.length} values: give one of each per item`,
+        );
+      }
+      if (errors.length > 0 || !w.ok || !v.ok) return { ok: false, errors };
+      return { ok: true, value: { weights: w.value, values: v.value, capacity: Number(capText) } };
+    },
+    format: (k) => ({
+      weights: k.weights.join(", "),
+      values: k.values.join(", "),
+      capacity: String(k.capacity),
+    }),
+    presets: options.presets,
+    random: (rng, size) => {
+      const n = clamp(size ?? 4, 1, maxItems);
+      return {
+        weights: randomNumbers(rng, n, 1, Math.min(6, maxCapacity)),
+        values: randomNumbers(rng, n, 1, 20),
+        capacity: rng.int(1, maxCapacity),
+      };
+    },
+  };
 }

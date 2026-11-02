@@ -1,13 +1,20 @@
-import type {
-  ArrayStructure,
-  GraphStructure,
-  GridStructure,
-  SequenceStructure,
-  Structure,
-  StructureKind,
-  TraceEvent,
+import {
+  MAX_GRAPH_EDGES,
+  MAX_PLANE_SHAPES,
+  MAX_TIMELINE_ITEMS,
+  type ArrayStructure,
+  type GraphStructure,
+  type GridStructure,
+  type PlaneStructure,
+  type SequenceStructure,
+  type Structure,
+  type StructureKind,
+  type TimelineStructure,
+  type TraceEvent,
+  type TreeStructure,
 } from "./protocol";
 import type { TraceState } from "./state";
+import { treeAdd, treeMove, treeRemove, treeRotate, treeSplice, treeSwap } from "./tree";
 
 /** Raised when an event cannot be applied to the current state (e.g. index out of range). */
 export class TraceReplayError extends Error {
@@ -26,7 +33,47 @@ type KindMap = {
   graph: GraphStructure;
   sequence: SequenceStructure;
   grid: GridStructure;
+  tree: TreeStructure;
+  plane: PlaneStructure;
+  timeline: TimelineStructure;
 };
+
+/** Run a shared tree operation, converting its errors into replay errors. */
+function treeOp<T>(fn: () => T): T {
+  try {
+    return fn();
+  } catch (err) {
+    throw new TraceReplayError((err as Error).message);
+  }
+}
+
+function treeNode(t: TreeStructure, node: string, s: string) {
+  const data = t.nodes[node];
+  if (!data) throw new TraceReplayError(`unknown node "${node}" in tree "${s}"`);
+  return data;
+}
+
+function planePoint(p: PlaneStructure, point: string, s: string): void {
+  if (!p.points.some((x) => x.id === point))
+    throw new TraceReplayError(`unknown point "${point}" in plane "${s}"`);
+}
+
+function lane(t: TimelineStructure, id: string, s: string): void {
+  if (!t.lanes.some((l) => l.id === id))
+    throw new TraceReplayError(`unknown lane "${id}" in timeline "${s}"`);
+}
+
+function inFlight(t: TimelineStructure, id: string, s: string) {
+  const m = t.messages.find((x) => x.id === id);
+  if (!m) throw new TraceReplayError(`unknown message "${id}" in timeline "${s}"`);
+  if (m.received !== null) throw new TraceReplayError(`message "${id}" is no longer in flight`);
+  return m;
+}
+
+function roomFor(t: TimelineStructure, s: string): void {
+  if (t.messages.length + t.marks.length >= MAX_TIMELINE_ITEMS)
+    throw new TraceReplayError(`timeline "${s}" already holds ${MAX_TIMELINE_ITEMS} items`);
+}
 
 function get<K extends StructureKind>(state: TraceState, s: string, kind: K): KindMap[K] {
   const structure = state.structures[s];
@@ -39,13 +86,24 @@ function get<K extends StructureKind>(state: TraceState, s: string, kind: K): Ki
 
 function checkIndex(a: ArrayStructure, i: number, s: string): void {
   if (!Number.isInteger(i) || i < 0 || i >= a.values.length) {
-    throw new TraceReplayError(`index ${i} out of range for array "${s}" (length ${a.values.length})`);
+    throw new TraceReplayError(
+      `index ${i} out of range for array "${s}" (length ${a.values.length})`,
+    );
   }
 }
 
 function checkCell(g: GridStructure, r: number, c: number, s: string): void {
-  if (!Number.isInteger(r) || !Number.isInteger(c) || r < 0 || c < 0 || r >= g.rows || c >= g.cols) {
-    throw new TraceReplayError(`cell (${r}, ${c}) out of range for grid "${s}" (${g.rows}×${g.cols})`);
+  if (
+    !Number.isInteger(r) ||
+    !Number.isInteger(c) ||
+    r < 0 ||
+    c < 0 ||
+    r >= g.rows ||
+    c >= g.cols
+  ) {
+    throw new TraceReplayError(
+      `cell (${r}, ${c}) out of range for grid "${s}" (${g.rows}×${g.cols})`,
+    );
   }
 }
 
@@ -167,6 +225,31 @@ function applyUnchecked(state: TraceState, e: TraceEvent): void {
       });
       break;
     }
+    case "graph.link": {
+      const g = get(state, e.s, "graph");
+      for (const n of [e.from, e.to])
+        if (!g.nodes.some((x) => x.id === n))
+          throw new TraceReplayError(`unknown node "${n}" in graph "${e.s}"`);
+      if (g.edges.some((x) => x.id === e.id))
+        throw new TraceReplayError(`edge "${e.id}" already exists in graph "${e.s}"`);
+      if (g.edges.length >= MAX_GRAPH_EDGES)
+        throw new TraceReplayError(`graph "${e.s}" would exceed ${MAX_GRAPH_EDGES} edges`);
+      g.edges.push({ id: e.id, from: e.from, to: e.to });
+      g.edgeStatus[e.id] = e.status;
+      bump(state, "writes");
+      state.focus.push({ s: e.s, tone: "write", edges: [e.id], nodes: [e.from, e.to] });
+      break;
+    }
+    case "graph.unlink": {
+      const g = get(state, e.s, "graph");
+      const at = g.edges.findIndex((x) => x.id === e.id);
+      if (at < 0) throw new TraceReplayError(`unknown edge "${e.id}" in graph "${e.s}"`);
+      const [gone] = g.edges.splice(at, 1);
+      delete g.edgeStatus[e.id];
+      bump(state, "writes");
+      state.focus.push({ s: e.s, tone: "write", nodes: [gone!.from, gone!.to] });
+      break;
+    }
     case "graph.annotate": {
       const g = get(state, e.s, "graph");
       if (!g.nodes.some((n) => n.id === e.node)) {
@@ -185,8 +268,18 @@ function applyUnchecked(state: TraceState, e: TraceEvent): void {
       const q = get(state, e.s, "sequence");
       if (q.items.length === 0) throw new TraceReplayError(`pop from empty sequence "${e.s}"`);
       if (q.discipline === "priority") {
-        if (e.index === undefined || !Number.isInteger(e.index) || e.index < 0 || e.index >= q.items.length) {
+        if (
+          e.index === undefined ||
+          !Number.isInteger(e.index) ||
+          e.index < 0 ||
+          e.index >= q.items.length
+        ) {
           throw new TraceReplayError(`priority pop on "${e.s}" needs a valid index`);
+        }
+        q.items.splice(e.index, 1);
+      } else if (q.discipline === "deque") {
+        if (e.index !== 0 && e.index !== q.items.length - 1) {
+          throw new TraceReplayError(`deque pop on "${e.s}" must name the front (0) or the back`);
         }
         q.items.splice(e.index, 1);
       } else if (q.discipline === "queue") {
@@ -217,6 +310,176 @@ function applyUnchecked(state: TraceState, e: TraceEvent): void {
         checkCell(g, r, c, e.s);
         g.marks[r]![c] = e.mark;
       }
+      break;
+    }
+    case "tree.add": {
+      const t = get(state, e.s, "tree");
+      treeOp(() => treeAdd(t, e.node, e.value, e.parent, e.slot, e.edgeLabel));
+      state.focus.push({ s: e.s, tone: "write", nodes: [e.node] });
+      if (!e.view) bump(state, "writes");
+      break;
+    }
+    case "tree.set": {
+      const t = get(state, e.s, "tree");
+      treeNode(t, e.node, e.s).value = e.value;
+      state.focus.push({ s: e.s, tone: "write", nodes: [e.node] });
+      bump(state, "writes");
+      break;
+    }
+    case "tree.compare": {
+      const t = get(state, e.s, "tree");
+      treeNode(t, e.node, e.s);
+      state.focus.push({ s: e.s, tone: "compare", nodes: [e.node], value: e.value });
+      bump(state, "comparisons");
+      break;
+    }
+    case "tree.node": {
+      const t = get(state, e.s, "tree");
+      treeNode(t, e.node, e.s);
+      t.nodeStatus[e.node] = e.status;
+      state.focus.push({ s: e.s, tone: "visit", nodes: [e.node] });
+      break;
+    }
+    case "tree.annotate": {
+      const t = get(state, e.s, "tree");
+      treeNode(t, e.node, e.s);
+      if (e.text === null) delete t.annotations[e.node];
+      else t.annotations[e.node] = e.text;
+      break;
+    }
+    case "tree.remove": {
+      const t = get(state, e.s, "tree");
+      treeOp(() => treeRemove(t, e.node));
+      break;
+    }
+    case "tree.splice": {
+      const t = get(state, e.s, "tree");
+      treeOp(() => treeSplice(t, e.node));
+      break;
+    }
+    case "tree.move": {
+      const t = get(state, e.s, "tree");
+      treeOp(() => treeMove(t, e.node, e.parent, e.slot));
+      // Structural, like remove and splice: no counter, so drawing a pointer change
+      // that the algorithm also writes to an array is not counted twice.
+      state.focus.push({ s: e.s, tone: "write", nodes: [e.node] });
+      break;
+    }
+    case "tree.swap": {
+      const t = get(state, e.s, "tree");
+      treeOp(() => treeSwap(t, e.a, e.b));
+      state.focus.push({ s: e.s, tone: "write", nodes: [e.a, e.b] });
+      break;
+    }
+    case "tree.rotate": {
+      const t = get(state, e.s, "tree");
+      // Structural like tree.move: algorithms count rotations themselves.
+      const up = treeOp(() => treeRotate(t, e.node, e.dir));
+      state.focus.push({ s: e.s, tone: "write", nodes: [e.node, up] });
+      break;
+    }
+    case "plane.point": {
+      const p = get(state, e.s, "plane");
+      planePoint(p, e.point, e.s);
+      p.pointStatus[e.point] = e.status;
+      state.focus.push({ s: e.s, tone: "visit", nodes: [e.point] });
+      break;
+    }
+    case "plane.annotate": {
+      const p = get(state, e.s, "plane");
+      planePoint(p, e.point, e.s);
+      if (e.text === null) delete p.annotations[e.point];
+      else p.annotations[e.point] = e.text;
+      break;
+    }
+    case "plane.draw": {
+      const p = get(state, e.s, "plane");
+      const shape = {
+        ...structuredClone(e.shape),
+        id: e.id,
+        status: e.status,
+        ...(e.label !== undefined ? { label: e.label } : {}),
+      };
+      const at = p.shapes.findIndex((x) => x.id === e.id);
+      if (at !== -1) p.shapes[at] = shape;
+      else if (p.shapes.length >= MAX_PLANE_SHAPES)
+        throw new TraceReplayError(`plane "${e.s}" already holds ${MAX_PLANE_SHAPES} shapes`);
+      else p.shapes.push(shape);
+      state.focus.push({ s: e.s, tone: "visit", edges: [e.id] });
+      break;
+    }
+    case "plane.erase": {
+      const p = get(state, e.s, "plane");
+      const at = p.shapes.findIndex((x) => x.id === e.id);
+      if (at === -1) throw new TraceReplayError(`unknown shape "${e.id}" in plane "${e.s}"`);
+      p.shapes.splice(at, 1);
+      break;
+    }
+    case "timeline.tick": {
+      const t = get(state, e.s, "timeline");
+      if (!Number.isInteger(e.time) || e.time <= t.now)
+        throw new TraceReplayError(`time ${e.time} does not move timeline "${e.s}" forwards`);
+      t.now = e.time;
+      break;
+    }
+    case "timeline.send": {
+      const t = get(state, e.s, "timeline");
+      lane(t, e.from, e.s);
+      lane(t, e.to, e.s);
+      if (t.messages.some((m) => m.id === e.id))
+        throw new TraceReplayError(`message "${e.id}" already exists in timeline "${e.s}"`);
+      roomFor(t, e.s);
+      t.messages.push({
+        id: e.id,
+        from: e.from,
+        to: e.to,
+        ...(e.label !== undefined ? { label: e.label } : {}),
+        sent: t.now,
+        received: null,
+        status: "examining",
+      });
+      state.focus.push({ s: e.s, tone: "write", edges: [e.id] });
+      break;
+    }
+    case "timeline.deliver": {
+      const t = get(state, e.s, "timeline");
+      const m = inFlight(t, e.id, e.s);
+      m.received = t.now;
+      m.status = e.status;
+      state.focus.push({ s: e.s, tone: "read", edges: [e.id], nodes: [m.to] });
+      break;
+    }
+    case "timeline.lose": {
+      const t = get(state, e.s, "timeline");
+      const m = inFlight(t, e.id, e.s);
+      m.received = t.now;
+      m.lost = true;
+      m.status = "rejected";
+      state.focus.push({ s: e.s, tone: "mismatch", edges: [e.id] });
+      break;
+    }
+    case "timeline.lane": {
+      const t = get(state, e.s, "timeline");
+      lane(t, e.lane, e.s);
+      t.laneStatus[e.lane] = e.status;
+      state.focus.push({ s: e.s, tone: "visit", nodes: [e.lane] });
+      break;
+    }
+    case "timeline.annotate": {
+      const t = get(state, e.s, "timeline");
+      lane(t, e.lane, e.s);
+      if (e.text === null) delete t.annotations[e.lane];
+      else t.annotations[e.lane] = e.text;
+      break;
+    }
+    case "timeline.mark": {
+      const t = get(state, e.s, "timeline");
+      lane(t, e.lane, e.s);
+      if (t.marks.some((m) => m.id === e.id))
+        throw new TraceReplayError(`mark "${e.id}" already exists in timeline "${e.s}"`);
+      roomFor(t, e.s);
+      t.marks.push({ id: e.id, lane: e.lane, time: t.now, label: e.label });
+      state.focus.push({ s: e.s, tone: "write", nodes: [e.lane] });
       break;
     }
     case "structure.create": {

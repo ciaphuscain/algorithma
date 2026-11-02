@@ -26,3 +26,27 @@ export const arrayFidelity =
     }
     return null;
   };
+
+export const SORT_LIMITS = { minLength: 1, maxLength: 40, min: -999, max: 999 };
+
+/** The usual sorting presets, plus any extra ones. */
+export function sortPresets(
+  extra: { id: string; label: string; value: number[] }[] = [],
+): { id: string; label: string; value: number[] }[] {
+  return [
+    { id: "classic", label: "Small example", value: [5, 1, 4, 2, 8] },
+    { id: "reversed", label: "Reversed (worst case)", value: [9, 8, 7, 6, 5, 4, 3, 2] },
+    { id: "sorted", label: "Already sorted", value: [1, 2, 3, 4, 5, 6, 7, 8] },
+    ...extra,
+  ];
+}
+
+/** Number of pairs i < j with a[i] > a[j]. */
+export function inversions(a: number[]): number {
+  let count = 0;
+  for (let i = 0; i < a.length; i++)
+    for (let j = i + 1; j < a.length; j++) if (a[i]! > a[j]!) count++;
+  return count;
+}
+
+export const describeSorted = (out: number[]) => `Sorted: [${out.join(", ")}]`;

@@ -4,7 +4,15 @@ import reactHooks from "eslint-plugin-react-hooks";
 import globals from "globals";
 
 export default tseslint.config(
-  { ignores: [".next/**", "node_modules/**", "playwright-report/**", "test-results/**", "next-env.d.ts"] },
+  {
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      "playwright-report/**",
+      "test-results/**",
+      "next-env.d.ts",
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -13,14 +21,22 @@ export default tseslint.config(
     plugins: { "react-hooks": reactHooks },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
       "@typescript-eslint/consistent-type-imports": "error",
     },
   },
   {
     // The engine and algorithm layers must stay framework-free so they can run in
     // workers, scripts, and tests. See docs/architecture.md "Dependency direction".
-    files: ["src/engine/**/*.ts", "src/algorithms/**/*.ts", "src/lib/**/*.ts"],
+    files: [
+      "src/engine/**/*.ts",
+      "src/algorithms/**/*.ts",
+      "src/lib/**/*.ts",
+      "src/experiments/**/*.ts",
+    ],
     rules: {
       "no-restricted-imports": [
         "error",
@@ -29,11 +45,43 @@ export default tseslint.config(
     },
   },
   {
+    // lib is the bottom layer: pure utilities with no knowledge of algorithms or content.
+    files: ["src/lib/**/*.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            "react",
+            "react-dom",
+            "next",
+            "next/*",
+            "@/ui/*",
+            "@/app/*",
+            "@/algorithms/*",
+            "@/experiments/*",
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ["src/engine/**/*.ts"],
     rules: {
       "no-restricted-imports": [
         "error",
-        { patterns: ["react", "react-dom", "next", "next/*", "@/ui/*", "@/app/*", "@/algorithms/*", "@/content/*"] },
+        {
+          patterns: [
+            "react",
+            "react-dom",
+            "next",
+            "next/*",
+            "@/ui/*",
+            "@/app/*",
+            "@/algorithms/*",
+            "@/content/*",
+          ],
+        },
       ],
     },
   },

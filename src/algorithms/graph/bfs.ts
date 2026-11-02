@@ -32,14 +32,30 @@ export const bfs: AlgorithmModule<GraphInputValue, BfsOutput> = {
   input: graphInput({
     ...UNDIRECTED,
     presets: [
-      { id: "small", label: "Small graph", value: graphPreset("A-B, A-C, B-D, C-D, D-E, C-F", "A", UNDIRECTED) },
+      {
+        id: "small",
+        label: "Small graph",
+        value: graphPreset("A-B, A-C, B-D, C-D, D-E, C-F", "A", UNDIRECTED),
+      },
       {
         id: "grid",
         label: "Grid-like",
-        value: graphPreset("A-B, B-C, A-D, B-E, C-F, D-E, E-F, D-G, E-H, F-I, G-H, H-I", "A", UNDIRECTED),
+        value: graphPreset(
+          "A-B, B-C, A-D, B-E, C-F, D-E, E-F, D-G, E-H, F-I, G-H, H-I",
+          "A",
+          UNDIRECTED,
+        ),
       },
-      { id: "disconnected", label: "Disconnected", value: graphPreset("A-B, B-C, C-A, D-E, F", "A", UNDIRECTED) },
-      { id: "path", label: "Long path", value: graphPreset("A-B, B-C, C-D, D-E, E-F, F-G", "D", UNDIRECTED) },
+      {
+        id: "disconnected",
+        label: "Disconnected",
+        value: graphPreset("A-B, B-C, C-A, D-E, F", "A", UNDIRECTED),
+      },
+      {
+        id: "path",
+        label: "Long path",
+        value: graphPreset("A-B, B-C, C-D, D-E, E-F, F-G", "D", UNDIRECTED),
+      },
     ],
   }),
 
@@ -74,7 +90,10 @@ export const bfs: AlgorithmModule<GraphInputValue, BfsOutput> = {
           dist[v] = dist[u]! + 1;
           parent[v] = u;
           edgeState.set(edge, "tree");
-          G.edge(edge, "tree", { line: 8, note: `Set dist[${v}] = ${dist[v]} and parent[${v}] = ${u}.` });
+          G.edge(edge, "tree", {
+            line: 8,
+            note: `Set dist[${v}] = ${dist[v]} and parent[${v}] = ${u}.`,
+          });
           G.annotate(v, `d=${dist[v]}`, { line: 8 });
           G.node(v, "frontier", { line: 9 });
           Q.push(v, { line: 9, note: `Enqueue ${v}.` });
@@ -86,7 +105,11 @@ export const bfs: AlgorithmModule<GraphInputValue, BfsOutput> = {
             note: `${v} was already discovered at distance ${dist[v]}; skip it.`,
           });
         } else {
-          t.step({ line: 7, vars: { v }, note: `${v} is ${u}'s BFS-tree neighbour and already discovered.` });
+          t.step({
+            line: 7,
+            vars: { v },
+            note: `${v} is ${u}'s BFS-tree neighbour and already discovered.`,
+          });
         }
       }
       G.node(u, "visited", { line: 4, vars: { v: null }, note: `Finished ${u}.` });
@@ -99,7 +122,11 @@ export const bfs: AlgorithmModule<GraphInputValue, BfsOutput> = {
       }
     }
     const output: BfsOutput = { dist, parent, order };
-    t.finish(input, output, { line: 10, vars: { u: null, v: null }, note: "The queue is empty: BFS is complete." });
+    t.finish(input, output, {
+      line: 10,
+      vars: { u: null, v: null },
+      note: "The queue is empty: BFS is complete.",
+    });
     return output;
   },
 
@@ -108,10 +135,15 @@ export const bfs: AlgorithmModule<GraphInputValue, BfsOutput> = {
     const expected: Record<string, number> = {};
     for (const n of input.nodes) expected[n.id] = Infinity;
     expected[input.source] = 0;
-    for (let changed = true; changed; ) {
+    for (let changed = true; changed;) {
       changed = false;
       for (const e of input.edges) {
-        const pairs = input.directed ? [[e.from, e.to]] : [[e.from, e.to], [e.to, e.from]];
+        const pairs = input.directed
+          ? [[e.from, e.to]]
+          : [
+              [e.from, e.to],
+              [e.to, e.from],
+            ];
         for (const [a, b] of pairs) {
           if (expected[a!]! + 1 < expected[b!]!) {
             expected[b!] = expected[a!]! + 1;
@@ -121,7 +153,9 @@ export const bfs: AlgorithmModule<GraphInputValue, BfsOutput> = {
       }
     }
     const neighbours = (a: string, b: string) =>
-      input.edges.some((e) => (e.from === a && e.to === b) || (!input.directed && e.from === b && e.to === a));
+      input.edges.some(
+        (e) => (e.from === a && e.to === b) || (!input.directed && e.from === b && e.to === a),
+      );
     for (const n of input.nodes) {
       const want = expected[n.id] === Infinity ? null : expected[n.id]!;
       if (out.dist[n.id] !== want) return `dist[${n.id}] = ${out.dist[n.id]}, expected ${want}`;
@@ -133,7 +167,8 @@ export const bfs: AlgorithmModule<GraphInputValue, BfsOutput> = {
       }
     }
     for (let i = 1; i < out.order.length; i++) {
-      if (out.dist[out.order[i]!]! < out.dist[out.order[i - 1]!]!) return "dequeue order is not by non-decreasing distance";
+      if (out.dist[out.order[i]!]! < out.dist[out.order[i - 1]!]!)
+        return "dequeue order is not by non-decreasing distance";
     }
     return null;
   },
