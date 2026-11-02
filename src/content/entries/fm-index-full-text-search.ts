@@ -83,7 +83,8 @@ export const fmIndexFullTextSearchEntry: AlgorithmEntry = {
             occ[ch][i + 1] = occ[ch][i] + (1 if bwt[i] == ch else 0)
     return {"bwt": bwt, "sa": suffixes, "c": c_table, "occ": occ}
 
-def fm_count(index, pattern: str) -> int:
+def fm_count(text: str, pattern: str) -> int:
+    index = build_fm_index(text)
     lo, hi = 0, len(index["bwt"])
     for c in reversed(pattern):
         if c not in index["c"]:

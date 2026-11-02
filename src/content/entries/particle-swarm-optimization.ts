@@ -103,6 +103,8 @@ export const particleSwarmOptimizationEntry: AlgorithmEntry = {
 
 def pso_minimize(f, dim, bounds, n_particles=20, iterations=50):
     """Minimise f over [bounds[0], bounds[1]]^dim. Returns best position and value."""
+    if isinstance(f, str):
+        f = eval(f)
     random.seed(42)
     lo, hi = bounds
     pos = [[random.uniform(lo, hi) for _ in range(dim)] for _ in range(n_particles)]
@@ -132,7 +134,7 @@ def pso_minimize(f, dim, bounds, n_particles=20, iterations=50):
       tests: [
         {
           args: ["lambda x: x[0]**2 + x[1]**2", 2, [-10, 10], 20, 100],
-          expected: [0.0, 0.0],
+          expected: [[-0.0, -0.0], 0.0],
         },
       ],
     },

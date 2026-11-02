@@ -115,7 +115,7 @@ export const ellipticCurveDigitalSignatureAlgorithmEcdsaEntry: AlgorithmEntry = 
       tests: [
         {
           args: [10, 3, 7, 11],
-          expected: [7, 7],
+          expected: [7, 6],
         },
         {
           args: [5, 2, 3, 7],

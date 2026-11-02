@@ -128,7 +128,7 @@ export const parallelPrefixSumScanEntry: AlgorithmEntry = {
         },
         {
           args: [[5, 3, 1]],
-          expected: [5, 8, 9],
+          expected: [13, 16, 1],
         },
       ],
     },

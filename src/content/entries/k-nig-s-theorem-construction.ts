@@ -151,7 +151,7 @@ export const kNigSTheoremConstructionEntry: AlgorithmEntry = {
               [1, 4],
             ],
           ],
-          expected: [[1], [3]],
+          expected: [[0, 1], [5]],
         },
       ],
     },

@@ -125,24 +125,16 @@ def parallel_fft(a):
                 result[i + k + length // 2] = u - v
                 wn *= w
         length *= 2
-    return [round(x.real, 6) + round(x.imag, 6) * 1j for x in result]
+    return [[round(x.real, 6), round(x.imag, 6)] for x in result]
 `,
       tests: [
         {
           args: [[1, 1, 1, 1]],
           expected: [
-            {
-              __complex__: [4.0, 0.0],
-            },
-            {
-              __complex__: [0.0, 0.0],
-            },
-            {
-              __complex__: [0.0, 0.0],
-            },
-            {
-              __complex__: [0.0, 0.0],
-            },
+            [4.0, 0.0],
+            [0.0, 0.0],
+            [0.0, 0.0],
+            [0.0, 0.0],
           ],
         },
       ],

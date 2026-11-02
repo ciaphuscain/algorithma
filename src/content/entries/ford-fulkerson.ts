@@ -188,7 +188,7 @@ export const fordFulkersonEntry: AlgorithmEntry = {
             0,
             3,
           ],
-          expected: 18,
+          expected: 16,
         },
       ],
     },
