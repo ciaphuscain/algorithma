@@ -78,7 +78,7 @@ export const unboundedKnapsackEntry: AlgorithmEntry = {
         },
         {
           args: [[2, 3], [5, 8], 7],
-          expected: 21,
+          expected: 18,
         },
       ],
     },
@@ -101,7 +101,7 @@ export const unboundedKnapsackEntry: AlgorithmEntry = {
         },
         {
           args: [[2, 3], [5, 8], 7],
-          expected: 21,
+          expected: 18,
         },
       ],
     },

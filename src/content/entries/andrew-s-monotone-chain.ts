@@ -109,7 +109,7 @@ export const andrewSMonotoneChainEntry: AlgorithmEntry = {
       entry: "convex_hull",
       code: `def convex_hull(points):
     """Return convex hull vertices in CCW order."""
-    points = sorted(set(points))
+    points = sorted(set(tuple(p) for p in points))
     if len(points) <= 1:
         return points
     def cross(o, a, b):
@@ -124,7 +124,7 @@ export const andrewSMonotoneChainEntry: AlgorithmEntry = {
         while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
             upper.pop()
         upper.append(p)
-    return lower[:-1] + upper[:-1]
+    return [list(p) for p in lower[:-1] + upper[:-1]]
 `,
       tests: [
         {

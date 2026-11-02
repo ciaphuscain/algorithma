@@ -95,7 +95,7 @@ export const perfectHashingEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "perfect_hash_build",
+      entry: "perfect_hash_test",
       code: `def perfect_hash_build(keys):
     """Build a simple two-level perfect hash for distinct integer keys.
     Returns (table, m, a, b) where lookup uses ((a*k+b)%p)%m then second level."""
@@ -103,7 +103,6 @@ export const perfectHashingEntry: AlgorithmEntry = {
     if n == 0:
         return [], 0, 0, 0
     p = 1000000007
-    # Simple: for small sets, try direct mapping
     import random
     random.seed(42)
     for _ in range(100):
@@ -125,11 +124,18 @@ def perfect_hash_lookup(table, size, a, b, key):
     p = 1000000007
     idx = ((a * key + b) % p) % size
     return table[idx] == key
+
+def perfect_hash_test(keys):
+    result = perfect_hash_build(keys)
+    if result is None:
+        return False
+    table, size, a, b = result
+    return all(perfect_hash_lookup(table, size, a, b, k) for k in keys)
 `,
       tests: [
         {
           args: [[3, 7, 11]],
-          expected: null,
+          expected: true,
         },
       ],
     },

@@ -57,15 +57,15 @@ export const zAlgorithmEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(n)$" },
-    space: "$O(n)$",
+    time: { best: "O(n)", average: "O(n)", worst: "O(n)" },
+    space: "O(n)",
     worstClass: "n",
   },
   properties: [],
   implementations: [
     {
       language: "python",
-      entry: "z_search",
+      entry: "z_function",
       code: `def z_function(s: str) -> list[int]:
     n = len(s)
     z = [0] * n
@@ -89,7 +89,7 @@ def z_search(text: str, pattern: str) -> list[int]:
       tests: [
         {
           args: ["aabxaab"],
-          expected: [7, 0, 1, 0, 3, 0, 1],
+          expected: [7, 1, 0, 0, 3, 1, 0],
         },
         {
           args: ["aaaa"],
@@ -115,7 +115,7 @@ def z_search(text: str, pattern: str) -> list[int]:
       tests: [
         {
           args: ["aabxaab"],
-          expected: [7, 0, 1, 0, 3, 0, 1],
+          expected: [7, 1, 0, 0, 3, 1, 0],
         },
       ],
     },

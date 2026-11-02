@@ -99,7 +99,7 @@ export const cuckooFilterEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "CuckooFilter",
+      entry: "cf_test",
       code: `class CuckooFilter:
     def __init__(self, capacity, fp_size=8):
         self.cap = capacity

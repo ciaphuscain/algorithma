@@ -55,15 +55,15 @@ export const asymmetricNumeralSystemsAnsEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(n)$" },
-    space: "$O(|\\Sigma|)$",
+    time: { best: "O(n)", average: "O(n)", worst: "O(n)" },
+    space: "O(|\\Sigma|)",
     worstClass: "n",
   },
   properties: [],
   implementations: [
     {
       language: "python",
-      entry: "rans_decode",
+      entry: "rans_encode",
       code: `def rans_encode(message: list[int], freqs: list[int]) -> int:
     total = sum(freqs)
     cumul = [0] * (len(freqs) + 1)

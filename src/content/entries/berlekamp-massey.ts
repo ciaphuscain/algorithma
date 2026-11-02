@@ -104,7 +104,7 @@ export const berlekampMasseyEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "berlekamp_massey",
+      entry: "bm_test",
       code: `def berlekamp_massey(s, mod=998244353):
     """Find shortest linear recurrence for sequence s modulo mod."""
     n = len(s)

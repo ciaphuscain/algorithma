@@ -115,7 +115,7 @@ export const countingBloomFilterEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "CountingBloomFilter",
+      entry: "cbf_test",
       code: `class CountingBloomFilter:
     def __init__(self, size, num_hashes):
         self.m = size

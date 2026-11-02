@@ -121,7 +121,7 @@ export const countMinSketchEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "CountMinSketch",
+      entry: "cms_test",
       code: `import hashlib
 
 class CountMinSketch:

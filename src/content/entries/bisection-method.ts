@@ -118,7 +118,7 @@ export const bisectionMethodEntry: AlgorithmEntry = {
   implementations: [
     {
       language: "python",
-      entry: "bisect_root",
+      entry: "bisect_test",
       code: `def bisect_root(f, a, b, eps=1e-9, max_iter=100):
     """Find x in [a,b] with f(x) approx 0. f(a) and f(b) must have opposite signs."""
     fa, fb = f(a), f(b)

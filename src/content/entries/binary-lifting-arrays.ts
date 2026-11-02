@@ -163,7 +163,7 @@ export const binaryLiftingArraysEntry: AlgorithmEntry = {
               [1, 3],
             ],
           ],
-          expected: [1, 0, 1],
+          expected: [1, 0, 0],
         },
       ],
     },

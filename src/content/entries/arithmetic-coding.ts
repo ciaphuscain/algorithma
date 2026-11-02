@@ -57,15 +57,15 @@ export const arithmeticCodingEntry: AlgorithmEntry = {
     ],
   },
   complexity: {
-    time: { best: "$O(n)$", average: "$O(n)$", worst: "$O(n)$" },
-    space: "$O(|\\Sigma|)$",
+    time: { best: "O(n)", average: "O(n)", worst: "O(n)" },
+    space: "O(|\\Sigma|)",
     worstClass: "n",
   },
   properties: [],
   implementations: [
     {
       language: "python",
-      entry: "arithmetic_decode",
+      entry: "arithmetic_encode",
       code: `def arithmetic_encode(message: str, probs: dict[str, tuple[float, float]]) -> float:
     low, high = 0.0, 1.0
     for ch in message:
