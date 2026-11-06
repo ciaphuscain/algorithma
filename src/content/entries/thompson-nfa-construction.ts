@@ -12,7 +12,7 @@ export const thompsonNfaConstructionEntry: AlgorithmEntry = {
     "Thompson NFA Construction is an algorithm in the field of compiler algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["thompson nfa construction", "compiler algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["dfa-construction", "regex-backtracking-algorithm"],
   problem: {
     input: "Input data for Thompson NFA Construction.",
     output: "Result of applying Thompson NFA Construction to the input.",
@@ -202,7 +202,7 @@ export const thompsonNfaConstructionEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

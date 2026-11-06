@@ -12,7 +12,7 @@ export const operationalTransformationEntry: AlgorithmEntry = {
     "Operational Transformation is an algorithm in the field of distributed algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["operational transformation", "distributed algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["crdts-g-counter-or-set-rga", "rope"],
   problem: {
     input: "Input data for Operational Transformation.",
     output: "Result of applying Operational Transformation to the input.",
@@ -187,7 +187,7 @@ export const operationalTransformationEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

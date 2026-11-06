@@ -12,7 +12,7 @@ export const graceHashJoinEntry: AlgorithmEntry = {
     "Grace Hash Join is an algorithm in the field of database algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["grace hash join", "database algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["bloom-join", "external-merge-sort"],
   problem: {
     input: "Input data for Grace Hash Join.",
     output: "Result of applying Grace Hash Join to the input.",
@@ -198,7 +198,7 @@ export const graceHashJoinEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

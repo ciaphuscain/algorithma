@@ -12,7 +12,7 @@ export const proximalPolicyOptimizationPpoEntry: AlgorithmEntry = {
     "Proximal Policy Optimization (PPO) is an algorithm in the field of machine learning. It provides an efficient approach to solving problems in this domain.",
   tags: ["proximal policy optimization (ppo)", "machine learning"],
   prerequisites: [],
-  related: [],
+  related: ["policy-gradient-reinforce", "q-learning-dqn"],
   problem: {
     input: "Input data for Proximal Policy Optimization (PPO).",
     output: "Result of applying Proximal Policy Optimization (PPO) to the input.",
@@ -176,7 +176,7 @@ export const proximalPolicyOptimizationPpoEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

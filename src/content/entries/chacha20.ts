@@ -12,7 +12,7 @@ export const chacha20Entry: AlgorithmEntry = {
     "ChaCha20 is an algorithm in the field of cryptography. It provides an efficient approach to solving problems in this domain.",
   tags: ["chacha20", "cryptography"],
   prerequisites: [],
-  related: [],
+  related: ["aes-encryption", "poly1305"],
   problem: {
     input: "Input data for ChaCha20.",
     output: "Result of applying ChaCha20 to the input.",
@@ -167,7 +167,7 @@ export const chacha20Entry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

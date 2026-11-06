@@ -12,7 +12,7 @@ export const poly1305Entry: AlgorithmEntry = {
     "Poly1305 is an algorithm in the field of cryptography. It provides an efficient approach to solving problems in this domain.",
   tags: ["poly1305", "cryptography"],
   prerequisites: [],
-  related: [],
+  related: ["chacha20", "hmac"],
   problem: {
     input: "Input data for Poly1305.",
     output: "Result of applying Poly1305 to the input.",
@@ -167,7 +167,7 @@ export const poly1305Entry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

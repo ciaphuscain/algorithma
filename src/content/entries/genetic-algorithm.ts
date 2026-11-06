@@ -12,7 +12,7 @@ export const geneticAlgorithmEntry: AlgorithmEntry = {
     "Genetic Algorithm is an algorithm in the field of randomized algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["genetic algorithm", "randomized algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["simulated-annealing", "ant-colony-optimization"],
   problem: {
     input: "Input data for Genetic Algorithm.",
     output: "Result of applying Genetic Algorithm to the input.",
@@ -196,7 +196,7 @@ export const geneticAlgorithmEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

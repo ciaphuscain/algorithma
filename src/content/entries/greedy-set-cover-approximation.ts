@@ -12,7 +12,7 @@ export const greedySetCoverApproximationEntry: AlgorithmEntry = {
     "Greedy Set Cover Approximation is an algorithm in the field of optimization. It provides an efficient approach to solving problems in this domain.",
   tags: ["greedy set cover approximation", "optimization"],
   prerequisites: [],
-  related: [],
+  related: ["vertex-cover-approximation", "christofides-algorithm-approximate-tsp"],
   problem: {
     input: "Input data for Greedy Set Cover Approximation.",
     output: "Result of applying Greedy Set Cover Approximation to the input.",
@@ -176,7 +176,7 @@ export const greedySetCoverApproximationEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

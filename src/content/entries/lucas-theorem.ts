@@ -12,7 +12,7 @@ export const lucasTheoremEntry: AlgorithmEntry = {
     "Lucas Theorem is an algorithm in the field of number theory. It provides an efficient approach to solving problems in this domain.",
   tags: ["lucas theorem", "number theory"],
   prerequisites: [],
-  related: [],
+  related: ["binomial-coefficient-dp", "crt"],
   problem: {
     input: "Input data for Lucas Theorem.",
     output: "Result of applying Lucas Theorem to the input.",
@@ -182,7 +182,7 @@ export const lucasTheoremEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

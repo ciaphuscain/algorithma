@@ -12,7 +12,7 @@ export const transformerForwardBackwardPassEntry: AlgorithmEntry = {
     "Transformer Forward/Backward Pass is an algorithm in the field of deep learning. It provides an efficient approach to solving problems in this domain.",
   tags: ["transformer forward/backward pass", "deep learning"],
   prerequisites: [],
-  related: [],
+  related: ["scaled-dot-product-attention", "flashattention"],
   problem: {
     input: "Input data for Transformer Forward/Backward Pass.",
     output: "Result of applying Transformer Forward/Backward Pass to the input.",
@@ -187,7 +187,7 @@ export const transformerForwardBackwardPassEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

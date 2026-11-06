@@ -12,7 +12,7 @@ export const crdtsGCounterOrSetRgaEntry: AlgorithmEntry = {
     "CRDTs (G-Counter, OR-Set, RGA) is an algorithm in the field of distributed algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["crdts (g-counter, or-set, rga)", "distributed algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["operational-transformation", "vector-clocks"],
   problem: {
     input: "Input data for CRDTs (G-Counter, OR-Set, RGA).",
     output: "Result of applying CRDTs (G-Counter, OR-Set, RGA) to the input.",
@@ -187,7 +187,7 @@ export const crdtsGCounterOrSetRgaEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

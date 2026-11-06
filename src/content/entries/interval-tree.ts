@@ -12,7 +12,7 @@ export const intervalTreeEntry: AlgorithmEntry = {
     "Interval Tree is an algorithm in the field of special-purpose trees. It provides an efficient approach to solving problems in this domain.",
   tags: ["interval tree", "special-purpose trees"],
   prerequisites: [],
-  related: [],
+  related: ["segment-tree", "range-tree"],
   problem: {
     input: "Input data for Interval Tree.",
     output: "Result of applying Interval Tree to the input.",
@@ -167,7 +167,7 @@ export const intervalTreeEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

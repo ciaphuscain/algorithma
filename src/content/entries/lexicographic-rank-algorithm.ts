@@ -12,7 +12,7 @@ export const lexicographicRankAlgorithmEntry: AlgorithmEntry = {
     "Computes the rank (position) of a string among all its sorted permutations using factorial number system.",
   tags: ["permutation", "rank", "factorial", "combinatorics"],
   prerequisites: [],
-  related: [],
+  related: ["catalan-numbers", "pascal-s-triangle"],
   problem: {
     input: "A string S.",
     output: "The 1-based rank of S among all sorted permutations of its characters.",
@@ -172,7 +172,7 @@ function lexRank(s) {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

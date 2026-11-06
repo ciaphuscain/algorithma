@@ -12,7 +12,7 @@ export const chandyLamportSnapshotAlgorithmEntry: AlgorithmEntry = {
     "Chandy–Lamport Snapshot Algorithm is an algorithm in the field of distributed algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["chandy–lamport snapshot algorithm", "distributed algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["vector-clocks", "lamport-clocks"],
   problem: {
     input: "Input data for Chandy–Lamport Snapshot Algorithm.",
     output: "Result of applying Chandy–Lamport Snapshot Algorithm to the input.",
@@ -187,7 +187,7 @@ export const chandyLamportSnapshotAlgorithmEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

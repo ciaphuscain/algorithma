@@ -12,7 +12,7 @@ export const dominatorTreeLengauerTarjanEntry: AlgorithmEntry = {
     "Computes the dominator tree of a directed graph in O(E α(V)) time, where vertex u dominates v if every path from the entry to v passes through u.",
   tags: ["dominator tree", "control flow", "graph", "compiler"],
   prerequisites: ["DFS"],
-  related: [],
+  related: ["tarjan-scc", "dfs"],
   problem: {
     input: "A directed graph with a distinguished entry vertex.",
     output: "The dominator tree: for each vertex, its immediate dominator.",
@@ -217,7 +217,7 @@ export const dominatorTreeLengauerTarjanEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

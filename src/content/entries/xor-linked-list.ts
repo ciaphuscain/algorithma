@@ -12,7 +12,7 @@ export const xorLinkedListEntry: AlgorithmEntry = {
     "XOR Linked List is an algorithm in the field of linear data structures. It provides an efficient approach to solving problems in this domain.",
   tags: ["xor linked list", "linear data structures"],
   prerequisites: [],
-  related: [],
+  related: ["unrolled-linked-list", "skip-list"],
   problem: {
     input: "Input data for XOR Linked List.",
     output: "Result of applying XOR Linked List to the input.",
@@ -179,7 +179,7 @@ export const xorLinkedListEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

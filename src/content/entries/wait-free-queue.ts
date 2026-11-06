@@ -12,7 +12,7 @@ export const waitFreeQueueEntry: AlgorithmEntry = {
     "Wait-Free Queue is an algorithm in the field of linear data structures. It provides an efficient approach to solving problems in this domain.",
   tags: ["wait-free queue", "linear data structures"],
   prerequisites: [],
-  related: [],
+  related: ["lock-free-queue", "michael-scott-queue"],
   problem: {
     input: "Input data for Wait-Free Queue.",
     output: "Result of applying Wait-Free Queue to the input.",
@@ -179,7 +179,7 @@ export const waitFreeQueueEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

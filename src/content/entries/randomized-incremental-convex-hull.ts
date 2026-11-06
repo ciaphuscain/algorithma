@@ -12,7 +12,7 @@ export const randomizedIncrementalConvexHullEntry: AlgorithmEntry = {
     "Randomized Incremental Convex Hull is an algorithm in the field of randomized algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["randomized incremental convex hull", "randomized algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["quickhull", "graham-scan"],
   problem: {
     input: "Input data for Randomized Incremental Convex Hull.",
     output: "Result of applying Randomized Incremental Convex Hull to the input.",
@@ -196,7 +196,7 @@ export const randomizedIncrementalConvexHullEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

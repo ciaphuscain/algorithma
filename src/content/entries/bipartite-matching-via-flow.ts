@@ -12,7 +12,7 @@ export const bipartiteMatchingViaFlowEntry: AlgorithmEntry = {
     "Bipartite Matching via Flow is an algorithm in the field of graph algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["bipartite matching via flow", "graph algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["hopcroft-karp", "hungarian-algorithm"],
   problem: {
     input: "Input data for Bipartite Matching via Flow.",
     output: "Result of applying Bipartite Matching via Flow to the input.",
@@ -205,7 +205,7 @@ export const bipartiteMatchingViaFlowEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

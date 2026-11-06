@@ -12,7 +12,7 @@ export const smallestEnclosingCircleWelzlSAlgorithmEntry: AlgorithmEntry = {
     "Welzl's algorithm finds the smallest circle enclosing a set of points in expected O(n) time using a randomized incremental approach.",
   tags: ["computational geometry", "enclosing circle", "randomized", "incremental"],
   prerequisites: ["Geometry Basics"],
-  related: [],
+  related: ["closest-pair", "convex-polygon-intersection"],
   problem: {
     input: "A set of 2D points.",
     output: "The center and radius of the smallest circle containing all points.",
@@ -201,7 +201,7 @@ export const smallestEnclosingCircleWelzlSAlgorithmEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

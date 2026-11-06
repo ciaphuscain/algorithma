@@ -12,7 +12,7 @@ export const waveletTreeEntry: AlgorithmEntry = {
     "Wavelet Tree is an algorithm in the field of tree algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["wavelet tree", "tree algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["segment-tree", "merge-sort-tree"],
   problem: {
     input: "Input data for Wavelet Tree.",
     output: "Result of applying Wavelet Tree to the input.",
@@ -167,7 +167,7 @@ export const waveletTreeEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

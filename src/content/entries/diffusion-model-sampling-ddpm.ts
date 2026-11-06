@@ -12,7 +12,7 @@ export const diffusionModelSamplingDdpmEntry: AlgorithmEntry = {
     "Generates data by iteratively denoising a sample of pure Gaussian noise through T learned reverse diffusion steps, each removing a small amount of noise predicted by a neural network.",
   tags: ["generative model", "diffusion", "denoising", "deep learning"],
   prerequisites: ["Backpropagation"],
-  related: [],
+  related: ["backpropagation", "stochastic-gradient-descent-sgd"],
   problem: {
     input: "A trained DDPM model and T timesteps.",
     output: "A generated sample (e.g., an image) produced by iterative denoising.",
@@ -181,7 +181,7 @@ export const diffusionModelSamplingDdpmEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

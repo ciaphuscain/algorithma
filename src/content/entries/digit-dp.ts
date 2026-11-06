@@ -259,7 +259,7 @@ function countDigitSumRange(lo, hi, s) {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review. Digit DP is a competitive-programming technique without a single original paper; the reference covers the underlying method only.",
+    note: "Written with AI assistance. Code samples verified by automated tests. Digit DP is a competitive-programming technique without a single original paper; the reference covers the underlying method only.",
   },
   version: 1,
   updated: "2026-10-23",

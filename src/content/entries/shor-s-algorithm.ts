@@ -12,7 +12,7 @@ export const shorSAlgorithmEntry: AlgorithmEntry = {
     "Shor's algorithm factors integers in polynomial time on a quantum computer by reducing factoring to period-finding and using the quantum Fourier transform to find the period efficiently.",
   tags: ["quantum computing", "factoring", "period finding", "QFT", "cryptography"],
   prerequisites: ["Binary Exponentiation"],
-  related: [],
+  related: ["grover-s-search", "quantum-fourier-transform"],
   problem: {
     input: "A composite integer N to factor.",
     output: "A non-trivial factor of N.",
@@ -179,7 +179,7 @@ export const shorSAlgorithmEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

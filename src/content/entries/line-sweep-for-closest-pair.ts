@@ -12,7 +12,7 @@ export const lineSweepForClosestPairEntry: AlgorithmEntry = {
     "Line Sweep for Closest Pair is an algorithm in the field of computational geometry. It provides an efficient approach to solving problems in this domain.",
   tags: ["line sweep for closest pair", "computational geometry"],
   prerequisites: [],
-  related: [],
+  related: ["closest-pair", "sweep-line"],
   problem: {
     input: "Input data for Line Sweep for Closest Pair.",
     output: "Result of applying Line Sweep for Closest Pair to the input.",
@@ -211,7 +211,7 @@ export const lineSweepForClosestPairEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

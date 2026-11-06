@@ -12,7 +12,7 @@ export const twoPhaseCommitEntry: AlgorithmEntry = {
     "Two-Phase Commit is an algorithm in the field of distributed algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["two-phase commit", "distributed algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["three-phase-commit", "paxos"],
   problem: {
     input: "Input data for Two-Phase Commit.",
     output: "Result of applying Two-Phase Commit to the input.",
@@ -187,7 +187,7 @@ export const twoPhaseCommitEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

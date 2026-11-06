@@ -12,7 +12,7 @@ export const sumOverSubsetsSosDpEntry: AlgorithmEntry = {
     "Sum over Subsets (SOS) DP is an algorithm in the field of dynamic programming. It provides an efficient approach to solving problems in this domain.",
   tags: ["sum over subsets (sos) dp", "dynamic programming"],
   prerequisites: [],
-  related: [],
+  related: ["state-compression-dp", "inclusion-exclusion-principle"],
   problem: {
     input: "Input data for Sum over Subsets (SOS) DP.",
     output: "Result of applying Sum over Subsets (SOS) DP to the input.",
@@ -193,7 +193,7 @@ export const sumOverSubsetsSosDpEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

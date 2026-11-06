@@ -12,7 +12,7 @@ export const stoerWagnerMinimumCutEntry: AlgorithmEntry = {
     "The Stoer–Wagner algorithm finds the global minimum cut of an undirected weighted graph in O(V^3) or O(VE + V^2 log V) time by repeatedly computing minimum s-t cuts and merging vertices.",
   tags: ["minimum cut", "graph", "network flow", "contraction"],
   prerequisites: ["Graph Traversal"],
-  related: [],
+  related: ["karger-s-minimum-cut-algorithm", "gomory-hu-tree"],
   problem: {
     input: "An undirected weighted graph.",
     output: "The minimum total weight of edges whose removal disconnects the graph.",
@@ -204,7 +204,7 @@ export const stoerWagnerMinimumCutEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

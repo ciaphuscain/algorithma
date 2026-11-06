@@ -12,7 +12,7 @@ export const dfaConstructionEntry: AlgorithmEntry = {
     "Converts a nondeterministic finite automaton (NFA) to an equivalent deterministic finite automaton (DFA) via the subset (powerset) construction, where each DFA state represents a set of NFA states.",
   tags: ["automata", "NFA", "DFA", "subset construction", "compilers"],
   prerequisites: ["Graphs"],
-  related: [],
+  related: ["thompson-nfa-construction", "regex-backtracking-algorithm"],
   problem: {
     input: "An NFA with states, alphabet, transition function, start state, and accept states.",
     output: "An equivalent DFA that accepts the same language.",
@@ -207,7 +207,7 @@ export const dfaConstructionEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

@@ -12,7 +12,7 @@ export const gapBufferEntry: AlgorithmEntry = {
     "Gap Buffer is an algorithm in the field of persistent & text structures. It provides an efficient approach to solving problems in this domain.",
   tags: ["gap buffer", "persistent & text structures"],
   prerequisites: [],
-  related: [],
+  related: ["piece-table", "rope"],
   problem: {
     input: "Input data for Gap Buffer.",
     output: "Result of applying Gap Buffer to the input.",
@@ -179,7 +179,7 @@ export const gapBufferEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

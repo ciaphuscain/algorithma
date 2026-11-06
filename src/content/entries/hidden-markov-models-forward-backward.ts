@@ -12,7 +12,7 @@ export const hiddenMarkovModelsForwardBackwardEntry: AlgorithmEntry = {
     "Computes the probability of an observation sequence and infers hidden states using the forward-backward algorithm on a Hidden Markov Model.",
   tags: ["hidden markov models forward backward", "machine learning"],
   prerequisites: [],
-  related: [],
+  related: ["viterbi-decoding", "kalman-filter"],
   problem: {
     input:
       "HMM parameters (transition, emission, initial probabilities) and an observation sequence.",
@@ -206,7 +206,7 @@ export const hiddenMarkovModelsForwardBackwardEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

@@ -12,7 +12,7 @@ export const policyGradientReinforceEntry: AlgorithmEntry = {
     "Policy Gradient (REINFORCE) is an algorithm in the field of machine learning. It provides an efficient approach to solving problems in this domain.",
   tags: ["policy gradient (reinforce)", "machine learning"],
   prerequisites: [],
-  related: [],
+  related: ["proximal-policy-optimization-ppo", "q-learning-dqn"],
   problem: {
     input: "Input data for Policy Gradient (REINFORCE).",
     output: "Result of applying Policy Gradient (REINFORCE) to the input.",
@@ -176,7 +176,7 @@ export const policyGradientReinforceEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

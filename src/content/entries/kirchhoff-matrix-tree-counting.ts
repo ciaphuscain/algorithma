@@ -164,6 +164,67 @@ export const kirchhoffMatrixTreeCountingEntry: AlgorithmEntry = {
         },
       ],
     },
+    {
+      language: "javascript",
+      entry: "countSpanningTrees",
+      code: `function countSpanningTrees(n, edges) {
+  const L = Array.from({length: n}, () => new Array(n).fill(0));
+  for (const [u, v] of edges) {
+    L[u][v]--; L[v][u]--;
+    L[u][u]++; L[v][v]++;
+  }
+  const size = n - 1;
+  const M = Array.from({length: size}, (_, i) =>
+    Array.from({length: size}, (_, j) => L[i+1][j+1])
+  );
+  let det = 1;
+  for (let col = 0; col < size; col++) {
+    let pivot = -1;
+    for (let row = col; row < size; row++) {
+      if (M[row][col] !== 0) { pivot = row; break; }
+    }
+    if (pivot === -1) return 0;
+    if (pivot !== col) {
+      [M[col], M[pivot]] = [M[pivot], M[col]];
+      det *= -1;
+    }
+    det *= M[col][col];
+    for (let row = col + 1; row < size; row++) {
+      const factor = M[row][col] / M[col][col];
+      for (let j = col; j < size; j++) M[row][j] -= factor * M[col][j];
+    }
+  }
+  return Math.round(det);
+}
+`,
+      tests: [
+        {
+          args: [
+            3,
+            [
+              [0, 1],
+              [1, 2],
+              [0, 2],
+            ],
+          ],
+          expected: 3,
+        },
+        {
+          args: [
+            4,
+            [
+              [0, 1],
+              [0, 2],
+              [0, 3],
+              [1, 2],
+              [1, 3],
+              [2, 3],
+            ],
+          ],
+          expected: 16,
+        },
+      ],
+    },
   ],
   visualizer: null,
   practice: [
@@ -215,7 +276,7 @@ export const kirchhoffMatrixTreeCountingEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

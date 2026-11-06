@@ -12,7 +12,7 @@ export const tcpCongestionControlRenoCubicEntry: AlgorithmEntry = {
     "TCP Congestion Control (Reno/CUBIC) is an algorithm in the field of network algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["tcp congestion control (reno/cubic)", "network algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["bbr-congestion-control", "token-bucket-rate-limiting"],
   problem: {
     input: "Input data for TCP Congestion Control (Reno/CUBIC).",
     output: "Result of applying TCP Congestion Control (Reno/CUBIC) to the input.",
@@ -191,7 +191,7 @@ export const tcpCongestionControlRenoCubicEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

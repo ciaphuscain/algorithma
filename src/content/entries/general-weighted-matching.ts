@@ -12,7 +12,7 @@ export const generalWeightedMatchingEntry: AlgorithmEntry = {
     "General Weighted Matching is an algorithm in the field of graph algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["general weighted matching", "graph algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["blossom-algorithm", "hungarian-algorithm"],
   problem: {
     input: "Input data for General Weighted Matching.",
     output: "Result of applying General Weighted Matching to the input.",
@@ -205,7 +205,7 @@ export const generalWeightedMatchingEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

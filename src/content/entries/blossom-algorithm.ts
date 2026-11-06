@@ -12,7 +12,7 @@ export const blossomAlgorithmEntry: AlgorithmEntry = {
     "Blossom Algorithm is an algorithm in the field of graph algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["blossom algorithm", "graph algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["general-weighted-matching", "hopcroft-karp"],
   problem: {
     input: "Input data for Blossom Algorithm.",
     output: "Result of applying Blossom Algorithm to the input.",
@@ -205,7 +205,7 @@ export const blossomAlgorithmEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

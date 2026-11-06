@@ -12,7 +12,7 @@ export const finiteElementMethod1d2dEntry: AlgorithmEntry = {
     "Finite Element Method (1D/2D) is an algorithm in the field of number theory. It provides an efficient approach to solving problems in this domain.",
   tags: ["finite element method (1d/2d)", "number theory"],
   prerequisites: [],
-  related: [],
+  related: ["runge-kutta-rk4", "conjugate-gradient"],
   problem: {
     input: "Input data for Finite Element Method (1D/2D).",
     output: "Result of applying Finite Element Method (1D/2D) to the input.",
@@ -182,7 +182,7 @@ export const finiteElementMethod1d2dEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

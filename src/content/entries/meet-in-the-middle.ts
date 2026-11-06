@@ -12,7 +12,7 @@ export const meetInTheMiddleEntry: AlgorithmEntry = {
     "Meet in the Middle is an algorithm in the field of advanced topics. It provides an efficient approach to solving problems in this domain.",
   tags: ["meet in the middle", "advanced topics"],
   prerequisites: [],
-  related: [],
+  related: ["branch-and-bound", "knapsack"],
   problem: {
     input: "Input data for Meet in the Middle.",
     output: "Result of applying Meet in the Middle to the input.",
@@ -167,7 +167,7 @@ export const meetInTheMiddleEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

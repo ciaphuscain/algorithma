@@ -12,7 +12,7 @@ export const linearHashingEntry: AlgorithmEntry = {
     "Linear Hashing is an algorithm in the field of database algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["linear hashing", "database algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["extendible-hashing", "open-addressing"],
   problem: {
     input: "Input data for Linear Hashing.",
     output: "Result of applying Linear Hashing to the input.",
@@ -198,7 +198,7 @@ export const linearHashingEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

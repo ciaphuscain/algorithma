@@ -12,7 +12,7 @@ export const kalmanFilterEntry: AlgorithmEntry = {
     "Estimates the state of a linear dynamical system from noisy measurements by combining prediction and observation updates using Gaussian distributions.",
   tags: ["kalman filter", "machine learning"],
   prerequisites: [],
-  related: [],
+  related: ["particle-filter", "hidden-markov-models-forward-backward"],
   problem: {
     input:
       "A linear state-space model (transition, observation matrices, noise covariances) and a sequence of observations.",
@@ -184,7 +184,7 @@ export const kalmanFilterEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

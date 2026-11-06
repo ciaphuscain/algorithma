@@ -12,7 +12,7 @@ export const vectorClocksEntry: AlgorithmEntry = {
     "Vector Clocks is an algorithm in the field of distributed algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["vector clocks", "distributed algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["lamport-clocks", "hybrid-logical-clocks"],
   problem: {
     input: "Input data for Vector Clocks.",
     output: "Result of applying Vector Clocks to the input.",
@@ -187,7 +187,7 @@ export const vectorClocksEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

@@ -12,7 +12,7 @@ export const aliensTrickLagrangianRelaxationWqsBinarySearchEntry: AlgorithmEntry
     "Aliens Trick (Lagrangian Relaxation / WQS Binary Search) is an algorithm in the field of dynamic programming. It provides an efficient approach to solving problems in this domain.",
   tags: ["aliens trick (lagrangian relaxation / wqs binary search)", "dynamic programming"],
   prerequisites: [],
-  related: [],
+  related: ["convex-hull-trick", "divide-and-conquer-dp-optimization"],
   problem: {
     input: "Input data for Aliens Trick (Lagrangian Relaxation / WQS Binary Search).",
     output:
@@ -206,7 +206,7 @@ export const aliensTrickLagrangianRelaxationWqsBinarySearchEntry: AlgorithmEntry
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

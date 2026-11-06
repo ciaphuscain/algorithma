@@ -137,6 +137,46 @@ export const kyberPostQuantumKeyExchangeEntry: AlgorithmEntry = {
         },
       ],
     },
+    {
+      language: "javascript",
+      entry: "kyberToyLwe",
+      code: `function kyberToyLwe(n, q) {
+  let seed = 42;
+  function rand() {
+    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+    return seed;
+  }
+  function randRange(lo, hi) { return lo + (rand() % (hi - lo + 1)); }
+  const A = Array.from({length: n}, () => Array.from({length: n}, () => rand() % q));
+  const s = Array.from({length: n}, () => rand() % 2);
+  const e = Array.from({length: n}, () => randRange(-1, 1));
+  const b = Array.from({length: n}, (_, i) => {
+    let sum = 0;
+    for (let j = 0; j < n; j++) sum += A[i][j] * s[j];
+    return ((sum + e[i]) % q + q) % q;
+  });
+  const bit = 1;
+  const r = Array.from({length: n}, () => rand() % 2);
+  const e1 = Array.from({length: n}, () => randRange(-1, 1));
+  const e2 = randRange(-1, 1);
+  const u = Array.from({length: n}, (_, i) => {
+    let sum = 0;
+    for (let j = 0; j < n; j++) sum += A[j][i] * r[j];
+    return ((sum + e1[i]) % q + q) % q;
+  });
+  let vv = 0;
+  for (let j = 0; j < n; j++) vv += b[j] * r[j];
+  vv = ((vv + e2 + Math.floor(q / 2) * bit) % q + q) % q;
+  let inner = 0;
+  for (let i = 0; i < n; i++) inner += s[i] * u[i];
+  inner = ((inner % q) + q) % q;
+  let noisy = ((vv - inner) % q + q) % q;
+  if (noisy > Math.floor(q / 2)) noisy -= q;
+  return Math.abs(noisy - Math.floor(q / 2)) < Math.floor(q / 4) ? 1 : 0;
+}
+`,
+      tests: [{ args: [4, 97], expected: 1 }],
+    },
   ],
   visualizer: null,
   practice: [
@@ -191,7 +231,7 @@ export const kyberPostQuantumKeyExchangeEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

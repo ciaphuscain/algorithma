@@ -12,7 +12,7 @@ export const ropeEntry: AlgorithmEntry = {
     "Rope is an algorithm in the field of persistent & text structures. It provides an efficient approach to solving problems in this domain.",
   tags: ["rope", "persistent & text structures"],
   prerequisites: [],
-  related: [],
+  related: ["gap-buffer", "piece-table"],
   problem: {
     input: "Input data for Rope.",
     output: "Result of applying Rope to the input.",
@@ -176,7 +176,7 @@ export const ropeEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

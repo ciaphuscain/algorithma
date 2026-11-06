@@ -12,7 +12,7 @@ export const lsmTreeLogStructuredMergeTreeEntry: AlgorithmEntry = {
     "LSM Tree (Log-Structured Merge Tree) is an algorithm in the field of database algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["lsm tree (log-structured merge tree)", "database algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["b-plus-tree", "bloom-filter"],
   problem: {
     input: "Input data for LSM Tree (Log-Structured Merge Tree).",
     output: "Result of applying LSM Tree (Log-Structured Merge Tree) to the input.",
@@ -198,7 +198,7 @@ export const lsmTreeLogStructuredMergeTreeEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

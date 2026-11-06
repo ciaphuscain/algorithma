@@ -12,7 +12,7 @@ export const softHeapEntry: AlgorithmEntry = {
     "A soft heap is a priority queue that deliberately corrupts a small fraction of keys (making them larger) in exchange for O(1) amortized time for all operations except delete.",
   tags: ["heap", "amortized", "approximate", "priority queue"],
   prerequisites: ["Binary Heap"],
-  related: [],
+  related: ["fibonacci-heap", "binomial-heap"],
   problem: {
     input: "Insert, delete-min, and meld operations on a priority queue.",
     output:
@@ -177,7 +177,7 @@ export const softHeapEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

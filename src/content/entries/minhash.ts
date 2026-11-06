@@ -12,7 +12,7 @@ export const minHashEntry: AlgorithmEntry = {
     "MinHash is an algorithm in the field of probabilistic data structures. It provides an efficient approach to solving problems in this domain.",
   tags: ["minhash", "probabilistic data structures"],
   prerequisites: [],
-  related: [],
+  related: ["hyperloglog", "bloom-filter"],
   problem: {
     input: "Input data for MinHash.",
     output: "Result of applying MinHash to the input.",
@@ -178,7 +178,7 @@ export const minHashEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

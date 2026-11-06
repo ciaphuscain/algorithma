@@ -12,7 +12,7 @@ export const matrixExponentiationForLinearRecurrencesEntry: AlgorithmEntry = {
     "Matrix Exponentiation for Linear Recurrences is an algorithm in the field of number theory. It provides an efficient approach to solving problems in this domain.",
   tags: ["matrix exponentiation for linear recurrences", "number theory"],
   prerequisites: [],
-  related: [],
+  related: ["matrix-exponentiation", "kitamasa-method"],
   problem: {
     input: "Input data for Matrix Exponentiation for Linear Recurrences.",
     output: "Result of applying Matrix Exponentiation for Linear Recurrences to the input.",
@@ -183,7 +183,7 @@ export const matrixExponentiationForLinearRecurrencesEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

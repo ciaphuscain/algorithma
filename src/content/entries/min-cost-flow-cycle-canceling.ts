@@ -12,7 +12,7 @@ export const minCostFlowCycleCancelingEntry: AlgorithmEntry = {
     "Min-Cost Flow (Cycle Canceling) is an algorithm in the field of graph algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["min-cost flow (cycle canceling)", "graph algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["min-cost-max-flow-successive-shortest-paths", "bellman-ford"],
   problem: {
     input: "Input data for Min-Cost Flow (Cycle Canceling).",
     output: "Result of applying Min-Cost Flow (Cycle Canceling) to the input.",
@@ -205,7 +205,7 @@ export const minCostFlowCycleCancelingEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

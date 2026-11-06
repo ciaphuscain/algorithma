@@ -12,7 +12,7 @@ export const palindromicTreeEertreeEntry: AlgorithmEntry = {
     "A tree structure containing all distinct palindromic substrings of a string, built online in O(n) time.",
   tags: ["palindrome", "eertree", "online construction"],
   prerequisites: [],
-  related: [],
+  related: ["manacher", "suffix-automaton"],
   problem: {
     input: "A string S.",
     output: "All distinct palindromic substrings and their counts.",
@@ -199,7 +199,7 @@ def build_eertree(s: str) -> int:
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

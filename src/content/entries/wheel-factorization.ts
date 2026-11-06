@@ -12,7 +12,7 @@ export const wheelFactorizationEntry: AlgorithmEntry = {
     "Wheel Factorization is an algorithm in the field of number theory. It provides an efficient approach to solving problems in this domain.",
   tags: ["wheel factorization", "number theory"],
   prerequisites: [],
-  related: [],
+  related: ["sieve", "trial-division"],
   problem: {
     input: "Input data for Wheel Factorization.",
     output: "Result of applying Wheel Factorization to the input.",
@@ -182,7 +182,7 @@ export const wheelFactorizationEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

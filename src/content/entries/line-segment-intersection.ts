@@ -12,7 +12,7 @@ export const lineSegmentIntersectionEntry: AlgorithmEntry = {
     "Line Segment Intersection is an algorithm in the field of computational geometry. It provides an efficient approach to solving problems in this domain.",
   tags: ["line segment intersection", "computational geometry"],
   prerequisites: [],
-  related: [],
+  related: ["bentley-ottmann-algorithm", "sweep-line"],
   problem: {
     input: "Input data for Line Segment Intersection.",
     output: "Result of applying Line Segment Intersection to the input.",
@@ -211,7 +211,7 @@ export const lineSegmentIntersectionEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

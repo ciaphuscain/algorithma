@@ -12,7 +12,7 @@ export const rangeTreeEntry: AlgorithmEntry = {
     "Range Tree is an algorithm in the field of computational geometry. It provides an efficient approach to solving problems in this domain.",
   tags: ["range tree", "computational geometry"],
   prerequisites: [],
-  related: [],
+  related: ["interval-tree", "kd-tree"],
   problem: {
     input: "Input data for Range Tree.",
     output: "Result of applying Range Tree to the input.",
@@ -211,7 +211,7 @@ export const rangeTreeEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

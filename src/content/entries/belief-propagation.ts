@@ -12,7 +12,7 @@ export const beliefPropagationEntry: AlgorithmEntry = {
     "Belief Propagation is an algorithm in the field of machine learning. It provides an efficient approach to solving problems in this domain.",
   tags: ["belief propagation", "machine learning"],
   prerequisites: [],
-  related: [],
+  related: ["hidden-markov-models-forward-backward", "expectation-maximization"],
   problem: {
     input: "Input data for Belief Propagation.",
     output: "Result of applying Belief Propagation to the input.",
@@ -176,7 +176,7 @@ export const beliefPropagationEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

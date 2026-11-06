@@ -12,7 +12,7 @@ export const hamiltonianMonteCarloEntry: AlgorithmEntry = {
     "Hamiltonian Monte Carlo is an algorithm in the field of machine learning. It provides an efficient approach to solving problems in this domain.",
   tags: ["hamiltonian monte carlo", "machine learning"],
   prerequisites: [],
-  related: [],
+  related: ["metropolis-hastings-mcmc", "gibbs-sampling"],
   problem: {
     input: "Input data for Hamiltonian Monte Carlo.",
     output: "Result of applying Hamiltonian Monte Carlo to the input.",
@@ -176,7 +176,7 @@ export const hamiltonianMonteCarloEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

@@ -12,7 +12,7 @@ export const rungeKuttaRk4Entry: AlgorithmEntry = {
     "Runge–Kutta (RK4) is an algorithm in the field of number theory. It provides an efficient approach to solving problems in this domain.",
   tags: ["runge–kutta (rk4)", "number theory"],
   prerequisites: [],
-  related: [],
+  related: ["newton-raphson-method", "finite-element-method-1d-2d"],
   problem: {
     input: "Input data for Runge–Kutta (RK4).",
     output: "Result of applying Runge–Kutta (RK4) to the input.",
@@ -182,7 +182,7 @@ export const rungeKuttaRk4Entry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

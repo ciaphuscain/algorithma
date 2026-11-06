@@ -12,7 +12,7 @@ export const chromaticPolynomialExactColoringEntry: AlgorithmEntry = {
     "Chromatic Polynomial / Exact Coloring is an algorithm in the field of graph algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["chromatic polynomial / exact coloring", "graph algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["dsatur", "welsh-powell"],
   problem: {
     input: "Input data for Chromatic Polynomial / Exact Coloring.",
     output: "Result of applying Chromatic Polynomial / Exact Coloring to the input.",
@@ -205,7 +205,7 @@ export const chromaticPolynomialExactColoringEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

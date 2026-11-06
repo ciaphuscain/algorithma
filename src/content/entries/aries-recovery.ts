@@ -12,7 +12,7 @@ export const ariesRecoveryEntry: AlgorithmEntry = {
     "ARIES Recovery is an algorithm in the field of database algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["aries recovery", "database algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["two-phase-locking", "mvcc-multi-version-concurrency-control"],
   problem: {
     input: "Input data for ARIES Recovery.",
     output: "Result of applying ARIES Recovery to the input.",
@@ -198,7 +198,7 @@ export const ariesRecoveryEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

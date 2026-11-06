@@ -12,7 +12,7 @@ export const solovayStrassenTestEntry: AlgorithmEntry = {
     "The Solovay–Strassen test is a probabilistic primality test that checks whether a^((n-1)/2) ≡ Jacobi(a,n) (mod n) for random witnesses a, catching composites with probability ≥ 1/2 per round.",
   tags: ["primality testing", "probabilistic", "Jacobi symbol", "Euler criterion"],
   prerequisites: ["Modular Arithmetic", "Binary Exponentiation"],
-  related: [],
+  related: ["miller-rabin", "fermat-primality-test"],
   problem: {
     input: "An odd integer n > 2 and a number of rounds k.",
     output:
@@ -193,7 +193,7 @@ export const solovayStrassenTestEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

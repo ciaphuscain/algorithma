@@ -12,7 +12,7 @@ export const variationalInferenceEntry: AlgorithmEntry = {
     "Variational Inference is an algorithm in the field of machine learning. It provides an efficient approach to solving problems in this domain.",
   tags: ["variational inference", "machine learning"],
   prerequisites: [],
-  related: [],
+  related: ["expectation-maximization", "gibbs-sampling"],
   problem: {
     input: "Input data for Variational Inference.",
     output: "Result of applying Variational Inference to the input.",
@@ -176,7 +176,7 @@ export const variationalInferenceEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

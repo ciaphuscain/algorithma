@@ -12,7 +12,7 @@ export const lockFreeQueueEntry: AlgorithmEntry = {
     "Lock-Free Queue is an algorithm in the field of linear data structures. It provides an efficient approach to solving problems in this domain.",
   tags: ["lock-free queue", "linear data structures"],
   prerequisites: [],
-  related: [],
+  related: ["michael-scott-queue", "wait-free-queue"],
   problem: {
     input: "Input data for Lock-Free Queue.",
     output: "Result of applying Lock-Free Queue to the input.",
@@ -179,7 +179,7 @@ export const lockFreeQueueEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

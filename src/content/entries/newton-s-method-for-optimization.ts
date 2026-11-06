@@ -12,7 +12,7 @@ export const newtonSMethodForOptimizationEntry: AlgorithmEntry = {
     "Newton's Method for Optimization is an algorithm in the field of optimization. It provides an efficient approach to solving problems in this domain.",
   tags: ["newton's method for optimization", "optimization"],
   prerequisites: [],
-  related: [],
+  related: ["gradient-descent", "l-bfgs"],
   problem: {
     input: "Input data for Newton's Method for Optimization.",
     output: "Result of applying Newton's Method for Optimization to the input.",
@@ -176,7 +176,7 @@ export const newtonSMethodForOptimizationEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

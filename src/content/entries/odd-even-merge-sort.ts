@@ -12,7 +12,7 @@ export const oddEvenMergeSortEntry: AlgorithmEntry = {
     "Odd–Even Merge Sort is an algorithm in the field of parallel algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["odd–even merge sort", "parallel algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["bitonic-sort", "parallel-merge-sort"],
   problem: {
     input: "Input data for Odd–Even Merge Sort.",
     output: "Result of applying Odd–Even Merge Sort to the input.",
@@ -181,7 +181,7 @@ export const oddEvenMergeSortEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

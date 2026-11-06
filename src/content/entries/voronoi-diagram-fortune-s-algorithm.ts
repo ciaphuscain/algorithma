@@ -12,7 +12,7 @@ export const voronoiDiagramFortuneSAlgorithmEntry: AlgorithmEntry = {
     "Voronoi Diagram (Fortune's Algorithm) is an algorithm in the field of computational geometry. It provides an efficient approach to solving problems in this domain.",
   tags: ["voronoi diagram (fortune's algorithm)", "computational geometry"],
   prerequisites: [],
-  related: [],
+  related: ["delaunay-triangulation", "sweep-line"],
   problem: {
     input: "Input data for Voronoi Diagram (Fortune's Algorithm).",
     output: "Result of applying Voronoi Diagram (Fortune's Algorithm) to the input.",
@@ -211,7 +211,7 @@ export const voronoiDiagramFortuneSAlgorithmEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

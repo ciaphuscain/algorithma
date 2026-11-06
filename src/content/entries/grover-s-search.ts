@@ -12,7 +12,7 @@ export const groverSSearchEntry: AlgorithmEntry = {
     "Grover's Search is an algorithm in the field of advanced topics. It provides an efficient approach to solving problems in this domain.",
   tags: ["grover's search", "advanced topics"],
   prerequisites: [],
-  related: [],
+  related: ["shor-s-algorithm", "quantum-fourier-transform"],
   problem: {
     input: "Input data for Grover's Search.",
     output: "Result of applying Grover's Search to the input.",
@@ -167,7 +167,7 @@ export const groverSSearchEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

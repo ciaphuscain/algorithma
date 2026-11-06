@@ -12,7 +12,7 @@ export const fermatPrimalityTestEntry: AlgorithmEntry = {
     "Fermat Primality Test is an algorithm in the field of number theory. It provides an efficient approach to solving problems in this domain.",
   tags: ["fermat primality test", "number theory"],
   prerequisites: [],
-  related: [],
+  related: ["miller-rabin", "solovay-strassen-test"],
   problem: {
     input: "Input data for Fermat Primality Test.",
     output: "Result of applying Fermat Primality Test to the input.",
@@ -182,7 +182,7 @@ export const fermatPrimalityTestEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

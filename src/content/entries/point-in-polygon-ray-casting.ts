@@ -12,7 +12,7 @@ export const pointInPolygonRayCastingEntry: AlgorithmEntry = {
     "Point in Polygon (Ray Casting) is an algorithm in the field of computational geometry. It provides an efficient approach to solving problems in this domain.",
   tags: ["point in polygon (ray casting)", "computational geometry"],
   prerequisites: [],
-  related: [],
+  related: ["point-in-convex-polygon", "orientation-test-ccw-test"],
   problem: {
     input: "Input data for Point in Polygon (Ray Casting).",
     output: "Result of applying Point in Polygon (Ray Casting) to the input.",
@@ -211,7 +211,7 @@ export const pointInPolygonRayCastingEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

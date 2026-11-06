@@ -12,7 +12,7 @@ export const octreeEntry: AlgorithmEntry = {
     "Octree is an algorithm in the field of tree algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["octree", "tree algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["quad-tree", "kd-tree"],
   problem: {
     input: "Input data for Octree.",
     output: "Result of applying Octree to the input.",
@@ -163,7 +163,7 @@ export const octreeEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

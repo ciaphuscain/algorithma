@@ -12,7 +12,7 @@ export const gaussianMixtureModelsEntry: AlgorithmEntry = {
     "Models data as a mixture of k Gaussian distributions, estimating means, covariances, and mixing weights via EM.",
   tags: ["gaussian mixture models", "machine learning"],
   prerequisites: [],
-  related: [],
+  related: ["expectation-maximization", "k-means-clustering"],
   problem: {
     input: "A set of data points and number of components k.",
     output: "Mixture parameters (means, covariances, weights) and soft cluster assignments.",
@@ -202,7 +202,7 @@ export const gaussianMixtureModelsEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

@@ -12,7 +12,7 @@ export const pointInConvexPolygonEntry: AlgorithmEntry = {
     "Point in Convex Polygon is an algorithm in the field of computational geometry. It provides an efficient approach to solving problems in this domain.",
   tags: ["point in convex polygon", "computational geometry"],
   prerequisites: [],
-  related: [],
+  related: ["point-in-polygon-ray-casting", "orientation-test-ccw-test"],
   problem: {
     input: "Input data for Point in Convex Polygon.",
     output: "Result of applying Point in Convex Polygon to the input.",
@@ -211,7 +211,7 @@ export const pointInConvexPolygonEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

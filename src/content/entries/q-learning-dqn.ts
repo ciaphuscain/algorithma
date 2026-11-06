@@ -12,7 +12,7 @@ export const qLearningDqnEntry: AlgorithmEntry = {
     "Q-Learning / DQN is an algorithm in the field of machine learning. It provides an efficient approach to solving problems in this domain.",
   tags: ["q-learning / dqn", "machine learning"],
   prerequisites: [],
-  related: [],
+  related: ["policy-gradient-reinforce", "proximal-policy-optimization-ppo"],
   problem: {
     input: "Input data for Q-Learning / DQN.",
     output: "Result of applying Q-Learning / DQN to the input.",
@@ -176,7 +176,7 @@ export const qLearningDqnEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

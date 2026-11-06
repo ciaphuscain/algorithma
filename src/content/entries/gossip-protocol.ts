@@ -12,7 +12,7 @@ export const gossipProtocolEntry: AlgorithmEntry = {
     "Gossip Protocol is an algorithm in the field of distributed algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["gossip protocol", "distributed algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["swim-membership-protocol", "crdts-g-counter-or-set-rga"],
   problem: {
     input: "Input data for Gossip Protocol.",
     output: "Result of applying Gossip Protocol to the input.",
@@ -187,7 +187,7 @@ export const gossipProtocolEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

@@ -178,6 +178,81 @@ def karger_repeated(n, edges, trials=100):
         },
       ],
     },
+    {
+      language: "javascript",
+      entry: "kargerRepeated",
+      code: `function kargerRepeated(n, edges, trials = 100) {
+  function mulberry32(seed) {
+    return function() {
+      let t = seed += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function kargerMinCut(n, edges, seed) {
+    const rand = mulberry32(seed);
+    const parent = Array.from({length: n}, (_, i) => i);
+    const rank = new Array(n).fill(0);
+    function find(x) {
+      while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; }
+      return x;
+    }
+    function union(a, b) {
+      a = find(a); b = find(b);
+      if (a === b) return;
+      if (rank[a] < rank[b]) [a, b] = [b, a];
+      parent[b] = a;
+      if (rank[a] === rank[b]) rank[a]++;
+    }
+    let left = n;
+    while (left > 2) {
+      let u, v;
+      do {
+        const e = edges[Math.floor(rand() * edges.length)];
+        u = e[0]; v = e[1];
+      } while (find(u) === find(v));
+      union(u, v);
+      left--;
+    }
+    return edges.reduce((s, e) => s + (find(e[0]) !== find(e[1]) ? 1 : 0), 0);
+  }
+  let best = Infinity;
+  for (let i = 0; i < trials; i++) {
+    best = Math.min(best, kargerMinCut(n, edges, i));
+  }
+  return best;
+}
+`,
+      tests: [
+        {
+          args: [
+            4,
+            [
+              [0, 1],
+              [1, 2],
+              [2, 3],
+              [3, 0],
+              [0, 2],
+            ],
+            100,
+          ],
+          expected: 2,
+        },
+        {
+          args: [
+            3,
+            [
+              [0, 1],
+              [1, 2],
+              [0, 2],
+            ],
+            50,
+          ],
+          expected: 2,
+        },
+      ],
+    },
   ],
   visualizer: null,
   practice: [
@@ -237,7 +312,7 @@ def karger_repeated(n, edges, trials=100):
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

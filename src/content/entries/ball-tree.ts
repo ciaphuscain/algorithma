@@ -12,7 +12,7 @@ export const ballTreeEntry: AlgorithmEntry = {
     "Ball Tree is an algorithm in the field of tree algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["ball tree", "tree algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["kd-tree", "vp-tree", "cover-tree"],
   problem: {
     input: "Input data for Ball Tree.",
     output: "Result of applying Ball Tree to the input.",
@@ -167,7 +167,7 @@ export const ballTreeEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

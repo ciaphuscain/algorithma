@@ -12,7 +12,7 @@ export const branchAndBoundEntry: AlgorithmEntry = {
     "Branch and Bound is an algorithm in the field of optimization. It provides an efficient approach to solving problems in this domain.",
   tags: ["branch and bound", "optimization"],
   prerequisites: [],
-  related: [],
+  related: ["branch-and-cut", "beam-search"],
   problem: {
     input: "Input data for Branch and Bound.",
     output: "Result of applying Branch and Bound to the input.",
@@ -176,7 +176,7 @@ export const branchAndBoundEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

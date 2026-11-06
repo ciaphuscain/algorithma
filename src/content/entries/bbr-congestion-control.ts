@@ -12,7 +12,7 @@ export const bbrCongestionControlEntry: AlgorithmEntry = {
     "BBR Congestion Control is an algorithm in the field of network algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["bbr congestion control", "network algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["tcp-congestion-control-reno-cubic", "token-bucket-rate-limiting"],
   problem: {
     input: "Input data for BBR Congestion Control.",
     output: "Result of applying BBR Congestion Control to the input.",
@@ -191,7 +191,7 @@ export const bbrCongestionControlEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

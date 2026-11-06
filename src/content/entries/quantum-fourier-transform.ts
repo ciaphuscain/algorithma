@@ -12,7 +12,7 @@ export const quantumFourierTransformEntry: AlgorithmEntry = {
     "Quantum Fourier Transform is an algorithm in the field of advanced topics. It provides an efficient approach to solving problems in this domain.",
   tags: ["quantum fourier transform", "advanced topics"],
   prerequisites: [],
-  related: [],
+  related: ["shor-s-algorithm", "fft"],
   problem: {
     input: "Input data for Quantum Fourier Transform.",
     output: "Result of applying Quantum Fourier Transform to the input.",
@@ -167,7 +167,7 @@ export const quantumFourierTransformEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

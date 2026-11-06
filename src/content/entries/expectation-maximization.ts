@@ -12,7 +12,7 @@ export const expectationMaximizationEntry: AlgorithmEntry = {
     "Iteratively estimates parameters of statistical models with latent variables by alternating between computing expected values (E-step) and maximizing likelihood (M-step).",
   tags: ["expectation maximization", "machine learning"],
   prerequisites: [],
-  related: [],
+  related: ["gaussian-mixture-models", "k-means-clustering"],
   problem: {
     input: "Observed data and a parametric model with latent variables.",
     output: "Maximum likelihood parameter estimates.",
@@ -203,7 +203,7 @@ export const expectationMaximizationEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

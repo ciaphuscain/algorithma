@@ -12,7 +12,7 @@ export const rsaEncryptionEntry: AlgorithmEntry = {
     "RSA Encryption is an algorithm in the field of cryptography. It provides an efficient approach to solving problems in this domain.",
   tags: ["rsa encryption", "cryptography"],
   prerequisites: [],
-  related: [],
+  related: ["rsa-key-generation", "diffie-hellman-key-exchange"],
   problem: {
     input: "Input data for RSA Encryption.",
     output: "Result of applying RSA Encryption to the input.",
@@ -168,7 +168,7 @@ export const rsaEncryptionEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

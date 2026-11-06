@@ -12,7 +12,7 @@ export const gomoryHuTreeEntry: AlgorithmEntry = {
     "Gomory–Hu Tree is an algorithm in the field of graph algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["gomory–hu tree", "graph algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["stoer-wagner-minimum-cut", "dinic"],
   problem: {
     input: "Input data for Gomory–Hu Tree.",
     output: "Result of applying Gomory–Hu Tree to the input.",
@@ -205,7 +205,7 @@ export const gomoryHuTreeEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

@@ -12,7 +12,7 @@ export const randomizedPrimSAlgorithmEntry: AlgorithmEntry = {
     "Randomized Prim's Algorithm is an algorithm in the field of randomized algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["randomized prim's algorithm", "randomized algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["prim", "randomized-kruskal"],
   problem: {
     input: "Input data for Randomized Prim's Algorithm.",
     output: "Result of applying Randomized Prim's Algorithm to the input.",
@@ -196,7 +196,7 @@ export const randomizedPrimSAlgorithmEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

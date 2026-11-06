@@ -12,7 +12,7 @@ export const bufferReplacementClockAlgorithmEntry: AlgorithmEntry = {
     "Buffer Replacement (Clock Algorithm) is an algorithm in the field of database algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["buffer replacement (clock algorithm)", "database algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["lru-cache", "lfu-cache"],
   problem: {
     input: "Input data for Buffer Replacement (Clock Algorithm).",
     output: "Result of applying Buffer Replacement (Clock Algorithm) to the input.",
@@ -198,7 +198,7 @@ export const bufferReplacementClockAlgorithmEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

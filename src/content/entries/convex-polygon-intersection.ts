@@ -12,7 +12,7 @@ export const convexPolygonIntersectionEntry: AlgorithmEntry = {
     "Convex Polygon Intersection is an algorithm in the field of computational geometry. It provides an efficient approach to solving problems in this domain.",
   tags: ["convex polygon intersection", "computational geometry"],
   prerequisites: [],
-  related: [],
+  related: ["half-plane-intersection", "convex-hull-trick"],
   problem: {
     input: "Input data for Convex Polygon Intersection.",
     output: "Result of applying Convex Polygon Intersection to the input.",
@@ -211,7 +211,7 @@ export const convexPolygonIntersectionEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

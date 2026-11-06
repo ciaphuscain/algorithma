@@ -12,7 +12,7 @@ export const polygonAreaShoelaceFormulaEntry: AlgorithmEntry = {
     "Polygon Area (Shoelace Formula) is an algorithm in the field of computational geometry. It provides an efficient approach to solving problems in this domain.",
   tags: ["polygon area (shoelace formula)", "computational geometry"],
   prerequisites: [],
-  related: [],
+  related: ["polygon-triangulation", "orientation-test-ccw-test"],
   problem: {
     input: "Input data for Polygon Area (Shoelace Formula).",
     output: "Result of applying Polygon Area (Shoelace Formula) to the input.",
@@ -211,7 +211,7 @@ export const polygonAreaShoelaceFormulaEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

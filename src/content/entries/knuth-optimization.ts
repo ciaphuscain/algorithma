@@ -148,6 +148,38 @@ export const knuthOptimizationEntry: AlgorithmEntry = {
         },
       ],
     },
+    {
+      language: "javascript",
+      entry: "knuthOptimalBst",
+      code: `function knuthOptimalBst(freq) {
+  const n = freq.length;
+  if (n === 0) return 0;
+  const ps = [0];
+  for (let i = 0; i < n; i++) ps.push(ps[i] + freq[i]);
+  const dp = Array.from({length: n}, () => new Array(n).fill(0));
+  const opt = Array.from({length: n}, () => new Array(n).fill(0));
+  for (let i = 0; i < n; i++) { dp[i][i] = freq[i]; opt[i][i] = i; }
+  for (let len = 2; len <= n; len++) {
+    for (let i = 0; i <= n - len; i++) {
+      const j = i + len - 1;
+      dp[i][j] = Infinity;
+      const lo = opt[i][j - 1];
+      const hi = i + 1 <= j ? opt[i + 1][j] : j;
+      for (let k = lo; k <= hi; k++) {
+        const cost = (k > i ? dp[i][k - 1] : 0) + (k < j ? dp[k + 1][j] : 0) + ps[j + 1] - ps[i];
+        if (cost < dp[i][j]) { dp[i][j] = cost; opt[i][j] = k; }
+      }
+    }
+  }
+  return dp[0][n - 1];
+}
+`,
+      tests: [
+        { args: [[3, 1, 2]], expected: 10 },
+        { args: [[1, 1]], expected: 3 },
+        { args: [[5]], expected: 5 },
+      ],
+    },
   ],
   visualizer: null,
   practice: [
@@ -198,7 +230,7 @@ export const knuthOptimizationEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

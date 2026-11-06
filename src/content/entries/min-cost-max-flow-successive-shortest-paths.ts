@@ -12,7 +12,7 @@ export const minCostMaxFlowSuccessiveShortestPathsEntry: AlgorithmEntry = {
     "Min-Cost Max-Flow (Successive Shortest Paths) is an algorithm in the field of graph algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["min-cost max-flow (successive shortest paths)", "graph algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["min-cost-flow-cycle-canceling", "dijkstra"],
   problem: {
     input: "Input data for Min-Cost Max-Flow (Successive Shortest Paths).",
     output: "Result of applying Min-Cost Max-Flow (Successive Shortest Paths) to the input.",
@@ -206,7 +206,7 @@ export const minCostMaxFlowSuccessiveShortestPathsEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

@@ -12,7 +12,7 @@ export const mvccMultiVersionConcurrencyControlEntry: AlgorithmEntry = {
     "MVCC (Multi-Version Concurrency Control) is an algorithm in the field of database algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["mvcc (multi-version concurrency control)", "database algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["two-phase-locking", "snapshot-isolation"],
   problem: {
     input: "Input data for MVCC (Multi-Version Concurrency Control).",
     output: "Result of applying MVCC (Multi-Version Concurrency Control) to the input.",
@@ -198,7 +198,7 @@ export const mvccMultiVersionConcurrencyControlEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

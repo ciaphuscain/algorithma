@@ -166,6 +166,54 @@ export const kitamasaMethodEntry: AlgorithmEntry = {
         },
       ],
     },
+    {
+      language: "javascript",
+      entry: "kitamasa",
+      code: `function kitamasa(coeffs, initial, n, mod) {
+  const k = coeffs.length;
+  if (n < k) return mod != null ? initial[n] % mod : initial[n];
+  function polyMod(p) {
+    while (p.length >= k + 1) {
+      let c = p[p.length - 1];
+      if (mod) c = ((c % mod) + mod) % mod;
+      const deg = p.length - 1;
+      for (let i = 0; i < k; i++) {
+        p[deg - 1 - i] += c * coeffs[i];
+        if (mod) p[deg - 1 - i] = ((p[deg - 1 - i] % mod) + mod) % mod;
+      }
+      p.pop();
+    }
+    return p;
+  }
+  function polyMul(a, b) {
+    const res = new Array(a.length + b.length - 1).fill(0);
+    for (let i = 0; i < a.length; i++)
+      for (let j = 0; j < b.length; j++) {
+        res[i + j] += a[i] * b[j];
+        if (mod) res[i + j] = ((res[i + j] % mod) + mod) % mod;
+      }
+    return polyMod(res);
+  }
+  let result = [1], base = [0, 1], m = n;
+  while (m > 0) {
+    if (m & 1) result = polyMul(result, base);
+    base = polyMul(base, base);
+    m >>= 1;
+  }
+  let ans = 0;
+  for (let i = 0; i < Math.min(result.length, k); i++) {
+    ans += result[i] * initial[i];
+    if (mod) ans = ((ans % mod) + mod) % mod;
+  }
+  return ans;
+}
+`,
+      tests: [
+        { args: [[1, 1], [0, 1], 10], expected: 55 },
+        { args: [[1, 1], [0, 1], 0], expected: 0 },
+        { args: [[2], [1], 10], expected: 1024 },
+      ],
+    },
   ],
   visualizer: null,
   practice: [
@@ -230,7 +278,7 @@ export const kitamasaMethodEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

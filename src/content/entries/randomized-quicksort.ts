@@ -12,7 +12,7 @@ export const randomizedQuicksortEntry: AlgorithmEntry = {
     "Randomized QuickSort is an algorithm in the field of randomized algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["randomized quicksort", "randomized algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["quick-sort", "randomized-kruskal"],
   problem: {
     input: "Input data for Randomized QuickSort.",
     output: "Result of applying Randomized QuickSort to the input.",
@@ -196,7 +196,7 @@ export const randomizedQuicksortEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

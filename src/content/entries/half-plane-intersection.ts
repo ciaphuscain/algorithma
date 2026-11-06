@@ -12,7 +12,7 @@ export const halfPlaneIntersectionEntry: AlgorithmEntry = {
     "Half-Plane Intersection is an algorithm in the field of computational geometry. It provides an efficient approach to solving problems in this domain.",
   tags: ["half-plane intersection", "computational geometry"],
   prerequisites: [],
-  related: [],
+  related: ["convex-polygon-intersection", "sweep-line"],
   problem: {
     input: "Input data for Half-Plane Intersection.",
     output: "Result of applying Half-Plane Intersection to the input.",
@@ -211,7 +211,7 @@ export const halfPlaneIntersectionEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

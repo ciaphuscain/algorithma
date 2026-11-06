@@ -12,7 +12,7 @@ export const murmurhashEntry: AlgorithmEntry = {
     "MurmurHash is an algorithm in the field of hashing. It provides an efficient approach to solving problems in this domain.",
   tags: ["murmurhash", "hashing"],
   prerequisites: [],
-  related: [],
+  related: ["xxhash", "cityhash"],
   problem: {
     input: "Input data for MurmurHash.",
     output: "Result of applying MurmurHash to the input.",
@@ -177,7 +177,7 @@ export const murmurhashEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

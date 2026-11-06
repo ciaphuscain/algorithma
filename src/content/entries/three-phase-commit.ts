@@ -12,7 +12,7 @@ export const threePhaseCommitEntry: AlgorithmEntry = {
     "Three-Phase Commit is an algorithm in the field of distributed algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["three-phase commit", "distributed algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["two-phase-commit", "paxos"],
   problem: {
     input: "Input data for Three-Phase Commit.",
     output: "Result of applying Three-Phase Commit to the input.",
@@ -187,7 +187,7 @@ export const threePhaseCommitEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

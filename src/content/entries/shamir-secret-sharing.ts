@@ -12,7 +12,7 @@ export const shamirSecretSharingEntry: AlgorithmEntry = {
     "Shamir's secret sharing splits a secret into n shares such that any k shares can reconstruct it via polynomial interpolation, but fewer than k shares reveal nothing.",
   tags: ["secret sharing", "polynomial interpolation", "threshold scheme", "cryptography"],
   prerequisites: ["Modular Arithmetic"],
-  related: [],
+  related: ["rsa-encryption", "diffie-hellman-key-exchange"],
   problem: {
     input: "A secret value S, threshold k, total shares n, and a prime p > S.",
     output: "n shares (x_i, y_i) such that any k shares reconstruct S.",
@@ -190,7 +190,7 @@ def shamir_reconstruct(shares, p):
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

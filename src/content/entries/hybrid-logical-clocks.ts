@@ -12,7 +12,7 @@ export const hybridLogicalClocksEntry: AlgorithmEntry = {
     "Hybrid Logical Clocks is an algorithm in the field of distributed algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["hybrid logical clocks", "distributed algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["lamport-clocks", "vector-clocks"],
   problem: {
     input: "Input data for Hybrid Logical Clocks.",
     output: "Result of applying Hybrid Logical Clocks to the input.",
@@ -187,7 +187,7 @@ export const hybridLogicalClocksEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

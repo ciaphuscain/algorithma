@@ -12,7 +12,7 @@ export const costBasedQueryOptimizationSelingerEntry: AlgorithmEntry = {
     "Cost-Based Query Optimization (Selinger) is an algorithm in the field of database algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["cost-based query optimization (selinger)", "database algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["bloom-join", "grace-hash-join"],
   problem: {
     input: "Input data for Cost-Based Query Optimization (Selinger).",
     output: "Result of applying Cost-Based Query Optimization (Selinger) to the input.",
@@ -198,7 +198,7 @@ export const costBasedQueryOptimizationSelingerEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

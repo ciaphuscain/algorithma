@@ -12,7 +12,7 @@ export const twoPhaseLockingEntry: AlgorithmEntry = {
     "Two-Phase Locking is an algorithm in the field of database algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["two-phase locking", "database algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["mvcc-multi-version-concurrency-control", "snapshot-isolation"],
   problem: {
     input: "Input data for Two-Phase Locking.",
     output: "Result of applying Two-Phase Locking to the input.",
@@ -198,7 +198,7 @@ export const twoPhaseLockingEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

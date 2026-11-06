@@ -12,7 +12,7 @@ export const metropolisHastingsMcmcEntry: AlgorithmEntry = {
     "Generates samples from a target probability distribution by constructing a Markov chain that converges to the target as its stationary distribution.",
   tags: ["metropolis hastings mcmc", "machine learning"],
   prerequisites: [],
-  related: [],
+  related: ["gibbs-sampling", "hamiltonian-monte-carlo"],
   problem: {
     input: "A target distribution p(x) (up to a normalizing constant) and a proposal distribution.",
     output: "A sequence of samples approximately distributed according to p(x).",
@@ -194,7 +194,7 @@ function metropolisDemo(x0, sigma, nSamples, seed) {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

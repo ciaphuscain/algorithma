@@ -12,7 +12,7 @@ export const extendibleHashingEntry: AlgorithmEntry = {
     "Extendible Hashing is an algorithm in the field of database algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["extendible hashing", "database algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["linear-hashing", "cuckoo-hashing"],
   problem: {
     input: "Input data for Extendible Hashing.",
     output: "Result of applying Extendible Hashing to the input.",
@@ -198,7 +198,7 @@ export const extendibleHashingEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

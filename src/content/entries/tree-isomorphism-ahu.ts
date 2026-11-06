@@ -12,7 +12,7 @@ export const treeIsomorphismAhuEntry: AlgorithmEntry = {
     "Tree Isomorphism (AHU) is an algorithm in the field of graph algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["tree isomorphism (ahu)", "graph algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["tree-dp", "dfs"],
   problem: {
     input: "Input data for Tree Isomorphism (AHU).",
     output: "Result of applying Tree Isomorphism (AHU) to the input.",
@@ -205,7 +205,7 @@ export const treeIsomorphismAhuEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

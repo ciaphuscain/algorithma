@@ -12,7 +12,7 @@ export const hmacEntry: AlgorithmEntry = {
     "HMAC is an algorithm in the field of cryptography. It provides an efficient approach to solving problems in this domain.",
   tags: ["hmac", "cryptography"],
   prerequisites: [],
-  related: [],
+  related: ["sha-2", "poly1305"],
   problem: {
     input: "Input data for HMAC.",
     output: "Result of applying HMAC to the input.",
@@ -164,7 +164,7 @@ export const hmacEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

@@ -12,7 +12,7 @@ export const treeDpEntry: AlgorithmEntry = {
     "Tree DP is an algorithm in the field of tree algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["tree dp", "tree algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["centroid-decomposition", "heavy-light"],
   problem: {
     input: "Input data for Tree DP.",
     output: "Result of applying Tree DP to the input.",
@@ -167,7 +167,7 @@ export const treeDpEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

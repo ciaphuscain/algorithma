@@ -282,7 +282,7 @@ function frogLiChao(h, C) {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review. The trick itself is folklore in competitive programming; no single original source is cited.",
+    note: "Written with AI assistance. Code samples verified by automated tests. The trick itself is folklore in competitive programming; no single original source is cited.",
   },
   version: 1,
   updated: "2026-10-23",

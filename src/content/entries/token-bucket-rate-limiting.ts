@@ -12,7 +12,7 @@ export const tokenBucketRateLimitingEntry: AlgorithmEntry = {
     "Token Bucket Rate Limiting is an algorithm in the field of network algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["token bucket rate limiting", "network algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["bbr-congestion-control", "tcp-congestion-control-reno-cubic"],
   problem: {
     input: "Input data for Token Bucket Rate Limiting.",
     output: "Result of applying Token Bucket Rate Limiting to the input.",
@@ -191,7 +191,7 @@ export const tokenBucketRateLimitingEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

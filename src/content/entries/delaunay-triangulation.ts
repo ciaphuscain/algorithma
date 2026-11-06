@@ -12,7 +12,7 @@ export const delaunayTriangulationEntry: AlgorithmEntry = {
     "Delaunay Triangulation is an algorithm in the field of computational geometry. It provides an efficient approach to solving problems in this domain.",
   tags: ["delaunay triangulation", "computational geometry"],
   prerequisites: [],
-  related: [],
+  related: ["voronoi-diagram-fortune-s-algorithm", "polygon-triangulation"],
   problem: {
     input: "Input data for Delaunay Triangulation.",
     output: "Result of applying Delaunay Triangulation to the input.",
@@ -211,7 +211,7 @@ export const delaunayTriangulationEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

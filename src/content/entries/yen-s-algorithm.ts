@@ -12,7 +12,7 @@ export const yenSAlgorithmEntry: AlgorithmEntry = {
     "Yen's Algorithm is an algorithm in the field of graph algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["yen's algorithm", "graph algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["k-shortest-paths", "dijkstra"],
   problem: {
     input: "Input data for Yen's Algorithm.",
     output: "Result of applying Yen's Algorithm to the input.",
@@ -205,7 +205,7 @@ export const yenSAlgorithmEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

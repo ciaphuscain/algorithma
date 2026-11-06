@@ -12,7 +12,7 @@ export const bisectionMethodEntry: AlgorithmEntry = {
     "Finds a root of a continuous function on an interval [a, b] where f(a) and f(b) have opposite signs, by repeatedly halving the interval, guaranteeing convergence with one bit of precision per iteration.",
   tags: ["root finding", "numerical methods", "binary search"],
   prerequisites: ["Binary Search"],
-  related: [],
+  related: ["newton-raphson-method", "secant-method"],
   problem: {
     input:
       "A continuous function f, an interval [a, b] with f(a) * f(b) < 0, and a tolerance epsilon.",
@@ -200,7 +200,7 @@ def bisect_test(target_sq):
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

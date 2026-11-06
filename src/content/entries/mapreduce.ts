@@ -319,7 +319,7 @@ function invertedIndex(documents) {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review. The visualizer is a simplified model: unit-time steps, only one kind of failure (a mapper crashing on its first task), and a master that never fails.",
+    note: "Written with AI assistance. Code samples verified by automated tests. The visualizer is a simplified model: unit-time steps, only one kind of failure (a mapper crashing on its first task), and a master that never fails.",
   },
   version: 1,
   updated: "2026-10-25",

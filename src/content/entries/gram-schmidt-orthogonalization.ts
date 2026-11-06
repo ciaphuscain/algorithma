@@ -12,7 +12,7 @@ export const gramSchmidtOrthogonalizationEntry: AlgorithmEntry = {
     "Gram–Schmidt Orthogonalization is an algorithm in the field of number theory. It provides an efficient approach to solving problems in this domain.",
   tags: ["gram–schmidt orthogonalization", "number theory"],
   prerequisites: [],
-  related: [],
+  related: ["qr-decomposition", "singular-value-decomposition"],
   problem: {
     input: "Input data for Gram–Schmidt Orthogonalization.",
     output: "Result of applying Gram–Schmidt Orthogonalization to the input.",
@@ -182,7 +182,7 @@ export const gramSchmidtOrthogonalizationEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

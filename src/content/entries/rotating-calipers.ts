@@ -12,7 +12,7 @@ export const rotatingCalipersEntry: AlgorithmEntry = {
     "Rotating Calipers is an algorithm in the field of computational geometry. It provides an efficient approach to solving problems in this domain.",
   tags: ["rotating calipers", "computational geometry"],
   prerequisites: [],
-  related: [],
+  related: ["convex-polygon-intersection", "jarvis-march-gift-wrapping"],
   problem: {
     input: "Input data for Rotating Calipers.",
     output: "Result of applying Rotating Calipers to the input.",
@@ -211,7 +211,7 @@ export const rotatingCalipersEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

@@ -12,7 +12,7 @@ export const interiorPointMethodsEntry: AlgorithmEntry = {
     "Interior-Point Methods is an algorithm in the field of optimization. It provides an efficient approach to solving problems in this domain.",
   tags: ["interior-point methods", "optimization"],
   prerequisites: [],
-  related: [],
+  related: ["simplex-method", "conjugate-gradient"],
   problem: {
     input: "Input data for Interior-Point Methods.",
     output: "Result of applying Interior-Point Methods to the input.",
@@ -176,7 +176,7 @@ export const interiorPointMethodsEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

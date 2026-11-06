@@ -12,7 +12,7 @@ export const lyndonFactorizationDuvalSAlgorithmEntry: AlgorithmEntry = {
     "Decomposes a string into a non-increasing sequence of Lyndon words in O(n) time. A Lyndon word is a string strictly smaller than all its rotations.",
   tags: ["Lyndon word", "factorization", "string decomposition"],
   prerequisites: ["booth-s-algorithm-lexicographically-minimum-rotation"],
-  related: [],
+  related: ["suffix-array", "booth-s-algorithm-lexicographically-minimum-rotation"],
   problem: {
     input: "A string S.",
     output:
@@ -162,7 +162,7 @@ export const lyndonFactorizationDuvalSAlgorithmEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

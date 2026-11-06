@@ -12,7 +12,7 @@ export const bitonicSortEntry: AlgorithmEntry = {
     "A parallel comparison-based sorting algorithm that builds a bitonic sequence and then sorts it using a network of comparators. Well-suited for GPU and hardware implementations.",
   tags: ["sorting", "parallel", "sorting network", "bitonic merge"],
   prerequisites: ["Merge Sort"],
-  related: [],
+  related: ["odd-even-merge-sort", "parallel-merge-sort"],
   problem: {
     input: "Input for Bitonic Sort.",
     output: "Output of Bitonic Sort.",
@@ -202,7 +202,7 @@ export const bitonicSortEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

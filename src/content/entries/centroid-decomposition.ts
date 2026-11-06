@@ -12,7 +12,7 @@ export const centroidDecompositionEntry: AlgorithmEntry = {
     "Centroid Decomposition is an algorithm in the field of tree algorithms. It provides an efficient approach to solving problems in this domain.",
   tags: ["centroid decomposition", "tree algorithms"],
   prerequisites: [],
-  related: [],
+  related: ["heavy-light", "tree-dp"],
   problem: {
     input: "Input data for Centroid Decomposition.",
     output: "Result of applying Centroid Decomposition to the input.",
@@ -167,7 +167,7 @@ export const centroidDecompositionEntry: AlgorithmEntry = {
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",

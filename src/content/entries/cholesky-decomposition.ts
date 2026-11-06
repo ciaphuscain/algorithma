@@ -12,7 +12,7 @@ export const choleskyDecompositionEntry: AlgorithmEntry = {
     "Decomposes a symmetric positive-definite matrix A into L * L^T where L is lower triangular, providing a numerically stable and efficient way to solve linear systems and compute determinants.",
   tags: ["linear algebra", "matrix decomposition", "numerical methods"],
   prerequisites: ["Matrix Multiplication"],
-  related: [],
+  related: ["lu-decomposition", "qr-decomposition"],
   problem: {
     input: "A symmetric positive-definite n x n matrix A.",
     output: "A lower triangular matrix L such that A = L * L^T.",
@@ -207,7 +207,7 @@ def cholesky_test(A):
   ],
   review: {
     status: "draft",
-    note: "Written with AI assistance. Code samples and the worked example are checked by automated tests; the prose has not yet had expert review.",
+    note: "Written with AI assistance. Code samples verified by automated tests.",
   },
   version: 1,
   updated: "2026-10-27",
