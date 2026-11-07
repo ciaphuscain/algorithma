@@ -143,7 +143,7 @@ export const fibonacciDpEntry: AlgorithmEntry = {
       ],
     },
   ],
-  visualizer: null,
+  visualizer: "fibonacci-dp",
   practice: [
     {
       id: "fibonacci-dp-q1",

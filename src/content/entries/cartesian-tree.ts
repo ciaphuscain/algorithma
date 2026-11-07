@@ -160,7 +160,7 @@ export const cartesianTreeEntry: AlgorithmEntry = {
       ],
     },
   ],
-  visualizer: null,
+  visualizer: "cartesian-tree",
   practice: [
     {
       id: "ct-root",

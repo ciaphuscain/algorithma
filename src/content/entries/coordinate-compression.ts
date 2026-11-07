@@ -126,7 +126,7 @@ export const coordinateCompressionEntry: AlgorithmEntry = {
       ],
     },
   ],
-  visualizer: null,
+  visualizer: "coordinate-compression",
   practice: [
     {
       id: "cc-size",
